@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>shared-objects</artifactId>
-			<version>0.0.1.SNAPSHOT</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
