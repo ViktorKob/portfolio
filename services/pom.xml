@@ -17,6 +17,7 @@
 
   <modules>
     <module>sample-service</module>
+    <module>cluster-data-service</module>
   </modules>
 
   <properties>

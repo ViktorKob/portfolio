@@ -1,0 +1,29 @@
+spring.application.name: graphql-service
+
+server:
+  port: 8110
+  
+  tomcat:
+    max-connections: 2000
+    max-http-header-size: 120000
+    max-http-post-size: 120000
+    max-threads: 50
+    min-spare-threads: 10
+    
+logging:
+  level:
+    org:
+      springframework: INFO
+    springfox: INFO
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://192.168.0.13:8000/eureka/
+
+cluster-service:
+  kerberos:
+    user: splyf@company.org
+    keytabFilePath: /opt/tomcat/keytab
+    
+    
