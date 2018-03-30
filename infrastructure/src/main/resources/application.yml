@@ -1,0 +1,14 @@
+spring.application.name: infrastructure-master
+
+server:
+  port: 8000
+
+eureka:
+  instance.hostname: 192.168.0.13
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    server:
+      waitTimeInMsWhenSyncEmpty: 0
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
