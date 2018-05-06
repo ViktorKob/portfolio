@@ -4,7 +4,6 @@ import static java.awt.Color.LIGHT_GRAY;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static map.EventType.BASE_COLOR;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Point2D;
@@ -29,9 +28,9 @@ public class HeatmapTile implements MapTile {
 		points = new LinkedList<>();
 	}
 
-	public void addPoint(GeoPoint randomGeoPoint) {
+	public void addPoint(GeoPoint point) {
 		synchronized (points) {
-			points.add(randomGeoPoint);
+			points.add(point);
 		}
 	}
 
@@ -102,20 +101,20 @@ public class HeatmapTile implements MapTile {
 		for (int i = 0; i < typeCounts.length; i++) {
 			if (typeCounts[i] > 0) {
 				colorCount++;
-				sum(colorSum, EVENT_TYPES[i].calculateColor(typeCounts[i]));
+				addToSum(colorSum, EVENT_TYPES[i].calculateColor(typeCounts[i]));
 			}
 		}
 		if (colorCount > 0) {
 			colorSum[0] = (short) (colorSum[0] / colorCount + BASE_COLOR[0]);
 			colorSum[1] = (short) (colorSum[1] / colorCount + BASE_COLOR[1]);
 			colorSum[2] = (short) (colorSum[2] / colorCount + BASE_COLOR[2]);
-			return new Color(colorSum[0], colorSum[1], colorSum[2], 128).getRGB();
+			return (128 & 0xFF) << 24 | (colorSum[0] & 0xFF) << 16 | (colorSum[1] & 0xFF) << 8 | (colorSum[2] & 0xFF) << 0;
 		} else {
 			return null;
 		}
 	}
 
-	private void sum(short[] colorSum, byte[] calculatedColor) {
+	private void addToSum(short[] colorSum, byte[] calculatedColor) {
 		colorSum[0] += calculatedColor[0];
 		colorSum[1] += calculatedColor[1];
 		colorSum[2] += calculatedColor[2];
