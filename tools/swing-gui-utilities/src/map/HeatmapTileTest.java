@@ -1,6 +1,7 @@
 package map;
 
 import static java.awt.Color.BLACK;
+import static java.lang.Math.random;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -21,7 +22,6 @@ public class HeatmapTileTest extends JFrame {
 		for (int i = 0; i < sampleSize; i++) {
 			tile.addPoint(new RandomGeoPoint());
 		}
-		tileRender = null;
 	}
 
 	public void cacheTile() {
@@ -51,9 +51,9 @@ class RandomGeoPoint implements GeoPoint {
 	private final double latitude;
 
 	public RandomGeoPoint() {
-		eventType = EventType.values()[(int) (Math.random() * EventType.values().length)];
-		longitude = Math.random() * 180 - 90;
-		latitude = Math.random() * 180 - 90;
+		eventType = EventType.values()[(int) (random() * EventType.values().length)];
+		longitude = random() * 180 - 90;
+		latitude = random() * 180 - 90;
 	}
 
 	@Override
