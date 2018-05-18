@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.model.DataType;
 import net.model.types.GeoLocation;
-import net.model.util.UidTool;
+import net.model.util.UidGenerator;
 import net.sample.generators.DocumentGenerator;
 import net.sample.generators.primitives.StringGenerator;
 
@@ -16,14 +16,15 @@ public class SmsGenerator extends DocumentGenerator {
 	private final List<DataType> pstnNumbers;
 	private final List<DataType> imsiNumbers;
 	private final StringGenerator messageGenerator;
-	private final UidTool uidTool;
+	private final UidGenerator uidTool;
 
 	public SmsGenerator(Map<String, DataType> pstnNumbers, Map<String, DataType> imsiNumbers, long randomSeed) {
 		super("Sms", randomSeed);
 		this.pstnNumbers = new ArrayList<>(pstnNumbers.values());
 		this.imsiNumbers = new ArrayList<>(imsiNumbers.values());
 		messageGenerator = new StringGenerator(5, 250, 0.1, random.nextLong());
-		uidTool = new UidTool(DATA_TYPE_FIELDS.get("PstnEndpoint").values(), true);
+		uidTool = new UidGenerator(DATA_TYPE_FIELDS.get("PstnEndpoint")
+			.values(), true);
 	}
 
 	@Override

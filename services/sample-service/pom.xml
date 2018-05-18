@@ -13,6 +13,14 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>net.thomas.portfolio.tools</groupId>
+			<artifactId>shared-objects</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.thomas.portfolio.tools</groupId>
+			<artifactId>common</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.pivotal.spring.cloud</groupId>
 			<artifactId>spring-cloud-services-starter-service-registry</artifactId>
 		</dependency>

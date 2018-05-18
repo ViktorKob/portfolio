@@ -1,5 +1,11 @@
 spring.application.name: graphql-service
 
+security:
+  user:
+    name: user 
+    password: password 
+    roles: USER 
+
 server:
   port: 8110
   
@@ -18,12 +24,8 @@ logging:
 
 eureka:
   client:
+    registerWithEureka: true
+    fetchRegistry: true
     serviceUrl:
-      defaultZone: http://192.168.0.13:8000/eureka/
-
-cluster-service:
-  kerberos:
-    user: splyf@company.org
-    keytabFilePath: /opt/tomcat/keytab
-    
-    
+#      defaultZone: http://ec2-34-209-142-238.us-west-2.compute.amazonaws.com:8000/
+      defaultZone: http://localhost:8000/eureka
