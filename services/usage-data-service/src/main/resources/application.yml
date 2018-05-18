@@ -1,0 +1,42 @@
+spring.application.name: usage-data-service
+server.port: 8150
+
+security:
+  user:
+    name: user 
+    password: password
+    roles: USER
+     
+usageDataService:
+  database:
+    host: localhost
+    port: 3306
+    schema: usage_activity
+    user: root
+    password: computer
+    
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+#      defaultZone: http://ec2-34-209-142-238.us-west-2.compute.amazonaws.com:8000/
+      defaultZone: http://localhost:8000/eureka
+
+
+#jOOQ
+jdbc.Driver: com.mysql.jdbc.Driver
+jdbc.URL: jdbc:mysql://localhost:3306/usage_activity
+jdbc.Schema: usage_activity
+jdbc.User: root
+jdbc.Password: computer
+ 
+generator: org.jooq.util.DefaultGenerator
+generator.database: org.jooq.util.mysql.MySQLDatabase
+generator.database.includes: .*
+generator.database.excludes: 
+generator.generate.relations: true
+generator.generate.deprecated: false
+generator.target.package: test.generated
+generator.target.directory: src/main/generated
+      

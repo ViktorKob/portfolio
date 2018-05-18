@@ -26,10 +26,10 @@ import net.model.meta_data.StatisticsPeriod;
 import net.model.types.Document;
 import net.model.types.Selector;
 import net.model.util.DateConverter;
-import net.model.util.HeadlineRendererLibrary;
+import net.model.util.SampleModelHeadlineRendererLibrary;
 import net.model.util.Parser;
-import net.model.util.SimpleRepresentationParserLibrary;
-import net.model.util.SimpleRepresentationRendererLibrary;
+import net.model.util.SampleModelSimpleRepresentationParserLibrary;
+import net.model.util.SampleModelSimpleRepresentationRendererLibrary;
 
 public class SampleAdaptor implements ModelAdaptor {
 
@@ -42,9 +42,9 @@ public class SampleAdaptor implements ModelAdaptor {
 	public SampleAdaptor(SampleStorage storage) {
 		this.storage = storage;
 		dateConverter = new DateConverter.SimpleDateConverter();
-		headlineRendererLibrary = new HeadlineRendererLibrary(this);
-		simpleRepresentationParserLibrary = new SimpleRepresentationParserLibrary();
-		simpleRepresentationRendererLibrary = new SimpleRepresentationRendererLibrary();
+		headlineRendererLibrary = new SampleModelHeadlineRendererLibrary(this);
+		simpleRepresentationParserLibrary = new SampleModelSimpleRepresentationParserLibrary();
+		simpleRepresentationRendererLibrary = new SampleModelSimpleRepresentationRendererLibrary();
 	}
 
 	@Override

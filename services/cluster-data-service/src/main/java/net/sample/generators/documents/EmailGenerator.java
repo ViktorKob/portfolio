@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.model.DataType;
-import net.model.util.UidTool;
+import net.model.util.UidGenerator;
 import net.sample.generators.DocumentGenerator;
 import net.sample.generators.primitives.StringGenerator;
 
@@ -19,7 +19,7 @@ public class EmailGenerator extends DocumentGenerator {
 	private final List<DataType> emailAddresses;
 	private final StringGenerator subjectGenerator;
 	private final StringGenerator messageGenerator;
-	private final UidTool uidTool;
+	private final UidGenerator uidTool;
 
 	private final Map<String, List<DataType>> previousDisplayedNameMatches;
 
@@ -29,7 +29,8 @@ public class EmailGenerator extends DocumentGenerator {
 		emailAddresses = new ArrayList<>(emailAdresses.values());
 		subjectGenerator = new StringGenerator(0, 250, .2, random.nextLong());
 		messageGenerator = new StringGenerator(30, 1000, .10, random.nextLong());
-		uidTool = new UidTool(DATA_TYPE_FIELDS.get("EmailEndpoint").values(), true);
+		uidTool = new UidGenerator(DATA_TYPE_FIELDS.get("EmailEndpoint")
+			.values(), true);
 		previousDisplayedNameMatches = new HashMap<>();
 	}
 
@@ -74,7 +75,8 @@ public class EmailGenerator extends DocumentGenerator {
 				return randomSample(previousDisplayedNameMatches.get(address.getUid()));
 			}
 			final DataType additionalDisplayedName = randomSample(displayedNames);
-			previousDisplayedNameMatches.get(address.getUid()).add(additionalDisplayedName);
+			previousDisplayedNameMatches.get(address.getUid())
+				.add(additionalDisplayedName);
 			return additionalDisplayedName;
 		} else if (random.nextDouble() < .4) {
 			final DataType displayedName = randomSample(displayedNames);

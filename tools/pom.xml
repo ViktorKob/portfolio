@@ -9,6 +9,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>architecture</module>
 		<module>common</module>
 		<module>shared-objects</module>
 		<module>swing-gui-utilities</module>

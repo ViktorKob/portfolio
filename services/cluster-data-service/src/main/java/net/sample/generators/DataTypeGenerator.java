@@ -7,18 +7,19 @@ import java.util.List;
 import java.util.Random;
 
 import net.model.DataType;
-import net.model.util.UidTool;
+import net.model.util.UidGenerator;
 
 public abstract class DataTypeGenerator implements Iterable<DataType>, Iterator<DataType> {
 
 	protected final String dataTypeName;
 	protected final Random random;
-	private final UidTool uidTool;
+	private final UidGenerator uidTool;
 
 	public DataTypeGenerator(String dataTypeName, boolean keyShouldBeUnique, long randomSeed) {
 		this.dataTypeName = dataTypeName;
 		random = new Random(randomSeed);
-		uidTool = new UidTool(DATA_TYPE_FIELDS.get(dataTypeName).values(), keyShouldBeUnique);
+		uidTool = new UidGenerator(DATA_TYPE_FIELDS.get(dataTypeName)
+			.values(), keyShouldBeUnique);
 	}
 
 	protected synchronized void populateUid(DataType sample) {
