@@ -1,5 +1,5 @@
-spring.application.name: usage-data-service
-server.port: 8150
+spring.application.name: hbase-indexing-service
+server.port: 8100
 
 security:
   user:
@@ -7,13 +7,6 @@ security:
     password: password
     roles: SYSTEM
      
-usageDataService:
-  database:
-    host: localhost
-    port: 3306
-    schema: usage_data
-    user: root
-    password: computer
     
 eureka:
   client:

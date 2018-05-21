@@ -11,7 +11,7 @@ import javax.annotation.Generated;
 
 import net.usage_data.schema.Indexes;
 import net.usage_data.schema.Keys;
-import net.usage_data.schema.UsageActivity;
+import net.usage_data.schema.UsageData;
 import net.usage_data.schema.tables.records.AccessTypeRecord;
 
 import org.jooq.Field;
@@ -40,10 +40,10 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccessType extends TableImpl<AccessTypeRecord> {
 
-    private static final long serialVersionUID = -1674281242;
+    private static final long serialVersionUID = -1168461993;
 
     /**
-     * The reference instance of <code>usage_activity.access_type</code>
+     * The reference instance of <code>usage_data.access_type</code>
      */
     public static final AccessType ACCESS_TYPE = new AccessType();
 
@@ -56,31 +56,31 @@ public class AccessType extends TableImpl<AccessTypeRecord> {
     }
 
     /**
-     * The column <code>usage_activity.access_type.id</code>.
+     * The column <code>usage_data.access_type.id</code>.
      */
     public final TableField<AccessTypeRecord, UInteger> ID = createField("id", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>usage_activity.access_type.name</code>.
+     * The column <code>usage_data.access_type.name</code>.
      */
     public final TableField<AccessTypeRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
 
     /**
-     * Create a <code>usage_activity.access_type</code> table reference
+     * Create a <code>usage_data.access_type</code> table reference
      */
     public AccessType() {
         this(DSL.name("access_type"), null);
     }
 
     /**
-     * Create an aliased <code>usage_activity.access_type</code> table reference
+     * Create an aliased <code>usage_data.access_type</code> table reference
      */
     public AccessType(String alias) {
         this(DSL.name(alias), ACCESS_TYPE);
     }
 
     /**
-     * Create an aliased <code>usage_activity.access_type</code> table reference
+     * Create an aliased <code>usage_data.access_type</code> table reference
      */
     public AccessType(Name alias) {
         this(alias, ACCESS_TYPE);
@@ -99,7 +99,7 @@ public class AccessType extends TableImpl<AccessTypeRecord> {
      */
     @Override
     public Schema getSchema() {
-        return UsageActivity.USAGE_ACTIVITY;
+        return UsageData.USAGE_DATA;
     }
 
     /**

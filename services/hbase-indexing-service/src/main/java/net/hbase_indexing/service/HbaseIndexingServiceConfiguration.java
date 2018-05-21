@@ -1,4 +1,4 @@
-package net.usage_data.service;
+package net.hbase_indexing.service;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Configuration
 @ConfigurationProperties("usageDataService")
 @EnableWebMvc
-public class UsageDataServiceConfiguration extends WebMvcConfigurerAdapter {
+public class HbaseIndexingServiceConfiguration extends WebMvcConfigurerAdapter {
 
 	private Database database;
 

@@ -12,7 +12,7 @@ import javax.annotation.Generated;
 
 import net.usage_data.schema.Indexes;
 import net.usage_data.schema.Keys;
-import net.usage_data.schema.UsageActivity;
+import net.usage_data.schema.UsageData;
 import net.usage_data.schema.tables.records.UserAccessedDocumentRecord;
 
 import org.jooq.Field;
@@ -41,10 +41,10 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserAccessedDocument extends TableImpl<UserAccessedDocumentRecord> {
 
-    private static final long serialVersionUID = -553957358;
+    private static final long serialVersionUID = -1215748733;
 
     /**
-     * The reference instance of <code>usage_activity.user_accessed_document</code>
+     * The reference instance of <code>usage_data.user_accessed_document</code>
      */
     public static final UserAccessedDocument USER_ACCESSED_DOCUMENT = new UserAccessedDocument();
 
@@ -57,51 +57,51 @@ public class UserAccessedDocument extends TableImpl<UserAccessedDocumentRecord> 
     }
 
     /**
-     * The column <code>usage_activity.user_accessed_document.row</code>.
+     * The column <code>usage_data.user_accessed_document.row</code>.
      */
     public final TableField<UserAccessedDocumentRecord, UInteger> ROW = createField("row", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false).identity(true), this, "");
 
     /**
-     * The column <code>usage_activity.user_accessed_document.document_type</code>.
+     * The column <code>usage_data.user_accessed_document.document_type</code>.
      */
     public final TableField<UserAccessedDocumentRecord, String> DOCUMENT_TYPE = createField("document_type", org.jooq.impl.SQLDataType.VARCHAR(45).nullable(false), this, "");
 
     /**
-     * The column <code>usage_activity.user_accessed_document.document_uid</code>.
+     * The column <code>usage_data.user_accessed_document.document_uid</code>.
      */
     public final TableField<UserAccessedDocumentRecord, String> DOCUMENT_UID = createField("document_uid", org.jooq.impl.SQLDataType.VARCHAR(32).nullable(false), this, "");
 
     /**
-     * The column <code>usage_activity.user_accessed_document.user_id</code>.
+     * The column <code>usage_data.user_accessed_document.user_id</code>.
      */
     public final TableField<UserAccessedDocumentRecord, UInteger> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>usage_activity.user_accessed_document.access_type_id</code>.
+     * The column <code>usage_data.user_accessed_document.access_type_id</code>.
      */
     public final TableField<UserAccessedDocumentRecord, UInteger> ACCESS_TYPE_ID = createField("access_type_id", org.jooq.impl.SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>usage_activity.user_accessed_document.time_of_access</code>.
+     * The column <code>usage_data.user_accessed_document.time_of_access</code>.
      */
     public final TableField<UserAccessedDocumentRecord, Timestamp> TIME_OF_ACCESS = createField("time_of_access", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("CURRENT_TIMESTAMP", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
-     * Create a <code>usage_activity.user_accessed_document</code> table reference
+     * Create a <code>usage_data.user_accessed_document</code> table reference
      */
     public UserAccessedDocument() {
         this(DSL.name("user_accessed_document"), null);
     }
 
     /**
-     * Create an aliased <code>usage_activity.user_accessed_document</code> table reference
+     * Create an aliased <code>usage_data.user_accessed_document</code> table reference
      */
     public UserAccessedDocument(String alias) {
         this(DSL.name(alias), USER_ACCESSED_DOCUMENT);
     }
 
     /**
-     * Create an aliased <code>usage_activity.user_accessed_document</code> table reference
+     * Create an aliased <code>usage_data.user_accessed_document</code> table reference
      */
     public UserAccessedDocument(Name alias) {
         this(alias, USER_ACCESSED_DOCUMENT);
@@ -120,7 +120,7 @@ public class UserAccessedDocument extends TableImpl<UserAccessedDocumentRecord> 
      */
     @Override
     public Schema getSchema() {
-        return UsageActivity.USAGE_ACTIVITY;
+        return UsageData.USAGE_DATA;
     }
 
     /**

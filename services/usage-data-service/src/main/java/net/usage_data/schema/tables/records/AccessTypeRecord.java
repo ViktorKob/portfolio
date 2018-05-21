@@ -29,31 +29,31 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class AccessTypeRecord extends UpdatableRecordImpl<AccessTypeRecord> implements Record2<UInteger, String> {
 
-    private static final long serialVersionUID = 1149234728;
+    private static final long serialVersionUID = 1397048616;
 
     /**
-     * Setter for <code>usage_activity.access_type.id</code>.
+     * Setter for <code>usage_data.access_type.id</code>.
      */
     public void setId(UInteger value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>usage_activity.access_type.id</code>.
+     * Getter for <code>usage_data.access_type.id</code>.
      */
     public UInteger getId() {
         return (UInteger) get(0);
     }
 
     /**
-     * Setter for <code>usage_activity.access_type.name</code>.
+     * Setter for <code>usage_data.access_type.name</code>.
      */
     public void setName(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>usage_activity.access_type.name</code>.
+     * Getter for <code>usage_data.access_type.name</code>.
      */
     public String getName() {
         return (String) get(1);

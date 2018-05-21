@@ -5,7 +5,11 @@ import static net.architecture.globals.globals.UsageDataServiceGlobals.FETCH_USA
 import static net.architecture.globals.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +32,22 @@ public class UsageServiceController {
 		proxy = new SqlProxy(config.getDatabase());
 	}
 
-	@Secured("ROLE_USER")
+	@PostConstruct
+	public void ensureDatabaseIsReady() {
+		proxy.ensurePresenceOfSchema();
+	}
+
+	@Secured("ROLE_SYSTEM")
 	@RequestMapping(STORE_USAGE_ACTIVITY_PATH)
 	public ResponseEntity<?> storeUsageActivity(String type, String uid, String username, UsageActivityType activityType, Long timeOfActivity) {
-		if (validateTypeAndUid(type, uid) && validateActivity(username, activityType)) {
+		if (documentIsInvalid(type, uid)) {
 			return ResponseEntity.badRequest()
 				.body("Both type and uid must be present. The uid must be of even length. Values: type=" + type + ", uid=" + uid);
+		} else if (activityIsInvalid(username, activityType)) {
+			return ResponseEntity.badRequest()
+				.body("Both username and activityType must be present. Also, timeOfActivity can be added.<BR>activityType must belong to "
+						+ render(UsageActivityType.values()) + "<BR>Values: username=" + username + ", activityType=" + activityType + ", timeOfActivity="
+						+ timeOfActivity);
 		}
 		if (timeOfActivity == null) {
 			timeOfActivity = System.currentTimeMillis();
@@ -48,10 +62,10 @@ public class UsageServiceController {
 		}
 	}
 
-	@Secured("ROLE_USER")
+	@Secured("ROLE_SYSTEM")
 	@RequestMapping(FETCH_USAGE_ACTIVITY_PATH)
 	public ResponseEntity<?> fetchUsageActivity(String type, String uid, Integer offset, Integer limit) {
-		if (validateTypeAndUid(type, uid)) {
+		if (documentIsInvalid(type, uid)) {
 			return ResponseEntity.badRequest()
 				.body("Both type and uid must be present. The uid must be of even length. Values: type=" + type + ", uid=" + uid);
 		}
@@ -71,11 +85,17 @@ public class UsageServiceController {
 		}
 	}
 
-	private boolean validateTypeAndUid(String type, String uid) {
+	private boolean documentIsInvalid(String type, String uid) {
 		return type == null || uid == null || uid.length() % 2 == 1;
 	}
 
-	private boolean validateActivity(String username, UsageActivityType activityType) {
-		return username != null && !username.isEmpty() && activityType != null;
+	private boolean activityIsInvalid(String username, UsageActivityType activityType) {
+		return username == null || username.isEmpty() || activityType == null;
+	}
+
+	private String render(Enum<? extends Enum<?>>[] values) {
+		return "[ " + Arrays.stream(values)
+			.map(Enum::name)
+			.collect(Collectors.joining(" , ")) + " ]";
 	}
 }

@@ -29,31 +29,31 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserRecord extends UpdatableRecordImpl<UserRecord> implements Record2<UInteger, String> {
 
-    private static final long serialVersionUID = -217249774;
+    private static final long serialVersionUID = -1969966638;
 
     /**
-     * Setter for <code>usage_activity.user.id</code>.
+     * Setter for <code>usage_data.user.id</code>.
      */
     public void setId(UInteger value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user.id</code>.
+     * Getter for <code>usage_data.user.id</code>.
      */
     public UInteger getId() {
         return (UInteger) get(0);
     }
 
     /**
-     * Setter for <code>usage_activity.user.name</code>.
+     * Setter for <code>usage_data.user.name</code>.
      */
     public void setName(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user.name</code>.
+     * Getter for <code>usage_data.user.name</code>.
      */
     public String getName() {
         return (String) get(1);
