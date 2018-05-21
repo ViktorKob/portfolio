@@ -16,9 +16,10 @@
 	</parent>
 
 	<modules>
-		<module>sample-service</module>
-		<module>cluster-data-service</module>
+		<module>hbase-indexing-service</module>
 		<module>usage-data-service</module>
+		<module>nexus-service</module>
+		<module>sample-service</module>
 	</modules>
 
 	<properties>

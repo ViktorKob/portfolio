@@ -31,87 +31,87 @@ import org.jooq.types.UInteger;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class UserAccessedDocumentRecord extends UpdatableRecordImpl<UserAccessedDocumentRecord> implements Record6<UInteger, String, String, UInteger, UInteger, Timestamp> {
 
-    private static final long serialVersionUID = -329387415;
+    private static final long serialVersionUID = -660599979;
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.row</code>.
+     * Setter for <code>usage_data.user_accessed_document.row</code>.
      */
     public void setRow(UInteger value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.row</code>.
+     * Getter for <code>usage_data.user_accessed_document.row</code>.
      */
     public UInteger getRow() {
         return (UInteger) get(0);
     }
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.document_type</code>.
+     * Setter for <code>usage_data.user_accessed_document.document_type</code>.
      */
     public void setDocumentType(String value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.document_type</code>.
+     * Getter for <code>usage_data.user_accessed_document.document_type</code>.
      */
     public String getDocumentType() {
         return (String) get(1);
     }
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.document_uid</code>.
+     * Setter for <code>usage_data.user_accessed_document.document_uid</code>.
      */
     public void setDocumentUid(String value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.document_uid</code>.
+     * Getter for <code>usage_data.user_accessed_document.document_uid</code>.
      */
     public String getDocumentUid() {
         return (String) get(2);
     }
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.user_id</code>.
+     * Setter for <code>usage_data.user_accessed_document.user_id</code>.
      */
     public void setUserId(UInteger value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.user_id</code>.
+     * Getter for <code>usage_data.user_accessed_document.user_id</code>.
      */
     public UInteger getUserId() {
         return (UInteger) get(3);
     }
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.access_type_id</code>.
+     * Setter for <code>usage_data.user_accessed_document.access_type_id</code>.
      */
     public void setAccessTypeId(UInteger value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.access_type_id</code>.
+     * Getter for <code>usage_data.user_accessed_document.access_type_id</code>.
      */
     public UInteger getAccessTypeId() {
         return (UInteger) get(4);
     }
 
     /**
-     * Setter for <code>usage_activity.user_accessed_document.time_of_access</code>.
+     * Setter for <code>usage_data.user_accessed_document.time_of_access</code>.
      */
     public void setTimeOfAccess(Timestamp value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>usage_activity.user_accessed_document.time_of_access</code>.
+     * Getter for <code>usage_data.user_accessed_document.time_of_access</code>.
      */
     public Timestamp getTimeOfAccess() {
         return (Timestamp) get(5);

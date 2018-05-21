@@ -12,7 +12,7 @@ import net.usage_data.schema.tables.UserAccessedDocument;
 
 
 /**
- * Convenience access to all tables in usage_activity
+ * Convenience access to all tables in usage_data
  */
 @Generated(
     value = {
@@ -25,17 +25,17 @@ import net.usage_data.schema.tables.UserAccessedDocument;
 public class Tables {
 
     /**
-     * The table <code>usage_activity.access_type</code>.
+     * The table <code>usage_data.access_type</code>.
      */
     public static final AccessType ACCESS_TYPE = net.usage_data.schema.tables.AccessType.ACCESS_TYPE;
 
     /**
-     * The table <code>usage_activity.user</code>.
+     * The table <code>usage_data.user</code>.
      */
     public static final User USER = net.usage_data.schema.tables.User.USER;
 
     /**
-     * The table <code>usage_activity.user_accessed_document</code>.
+     * The table <code>usage_data.user_accessed_document</code>.
      */
     public static final UserAccessedDocument USER_ACCESSED_DOCUMENT = net.usage_data.schema.tables.UserAccessedDocument.USER_ACCESSED_DOCUMENT;
 }

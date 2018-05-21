@@ -3,9 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>cluster-data-service</artifactId>
-	<description>Access to data on the cluster</description>
-	<packaging>jar</packaging>
+	<artifactId>nexus-service</artifactId>
+	<description>GraphQL-based service that binds together the data resources</description>
 
 	<parent>
 		<groupId>net.thomas.portfolio.services</groupId>
@@ -71,7 +70,7 @@
 			<version>3.6.0</version>
 		</dependency>
 
-		<!-- to embed GraphiQL tool -->
+		<!-- To embed GraphiQL tool -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
@@ -90,6 +89,7 @@
 			<version>3.0.0</version>
 		</dependency>
 
+		<!-- Mocking -->
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>

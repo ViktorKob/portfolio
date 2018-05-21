@@ -21,7 +21,7 @@ import org.jooq.types.UInteger;
 
 /**
  * A class modelling foreign key relationships and constraints of tables of 
- * the <code>usage_activity</code> schema.
+ * the <code>usage_data</code> schema.
  */
 @Generated(
     value = {

@@ -26,4 +26,4 @@ CREATE TABLE `user_accessed_document` (
   KEY `user_foreign_key` (`user_id`),
   KEY `access_type_foreign_key_idx` (`access_type_id`),
   KEY `document_index` (`document_type`,`document_uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;

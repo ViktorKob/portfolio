@@ -16,8 +16,7 @@ import org.jooq.impl.Internal;
 
 
 /**
- * A class modelling indexes of tables of the <code>usage_activity</code> 
- * schema.
+ * A class modelling indexes of tables of the <code>usage_data</code> schema.
  */
 @Generated(
     value = {
