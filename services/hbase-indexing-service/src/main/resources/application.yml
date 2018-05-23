@@ -3,10 +3,12 @@ server.port: 8100
 
 security:
   user:
-    name: service 
+    name: service-user 
     password: password
-    roles: SYSTEM
-     
+    roles: USER
+
+hbaseIndexingService:
+  randomSeed: 1234
     
 eureka:
   client:

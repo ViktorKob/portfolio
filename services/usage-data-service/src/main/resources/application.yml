@@ -3,9 +3,9 @@ server.port: 8150
 
 security:
   user:
-    name: service 
+    name: service-user 
     password: password
-    roles: SYSTEM
+    roles: USER
      
 usageDataService:
   database:

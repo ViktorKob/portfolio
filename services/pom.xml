@@ -18,6 +18,7 @@
 	<modules>
 		<module>hbase-indexing-service</module>
 		<module>usage-data-service</module>
+		<module>render-service</module>
 		<module>nexus-service</module>
 		<module>sample-service</module>
 	</modules>
@@ -42,6 +43,11 @@
 				<groupId>net.thomas.portfolio.tools</groupId>
 				<artifactId>shared-objects</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.baeldung</groupId>
+				<artifactId>spring-security-rest-basic-auth</artifactId>
+				<version>0.2-SNAPSHOT</version>
 			</dependency>
 			<dependency>
 				<groupId>io.pivotal.spring.cloud</groupId>
