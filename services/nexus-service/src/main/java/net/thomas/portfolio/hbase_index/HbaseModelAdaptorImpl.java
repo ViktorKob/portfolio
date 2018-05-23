@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import net.thomas.portfolio.common.services.HttpRestClient;
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
+import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;

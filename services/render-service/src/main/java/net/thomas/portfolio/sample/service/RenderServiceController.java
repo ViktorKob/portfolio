@@ -1,5 +1,7 @@
 package net.thomas.portfolio.sample.service;
 
+import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +25,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 
 @Controller
-public class SampleServiceController {
+public class RenderServiceController {
 
 	@Autowired
 	private EurekaClient discoveryClient;
@@ -38,8 +40,25 @@ public class SampleServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping("/fetchSimpleRep")
-	public ResponseEntity<String> fetchSimpleRep(String type, String uid) {
+	@RequestMapping(RENDER_AS_TEXT_PATH)
+	public ResponseEntity<String> renderAsText(String type, String uid) {
+		final RestTemplate template = getRestTemplate();
+		try {
+			final URI graphQlQuery = buildSimpleRepRequestUrl(type, uid);
+			final ResponseEntity<String> response = template.<String>getForEntity(graphQlQuery, String.class);
+			if (OK.equals(response.getStatusCode())) {
+				return new ResponseEntity<>(response.getBody(), OK);
+			} else {
+				throw new RuntimeException("Invalid request. Please verify your parameters.");
+			}
+		} catch (RestClientException | MalformedURLException | UnsupportedEncodingException | URISyntaxException e) {
+			throw new RuntimeException("The server is currently unable to complete your request.\nPlease try again in a few minuters.");
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(RENDER_AS_HTML_PATH)
+	public ResponseEntity<String> renderAsHtml(String type, String uid) {
 		final RestTemplate template = getRestTemplate();
 		try {
 			final URI graphQlQuery = buildSimpleRepRequestUrl(type, uid);

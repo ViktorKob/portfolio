@@ -11,10 +11,10 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import graphql.servlet.SimpleGraphQLServlet;
-import net.thomas.portfolio.common.services.HttpRestClient;
 import net.thomas.portfolio.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.hbase_index.GraphQlUtilities;
 import net.thomas.portfolio.hbase_index.HbaseModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.services.HttpRestClient;
 
 @SpringBootApplication
 public class NexusServiceController {

@@ -22,13 +22,13 @@ public class SelectorFetcher extends EntityFetcher<Selector> {
 		final Object uid = environment.getArgument("uid");
 		if (uid != null) {
 			final Selector selector = (Selector) adaptor.getDataTypeByUid(type, uid.toString());
-			if (selector != null) {
-				if (environment.getArgument("justification") != null) {
-					selector.setJustification(environment.getArgument("justification"));
-				}
-				selector.setLowerBound(determineAfter(environment.getArguments()));
-				selector.setUpperBound(determineBefore(environment.getArguments()));
-			}
+			// if (selector != null) {
+			// if (environment.getArgument("justification") != null) {
+			// selector.setJustification(environment.getArgument("justification"));
+			// }
+			// selector.setLowerBound(determineAfter(environment.getArguments()));
+			// selector.setUpperBound(determineBefore(environment.getArguments()));
+			// }
 			return selector;
 		}
 		return null;
