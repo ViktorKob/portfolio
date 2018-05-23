@@ -4,7 +4,7 @@ import java.util.List;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 
 public class SubTypeArrayFetcher extends ModelDataFetcher<List<?>> {
@@ -18,7 +18,7 @@ public class SubTypeArrayFetcher extends ModelDataFetcher<List<?>> {
 
 	@Override
 	public List<?> _get(DataFetchingEnvironment environment) {
-		final Datatype parent = environment.getSource();
+		final DataType parent = environment.getSource();
 		return (List<?>) parent.get(fieldName);
 	}
 }

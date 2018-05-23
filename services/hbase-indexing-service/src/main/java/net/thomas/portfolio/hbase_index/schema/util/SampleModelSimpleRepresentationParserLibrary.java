@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
@@ -47,7 +47,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 
 		@Override
-		protected void populateValues(Datatype entity, String source) {
+		protected void populateValues(DataType entity, String source) {
 			entity.put(field, source);
 		}
 	}
@@ -58,7 +58,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 
 		@Override
-		protected void populateValues(Datatype entity, String source) {
+		protected void populateValues(DataType entity, String source) {
 			if (source.contains(".")) {
 				final int firstDot = source.indexOf('.');
 				entity.put("domainPart", source.substring(0, firstDot));
@@ -76,7 +76,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 
 		@Override
-		protected void populateValues(Datatype entity, String simpleRepresenation) {
+		protected void populateValues(DataType entity, String simpleRepresenation) {
 			final String[] parts = simpleRepresenation.split("@");
 			entity.put("localname", library.parse("Localname", parts[0]));
 			entity.put("domain", library.parse("Domain", parts[1]));

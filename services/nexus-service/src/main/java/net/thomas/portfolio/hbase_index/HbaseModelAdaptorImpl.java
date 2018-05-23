@@ -12,7 +12,7 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -84,8 +84,8 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
-	public Datatype getDataTypeByUid(String type, String uid) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, Datatype.class, new PreSerializedParameter("type", type),
+	public DataType getDataTypeByUid(String type, String uid) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class, new PreSerializedParameter("type", type),
 				new PreSerializedParameter("uid", uid));
 	}
 

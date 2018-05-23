@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -26,8 +26,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
-public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
-	private final Map<String, Map<String, Datatype>> storage;
+public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
+	private final Map<String, Map<String, DataType>> storage;
 	private Map<String, Map<StatisticsPeriod, Long>> selectorStatistics;
 	private Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex;
 	private Map<String, List<Reference>> sourceReferences;
@@ -37,7 +37,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 		storage = new HashMap<>();
 	}
 
-	public void addDataType(Datatype sample) {
+	public void addDataType(DataType sample) {
 		if (!storage.containsKey(sample.getType())) {
 			storage.put(sample.getType(), new HashMap<>());
 		}
@@ -54,16 +54,16 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 	}
 
 	@Override
-	public Iterator<Datatype> iterator() {
+	public Iterator<DataType> iterator() {
 		return new StorageIterator();
 	}
 
-	private class StorageIterator implements Iterator<Datatype> {
-		private final Stack<Iterator<Datatype>> allTypes;
+	private class StorageIterator implements Iterator<DataType> {
+		private final Stack<Iterator<DataType>> allTypes;
 
 		public StorageIterator() {
 			allTypes = new Stack<>();
-			for (final Entry<String, Map<String, Datatype>> entry : storage.entrySet()) {
+			for (final Entry<String, Map<String, DataType>> entry : storage.entrySet()) {
 				allTypes.push(entry.getValue()
 					.values()
 					.iterator());
@@ -84,7 +84,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 		}
 
 		@Override
-		public Datatype next() {
+		public DataType next() {
 			return allTypes.peek()
 				.next();
 		}
@@ -96,7 +96,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 	}
 
 	@Override
-	public Datatype getDataType(String type, String uid) {
+	public DataType getDataType(String type, String uid) {
 		if (storage.containsKey(type)) {
 			if (storage.get(type)
 				.containsKey(uid)) {
@@ -137,7 +137,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 		return Collections.<Reference>emptyList();
 	}
 
-	public PreviousKnowledge lookupPreviousKnowledgeFor(Datatype selector) {
+	public PreviousKnowledge lookupPreviousKnowledgeFor(DataType selector) {
 		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getUid());
 		if (knowledge == null) {
 			return new PreviousKnowledge(UNKNOWN, UNKNOWN);
@@ -146,15 +146,15 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 		}
 	}
 
-	public Collection<Datatype> getSamples(String type, int amount) {
+	public Collection<DataType> getSamples(String type, int amount) {
 		if (amount >= storage.get(type)
 			.size()) {
 			return storage.get(type)
 				.values();
 		} else {
-			final List<Datatype> instances = new ArrayList<>(storage.get(type)
+			final List<DataType> instances = new ArrayList<>(storage.get(type)
 				.values());
-			final Set<Datatype> samples = new HashSet<>();
+			final Set<DataType> samples = new HashSet<>();
 			while (samples.size() < amount) {
 				samples.add(getRandomInstance(instances));
 			}
@@ -162,19 +162,19 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<Datatype> {
 		}
 	}
 
-	private Datatype getRandomInstance(final List<Datatype> instances) {
+	private DataType getRandomInstance(final List<DataType> instances) {
 		return instances.get((int) (random() * instances.size()));
 	}
 
 	public void printSamples(int amount) {
 		for (final String type : storage.keySet()) {
-			for (final Datatype sample : getSamples(type, amount)) {
+			for (final DataType sample : getSamples(type, amount)) {
 				System.out.println(sample);
 			}
 		}
 	}
 
-	public Collection<Datatype> getAll(String dataType) {
+	public Collection<DataType> getAll(String dataType) {
 		return new HashSet<>(storage.get(dataType)
 			.values());
 	}

@@ -2,7 +2,7 @@ package net.thomas.portfolio.graphql.fetchers.fields;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 
@@ -16,7 +16,7 @@ public class GeoLocationFieldDataFetcher extends ModelDataFetcher<GeoLocation> {
 
 	@Override
 	public GeoLocation _get(DataFetchingEnvironment environment) {
-		final Datatype entity = (Datatype) environment.getSource();
+		final DataType entity = (DataType) environment.getSource();
 		return (GeoLocation) entity.get(fieldName);
 	}
 }

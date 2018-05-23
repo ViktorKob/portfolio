@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class DomainGenerator extends NameGenerator {
 
-	private final List<Datatype> parentDomains;
+	private final List<DataType> parentDomains;
 
-	public DomainGenerator(Collection<Datatype> parentDomains, int minLength, int maxLength, boolean allowWhitespace, HbaseIndexSchema schema,
+	public DomainGenerator(Collection<DataType> parentDomains, int minLength, int maxLength, boolean allowWhitespace, HbaseIndexSchema schema,
 			long randomSeed) {
 		super("Domain", "domainPart", minLength, maxLength, 0.0, schema, randomSeed);
 		this.parentDomains = new ArrayList<>(parentDomains);
@@ -23,7 +23,7 @@ public class DomainGenerator extends NameGenerator {
 	}
 
 	@Override
-	protected void populateValues(Datatype sample) {
+	protected void populateValues(DataType sample) {
 		super.populateValues(sample);
 		if (parentDomains.size() > 0) {
 			sample.put("domain", parentDomains.get(random.nextInt(parentDomains.size())));

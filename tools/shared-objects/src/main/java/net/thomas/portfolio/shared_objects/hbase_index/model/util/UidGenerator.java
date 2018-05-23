@@ -9,7 +9,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
@@ -26,7 +26,7 @@ public class UidGenerator {
 		counter = 0;
 	}
 
-	public synchronized String calculateUid(Datatype entity) {
+	public synchronized String calculateUid(DataType entity) {
 		try {
 			final MessageDigest hasher = MessageDigest.getInstance("MD5");
 			if (keyShouldBeUnique) {
@@ -63,7 +63,7 @@ public class UidGenerator {
 		if (field instanceof PrimitiveField) {
 			hasher.update(value.toString().getBytes());
 		} else if (field instanceof ReferenceField) {
-			final Datatype reference = (Datatype) value;
+			final DataType reference = (DataType) value;
 			hasher.update(reference.getUid().getBytes());
 		}
 	}

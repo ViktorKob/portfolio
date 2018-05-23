@@ -2,7 +2,7 @@ package net.thomas.portfolio.hbase_index.fake.generators.selectors;
 
 import net.thomas.portfolio.hbase_index.fake.generators.SelectorGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.DigitsGenerator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class NumberGenerator extends SelectorGenerator {
@@ -20,7 +20,7 @@ public class NumberGenerator extends SelectorGenerator {
 	}
 
 	@Override
-	protected void populateValues(Datatype sample) {
+	protected void populateValues(DataType sample) {
 		sample.put("number", generator.generate());
 	}
 }
