@@ -1,4 +1,6 @@
-package net.thomas.portfolio.common.services.validation;
+package net.thomas.portfolio.service_commons.validation;
+
+import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
 
 public class UidValidator extends StringPresenceValidator {
 

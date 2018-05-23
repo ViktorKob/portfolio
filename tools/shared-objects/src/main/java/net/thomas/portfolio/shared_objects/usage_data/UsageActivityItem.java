@@ -1,4 +1,4 @@
-package net.thomas.portfolio.usage_data;
+package net.thomas.portfolio.shared_objects.usage_data;
 
 import java.sql.Timestamp;
 

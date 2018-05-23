@@ -74,15 +74,15 @@ public class Adaptors {
 	}
 
 	public String renderAsText(DataType entity) {
-		return renderingAdaptor.renderAsText(entity.getType(), entity.getUid());
+		return renderingAdaptor.renderAsText(entity);
 	}
 
 	public String renderAsHtml(DataType entity) {
-		return renderingAdaptor.renderAsHtml(entity.getType(), entity.getUid());
+		return renderingAdaptor.renderAsHtml(entity);
 	}
 
-	public String renderAsSimpleRepresentation(DataType entity) {
-		return renderingAdaptor.renderAsSimpleRepresentation(entity.getType(), entity.getUid());
+	public String renderAsSimpleRepresentation(Selector selector) {
+		return renderingAdaptor.renderAsSimpleRepresentation(selector);
 	}
 
 	public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {

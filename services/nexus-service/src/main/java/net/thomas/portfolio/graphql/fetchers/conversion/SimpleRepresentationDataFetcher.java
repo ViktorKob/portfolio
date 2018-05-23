@@ -2,7 +2,7 @@ package net.thomas.portfolio.graphql.fetchers.conversion;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
@@ -14,7 +14,7 @@ public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
 
 	@Override
 	public Object _get(DataFetchingEnvironment environment) {
-		final DataType entity = (DataType) environment.getSource();
-		return adaptors.renderAsSimpleRepresentation(entity);
+		final Selector selector = (Selector) environment.getSource();
+		return adaptors.renderAsSimpleRepresentation(selector);
 	}
 }
