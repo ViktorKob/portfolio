@@ -4,15 +4,13 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.Arrays;
 
-public class EnumValueValidator<ENUM_TYPE extends Enum<ENUM_TYPE>> extends ParameterValidator<String> {
+public class EnumValueValidator<ENUM_TYPE extends Enum<ENUM_TYPE>> extends ParameterValidator<ENUM_TYPE> {
 
-	private final Class<ENUM_TYPE> enumType;
 	private final String values;
 	private final boolean required;
 
-	public EnumValueValidator(String parameterName, Class<ENUM_TYPE> enumType, ENUM_TYPE[] values, boolean required) {
+	public EnumValueValidator(String parameterName, ENUM_TYPE[] values, boolean required) {
 		super(parameterName);
-		this.enumType = enumType;
 		this.required = required;
 		this.values = "[" + Arrays.stream(values)
 			.map(Enum::name)
@@ -20,27 +18,16 @@ public class EnumValueValidator<ENUM_TYPE extends Enum<ENUM_TYPE>> extends Param
 	}
 
 	@Override
-	public boolean isValid(String value) {
-		return valueOfWorks(value);
+	public boolean isValid(ENUM_TYPE value) {
+		return value != null;
 	}
 
 	@Override
-	public String getReason(String value) {
+	public String getReason(ENUM_TYPE value) {
 		if (value == null) {
-			return parameterName + " is missing" + (required ? " and required" : ", but not required");
-		} else if (!valueOfWorks(value)) {
-			return parameterName + " ( was " + value + " ) must belong to " + values;
+			return parameterName + " is missing" + (required ? " and required" : ", but not required") + ". It should belong to " + values;
 		} else {
 			return parameterName + " ( was " + value + " ) is valid";
-		}
-	}
-
-	private boolean valueOfWorks(String value) {
-		try {
-			Enum.valueOf(enumType, value);
-			return true;
-		} catch (final IllegalArgumentException e) {
-			return false;
 		}
 	}
 }

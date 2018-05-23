@@ -1,6 +1,5 @@
 package net.thomas.portfolio.render.service;
 
-import static java.lang.Integer.MAX_VALUE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
@@ -9,6 +8,8 @@ import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
 import static net.thomas.portfolio.globals.ServiceGlobals.RENDER_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
+
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -23,8 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
-import net.thomas.portfolio.common.services.validation.DataTypeValidator;
-import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
+import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.UidValidator;
 import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.render.common.context.HtmlRenderContextBuilder;
@@ -39,9 +39,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 @Controller
 @RequestMapping(RENDER_SERVICE_PATH)
 public class RenderServiceController {
-	private static final DataTypeValidator TYPE = new DataTypeValidator("type", true);
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("type", true);
 	private static final UidValidator UID = new UidValidator("uid", true);
-	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, true);
 
 	private final RenderServiceConfiguration configuration;
 	private final HbaseIndexingModelSimpleRepresentationRendererLibrary simpleRepRenderer;
@@ -57,13 +56,16 @@ public class RenderServiceController {
 		simpleRepRenderer = new HbaseIndexingModelSimpleRepresentationRendererLibrary();
 		textRenderer = new HbaseIndexingModelTextRendererLibrary();
 		htmlRenderer = new HtmlRenderControl();
+		schema = null;
 	}
 
 	@PostConstruct
 	public void prepareForRendering() {
 		hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing());
 		schema = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
-		TYPE.setSchema(schema);
+		final Set<String> dataTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class)
+			.getDataTypes();
+		TYPE.setValidStrings(dataTypes);
 	}
 
 	@Bean

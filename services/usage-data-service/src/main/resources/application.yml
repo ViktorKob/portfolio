@@ -8,6 +8,11 @@ security:
     roles: USER
      
 usageDataService:
+  hbaseIndexing:
+    name: hbase-indexing-service
+    credentials:
+      user: service-user
+      password: password
   database:
     host: localhost
     port: 3306

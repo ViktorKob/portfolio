@@ -8,6 +8,8 @@ import static net.thomas.portfolio.globals.ServiceGlobals.HBASE_INDEXING_SERVICE
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.HashSet;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +18,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import net.thomas.portfolio.common.services.validation.DataTypeValidator;
 import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
+import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.UidValidator;
 import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
@@ -26,7 +28,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 @Controller
 @RequestMapping(HBASE_INDEXING_SERVICE_PATH)
 public class HbaseIndexingServiceController {
-	private static final DataTypeValidator TYPE = new DataTypeValidator("type", true);
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("type", true);
 	private static final UidValidator UID = new UidValidator("uid", true);
 	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, true);
 
@@ -45,7 +47,7 @@ public class HbaseIndexingServiceController {
 		schema = generator.getSchema();
 		generator.buildSampleDataSet(config.getRandomSeed());
 		index = generator.getSampleDataSet();
-		TYPE.setSchema(schema);
+		TYPE.setValidStrings(new HashSet<>(schema.getDataTypes()));
 	}
 
 	@Secured("ROLE_USER")
