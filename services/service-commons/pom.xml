@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>hbase-indexing-service</artifactId>
+	<artifactId>service-commons</artifactId>
 
 	<parent>
 		<groupId>net.thomas.portfolio.services</groupId>
@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>architecture</artifactId>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>common</artifactId>
@@ -25,12 +25,9 @@
 			<artifactId>shared-objects</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>io.pivotal.spring.cloud</groupId>
 			<artifactId>spring-cloud-services-starter-service-registry</artifactId>
 		</dependency>
 	</dependencies>
+
 </project>

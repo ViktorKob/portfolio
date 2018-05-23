@@ -1,4 +1,4 @@
-package net.thomas.portfolio.common.services;
+package net.thomas.portfolio.service_commons.services;
 
 import static java.util.Arrays.asList;
 import static org.springframework.http.HttpMethod.GET;
@@ -16,6 +16,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 
+import net.thomas.portfolio.common.services.Credentials;
+import net.thomas.portfolio.common.services.Parameter;
+import net.thomas.portfolio.common.services.ServiceDependency;
 import net.thomas.portfolio.enums.Service;
 import net.thomas.portfolio.enums.ServiceEndpoint;
 

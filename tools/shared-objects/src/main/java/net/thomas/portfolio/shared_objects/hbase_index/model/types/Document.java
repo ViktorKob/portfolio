@@ -33,6 +33,6 @@ public class Document extends DataType {
 
 	@Override
 	public String toString() {
-		return type + " (" + uid + ")@" + timeOfEvent + ": " + super.toString();
+		return getType() + " (" + getUid() + ")@" + timeOfEvent + ": " + super.toString();
 	}
 }
