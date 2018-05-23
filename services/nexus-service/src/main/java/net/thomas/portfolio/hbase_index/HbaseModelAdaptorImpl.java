@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index;
 
-import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATATYPE;
+import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 
@@ -85,7 +85,7 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	@Override
 	public DataType getDataTypeByUid(String type, String uid) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class, new PreSerializedParameter("type", type),
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", type),
 				new PreSerializedParameter("uid", uid));
 	}
 
