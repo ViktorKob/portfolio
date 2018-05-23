@@ -1,4 +1,4 @@
-spring.application.name: graphql-service
+spring.application.name: nexus-service
 
 security:
   user:
@@ -15,6 +15,13 @@ server:
     max-http-post-size: 120000
     max-threads: 50
     min-spare-threads: 10
+    
+nexusService:
+  hbaseIndexing:
+    name: hbase-indexing-service
+    credentials:
+      user: service-user
+      password: password
     
 logging:
   level:
