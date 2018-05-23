@@ -14,7 +14,6 @@ import com.netflix.discovery.EurekaClient;
 
 import graphql.servlet.SimpleGraphQLServlet;
 import net.thomas.portfolio.graphql.GraphQlModelBuilder;
-import net.thomas.portfolio.hbase_index.GraphQlUtilities;
 import net.thomas.portfolio.hbase_index.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 
@@ -44,10 +43,9 @@ public class NexusServiceController {
 
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
-		final GraphQlModelBuilder builder = new GraphQlModelBuilder(new GraphQlUtilities());
-		builder.setName("SampleModel")
-			.setDescription("Sample model created to showcase data structure")
-			.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
+		final GraphQlModelBuilder builder = new GraphQlModelBuilder();
+		final HbaseModelAdaptorImpl hbaseModelAdaptorImpl = new HbaseModelAdaptorImpl(hbaseIndexClient);
+		builder.setHbaseModelAdaptor(hbaseModelAdaptorImpl);
 		return new ServletRegistrationBean(new SimpleGraphQLServlet(builder.build()), "/schema.json", GRAPHQL_SERVLET_MAPPING);
 	}
 }

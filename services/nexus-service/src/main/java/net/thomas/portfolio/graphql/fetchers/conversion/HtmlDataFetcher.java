@@ -5,16 +5,15 @@ import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
-public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
-	// private final Renderer<String> renderer;
+public class HtmlDataFetcher extends ModelDataFetcher<String> {
 
-	public SimpleRepresentationDataFetcher(Adaptors adaptors) {
+	public HtmlDataFetcher(Adaptors adaptors) {
 		super(adaptors);
 	}
 
 	@Override
-	public Object _get(DataFetchingEnvironment environment) {
+	public String _get(DataFetchingEnvironment environment) {
 		final DataType entity = (DataType) environment.getSource();
-		return adaptors.renderAsSimpleRepresentation(entity);
+		return adaptors.renderAsText(entity);
 	}
 }

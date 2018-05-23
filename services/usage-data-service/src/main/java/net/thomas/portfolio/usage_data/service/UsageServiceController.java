@@ -30,8 +30,8 @@ import net.thomas.portfolio.common.services.validation.LongRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.UidValidator;
-import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.usage_data.UsageActivityItem;
 import net.thomas.portfolio.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
@@ -67,7 +67,7 @@ public class UsageServiceController {
 	@PostConstruct
 	public void loadHbaseIndexingSchema() {
 		final HttpRestClient hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing());
-		final Set<String> documentTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class)
+		final Set<String> documentTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class)
 			.getDocumentTypes();
 		TYPE.setValidStrings(documentTypes);
 	}

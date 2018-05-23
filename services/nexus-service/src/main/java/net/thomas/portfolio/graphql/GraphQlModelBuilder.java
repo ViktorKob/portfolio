@@ -32,6 +32,7 @@ import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.graphql.fetchers.conversion.FormattedTimeOfEventDataFetcher;
 import net.thomas.portfolio.graphql.fetchers.conversion.FormattedTimeOfInterceptionDataFetcher;
 import net.thomas.portfolio.graphql.fetchers.conversion.HeadlineDataFetcher;
+import net.thomas.portfolio.graphql.fetchers.conversion.HtmlDataFetcher;
 import net.thomas.portfolio.graphql.fetchers.conversion.SimpleRepresentationDataFetcher;
 import net.thomas.portfolio.graphql.fetchers.data_types.DocumentFetcher;
 import net.thomas.portfolio.graphql.fetchers.data_types.EntityFetcher;
@@ -60,7 +61,6 @@ import net.thomas.portfolio.graphql.fetchers.references.ReferenceOriginalIdFetch
 import net.thomas.portfolio.graphql.fetchers.references.ReferenceSourceFetcher;
 import net.thomas.portfolio.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
-import net.thomas.portfolio.hbase_index.GraphQlUtilities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
@@ -68,28 +68,17 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classific
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.RenderingAdaptor;
 
 public class GraphQlModelBuilder {
-	private String name;
-	private String description;
 	private HbaseModelAdaptor hbaseModelAdaptor;
-	private final GraphQlUtilities utilities;
+	private RenderingAdaptor renderingAdaptor;
+	private AnalyticsAdaptor analyticsAdaptor;
 
-	public GraphQlModelBuilder(GraphQlUtilities utilities) {
-		this.utilities = utilities;
-		name = "Unnamed model";
-		description = "";
-	}
-
-	public GraphQlModelBuilder setName(String name) {
-		this.name = name;
-		return this;
-	}
-
-	public GraphQlModelBuilder setDescription(String description) {
-		this.description = description;
-		return this;
+	public GraphQlModelBuilder() {
 	}
 
 	public GraphQlModelBuilder setHbaseModelAdaptor(HbaseModelAdaptor hbaseModelAdaptor) {
@@ -97,25 +86,37 @@ public class GraphQlModelBuilder {
 		return this;
 	}
 
+	public GraphQlModelBuilder setRenderingAdaptor(RenderingAdaptor renderingAdaptor) {
+		this.renderingAdaptor = renderingAdaptor;
+		return this;
+	}
+
+	public GraphQlModelBuilder setAnalyticsAdaptor(AnalyticsAdaptor analyticsAdaptor) {
+		this.analyticsAdaptor = analyticsAdaptor;
+		return this;
+	}
+
 	public GraphQLSchema build() {
-		final List<GraphQLFieldDefinition> fieldDefinitions = buildFieldDefinitions(hbaseModelAdaptor);
-		final GraphQLObjectType query = new GraphQLObjectType(name, description, fieldDefinitions, emptyList());
+		final Adaptors adaptors = new Adaptors(hbaseModelAdaptor, renderingAdaptor, analyticsAdaptor);
+		final List<GraphQLFieldDefinition> fieldDefinitions = buildFieldDefinitions(adaptors);
+		final GraphQLObjectType query = new GraphQLObjectType("NexusModel", "Model enabling use of all sub-services as one data structure", fieldDefinitions,
+				emptyList());
 		final GraphQLSchema.Builder builder = newSchema().query(query);
 		return builder.build();
 	}
 
-	private List<GraphQLFieldDefinition> buildFieldDefinitions(HbaseModelAdaptor adaptor) {
+	private List<GraphQLFieldDefinition> buildFieldDefinitions(Adaptors adaptors) {
 		final LinkedList<GraphQLFieldDefinition> fields = new LinkedList<>();
-		for (final String dataType : adaptor.getDataTypes()) {
-			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptor);
+		for (final String dataType : adaptors.getDataTypes()) {
+			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
 			List<GraphQLArgument> arguments = uidAnd(new LinkedList<>());
-			if (adaptor.isSimpleRepresentable(dataType)) {
+			if (adaptors.isSimpleRepresentable(dataType)) {
 				arguments = simpleRepAnd(arguments);
 			}
-			if (adaptor.isSelector(dataType)) {
+			if (adaptors.isSelector(dataType)) {
 				arguments = justificationAnd(dateBoundsAnd(arguments));
 			}
-			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptor);
+			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptors);
 			fields.add(newFieldDefinition().name(dataType)
 				.type(dataTypeObjectType)
 				.argument(arguments)
@@ -123,16 +124,16 @@ public class GraphQlModelBuilder {
 				.build());
 		}
 		fields.add(newFieldDefinition().name("SelectorStatistics")
-			.type(buildSelectorStatisticsType(adaptor))
+			.type(buildSelectorStatisticsType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("PreviousKnowledge")
-			.type(buildPreviousKnowledgeType(adaptor))
+			.type(buildPreviousKnowledgeType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("DocumentReference")
-			.type(buildDocumentReferenceType(adaptor))
+			.type(buildDocumentReferenceType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("GeoLocation")
-			.type(buildGeoLocationType(adaptor))
+			.type(buildGeoLocationType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("ClassificationEnum")
 			.type(enumType(Classification.values()))
@@ -147,121 +148,124 @@ public class GraphQlModelBuilder {
 		return fields;
 	}
 
-	private ModelDataFetcher<?> createFetcher(final String dataType, HbaseModelAdaptor adaptor) {
-		if (adaptor.isDocument(dataType)) {
-			return new DocumentFetcher(dataType, adaptor);
-		} else if (adaptor.isSimpleRepresentable(dataType)) {
-			return new SimpleRepresentationFetcher(dataType, adaptor, utilities);
-		} else if (adaptor.isSelector(dataType)) {
-			return new SelectorFetcher(dataType, adaptor, utilities);
+	private ModelDataFetcher<?> createFetcher(final String dataType, Adaptors adaptors) {
+		if (adaptors.isDocument(dataType)) {
+			return new DocumentFetcher(dataType, adaptors);
+		} else if (adaptors.isSimpleRepresentable(dataType)) {
+			return new SimpleRepresentationFetcher(dataType, adaptors);
+		} else if (adaptors.isSelector(dataType)) {
+			return new SelectorFetcher(dataType, adaptors);
 		} else {
-			return new EntityFetcher<>(dataType, adaptor);
+			return new EntityFetcher<>(dataType, adaptors);
 		}
 	}
 
-	private GraphQLObjectType buildObjectType(String dataType, HbaseModelAdaptor adaptor) {
+	private GraphQLObjectType buildObjectType(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType);
 		builder.field(newFieldDefinition().name("uid")
 			.type(GraphQLString)
-			.dataFetcher(new UidDataFetcher(adaptor)));
+			.dataFetcher(new UidDataFetcher(adaptors)));
 		builder.field(newFieldDefinition().name("type")
 			.type(GraphQLString)
-			.dataFetcher(new TypeDataFetcher(adaptor)));
+			.dataFetcher(new TypeDataFetcher(adaptors)));
 		builder.field(newFieldDefinition().name("headline")
 			.type(GraphQLString)
-			.dataFetcher(new HeadlineDataFetcher(adaptor)));
+			.dataFetcher(new HeadlineDataFetcher(adaptors)));
+		builder.field(newFieldDefinition().name("html")
+			.type(GraphQLString)
+			.dataFetcher(new HtmlDataFetcher(adaptors)));
 
-		if (adaptor.isSimpleRepresentable(dataType)) {
+		if (adaptors.isSimpleRepresentable(dataType)) {
 			builder.description("Simple representable selector");
 			builder.field(newFieldDefinition().name("simpleRep")
 				.type(GraphQLString)
-				.dataFetcher(new SimpleRepresentationDataFetcher(adaptor))
+				.dataFetcher(new SimpleRepresentationDataFetcher(adaptors))
 				.build());
-		} else if (adaptor.isDocument(dataType)) {
+		} else if (adaptors.isDocument(dataType)) {
 			builder.description("Document");
 			builder.field(newFieldDefinition().name("references")
 				.type(list(new GraphQLTypeReference("DocumentReference")))
-				.dataFetcher(new DocumentReferenceFetcher(adaptor))
+				.dataFetcher(new DocumentReferenceFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("rawData")
 				.type(GraphQLString)
-				.dataFetcher(new RawDataFetcher(adaptor))
+				.dataFetcher(new RawDataFetcher(adaptors))
 				.build());
 
 			builder.field(newFieldDefinition().name("timeOfEvent")
 				.type(GraphQLLong)
-				.dataFetcher(new TimeOfEventDataFetcher(adaptor))
+				.dataFetcher(new TimeOfEventDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("timeOfInterception")
 				.type(GraphQLLong)
-				.dataFetcher(new TimeOfInterceptionDataFetcher(adaptor))
+				.dataFetcher(new TimeOfInterceptionDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("formattedTimeOfEvent")
 				.type(GraphQLString)
 				.argument(format(new LinkedList<>()))
-				.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptor, utilities))
+				.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("formattedTimeOfInterception")
 				.type(GraphQLString)
 				.argument(format(new LinkedList<>()))
-				.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptor, utilities))
+				.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
 				.build());
-		} else if (adaptor.isSelector(dataType)) {
+		} else if (adaptors.isSelector(dataType)) {
 			builder.description("Selector without simple representation");
 		} else {
 			builder.description("Composition type");
 		}
 
-		if (adaptor.isSelector(dataType)) {
+		if (adaptors.isSelector(dataType)) {
 			builder.field(newFieldDefinition().name("statistics")
 				.type(new GraphQLTypeReference("SelectorStatistics"))
-				.dataFetcher(new SelectorStatisticsFetcher(adaptor))
+				.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("knowledge")
 				.type(new GraphQLTypeReference("PreviousKnowledge"))
-				.dataFetcher(new SelectorKnowledgeFetcher(adaptor))
+				.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("indexables")
-				.type(createInvertedIndexLookupTypeForSelector(dataType, adaptor))
+				.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
 				.argument(pagingAnd(dateBoundsAnd(new LinkedList<>())))
-				.dataFetcher(new IndexableDocumentSearchFetcher(adaptor, utilities))
+				.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
 				.build());
 		}
 
-		for (final Field field : adaptor.getDataTypeFields(dataType)) {
+		for (final Field field : adaptors.getDataTypeFields(dataType)) {
 			if (field instanceof PrimitiveField) {
-				builder.field(buildFieldDefinition((PrimitiveField) field, adaptor));
+				builder.field(buildFieldDefinition((PrimitiveField) field, adaptors));
 			} else if (field instanceof ReferenceField) {
-				builder.field(buildFieldDefinition((ReferenceField) field, adaptor));
+				builder.field(buildFieldDefinition((ReferenceField) field, adaptors));
 			}
 		}
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition buildFieldDefinition(PrimitiveField field, HbaseModelAdaptor adaptor) {
+	private GraphQLFieldDefinition buildFieldDefinition(PrimitiveField field, Adaptors adaptors) {
 		final Builder builder = newFieldDefinition().name(field.getName());
 		GraphQLOutputType graphQlType = null;
 		DataFetcher<?> fetcher = null;
 		switch (field.getType()) {
 		case DECIMAL:
-			fetcher = new DecimalFieldDataFetcher(field.getName(), adaptor);
+			fetcher = new DecimalFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLBigDecimal;
 			break;
 		case INTEGER:
-			fetcher = new IntegerFieldDataFetcher(field.getName(), adaptor);
+			fetcher = new IntegerFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLLong;
 			break;
 		case TIMESTAMP:
-			fetcher = new TimestampFieldDataFetcher(field.getName(), adaptor, utilities);
+			fetcher = new TimestampFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLString;
 			break;
 		case GEO_LOCATION:
-			fetcher = new GeoLocationFieldDataFetcher(field.getName(), adaptor);
+			fetcher = new GeoLocationFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = new GraphQLTypeReference("GeoLocation");
 			break;
 		case STRING:
 		default:
-			fetcher = new StringFieldDataFetcher(field.getName(), adaptor);
+			fetcher = new StringFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLString;
 			break;
 		}
@@ -276,15 +280,15 @@ public class GraphQlModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition buildFieldDefinition(ReferenceField field, HbaseModelAdaptor adaptor) {
+	private GraphQLFieldDefinition buildFieldDefinition(ReferenceField field, Adaptors adaptors) {
 		final Builder builder = newFieldDefinition().name(field.getName());
 		final GraphQLOutputType graphQlType = new GraphQLTypeReference(field.getType());
 		if (field.isArray()) {
 			builder.type(list(graphQlType))
-				.dataFetcher(new SubTypeArrayFetcher(field.getName(), adaptor));
+				.dataFetcher(new SubTypeArrayFetcher(field.getName(), adaptors));
 		} else {
 			builder.type(graphQlType)
-				.dataFetcher(new SubTypeFetcher(field.getName(), adaptor));
+				.dataFetcher(new SubTypeFetcher(field.getName(), adaptors));
 		}
 		return builder.build();
 	}
@@ -355,68 +359,68 @@ public class GraphQlModelBuilder {
 		return arguments;
 	}
 
-	private GraphQLObjectType createInvertedIndexLookupTypeForSelector(String dataType, HbaseModelAdaptor adaptor) {
+	private GraphQLObjectType createInvertedIndexLookupTypeForSelector(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType + "Indexables")
 			.description("Indexables for specific selector");
-		for (final Indexable indexable : adaptor.getIndexables(dataType)) {
+		for (final Indexable indexable : adaptors.getIndexables(dataType)) {
 			builder.field(newFieldDefinition().name(indexable.path + "_" + indexable.documentType)
 				.type(list(new GraphQLTypeReference(indexable.documentType)))
-				.dataFetcher(new IndexableDocumentListFetcher(indexable, adaptor))
+				.dataFetcher(new IndexableDocumentListFetcher(indexable, adaptors))
 				.build());
 		}
 		return builder.build();
 	}
 
-	private GraphQLOutputType buildSelectorStatisticsType(HbaseModelAdaptor adaptor) {
+	private GraphQLOutputType buildSelectorStatisticsType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("SelectorStatistics")
 			.description("Statistics for specific selector over time");
 		builder.field(newFieldDefinition().name("dayTotal")
 			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(DAY, adaptor))
+			.dataFetcher(new SelectorStatisticsForPeriodFetcher(DAY, adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("weekTotal")
 			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(WEEK, adaptor))
+			.dataFetcher(new SelectorStatisticsForPeriodFetcher(WEEK, adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("quarterTotal")
 			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(QUARTER, adaptor))
+			.dataFetcher(new SelectorStatisticsForPeriodFetcher(QUARTER, adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("infinityTotal")
 			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(INFINITY, adaptor))
+			.dataFetcher(new SelectorStatisticsForPeriodFetcher(INFINITY, adaptors))
 			.build());
 		return builder.build();
 	}
 
-	private GraphQLObjectType buildPreviousKnowledgeType(HbaseModelAdaptor adaptor) {
+	private GraphQLObjectType buildPreviousKnowledgeType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("PreviousKnowledge")
 			.description("Previous knowledge about selector");
 		builder.field(newFieldDefinition().name("isKnown")
 			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
-			.dataFetcher(new SelectorIsKnownFetcher(adaptor))
+			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("isDanish")
 			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
-			.dataFetcher(new SelectorIsKnownFetcher(adaptor))
+			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
 			.build());
 		return builder.build();
 	}
 
-	private GraphQLOutputType buildDocumentReferenceType(HbaseModelAdaptor adaptor) {
+	private GraphQLOutputType buildDocumentReferenceType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("DocumentReference")
 			.description("Source reference for specific document");
 		builder.field(newFieldDefinition().name("originalId")
 			.type(GraphQLString)
-			.dataFetcher(new ReferenceOriginalIdFetcher(adaptor))
+			.dataFetcher(new ReferenceOriginalIdFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("classifications")
 			.type(list(new GraphQLTypeReference("ClassificationEnum")))
-			.dataFetcher(new ReferenceClassificationsFetcher(adaptor))
+			.dataFetcher(new ReferenceClassificationsFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("source")
 			.type(new GraphQLTypeReference("SourceEnum"))
-			.dataFetcher(new ReferenceSourceFetcher(adaptor))
+			.dataFetcher(new ReferenceSourceFetcher(adaptors))
 			.build());
 		return builder.build();
 	}
@@ -432,16 +436,16 @@ public class GraphQlModelBuilder {
 		return new GraphQLEnumType(name + "Enum", "Mapping of Enum " + name + " to GraphQL", enumValues);
 	}
 
-	private GraphQLOutputType buildGeoLocationType(HbaseModelAdaptor adaptor) {
+	private GraphQLOutputType buildGeoLocationType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("GeoLocation")
 			.description("Location on Earth in Longitude and Latitude");
 		builder.field(newFieldDefinition().name("longitude")
 			.type(GraphQLBigDecimal)
-			.dataFetcher(new GeoLocationValueFetcher("longitude", adaptor))
+			.dataFetcher(new GeoLocationValueFetcher("longitude", adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("latitude")
 			.type(GraphQLBigDecimal)
-			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptor))
+			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptors))
 			.build());
 		return builder.build();
 	}

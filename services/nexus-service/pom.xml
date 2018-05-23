@@ -76,14 +76,14 @@
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-spring-boot-starter</artifactId>
-			<version>3.6.0</version>
+			<version>4.1.0</version>
 		</dependency>
 
 		<!-- To embed GraphiQL tool -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
-			<version>3.6.0</version>
+			<version>4.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -95,7 +95,7 @@
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java</artifactId>
-			<version>3.0.0</version>
+			<version>8.0</version>
 		</dependency>
 
 		<!-- Mocking -->

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
-import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
@@ -19,6 +18,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 
@@ -33,7 +33,7 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	public HbaseModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
+		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class);
 		// simpleRepresentationParserLibrary = new SampleModelSimpleRepresentationParserLibrary();
 		// dateConverter = new DateConverter.SimpleDateConverter();
 		// headlineRendererLibrary = new SampleModelHeadlineRendererLibrary(this);
@@ -86,6 +86,13 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	@Override
 	public DataType getDataTypeByUid(String type, String uid) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", type),
+				new PreSerializedParameter("uid", uid));
+	}
+
+	@Override
+	public Selector getDataTypeBySimpleRep(String type, String simpleRep) {
+		final String uid = schema.getUid(type, simpleRep);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, Selector.class, new PreSerializedParameter("type", type),
 				new PreSerializedParameter("uid", uid));
 	}
 

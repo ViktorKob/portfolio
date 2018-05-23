@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,12 +10,12 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
-public class SampleModelSimpleRepresentationParserLibrary implements Parser<String, Selector> {
-	private final SampleModelSimpleRepresentationParserLibrary library;
-	private final Map<String, SampleModelSimpleRepresentationParser<String>> parsers;
+public class SimpleRepresentationParserLibrary implements Parser<String, Selector> {
+	private final SimpleRepresentationParserLibrary library;
+	private final Map<String, SimpleRepresentationParser<String>> parsers;
 	private final HbaseIndexSchema model;
 
-	public SampleModelSimpleRepresentationParserLibrary(HbaseIndexSchema model) {
+	public SimpleRepresentationParserLibrary(HbaseIndexSchema model) {
 		this.model = model;
 		library = this;
 		parsers = new HashMap<>();
@@ -38,7 +38,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 	}
 
-	private class SimpleFieldParser extends SampleModelSimpleRepresentationParser<String> {
+	private class SimpleFieldParser extends SimpleRepresentationParser<String> {
 		private final String field;
 
 		public SimpleFieldParser(String type, String field) {
@@ -52,7 +52,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 	}
 
-	private class DomainParser extends SampleModelSimpleRepresentationParser<String> {
+	private class DomainParser extends SimpleRepresentationParser<String> {
 		public DomainParser() {
 			super(model.getFieldsForDataType("Domain"));
 		}
@@ -69,7 +69,7 @@ public class SampleModelSimpleRepresentationParserLibrary implements Parser<Stri
 		}
 	}
 
-	private class EmailAddressParser extends SampleModelSimpleRepresentationParser<String> {
+	private class EmailAddressParser extends SimpleRepresentationParser<String> {
 
 		public EmailAddressParser() {
 			super(model.getFieldsForDataType("EmailAddress"));

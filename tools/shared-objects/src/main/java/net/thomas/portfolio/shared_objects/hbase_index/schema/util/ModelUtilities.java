@@ -1,12 +1,12 @@
-package net.thomas.portfolio.hbase_index;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.SimpleDateConverter;
 
-public class GraphQlUtilities {
+public class ModelUtilities {
 	private final SimpleDateConverter dateConverter;
 
-	public GraphQlUtilities() {
+	public ModelUtilities() {
 		dateConverter = new DateConverter.SimpleDateConverter();
 	}
 

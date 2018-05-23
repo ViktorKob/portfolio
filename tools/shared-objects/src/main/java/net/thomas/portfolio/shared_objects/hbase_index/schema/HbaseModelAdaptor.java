@@ -35,9 +35,12 @@ public interface HbaseModelAdaptor {
 	/*** Data ***/
 	DataType getDataTypeByUid(String type, String uid);
 
+	Selector getDataTypeBySimpleRep(String type, String simpleRep);
+
 	Collection<Reference> getReferences(Document document);
 
 	Map<StatisticsPeriod, Long> getStatistics(Selector selector);
 
 	List<Document> doSearch(SelectorSearch search, Indexable indexable);
+
 }

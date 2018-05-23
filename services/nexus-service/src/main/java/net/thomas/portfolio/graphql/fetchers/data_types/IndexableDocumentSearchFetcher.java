@@ -4,19 +4,18 @@ import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.hbase_index.GraphQlUtilities;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class IndexableDocumentSearchFetcher extends ModelDataFetcher<SelectorSearch> {
 
 	private final DateConverter dateFormatter;
 
-	public IndexableDocumentSearchFetcher(HbaseModelAdaptor adaptor, GraphQlUtilities utilities) {
-		super(adaptor, 10);
-		dateFormatter = utilities.getDateConverter();
+	public IndexableDocumentSearchFetcher(Adaptors adaptors) {
+		super(adaptors/* , 10 */);
+		dateFormatter = adaptors.getDateConverter();
 	}
 
 	@Override
