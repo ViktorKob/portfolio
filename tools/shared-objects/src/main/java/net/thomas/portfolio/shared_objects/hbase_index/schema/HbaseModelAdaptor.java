@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.thomas.portfolio.shared_objects.SelectorSearch;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -43,7 +43,7 @@ public interface HbaseModelAdaptor {
 	Collection<Indexable> getIndexables(String selector);
 
 	/*** Data ***/
-	DataType getDataTypeByUid(String type, String uid);
+	Datatype getDataTypeByUid(String type, String uid);
 
 	Collection<Reference> getReferences(Document document);
 

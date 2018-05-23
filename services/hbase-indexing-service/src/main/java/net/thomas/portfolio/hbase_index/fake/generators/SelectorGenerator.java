@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.fake.generators;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -11,7 +11,7 @@ public abstract class SelectorGenerator extends DataTypeGenerator {
 	}
 
 	@Override
-	public DataType next() {
+	public Datatype next() {
 		final Selector sample = new Selector(dataTypeName);
 		populateFields(sample);
 		return sample;

@@ -4,9 +4,16 @@ server.port: 8150
 
 security:
   user:
-    name: user 
+    name: service-user 
     password: password 
     roles: USER 
+
+renderService:
+  hbaseIndexing:
+    name: hbase-indexing-service
+    credentials:
+      user: service-user
+      password: password
 
 eureka:
   client:

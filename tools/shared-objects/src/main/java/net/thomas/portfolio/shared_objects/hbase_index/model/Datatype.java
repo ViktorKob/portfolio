@@ -4,14 +4,14 @@ import java.util.HashMap;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class DataType extends HashMap<String, Object> {
+public class Datatype extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 
-	public DataType() {
+	public Datatype() {
 		super();
 	}
 
-	public DataType(String type) {
+	public Datatype(String type) {
 		super();
 		put("type", type);
 	}

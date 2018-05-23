@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Renderer;
 
 public class SampleModelSimpleRepresentationRendererLibrary implements Renderer<String> {
@@ -25,7 +25,7 @@ public class SampleModelSimpleRepresentationRendererLibrary implements Renderer<
 	}
 
 	@Override
-	public String render(DataType element) {
+	public String render(Datatype element) {
 		if (renderers.containsKey(element.getType())) {
 			return renderers.get(element.getType()).render(element);
 		} else {
@@ -41,17 +41,17 @@ public class SampleModelSimpleRepresentationRendererLibrary implements Renderer<
 		}
 
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			return String.valueOf(element.get(field));
 		}
 	}
 
 	private class DomainRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			final String domainPart = String.valueOf(element.get("domainPart"));
 			if (element.get("domain") != null) {
-				return domainPart + "." + render((DataType) element.get("domain"));
+				return domainPart + "." + render((Datatype) element.get("domain"));
 			} else {
 				return domainPart;
 			}
@@ -60,8 +60,8 @@ public class SampleModelSimpleRepresentationRendererLibrary implements Renderer<
 
 	private class EmailAddressRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
-			return library.render((DataType) element.get("localname")) + "@" + library.render((DataType) element.get("domain"));
+		public String render(Datatype element) {
+			return library.render((Datatype) element.get("localname")) + "@" + library.render((Datatype) element.get("domain"));
 		}
 	}
 

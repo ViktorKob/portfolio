@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Renderer;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
@@ -43,7 +43,7 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 	}
 
 	@Override
-	public String render(DataType element) {
+	public String render(Datatype element) {
 		if (renderers.containsKey(element.getType())) {
 			return renderers.get(element.getType())
 				.render(element);
@@ -60,7 +60,7 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 		}
 
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			String headline = String.valueOf(element.get(field));
 			if (adaptor.isSelector(element.getType()) && requiresJustification((Selector) element)) {
 				headline += "!";
@@ -71,10 +71,10 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class DomainRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			final String domainPart = String.valueOf(element.get("domainPart"));
 			if (element.get("domain") != null) {
-				return domainPart + "." + render((DataType) element.get("domain"));
+				return domainPart + "." + render((Datatype) element.get("domain"));
 			} else {
 				return domainPart;
 			}
@@ -83,8 +83,8 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class EmailAddressRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
-			String headline = library.render((DataType) element.get("localname")) + "@" + library.render((DataType) element.get("domain"));
+		public String render(Datatype element) {
+			String headline = library.render((Datatype) element.get("localname")) + "@" + library.render((Datatype) element.get("domain"));
 			if (requiresJustification((Selector) element)) {
 				headline += "!";
 			}
@@ -94,33 +94,33 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class EmailEndpointRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			if (element.containsKey("displayedName")) {
-				return library.render((DataType) element.get("displayedName")) + " <( " + library.render((DataType) element.get("address")) + " )>";
+				return library.render((Datatype) element.get("displayedName")) + " <( " + library.render((Datatype) element.get("address")) + " )>";
 			} else {
-				return library.render((DataType) element.get("address"));
+				return library.render((Datatype) element.get("address"));
 			}
 		}
 	}
 
 	private class PstnEndpointRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			String rendering = "";
 			if (element.containsKey("pstn")) {
-				rendering += "Pstn: " + library.render((DataType) element.get("pstn"));
+				rendering += "Pstn: " + library.render((Datatype) element.get("pstn"));
 			}
 			if (element.containsKey("imsi")) {
 				if (rendering.length() > 0) {
 					rendering += ", ";
 				}
-				rendering += "Imsi: " + library.render((DataType) element.get("imsi"));
+				rendering += "Imsi: " + library.render((Datatype) element.get("imsi"));
 			}
 			if (element.containsKey("imei")) {
 				if (rendering.length() > 0) {
 					rendering += ", ";
 				}
-				rendering += "Imei: " + library.render((DataType) element.get("imei"));
+				rendering += "Imei: " + library.render((Datatype) element.get("imei"));
 			}
 			return rendering;
 		}
@@ -128,9 +128,9 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class EmailRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			final Document document = (Document) element;
-			final String headline = library.render((DataType) element.get("from")) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
+			final String headline = library.render((Datatype) element.get("from")) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
 					+ element.get("subject");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
@@ -142,9 +142,9 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class SmsRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			final Document document = (Document) element;
-			final String headline = library.render((DataType) element.get("sender")) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
+			final String headline = library.render((Datatype) element.get("sender")) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
 					+ element.get("message");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
@@ -156,10 +156,10 @@ public class SampleModelHeadlineRendererLibrary implements Renderer<String> {
 
 	private class VoiceRenderer implements Renderer<String> {
 		@Override
-		public String render(DataType element) {
+		public String render(Datatype element) {
 			final Document document = (Document) element;
 			final int duration = (Integer) element.get("durationIsSeconds");
-			final String headline = library.render((DataType) element.get("caller")) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
+			final String headline = library.render((Datatype) element.get("caller")) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
 					+ ": call final duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);

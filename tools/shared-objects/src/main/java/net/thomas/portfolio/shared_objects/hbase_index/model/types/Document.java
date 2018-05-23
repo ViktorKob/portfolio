@@ -1,8 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 
-public class Document extends DataType {
+public class Document extends Datatype {
 	private static final long serialVersionUID = 1L;
 
 	private long timeOfEvent;
