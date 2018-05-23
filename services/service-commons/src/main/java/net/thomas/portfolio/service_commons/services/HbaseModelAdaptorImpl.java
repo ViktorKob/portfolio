@@ -1,20 +1,23 @@
 package net.thomas.portfolio.service_commons.services;
 
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
+import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_REFERENCES;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
+import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_STATISTICS;
 import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
@@ -27,27 +30,12 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	private final HbaseIndexSchema schema;
 
 	// private final Parser<String, Selector> simpleRepresentationParserLibrary;
-	// private final Renderer<String> headlineRendererLibrary;
-	// private final Renderer<String> simpleRepresentationRendererLibrary;
 
 	public HbaseModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class);
 		// simpleRepresentationParserLibrary = new SampleModelSimpleRepresentationParserLibrary();
-		// dateConverter = new DateConverter.SimpleDateConverter();
-		// headlineRendererLibrary = new SampleModelHeadlineRendererLibrary(this);
-		// simpleRepresentationRendererLibrary = new SampleModelSimpleRepresentationRendererLibrary();
 	}
-
-	// @Override
-	// public Renderer<String> getHeadlineRenderers() {
-	// return headlineRendererLibrary;
-	// }
-	//
-	// @Override
-	// public Renderer<String> getSimpleRepresentationRenderers() {
-	// return simpleRepresentationRendererLibrary;
-	// }
 
 	@Override
 	public boolean isSimpleRepresentable(String dataType) {
@@ -90,31 +78,23 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	@Override
 	public Selector getDataTypeBySimpleRep(String type, String simpleRep) {
-		final String uid = schema.getUid(type, simpleRep);
+		final String uid = schema.calculateUid(type, simpleRep);
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, Selector.class, new PreSerializedParameter("type", type),
 				new PreSerializedParameter("uid", uid));
 	}
 
-	// @Override
-	// public Parser<String, Selector> getSimpleRepresentationParsers() {
-	// return simpleRepresentationParserLibrary;
-	// }
-	//
-	// @Override
-	// public Selector getDataTypeBySimpleRepresentation(String type, String simpleRepresentation) {
-	// return simpleRepresentationParserLibrary.parse(type, simpleRepresentation);
-	// }
-
 	@Override
-	public Collection<Reference> getReferences(Document document) {
-		// return index.getReferences(document);
-		return null;
+	@SuppressWarnings("unchecked")
+	public References getReferences(Document document) {
+		return new References(client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, LinkedList.class,
+				new PreSerializedParameter("type", document.getType()), new PreSerializedParameter("uid", document.getUid())));
 	}
 
 	@Override
-	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
-		// return index.getStatistics(selector);
-		return null;
+	@SuppressWarnings("unchecked")
+	public Statistics getStatistics(Selector selector) {
+		return new Statistics(client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, HashMap.class,
+				new PreSerializedParameter("type", selector.getType()), new PreSerializedParameter("uid", selector.getUid())));
 	}
 
 	@Override

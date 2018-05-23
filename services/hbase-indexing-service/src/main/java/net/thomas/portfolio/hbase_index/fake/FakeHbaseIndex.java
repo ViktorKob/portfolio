@@ -20,7 +20,8 @@ import java.util.Stack;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -28,9 +29,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	private final Map<String, Map<String, DataType>> storage;
-	private Map<String, Map<StatisticsPeriod, Long>> selectorStatistics;
+	private Map<String, Statistics> selectorStatistics;
 	private Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex;
-	private Map<String, List<Reference>> sourceReferences;
+	private Map<String, References> sourceReferences;
 	private Map<String, PreviousKnowledge> previousKnowledge;
 
 	public FakeHbaseIndex() {
@@ -45,7 +46,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 			.put(sample.getUid(), sample);
 	}
 
-	public void setSelectorStatistics(Map<String, Map<StatisticsPeriod, Long>> selectorStatistics) {
+	public void setSelectorStatistics(Map<String, Statistics> selectorStatistics) {
 		this.selectorStatistics = selectorStatistics;
 	}
 
@@ -90,7 +91,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		}
 	}
 
-	public void setReferences(Map<String, List<Reference>> sourceReferences) {
+	public void setReferences(Map<String, References> sourceReferences) {
 		this.sourceReferences = sourceReferences;
 
 	}
@@ -125,16 +126,27 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		return selectorStatistics.get(selector.getUid());
 	}
 
+	public Statistics getStatistics(String uid) {
+		return selectorStatistics.get(uid);
+	}
+
 	public void setPreviousKnowledge(Map<String, PreviousKnowledge> previousKnowledge) {
 		this.previousKnowledge = previousKnowledge;
 	}
 
 	@Override
-	public Collection<Reference> getReferences(Document document) {
+	public References getReferences(Document document) {
 		if (sourceReferences.containsKey(document.getUid())) {
 			return sourceReferences.get(document.getUid());
 		}
-		return Collections.<Reference>emptyList();
+		return new References();
+	}
+
+	public References getReferences(String uid) {
+		if (sourceReferences.containsKey(uid)) {
+			return sourceReferences.get(uid);
+		}
+		return new References();
 	}
 
 	public PreviousKnowledge lookupPreviousKnowledgeFor(DataType selector) {

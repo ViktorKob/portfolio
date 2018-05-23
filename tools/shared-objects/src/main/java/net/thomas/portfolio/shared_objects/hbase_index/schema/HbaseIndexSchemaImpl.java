@@ -54,6 +54,8 @@ public class HbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		createSmsIndexables(builder, "Pstn", "Imsi", "Imei");
 		createVoiceIndexables(builder, "Pstn", "Imsi", "Imei");
 		indexables = builder.build();
+
+		initialize();
 	}
 
 	private Set<String> setOf(String... values) {

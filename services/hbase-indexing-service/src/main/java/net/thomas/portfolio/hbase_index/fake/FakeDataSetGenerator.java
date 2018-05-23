@@ -8,10 +8,8 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.St
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.WEEK;
 
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +30,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
@@ -239,12 +238,12 @@ public class FakeDataSetGenerator {
 		}
 	}
 
-	private Map<String, Map<StatisticsPeriod, Long>> generateSelectorStatistics() {
+	private Map<String, Statistics> generateSelectorStatistics() {
 		final long now = new GregorianCalendar(2017, 10, 17).getTimeInMillis();
 		final long yesterday = now - A_DAY;
 		final long oneWeekAgo = now - A_WEEK;
 		final long threeMonthsAgo = now - 3 * A_MONTH;
-		final Map<String, Map<StatisticsPeriod, Long>> allSelectorTotalCounts = new HashMap<>();
+		final Map<String, Statistics> allSelectorTotalCounts = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
 				.contains(entity.getType())) {
@@ -271,8 +270,8 @@ public class FakeDataSetGenerator {
 		return allSelectorTotalCounts;
 	}
 
-	private Map<StatisticsPeriod, Long> blankSelectorStatistics() {
-		final Map<StatisticsPeriod, Long> statistics = new EnumMap<>(StatisticsPeriod.class);
+	private Statistics blankSelectorStatistics() {
+		final Statistics statistics = new Statistics();
 		for (final StatisticsPeriod period : StatisticsPeriod.values()) {
 			statistics.put(period, 0l);
 		}
@@ -303,14 +302,14 @@ public class FakeDataSetGenerator {
 		}
 	}
 
-	private Map<String, List<Reference>> generateSourceReferences() {
+	private Map<String, References> generateSourceReferences() {
 		final Random random = new Random(randomSeed++);
 		final ReferenceGenerator generator = new ReferenceGenerator(random.nextLong());
-		final Map<String, List<Reference>> allReferences = new HashMap<>();
+		final Map<String, References> allReferences = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
 				.contains(entity.getType())) {
-				final List<Reference> references = new LinkedList<>();
+				final References references = new References();
 				final int referenceCount = random.nextInt(3) + 1;
 				while (references.size() < referenceCount) {
 					references.add(generator.generate());
