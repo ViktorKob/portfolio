@@ -36,7 +36,6 @@ public class HttpRestClient {
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
 		try {
 			final URI request = buildUri(service, endpoint, parameters);
-			System.out.println(request);
 			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			if (OK.equals(response.getStatusCode())) {
 				return response.getBody();

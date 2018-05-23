@@ -16,18 +16,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 public interface HbaseModelAdaptor {
 
 	// TODO[Thomas]: Move to other class
-	// /*** Utils ***/
-	// DateConverter getDateConverter();
-	//
-	// Renderer<String> getHeadlineRenderers();
-	//
 	// Parser<String, Selector> getSimpleRepresentationParsers();
 	// Selector getDataTypeBySimpleRepresentation(String type, String simpleRepresentation);
-	//
-	// Renderer<String> getSimpleRepresentationRenderers();
-	//
-	// /*** Data ***/
-	// PreviousKnowledge getPreviousKnowledgeFor(Selector selector);
 
 	/*** Schema ***/
 	boolean isSimpleRepresentable(String type);

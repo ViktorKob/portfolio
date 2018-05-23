@@ -1,12 +1,14 @@
 package net.thomas.portfolio.render.service;
 
-import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATATYPE;
+import static java.lang.Integer.MAX_VALUE;
+import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
 import static net.thomas.portfolio.globals.ServiceGlobals.RENDER_SERVICE_PATH;
+import static org.springframework.http.ResponseEntity.badRequest;
 
 import javax.annotation.PostConstruct;
 
@@ -21,6 +23,9 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
+import net.thomas.portfolio.common.services.validation.DataTypeValidator;
+import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
+import net.thomas.portfolio.common.services.validation.UidValidator;
 import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.render.common.context.HtmlRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContextBuilder;
@@ -34,6 +39,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 @Controller
 @RequestMapping(RENDER_SERVICE_PATH)
 public class RenderServiceController {
+	private static final DataTypeValidator TYPE = new DataTypeValidator("type", true);
+	private static final UidValidator UID = new UidValidator("uid", true);
+	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, true);
 
 	private final RenderServiceConfiguration configuration;
 	private final HbaseIndexingModelSimpleRepresentationRendererLibrary simpleRepRenderer;
@@ -55,6 +63,7 @@ public class RenderServiceController {
 	public void prepareForRendering() {
 		hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing());
 		schema = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
+		TYPE.setSchema(schema);
 	}
 
 	@Bean
@@ -66,25 +75,37 @@ public class RenderServiceController {
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_SIMPLE_REPRESENTATION_PATH)
 	public ResponseEntity<String> renderAsSimpleRepresentation(String type, String uid) {
-		final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class,
-				new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-		return ResponseEntity.ok(simpleRepRenderer.render(datatype, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
-			.build()));
+		if (TYPE.isValid(type) && UID.isValid(uid)) {
+			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
+					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
+			return ResponseEntity.ok(simpleRepRenderer.render(datatype, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
+				.build()));
+		} else {
+			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_TEXT_PATH)
 	public ResponseEntity<String> renderAsText(String type, String uid) {
-		final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class,
-				new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-		return ResponseEntity.ok(textRenderer.render(datatype, new TextRenderContextBuilder().build()));
+		if (TYPE.isValid(type) && UID.isValid(uid)) {
+			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
+					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
+			return ResponseEntity.ok(textRenderer.render(datatype, new TextRenderContextBuilder().build()));
+		} else {
+			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_HTML_PATH)
 	public ResponseEntity<String> renderAsHtml(String type, String uid) {
-		final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class,
-				new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-		return ResponseEntity.ok(htmlRenderer.render(datatype, new HtmlRenderContextBuilder().build()));
+		if (TYPE.isValid(type) && UID.isValid(uid)) {
+			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
+					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
+			return ResponseEntity.ok(htmlRenderer.render(datatype, new HtmlRenderContextBuilder().build()));
+		} else {
+			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+		}
 	}
 }
