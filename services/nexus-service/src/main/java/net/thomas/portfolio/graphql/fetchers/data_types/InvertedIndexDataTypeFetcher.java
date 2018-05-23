@@ -5,10 +5,10 @@ import java.util.List;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 
-public class InvertedIndexDataTypeFetcher extends ModelDataFetcher<List<Datatype>> {
+public class InvertedIndexDataTypeFetcher extends ModelDataFetcher<List<DataType>> {
 
 	private final String selectorType;
 
@@ -18,7 +18,7 @@ public class InvertedIndexDataTypeFetcher extends ModelDataFetcher<List<Datatype
 	}
 
 	@Override
-	public List<Datatype> _get(DataFetchingEnvironment environment) {
+	public List<DataType> _get(DataFetchingEnvironment environment) {
 		final Object uid = environment.getArgument("uid");
 		if (uid != null) {
 			return Collections.singletonList(adaptor.getDataTypeByUid(selectorType, uid.toString()));

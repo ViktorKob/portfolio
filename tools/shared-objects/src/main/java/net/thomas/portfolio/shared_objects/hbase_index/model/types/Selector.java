@@ -1,14 +1,22 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import static net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType.SELECTOR;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public class Selector extends Datatype {
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+
+@JsonDeserialize(as = Selector.class)
+public class Selector extends DataType {
 	private static final long serialVersionUID = 1L;
 
+	public Selector() {
+	}
+
 	public Selector(String type) {
-		super(type);
+		super(SELECTOR, type);
 	}
 
 	@Override

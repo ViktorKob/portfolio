@@ -1,8 +1,13 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType.DOCUMENT;
 
-public class Document extends Datatype {
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+
+@JsonDeserialize(as = Document.class)
+public class Document extends DataType {
 	private static final long serialVersionUID = 1L;
 
 	private long timeOfEvent;
@@ -12,7 +17,7 @@ public class Document extends Datatype {
 	}
 
 	public Document(String type) {
-		super(type);
+		super(DOCUMENT, type);
 	}
 
 	public void setTimeOfEvent(long timeOfEvent) {
