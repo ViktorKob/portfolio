@@ -23,7 +23,7 @@ import net.thomas.portfolio.enums.Service;
 import net.thomas.portfolio.enums.ServiceEndpoint;
 
 public class HttpRestClient {
-	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 10;
+	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 60;
 	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;

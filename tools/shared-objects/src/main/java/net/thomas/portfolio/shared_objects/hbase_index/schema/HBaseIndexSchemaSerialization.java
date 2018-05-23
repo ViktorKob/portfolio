@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
+
+	private SimpleRepresentationParserLibrary simpleRepParsers;
 
 	protected Map<String, Map<String, Field>> dataTypeFields;
 	protected Set<String> dataTypes;
@@ -18,6 +23,10 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	protected Map<String, List<Indexable>> indexables;
 
 	public HBaseIndexSchemaSerialization() {
+	}
+
+	protected void initialize() {
+		simpleRepParsers = new SimpleRepresentationParserLibrary(this);
 	}
 
 	public Map<String, Map<String, Field>> getDataTypeFields() {
@@ -90,7 +99,9 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	}
 
 	@Override
-	public String getUid(String type, String simpleRep) {
-		return null;
+	@JsonIgnore
+	public String calculateUid(String type, String simpleRep) {
+		return simpleRepParsers.parse(type, simpleRep)
+			.getUid();
 	}
 }

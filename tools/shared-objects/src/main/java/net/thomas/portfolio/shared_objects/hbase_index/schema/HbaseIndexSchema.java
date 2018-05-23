@@ -21,5 +21,5 @@ public interface HbaseIndexSchema {
 
 	Field getFieldForIndexable(Indexable indexable);
 
-	String getUid(String type, String simpleRep);
+	String calculateUid(String type, String simpleRep);
 }

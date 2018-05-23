@@ -1,5 +1,7 @@
 package net.thomas.portfolio.service;
 
+import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel.UNKNOWN;
+
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +19,9 @@ import net.thomas.portfolio.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.services.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.AnalyticsAdaptor;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -49,6 +54,12 @@ public class NexusServiceController {
 		final GraphQlModelBuilder builder = new GraphQlModelBuilder();
 		builder.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
 		builder.setRenderingAdaptor(new RenderingAdaptorImpl(renderingClient));
+		builder.setAnalyticsAdaptor(new AnalyticsAdaptor() {
+			@Override
+			public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {
+				return new PreviousKnowledge(UNKNOWN, UNKNOWN);
+			}
+		});
 		return new ServletRegistrationBean(new SimpleGraphQLServlet(builder.build()), "/schema.json", GRAPHQL_SERVLET_MAPPING);
 	}
 }
