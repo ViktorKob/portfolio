@@ -9,20 +9,20 @@ import java.util.Map;
 
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.UidGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class EmailGenerator extends DocumentGenerator {
-	private final List<DataType> displayedNames;
-	private final List<DataType> emailAddresses;
+	private final List<Datatype> displayedNames;
+	private final List<Datatype> emailAddresses;
 	private final StringGenerator subjectGenerator;
 	private final StringGenerator messageGenerator;
 	private final UidGenerator uidTool;
 
-	private final Map<String, List<DataType>> previousDisplayedNameMatches;
+	private final Map<String, List<Datatype>> previousDisplayedNameMatches;
 
-	public EmailGenerator(Map<String, DataType> displayedNames, Map<String, DataType> emailAdresses, HbaseIndexSchema schema, long randomSeed) {
+	public EmailGenerator(Map<String, Datatype> displayedNames, Map<String, Datatype> emailAdresses, HbaseIndexSchema schema, long randomSeed) {
 		super("Email", schema, randomSeed);
 		this.displayedNames = new ArrayList<>(displayedNames.values());
 		emailAddresses = new ArrayList<>(emailAdresses.values());
@@ -38,7 +38,7 @@ public class EmailGenerator extends DocumentGenerator {
 	}
 
 	@Override
-	protected void populateValues(final DataType sample) {
+	protected void populateValues(final Datatype sample) {
 		sample.put("subject", subjectGenerator.generate());
 		sample.put("message", messageGenerator.generate());
 		sample.put("from", createEmailEndpoint(randomSample(emailAddresses)));
@@ -49,16 +49,16 @@ public class EmailGenerator extends DocumentGenerator {
 
 	private Object createListOfEmailEndpoints(int minLength, int maxLength) {
 		final int targetLength = random.nextInt(maxLength - minLength + 1) + minLength;
-		final List<DataType> addresses = new LinkedList<>();
+		final List<Datatype> addresses = new LinkedList<>();
 		for (int i = 0; i < targetLength; i++) {
 			addresses.add(createEmailEndpoint(randomSample(emailAddresses)));
 		}
 		return addresses;
 	}
 
-	private DataType createEmailEndpoint(DataType address) {
-		final DataType endpoint = new DataType("EmailEndpoint");
-		final DataType displayedName = determineDisplayedName(address);
+	private Datatype createEmailEndpoint(Datatype address) {
+		final Datatype endpoint = new Datatype("EmailEndpoint");
+		final Datatype displayedName = determineDisplayedName(address);
 		if (displayedName != null) {
 			endpoint.put("displayedName", displayedName);
 		}
@@ -67,17 +67,17 @@ public class EmailGenerator extends DocumentGenerator {
 		return endpoint;
 	}
 
-	private DataType determineDisplayedName(DataType address) {
+	private Datatype determineDisplayedName(Datatype address) {
 		if (previousDisplayedNameMatches.containsKey(address.getUid())) {
 			if (random.nextDouble() < 0.95) {
 				return randomSample(previousDisplayedNameMatches.get(address.getUid()));
 			}
-			final DataType additionalDisplayedName = randomSample(displayedNames);
+			final Datatype additionalDisplayedName = randomSample(displayedNames);
 			previousDisplayedNameMatches.get(address.getUid())
 				.add(additionalDisplayedName);
 			return additionalDisplayedName;
 		} else if (random.nextDouble() < .4) {
-			final DataType displayedName = randomSample(displayedNames);
+			final Datatype displayedName = randomSample(displayedNames);
 			previousDisplayedNameMatches.put(address.getUid(), new ArrayList<>(Collections.singleton(displayedName)));
 			return displayedName;
 		}

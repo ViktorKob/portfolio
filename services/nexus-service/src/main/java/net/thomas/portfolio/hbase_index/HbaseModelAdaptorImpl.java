@@ -12,7 +12,7 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -25,7 +25,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	private final HttpRestClient client;
-	private HbaseIndexSchema schema;
+	private final HbaseIndexSchema schema;
 
 	// private final Parser<String, Selector> simpleRepresentationParserLibrary;
 	// private final Renderer<String> headlineRendererLibrary;
@@ -33,9 +33,6 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	public HbaseModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
 		// simpleRepresentationParserLibrary = new SampleModelSimpleRepresentationParserLibrary();
 		// dateConverter = new DateConverter.SimpleDateConverter();
@@ -87,8 +84,8 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
-	public DataType getDataTypeByUid(String type, String uid) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, DataType.class, new PreSerializedParameter("type", type),
+	public Datatype getDataTypeByUid(String type, String uid) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATATYPE, Datatype.class, new PreSerializedParameter("type", type),
 				new PreSerializedParameter("uid", uid));
 	}
 

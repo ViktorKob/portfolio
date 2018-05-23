@@ -2,6 +2,8 @@ package net.thomas.portfolio.service;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -21,12 +23,17 @@ public class NexusServiceController {
 
 	private static final String GRAPHQL_SERVLET_MAPPING = "/graphql/*";
 	private final NexusServiceConfiguration configuration;
-
 	@Autowired
 	private EurekaClient discoveryClient;
+	private HttpRestClient hbaseIndexClient;
 
 	public NexusServiceController(NexusServiceConfiguration configuration) {
 		this.configuration = configuration;
+	}
+
+	@PostConstruct
+	public void buildHttpClient() {
+		hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing());
 	}
 
 	@Bean
@@ -40,7 +47,7 @@ public class NexusServiceController {
 		final GraphQlModelBuilder builder = new GraphQlModelBuilder(new GraphQlUtilities());
 		builder.setName("SampleModel")
 			.setDescription("Sample model created to showcase data structure")
-			.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing())));
+			.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
 		return new ServletRegistrationBean(new SimpleGraphQLServlet(builder.build()), "/schema.json", GRAPHQL_SERVLET_MAPPING);
 	}
 }

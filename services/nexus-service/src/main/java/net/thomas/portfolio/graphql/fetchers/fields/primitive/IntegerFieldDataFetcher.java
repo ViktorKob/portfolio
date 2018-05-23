@@ -2,7 +2,7 @@ package net.thomas.portfolio.graphql.fetchers.fields.primitive;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.Datatype;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
 
 public class IntegerFieldDataFetcher extends ModelDataFetcher<Long> {
@@ -15,7 +15,7 @@ public class IntegerFieldDataFetcher extends ModelDataFetcher<Long> {
 
 	@Override
 	public Long _get(DataFetchingEnvironment environment) {
-		final DataType entity = (DataType) environment.getSource();
+		final Datatype entity = (Datatype) environment.getSource();
 		final Object value = entity.get(fieldName);
 		if (value instanceof Long) {
 			return (Long) value;
