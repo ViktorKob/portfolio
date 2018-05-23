@@ -10,6 +10,7 @@ import net.thomas.portfolio.common.services.ServiceDependency;
 public class NexusServiceConfiguration {
 
 	private ServiceDependency hbaseIndexing;
+	private ServiceDependency rendering;
 	private Kerberos kerberos;
 
 	public ServiceDependency getHbaseIndexing() {
@@ -18,6 +19,14 @@ public class NexusServiceConfiguration {
 
 	public void setHbaseIndexing(ServiceDependency hbaseIndexing) {
 		this.hbaseIndexing = hbaseIndexing;
+	}
+
+	public ServiceDependency getRendering() {
+		return rendering;
+	}
+
+	public void setRendering(ServiceDependency rendering) {
+		this.rendering = rendering;
 	}
 
 	public Kerberos getKerberos() {

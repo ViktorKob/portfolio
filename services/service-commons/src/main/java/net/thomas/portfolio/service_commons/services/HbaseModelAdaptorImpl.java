@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index;
+package net.thomas.portfolio.service_commons.services;
 
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;

@@ -14,8 +14,9 @@ import com.netflix.discovery.EurekaClient;
 
 import graphql.servlet.SimpleGraphQLServlet;
 import net.thomas.portfolio.graphql.GraphQlModelBuilder;
-import net.thomas.portfolio.hbase_index.HbaseModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.services.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
+import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -25,6 +26,7 @@ public class NexusServiceController {
 	@Autowired
 	private EurekaClient discoveryClient;
 	private HttpRestClient hbaseIndexClient;
+	private HttpRestClient renderingClient;
 
 	public NexusServiceController(NexusServiceConfiguration configuration) {
 		this.configuration = configuration;
@@ -33,6 +35,7 @@ public class NexusServiceController {
 	@PostConstruct
 	public void buildHttpClient() {
 		hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing());
+		renderingClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getRendering());
 	}
 
 	@Bean
@@ -44,8 +47,8 @@ public class NexusServiceController {
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
 		final GraphQlModelBuilder builder = new GraphQlModelBuilder();
-		final HbaseModelAdaptorImpl hbaseModelAdaptorImpl = new HbaseModelAdaptorImpl(hbaseIndexClient);
-		builder.setHbaseModelAdaptor(hbaseModelAdaptorImpl);
+		builder.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
+		builder.setRenderingAdaptor(new RenderingAdaptorImpl(renderingClient));
 		return new ServletRegistrationBean(new SimpleGraphQLServlet(builder.build()), "/schema.json", GRAPHQL_SERVLET_MAPPING);
 	}
 }

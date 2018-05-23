@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
-import net.thomas.portfolio.common.services.validation.UidValidator;
 import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
+import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 @Controller

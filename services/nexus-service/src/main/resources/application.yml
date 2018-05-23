@@ -22,6 +22,11 @@ nexusService:
     credentials:
       user: service-user
       password: password
+  rendering:
+    name: render-service
+    credentials:
+      user: service-user
+      password: password
     
 logging:
   level:

@@ -25,7 +25,6 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
-import net.thomas.portfolio.common.services.validation.UidValidator;
 import net.thomas.portfolio.render.common.context.HtmlRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.TextRenderContextBuilder;
@@ -33,6 +32,7 @@ import net.thomas.portfolio.render.format.html.HtmlRenderControl;
 import net.thomas.portfolio.render.format.simple_rep.HbaseIndexingModelSimpleRepresentationRendererLibrary;
 import net.thomas.portfolio.render.format.text.HbaseIndexingModelTextRendererLibrary;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
+import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 

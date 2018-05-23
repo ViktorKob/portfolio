@@ -28,8 +28,8 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
-import net.thomas.portfolio.usage_data.UsageActivityItem;
-import net.thomas.portfolio.usage_data.UsageActivityType;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
 
 public class SqlProxy {
