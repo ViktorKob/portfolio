@@ -23,6 +23,7 @@ import net.thomas.portfolio.enums.Service;
 import net.thomas.portfolio.enums.ServiceEndpoint;
 
 public class HttpRestClient {
+	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 10;
 	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;
@@ -34,16 +35,12 @@ public class HttpRestClient {
 	}
 
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
-		try {
-			final URI request = buildUri(service, endpoint, parameters);
-			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-			if (OK.equals(response.getStatusCode())) {
-				return response.getBody();
-			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify hbase-indexing-service is working properly.");
-			}
-		} catch (final RuntimeException e) {
-			throw new RuntimeException("Unable to query hbase-indexing-service", e);
+		final URI request = buildUri(service, endpoint, parameters);
+		final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+		if (OK.equals(response.getStatusCode())) {
+			return response.getBody();
+		} else {
+			throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 		}
 	}
 
@@ -54,7 +51,32 @@ public class HttpRestClient {
 	}
 
 	private InstanceInfo getHbaseServiceInfo(String serviceName) {
-		return discoveryClient.getNextServerFromEureka(serviceName, false);
+		InstanceInfo instanceInfo = null;
+		int tries = 0;
+		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
+			try {
+				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
+			} catch (final RuntimeException e) {
+				if (e.getMessage()
+					.contains("No matches for the virtual host")) {
+					tries++;
+					System.out
+						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
+					try {
+						Thread.sleep(5000);
+					} catch (final InterruptedException e1) {
+					}
+				} else {
+					throw new RuntimeException("Unable to perform GET", e);
+				}
+			}
+		}
+		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
+			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
+		} else if (tries > 0) {
+			System.out.println("Discovery of " + serviceInfo.getName() + " successful.");
+		}
+		return instanceInfo;
 	}
 
 	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Parameter... parameters) {

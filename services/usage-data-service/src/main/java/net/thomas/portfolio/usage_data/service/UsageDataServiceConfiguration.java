@@ -5,12 +5,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import net.thomas.portfolio.common.services.ServiceDependency;
+
 @Configuration
 @ConfigurationProperties("usageDataService")
 @EnableWebMvc
 public class UsageDataServiceConfiguration extends WebMvcConfigurerAdapter {
 
 	private Database database;
+	private ServiceDependency hbaseIndexing;
+
+	public ServiceDependency getHbaseIndexing() {
+		return hbaseIndexing;
+	}
 
 	public Database getDatabase() {
 		return database;
@@ -66,6 +73,10 @@ public class UsageDataServiceConfiguration extends WebMvcConfigurerAdapter {
 		public String getConnectionString(boolean withSchema) {
 			return "jdbc:mysql://" + host + ":" + port + (withSchema ? "/" + schema : "");
 		}
+	}
+
+	public void setHbaseIndexing(ServiceDependency hbaseIndexing) {
+		this.hbaseIndexing = hbaseIndexing;
 	}
 
 	public void setDatabase(Database database) {

@@ -2,7 +2,7 @@ package net.thomas.portfolio.common.services.validation;
 
 public class StringPresenceValidator extends ParameterValidator<String> {
 
-	private final boolean required;
+	protected final boolean required;
 
 	public StringPresenceValidator(String parameterName, boolean required) {
 		super(parameterName);
