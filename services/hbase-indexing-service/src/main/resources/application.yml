@@ -1,5 +1,5 @@
 spring.application.name: hbase-indexing-service
-server.port: 8100
+server.port: 8120
 
 security:
   user:
