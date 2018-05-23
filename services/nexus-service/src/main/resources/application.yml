@@ -7,7 +7,7 @@ security:
     roles: USER 
 
 server:
-  port: 8110
+  port: 8100
   
   tomcat:
     max-connections: 2000

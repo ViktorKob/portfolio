@@ -1,6 +1,6 @@
 spring.application.name: render-service
 
-server.port: 8200
+server.port: 8150
 
 security:
   user:

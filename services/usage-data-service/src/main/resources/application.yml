@@ -1,5 +1,5 @@
 spring.application.name: usage-data-service
-server.port: 8150
+server.port: 8200
 
 security:
   user:
