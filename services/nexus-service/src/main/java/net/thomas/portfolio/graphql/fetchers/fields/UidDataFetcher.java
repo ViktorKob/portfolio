@@ -3,12 +3,12 @@ package net.thomas.portfolio.graphql.fetchers.fields;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class UidDataFetcher extends ModelDataFetcher<Object> {
 
-	public UidDataFetcher(HbaseModelAdaptor adaptor) {
-		super(adaptor, 0);
+	public UidDataFetcher(Adaptors adaptors) {
+		super(adaptors);
 	}
 
 	@Override

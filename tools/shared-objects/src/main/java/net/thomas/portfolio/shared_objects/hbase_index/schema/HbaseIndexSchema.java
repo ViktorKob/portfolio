@@ -20,4 +20,6 @@ public interface HbaseIndexSchema {
 	Collection<Field> getFieldsForDataType(String dataType);
 
 	Field getFieldForIndexable(Indexable indexable);
+
+	String getUid(String type, String simpleRep);
 }

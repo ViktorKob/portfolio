@@ -1,17 +1,16 @@
 package net.thomas.portfolio.graphql.fetchers.conversion;
 
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.hbase_index.GraphQlUtilities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<String> {
 
 	private final DateConverter dateFormatter;
 
-	public FormattedTimestampDataFetcher(HbaseModelAdaptor adaptor, GraphQlUtilities utilities) {
-		super(adaptor, 0);
-		dateFormatter = utilities.getDateConverter();
+	public FormattedTimestampDataFetcher(Adaptors adaptor) {
+		super(adaptor);
+		dateFormatter = adaptors.getDateConverter();
 	}
 
 	protected String formatTimestamp(String format, long timestamp) {

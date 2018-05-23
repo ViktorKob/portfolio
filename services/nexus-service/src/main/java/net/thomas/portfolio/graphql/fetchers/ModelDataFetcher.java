@@ -2,27 +2,27 @@ package net.thomas.portfolio.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESULT_TYPE> {
 
-	protected final HbaseModelAdaptor adaptor;
-	private final long fakeResponseDelay;
+	protected final Adaptors adaptors;
+	// private final long fakeResponseDelay;
 
-	public ModelDataFetcher(HbaseModelAdaptor adaptor, long fakeResponseDelay) {
-		this.adaptor = adaptor;
-		this.fakeResponseDelay = fakeResponseDelay;
+	public ModelDataFetcher(Adaptors adaptors/* , long fakeResponseDelay */) {
+		this.adaptors = adaptors;
+		// this.fakeResponseDelay = fakeResponseDelay;
 	}
 
 	@Override
 	public final RESULT_TYPE get(DataFetchingEnvironment environment) {
-		if (fakeResponseDelay > 0) {
-			try {
-				Thread.sleep(fakeResponseDelay);
-			} catch (final InterruptedException e) {
-				// Ignored
-			}
-		}
+		// if (fakeResponseDelay > 0) {
+		// try {
+		// Thread.sleep(fakeResponseDelay);
+		// } catch (final InterruptedException e) {
+		// // Ignored
+		// }
+		// }
 		return _get(environment);
 	}
 

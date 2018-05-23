@@ -6,14 +6,14 @@ import java.util.List;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class InvertedIndexDataTypeFetcher extends ModelDataFetcher<List<DataType>> {
 
 	private final String selectorType;
 
-	public InvertedIndexDataTypeFetcher(String selectorType, HbaseModelAdaptor adaptor) {
-		super(adaptor, 50);
+	public InvertedIndexDataTypeFetcher(String selectorType, Adaptors adaptors) {
+		super(adaptors/* , 0 */);
 		this.selectorType = selectorType;
 	}
 
@@ -21,12 +21,12 @@ public class InvertedIndexDataTypeFetcher extends ModelDataFetcher<List<DataType
 	public List<DataType> _get(DataFetchingEnvironment environment) {
 		final Object uid = environment.getArgument("uid");
 		if (uid != null) {
-			return Collections.singletonList(adaptor.getDataTypeByUid(selectorType, uid.toString()));
+			return Collections.singletonList(adaptors.getDataTypeByUid(selectorType, uid.toString()));
 		}
 		final Object simpleRepresentation = environment.getArgument("simpleRep");
-		// if (simpleRepresentation != null) {
-		// return Collections.singletonList(adaptor.getDataTypeBySimpleRepresentation(selectorType, simpleRepresentation.toString()));
-		// }
+		if (simpleRepresentation != null) {
+			return Collections.singletonList(adaptors.getDataTypeBySimpleRepresentation(selectorType, simpleRepresentation.toString()));
+		}
 		return null;
 	}
 }

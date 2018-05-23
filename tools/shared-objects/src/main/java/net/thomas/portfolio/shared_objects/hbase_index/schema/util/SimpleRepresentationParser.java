@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import java.util.Collection;
 
@@ -10,10 +10,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.UidGenerator;
 
-public abstract class SampleModelSimpleRepresentationParser<PARSE_TYPE> implements Parser<PARSE_TYPE, Selector> {
+public abstract class SimpleRepresentationParser<PARSE_TYPE> implements Parser<PARSE_TYPE, Selector> {
 	private final UidGenerator uidTool;
 
-	public SampleModelSimpleRepresentationParser(Collection<Field> fields) {
+	public SimpleRepresentationParser(Collection<Field> fields) {
 		uidTool = new UidGenerator(fields, false);
 	}
 

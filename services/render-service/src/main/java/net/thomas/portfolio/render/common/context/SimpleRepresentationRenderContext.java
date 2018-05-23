@@ -1,15 +1,15 @@
 package net.thomas.portfolio.render.common.context;
 
-import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 
 public class SimpleRepresentationRenderContext {
-	private final HbaseIndexSchemaImpl schema;
+	private final HBaseIndexSchemaSerialization schema;
 
-	public SimpleRepresentationRenderContext(HbaseIndexSchemaImpl schema) {
+	public SimpleRepresentationRenderContext(HBaseIndexSchemaSerialization schema) {
 		this.schema = schema;
 	}
 
-	public HbaseIndexSchemaImpl getSchema() {
+	public HBaseIndexSchemaSerialization getSchema() {
 		return schema;
 	}
 }

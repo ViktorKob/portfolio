@@ -26,7 +26,6 @@ import com.netflix.discovery.EurekaClient;
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.UidValidator;
-import net.thomas.portfolio.hbase_index.fake.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.render.common.context.HtmlRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.TextRenderContextBuilder;
@@ -35,6 +34,7 @@ import net.thomas.portfolio.render.format.simple_rep.HbaseIndexingModelSimpleRep
 import net.thomas.portfolio.render.format.text.HbaseIndexingModelTextRendererLibrary;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 
 @Controller
 @RequestMapping(RENDER_SERVICE_PATH)
@@ -49,7 +49,7 @@ public class RenderServiceController {
 	@Autowired
 	private EurekaClient discoveryClient;
 	private HttpRestClient hbaseIndexClient;
-	private HbaseIndexSchemaImpl schema;
+	private HBaseIndexSchemaSerialization schema;
 
 	public RenderServiceController(RenderServiceConfiguration configuration) {
 		this.configuration = configuration;
@@ -62,8 +62,8 @@ public class RenderServiceController {
 	@PostConstruct
 	public void prepareForRendering() {
 		hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), configuration.getHbaseIndexing());
-		schema = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class);
-		final Set<String> dataTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HbaseIndexSchemaImpl.class)
+		schema = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class);
+		final Set<String> dataTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class)
 			.getDataTypes();
 		TYPE.setValidStrings(dataTypes);
 	}

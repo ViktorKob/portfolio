@@ -4,13 +4,13 @@ import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class GeoLocationFieldDataFetcher extends ModelDataFetcher<GeoLocation> {
 	private final String fieldName;
 
-	public GeoLocationFieldDataFetcher(String fieldName, HbaseModelAdaptor adaptor) {
-		super(adaptor, 0);
+	public GeoLocationFieldDataFetcher(String fieldName, Adaptors adaptors) {
+		super(adaptors);
 		this.fieldName = fieldName;
 	}
 
