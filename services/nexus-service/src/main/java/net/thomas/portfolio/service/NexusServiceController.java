@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import graphql.servlet.SimpleGraphQLServlet;
+import graphql.servlet.SimpleGraphQLServlet.Builder;
 import net.thomas.portfolio.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.services.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
@@ -51,15 +52,16 @@ public class NexusServiceController {
 
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
-		final GraphQlModelBuilder builder = new GraphQlModelBuilder();
-		builder.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
-		builder.setRenderingAdaptor(new RenderingAdaptorImpl(renderingClient));
-		builder.setAnalyticsAdaptor(new AnalyticsAdaptor() {
+		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder();
+		schemaBuilder.setHbaseModelAdaptor(new HbaseModelAdaptorImpl(hbaseIndexClient));
+		schemaBuilder.setRenderingAdaptor(new RenderingAdaptorImpl(renderingClient));
+		schemaBuilder.setAnalyticsAdaptor(new AnalyticsAdaptor() {
 			@Override
 			public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {
 				return new PreviousKnowledge(UNKNOWN, UNKNOWN);
 			}
 		});
-		return new ServletRegistrationBean(new SimpleGraphQLServlet(builder.build()), "/schema.json", GRAPHQL_SERVLET_MAPPING);
+		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
+		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING);
 	}
 }
