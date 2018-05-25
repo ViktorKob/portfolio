@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.OK;
 import java.net.URI;
 import java.util.Collection;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,16 @@ public class HttpRestClient {
 	}
 
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
+		final URI request = buildUri(service, endpoint, parameters);
+		final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+		if (OK.equals(response.getStatusCode())) {
+			return response.getBody();
+		} else {
+			throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+		}
+	}
+
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 		if (OK.equals(response.getStatusCode())) {

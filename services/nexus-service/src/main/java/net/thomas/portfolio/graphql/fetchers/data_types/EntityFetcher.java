@@ -2,7 +2,7 @@ package net.thomas.portfolio.graphql.fetchers.data_types;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 
 public class EntityFetcher<ENTITY_TYPE> extends ModelDataFetcher<ENTITY_TYPE> {
 

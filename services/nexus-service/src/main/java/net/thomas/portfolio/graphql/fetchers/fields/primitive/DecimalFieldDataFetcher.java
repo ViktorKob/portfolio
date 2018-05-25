@@ -2,8 +2,8 @@ package net.thomas.portfolio.graphql.fetchers.fields.primitive;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class DecimalFieldDataFetcher extends ModelDataFetcher<Double> {
 	private final String fieldName;
@@ -15,7 +15,7 @@ public class DecimalFieldDataFetcher extends ModelDataFetcher<Double> {
 
 	@Override
 	public Double _get(DataFetchingEnvironment environment) {
-		final DataType entity = (DataType) environment.getSource();
+		final DataType entity = extractOrFetchDataType(environment);
 		final Object value = entity.get(fieldName);
 		if (value instanceof Double) {
 			return (Double) value;

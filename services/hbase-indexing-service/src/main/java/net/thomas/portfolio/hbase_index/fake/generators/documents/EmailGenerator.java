@@ -1,9 +1,8 @@
 package net.thomas.portfolio.hbase_index.fake.generators.documents;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType.RAW;
+import static java.util.Collections.singleton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.Map;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.UidGenerator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class EmailGenerator extends DocumentGenerator {
@@ -20,7 +19,7 @@ public class EmailGenerator extends DocumentGenerator {
 	private final List<DataType> emailAddresses;
 	private final StringGenerator subjectGenerator;
 	private final StringGenerator messageGenerator;
-	private final UidGenerator uidTool;
+	private final IdGenerator uidTool;
 
 	private final Map<String, List<DataType>> previousDisplayedNameMatches;
 
@@ -30,7 +29,7 @@ public class EmailGenerator extends DocumentGenerator {
 		emailAddresses = new ArrayList<>(emailAdresses.values());
 		subjectGenerator = new StringGenerator(0, 250, .2, random.nextLong());
 		messageGenerator = new StringGenerator(30, 1000, .10, random.nextLong());
-		uidTool = new UidGenerator(schema.getFieldsForDataType("EmailEndpoint"), true);
+		uidTool = new IdGenerator(schema.getFieldsForDataType("EmailEndpoint"), true);
 		previousDisplayedNameMatches = new HashMap<>();
 	}
 
@@ -59,28 +58,30 @@ public class EmailGenerator extends DocumentGenerator {
 	}
 
 	private DataType createEmailEndpoint(DataType address) {
-		final DataType endpoint = new DataType(RAW, "EmailEndpoint");
+		final DataType endpoint = new DataType();
 		final DataType displayedName = determineDisplayedName(address);
 		if (displayedName != null) {
 			endpoint.put("displayedName", displayedName);
 		}
 		endpoint.put("address", address);
-		endpoint.setUid(uidTool.calculateUid(endpoint));
+		endpoint.setId(uidTool.calculateId("EmailEndpoint", endpoint));
 		return endpoint;
 	}
 
 	private DataType determineDisplayedName(DataType address) {
-		if (previousDisplayedNameMatches.containsKey(address.getUid())) {
+		final String uid = address.getId()
+			.getUid();
+		if (previousDisplayedNameMatches.containsKey(uid)) {
 			if (random.nextDouble() < 0.95) {
-				return randomSample(previousDisplayedNameMatches.get(address.getUid()));
+				return randomSample(previousDisplayedNameMatches.get(uid));
 			}
 			final DataType additionalDisplayedName = randomSample(displayedNames);
-			previousDisplayedNameMatches.get(address.getUid())
+			previousDisplayedNameMatches.get(uid)
 				.add(additionalDisplayedName);
 			return additionalDisplayedName;
 		} else if (random.nextDouble() < .4) {
 			final DataType displayedName = randomSample(displayedNames);
-			previousDisplayedNameMatches.put(address.getUid(), new ArrayList<>(Collections.singleton(displayedName)));
+			previousDisplayedNameMatches.put(uid, new ArrayList<>(singleton(displayedName)));
 			return displayedName;
 		}
 		return null;

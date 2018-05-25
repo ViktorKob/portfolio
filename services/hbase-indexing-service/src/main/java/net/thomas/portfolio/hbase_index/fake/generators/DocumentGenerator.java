@@ -1,13 +1,10 @@
 package net.thomas.portfolio.hbase_index.fake.generators;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType.DOCUMENT;
-
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.TimestampGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -25,15 +22,10 @@ public abstract class DocumentGenerator extends DataTypeGenerator {
 	}
 
 	@Override
-	protected DataTypeType getDataTypeType() {
-		return DOCUMENT;
-	}
-
-	@Override
 	public DataType next() {
-		final Document sample = new Document(dataTypeName);
-		populateDates(sample);
+		final Document sample = new Document();
 		populateFields(sample);
+		populateDates(sample);
 		return sample;
 	}
 

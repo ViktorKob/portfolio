@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.adaptors;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
@@ -66,19 +68,35 @@ public class Adaptors {
 	}
 
 	public Collection<Reference> getReferences(Document document) {
-		return hbaseModelAdaptor.getReferences(document);
+		return getReferences(document.getId());
 	}
 
-	public List<Document> doSearch(SelectorSearch search, Indexable indexable) {
-		return hbaseModelAdaptor.doSearch(search, indexable);
+	public Collection<Reference> getReferences(DocumentInfo info) {
+		return getReferences(info.getId());
+	}
+
+	private Collection<Reference> getReferences(DataTypeId id) {
+		return hbaseModelAdaptor.getReferences(id.getType(), id.getUid());
+	}
+
+	public List<DocumentInfo> invertedIndexLookup(SelectorSearch search, Indexable indexable) {
+		return hbaseModelAdaptor.invertedIndexLookup(search, indexable);
 	}
 
 	public String renderAsText(DataType entity) {
 		return renderingAdaptor.renderAsText(entity);
 	}
 
+	public String renderAsText(DocumentInfo info) {
+		return renderingAdaptor.renderAsText(info.getId());
+	}
+
 	public String renderAsHtml(DataType entity) {
 		return renderingAdaptor.renderAsHtml(entity);
+	}
+
+	public String renderAsHtml(DocumentInfo info) {
+		return renderingAdaptor.renderAsHtml(info.getId());
 	}
 
 	public String renderAsSimpleRepresentation(Selector selector) {

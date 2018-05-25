@@ -20,9 +20,9 @@ import net.thomas.portfolio.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.services.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
+import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.AnalyticsAdaptor;
 
 @SpringBootApplication
 public class NexusServiceController {

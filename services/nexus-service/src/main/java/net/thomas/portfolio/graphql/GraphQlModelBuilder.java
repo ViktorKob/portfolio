@@ -61,6 +61,10 @@ import net.thomas.portfolio.graphql.fetchers.references.ReferenceOriginalIdFetch
 import net.thomas.portfolio.graphql.fetchers.references.ReferenceSourceFetcher;
 import net.thomas.portfolio.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
@@ -68,10 +72,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classific
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.AnalyticsAdaptor;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseModelAdaptor;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.RenderingAdaptor;
 
 public class GraphQlModelBuilder {
 	private HbaseModelAdaptor hbaseModelAdaptor;

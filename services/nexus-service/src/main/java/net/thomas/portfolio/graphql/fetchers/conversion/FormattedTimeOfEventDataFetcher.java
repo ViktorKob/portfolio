@@ -1,8 +1,9 @@
 package net.thomas.portfolio.graphql.fetchers.conversion;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
 public class FormattedTimeOfEventDataFetcher extends FormattedTimestampDataFetcher {
 
@@ -12,12 +13,16 @@ public class FormattedTimeOfEventDataFetcher extends FormattedTimestampDataFetch
 
 	@Override
 	public String _get(DataFetchingEnvironment environment) {
-		final Document document = environment.getSource();
-		if (environment.getArgument("format") != null) {
-			return formatTimestamp(environment.getArgument("format")
-				.toString(), document.getTimeOfEvent());
+		long timestamp;
+		final Object entity = environment.getSource();
+		if (entity instanceof Document) {
+			timestamp = ((Document) entity).getTimeOfEvent();
+		} else if (entity instanceof DocumentInfo) {
+			timestamp = ((DocumentInfo) entity).getTimeOfEvent();
 		} else {
-			return formatTimestamp(null, document.getTimeOfEvent());
+			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
+				.getSimpleName());
 		}
+		return formatTimestamp(environment, timestamp);
 	}
 }

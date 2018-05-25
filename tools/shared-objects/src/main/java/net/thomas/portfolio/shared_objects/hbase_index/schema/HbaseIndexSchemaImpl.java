@@ -5,10 +5,10 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Primiti
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -123,7 +123,7 @@ public class HbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 	}
 
 	private class IndexableBuilder {
-		private final Map<String, List<Indexable>> indexables;
+		private final Map<String, Collection<Indexable>> indexables;
 
 		public IndexableBuilder() {
 			indexables = new HashMap<>();
@@ -152,7 +152,7 @@ public class HbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 				.add(indexable);
 		}
 
-		public Map<String, List<Indexable>> build() {
+		public Map<String, Collection<Indexable>> build() {
 			return indexables;
 		}
 	}

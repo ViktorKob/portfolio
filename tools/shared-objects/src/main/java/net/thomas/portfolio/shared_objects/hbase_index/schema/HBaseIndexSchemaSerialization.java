@@ -1,7 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
@@ -20,7 +20,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	protected Set<String> documentTypes;
 	protected Set<String> selectorTypes;
 	protected Set<String> simpleRepresentableTypes;
-	protected Map<String, List<Indexable>> indexables;
+	protected Map<String, Collection<Indexable>> indexables;
 
 	public HBaseIndexSchemaSerialization() {
 	}
@@ -73,17 +73,21 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		this.simpleRepresentableTypes = simpleRepresentableTypes;
 	}
 
-	public Map<String, List<Indexable>> getIndexables() {
+	public Map<String, Collection<Indexable>> getIndexables() {
 		return indexables;
 	}
 
-	public void setIndexables(Map<String, List<Indexable>> indexables) {
+	public void setIndexables(Map<String, Collection<Indexable>> indexables) {
 		this.indexables = indexables;
 	}
 
 	@Override
-	public Collection<Indexable> getIndexables(String selectorType) {
-		return indexables.get(selectorType);
+	public Collection<Indexable> getIndexables(String selectorType, IndexableFilter... filters) {
+		Collection<Indexable> indexables = this.indexables.get(selectorType);
+		for (final IndexableFilter filter : filters) {
+			indexables = filter.filter(indexables);
+		}
+		return indexables;
 	}
 
 	@Override
@@ -102,6 +106,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@JsonIgnore
 	public String calculateUid(String type, String simpleRep) {
 		return simpleRepParsers.parse(type, simpleRep)
+			.getId()
 			.getUid();
 	}
 }

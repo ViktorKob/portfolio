@@ -27,11 +27,14 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 
 	@Override
 	public String render(DataType element, SimpleRepresentationRenderContext context) {
-		if (renderers.containsKey(element.getType())) {
-			return renderers.get(element.getType())
+		if (renderers.containsKey(element.getId()
+			.getType())) {
+			return renderers.get(element.getId()
+				.getType())
 				.render(element, context);
 		} else {
-			return "<Unable to render element of type " + element.getType() + ">";
+			return "<Unable to render element of type " + element.getId()
+				.getType() + ">";
 		}
 	}
 
@@ -53,7 +56,7 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 		public String render(DataType element, SimpleRepresentationRenderContext context) {
 			final String domainPart = String.valueOf(element.get("domainPart"));
 			if (element.get("domain") != null) {
-				return domainPart + "." + render(DataType.from(element.get("domain")), context);
+				return domainPart + "." + render((DataType) element.get("domain"), context);
 			} else {
 				return domainPart;
 			}
@@ -63,7 +66,7 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 	private class EmailAddressRenderer implements Renderer<String, SimpleRepresentationRenderContext> {
 		@Override
 		public String render(DataType element, SimpleRepresentationRenderContext context) {
-			return library.render(DataType.from(element.get("localname")), context) + "@" + library.render(DataType.from(element.get("domain")), context);
+			return library.render((DataType) element.get("localname"), context) + "@" + library.render((DataType) element.get("domain"), context);
 		}
 	}
 
