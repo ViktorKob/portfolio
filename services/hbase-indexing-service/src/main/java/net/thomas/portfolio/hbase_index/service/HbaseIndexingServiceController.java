@@ -11,7 +11,10 @@ import static net.thomas.portfolio.globals.ServiceGlobals.HBASE_INDEXING_SERVICE
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,6 +33,10 @@ import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -74,7 +81,13 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(GET_SAMPLES_PATH)
 	public ResponseEntity<?> getSamples(String type, Integer amount) {
 		if (TYPE.isValid(type) && AMOUNT.isValid(amount)) {
-			return ok(index.getSamples(type, amount));
+			final Collection<DataType> samples = index.getSamples(type, amount);
+			if (samples != null && samples.size() > 0) {
+				return ResponseEntity.ok(samples);
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + AMOUNT.getReason(amount));
 		}
@@ -84,7 +97,13 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(GET_DATA_TYPE_PATH)
 	public ResponseEntity<?> getDatatype(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			return ResponseEntity.ok(index.getDataType(type, uid));
+			final DataType entity = index.getDataType(type, uid);
+			if (entity != null) {
+				return ResponseEntity.ok(entity);
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -98,7 +117,13 @@ public class HbaseIndexingServiceController {
 			builder.setIndexables(schema.getIndexables(type));
 			builder.setSelector((Selector) index.getDataType(type, uid));
 			final InvertedIndexLookup lookup = builder.build();
-			return ResponseEntity.ok(lookup.execute());
+			final List<DocumentInfo> results = lookup.execute();
+			if (results != null && results.size() > 0) {
+				return ResponseEntity.ok(results);
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(SELECTOR_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -108,7 +133,13 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(GET_REFERENCES_PATH)
 	public ResponseEntity<?> getReferences(String type, String uid) {
 		if (DOCUMENT_TYPE.isValid(type) && UID.isValid(uid)) {
-			return ResponseEntity.ok(index.getReferences(uid));
+			final Collection<Reference> references = index.getReferences(uid);
+			if (references != null && references.size() > 0) {
+				return ResponseEntity.ok(references);
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(DOCUMENT_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -118,7 +149,13 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(GET_STATISTICS_PATH)
 	public ResponseEntity<?> getStatistics(String type, String uid) {
 		if (SELECTOR_TYPE.isValid(type) && UID.isValid(uid)) {
-			return ResponseEntity.ok(index.getStatistics(uid));
+			final Map<StatisticsPeriod, Long> references = index.getStatistics(uid);
+			if (references != null) {
+				return ResponseEntity.ok(references);
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(SELECTOR_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
