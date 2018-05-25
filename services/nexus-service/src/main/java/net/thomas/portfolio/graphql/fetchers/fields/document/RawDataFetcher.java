@@ -2,8 +2,8 @@ package net.thomas.portfolio.graphql.fetchers.fields.document;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class RawDataFetcher extends ModelDataFetcher<Object> {
 
@@ -13,7 +13,7 @@ public class RawDataFetcher extends ModelDataFetcher<Object> {
 
 	@Override
 	public Object _get(DataFetchingEnvironment environment) {
-		final DataType entity = (DataType) environment.getSource();
+		final DataType entity = extractOrFetchDataType(environment);
 		return entity.getInRawForm();
 	}
 }

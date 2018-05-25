@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.adaptors;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,14 +10,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public interface HbaseModelAdaptor {
-
-	// TODO[Thomas]: Move to other class
-	// Parser<String, Selector> getSimpleRepresentationParsers();
-	// Selector getDataTypeBySimpleRepresentation(String type, String simpleRepresentation);
 
 	/*** Schema ***/
 	boolean isSimpleRepresentable(String type);
@@ -37,10 +33,10 @@ public interface HbaseModelAdaptor {
 
 	Selector getDataTypeBySimpleRep(String type, String simpleRep);
 
-	Collection<Reference> getReferences(Document document);
+	Collection<Reference> getReferences(String type, String uid);
 
 	Map<StatisticsPeriod, Long> getStatistics(Selector selector);
 
-	List<Document> doSearch(SelectorSearch search, Indexable indexable);
+	List<DocumentInfo> invertedIndexLookup(SelectorSearch search, Indexable indexable);
 
 }

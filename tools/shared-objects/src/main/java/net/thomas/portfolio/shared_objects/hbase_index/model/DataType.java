@@ -1,69 +1,94 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+
+//@JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dataType")
+@JsonSerialize(using = DataTypeSerializer.class)
 @JsonDeserialize(using = DataTypeDeserializer.class)
-public class DataType extends HashMap<String, Object> {
-	private static final long serialVersionUID = 1L;
+@JsonSubTypes({ @Type(value = Selector.class), @Type(value = Document.class), @Type(value = RawDataType.class) })
+public class DataType {
+	@JsonProperty
+	protected DataTypeId id;
+	protected Map<String, Object> fields;
 
 	public DataType() {
-		super();
+		fields = new LinkedHashMap<>();
 	}
 
-	public DataType(DataTypeType dataTypeType, String type) {
-		this();
-		setDataTypeType(dataTypeType);
-		setType(type);
+	public DataType(DataTypeId id, Map<String, Object> fields) {
+		this.id = id;
+		this.fields = fields;
 	}
 
-	public void setDataTypeType(DataTypeType type) {
-		put("dataTypeType", type.name());
-	}
-
-	public void setType(String type) {
-		put("type", type);
-	}
-
+	@JsonIgnore
 	public void setUid(String uid) {
-		put("uid", uid);
+		id.setUid(uid);
 	}
 
-	public String getDataTypeType() {
-		return (String) get("dataTypeType");
+	public void setId(DataTypeId id) {
+		this.id = id;
 	}
 
-	public String getType() {
-		return (String) get("type");
+	public DataTypeId getId() {
+		return id;
 	}
 
-	public String getUid() {
-		return (String) get("uid");
+	public void setFields(Map<String, Object> fields) {
+		this.fields = fields;
 	}
 
+	@JsonSerialize(using = FieldsSerializer.class)
+	public Map<String, Object> getFields() {
+		return fields;
+	}
+
+	@JsonIgnore
+	public void put(String field, Object value) {
+		fields.put(field, value);
+	}
+
+	@JsonIgnore
+	public boolean containsKey(String field) {
+		return fields.containsKey(field);
+	}
+
+	@JsonIgnore
+	public Object get(String field) {
+		return fields.get(field);
+	}
+
+	@JsonIgnore
 	public String getInRawForm() {
 		return toString();
 	}
 
 	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+	public boolean equals(Object obj) {
+		if (obj instanceof DataType) {
+			final DataType other = (DataType) obj;
+			return id.equals(other.id) && fields.equals(other.fields);
+		} else {
+			return super.equals(obj);
+		}
 	}
 
-	public static DataType from(Object dataType) {
-		if (dataType instanceof Map) {
-			final DataType instance = new DataType();
-			for (final Entry<?, ?> entry : ((Map<?, ?>) dataType).entrySet()) {
-				instance.put(entry.getKey()
-					.toString(), entry.getValue());
-			}
-			return instance;
-		} else {
-			return null;
-		}
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 }

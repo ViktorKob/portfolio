@@ -1,40 +1,47 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeType.DOCUMENT;
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeDeserializer;
 
-@JsonDeserialize(as = Document.class)
+@JsonDeserialize(as = Document.class, using = DataTypeDeserializer.class)
 public class Document extends DataType {
-	private static final long serialVersionUID = 1L;
+
+	private long timeOfEvent;
+	private long timeOfInterception;
 
 	public Document() {
 	}
 
-	public Document(String type) {
-		super(DOCUMENT, type);
-	}
-
 	public void setTimeOfEvent(long timeOfEvent) {
-		put("timeOfEvent", timeOfEvent);
+		this.timeOfEvent = timeOfEvent;
 	}
 
 	public void setTimeOfInterception(long timeOfInterception) {
-		put("timeOfInterception", timeOfInterception);
+		this.timeOfInterception = timeOfInterception;
 	}
 
 	public long getTimeOfEvent() {
-		return (long) get("timeOfEvent");
+		return timeOfEvent;
 	}
 
 	public long getTimeOfInterception() {
-		return (long) get("timeOfInterception");
+		return timeOfInterception;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Document) {
+			final Document other = (Document) obj;
+			return super.equals(other) && timeOfEvent == other.timeOfEvent && timeOfInterception == other.timeOfInterception;
+		} else {
+			return super.equals(obj);
+		}
 	}
 
 	@Override
 	public String toString() {
-		return getType() + " (" + getUid() + ")@" + getTimeOfEvent() + ": " + super.toString();
+		return id + "@" + getTimeOfEvent() + ": " + super.toString();
 	}
 }

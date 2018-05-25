@@ -13,30 +13,34 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
-public class UidGenerator {
+public class IdGenerator {
 	private final Collection<Field> fields;
 	private final boolean keyShouldBeUnique;
 	private final int counter;
 
-	public UidGenerator(Collection<Field> fields, boolean keyShouldBeUnique) {
+	public IdGenerator(Collection<Field> fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
 		this.keyShouldBeUnique = keyShouldBeUnique;
 		counter = 0;
 	}
 
-	public synchronized String calculateUid(DataType entity) {
+	public synchronized DataTypeId calculateId(String type, DataType entity) {
 		try {
 			final MessageDigest hasher = MessageDigest.getInstance("MD5");
 			if (keyShouldBeUnique) {
-				hasher.digest(String.valueOf(counter).getBytes());
+				hasher.digest(String.valueOf(counter)
+					.getBytes());
 			}
 
 			if (entity instanceof Document) {
-				hasher.update(String.valueOf(((Document) entity).getTimeOfEvent()).getBytes());
+				hasher.update(String.valueOf(((Document) entity).getTimeOfEvent())
+					.getBytes());
 			}
 
+			hasher.update(type.getBytes());
 			for (final Field field : fields) {
 				if (field.isKeyComponent()) {
 					final Object value = entity.get(field.getName());
@@ -53,7 +57,7 @@ public class UidGenerator {
 			}
 			final byte[] digest = hasher.digest();
 			final String uid = DatatypeConverter.printHexBinary(digest);
-			return uid;
+			return new DataTypeId(type, uid);
 		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
@@ -61,10 +65,12 @@ public class UidGenerator {
 
 	private void addField(final MessageDigest hasher, final Field field, final Object value) {
 		if (field instanceof PrimitiveField) {
-			hasher.update(value.toString().getBytes());
+			hasher.update(value.toString()
+				.getBytes());
 		} else if (field instanceof ReferenceField) {
-			final DataType reference = (DataType) value;
-			hasher.update(reference.getUid().getBytes());
+			final DataTypeId id = ((DataType) value).getId();
+			hasher.update(id.getUid()
+				.getBytes());
 		}
 	}
 

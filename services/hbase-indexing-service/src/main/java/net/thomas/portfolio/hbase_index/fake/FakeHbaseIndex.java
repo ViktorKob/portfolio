@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
+import static java.util.Collections.emptyList;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel.UNKNOWN;
 
 import java.util.ArrayList;
@@ -20,8 +21,7 @@ import java.util.Stack;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -29,9 +29,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	private final Map<String, Map<String, DataType>> storage;
-	private Map<String, Statistics> selectorStatistics;
+	private Map<String, Map<StatisticsPeriod, Long>> selectorStatistics;
 	private Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex;
-	private Map<String, References> sourceReferences;
+	private Map<String, Collection<Reference>> sourceReferences;
 	private Map<String, PreviousKnowledge> previousKnowledge;
 
 	public FakeHbaseIndex() {
@@ -39,14 +39,18 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	public void addDataType(DataType sample) {
-		if (!storage.containsKey(sample.getType())) {
-			storage.put(sample.getType(), new HashMap<>());
+		if (!storage.containsKey(sample.getId()
+			.getType())) {
+			storage.put(sample.getId()
+				.getType(), new HashMap<>());
 		}
-		storage.get(sample.getType())
-			.put(sample.getUid(), sample);
+		storage.get(sample.getId()
+			.getType())
+			.put(sample.getId()
+				.getUid(), sample);
 	}
 
-	public void setSelectorStatistics(Map<String, Statistics> selectorStatistics) {
+	public void setSelectorStatistics(Map<String, Map<StatisticsPeriod, Long>> selectorStatistics) {
 		this.selectorStatistics = selectorStatistics;
 	}
 
@@ -91,9 +95,8 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		}
 	}
 
-	public void setReferences(Map<String, References> sourceReferences) {
+	public void setReferences(Map<String, Collection<Reference>> sourceReferences) {
 		this.sourceReferences = sourceReferences;
-
 	}
 
 	@Override
@@ -110,10 +113,12 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	@Override
 	public List<Document> invertedIndexLookup(Selector selector, Indexable indexable) {
-		if (invertedIndex.containsKey(selector.getUid())) {
-			if (invertedIndex.get(selector.getUid())
+		final String uid = selector.getId()
+			.getUid();
+		if (invertedIndex.containsKey(uid)) {
+			if (invertedIndex.get(uid)
 				.containsKey(indexable.path)) {
-				return new LinkedList<>(invertedIndex.get(selector.getUid())
+				return new LinkedList<>(invertedIndex.get(uid)
 					.get(indexable.path)
 					.values());
 			}
@@ -123,10 +128,11 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	@Override
 	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
-		return selectorStatistics.get(selector.getUid());
+		return selectorStatistics.get(selector.getId()
+			.getUid());
 	}
 
-	public Statistics getStatistics(String uid) {
+	public Map<StatisticsPeriod, Long> getStatistics(String uid) {
 		return selectorStatistics.get(uid);
 	}
 
@@ -135,22 +141,25 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	@Override
-	public References getReferences(Document document) {
-		if (sourceReferences.containsKey(document.getUid())) {
-			return sourceReferences.get(document.getUid());
+	public Collection<Reference> getReferences(Document document) {
+		if (sourceReferences.containsKey(document.getId()
+			.getUid())) {
+			return sourceReferences.get(document.getId()
+				.getUid());
 		}
-		return new References();
+		return emptyList();
 	}
 
-	public References getReferences(String uid) {
+	public Collection<Reference> getReferences(String uid) {
 		if (sourceReferences.containsKey(uid)) {
 			return sourceReferences.get(uid);
 		}
-		return new References();
+		return emptyList();
 	}
 
 	public PreviousKnowledge lookupPreviousKnowledgeFor(DataType selector) {
-		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getUid());
+		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getId()
+			.getUid());
 		if (knowledge == null) {
 			return new PreviousKnowledge(UNKNOWN, UNKNOWN);
 		} else {

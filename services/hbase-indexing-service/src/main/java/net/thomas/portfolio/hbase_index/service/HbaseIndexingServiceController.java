@@ -6,11 +6,14 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_REFER
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_STATISTICS_PATH;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_LOOKUP_PATH;
 import static net.thomas.portfolio.globals.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
@@ -24,7 +27,10 @@ import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
+import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
+import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 @Controller
@@ -39,6 +45,7 @@ public class HbaseIndexingServiceController {
 	private final HbaseIndexingServiceConfiguration config;
 	private HbaseIndexSchema schema;
 	private FakeHbaseIndex index;
+	private ExecutorService lookupExecutor;
 
 	@Autowired
 	public HbaseIndexingServiceController(HbaseIndexingServiceConfiguration config) {
@@ -51,6 +58,7 @@ public class HbaseIndexingServiceController {
 		schema = generator.getSchema();
 		generator.buildSampleDataSet(config.getRandomSeed());
 		index = generator.getSampleDataSet();
+		lookupExecutor = Executors.newSingleThreadExecutor();
 		TYPE.setValidStrings(new HashSet<>(schema.getDataTypes()));
 		DOCUMENT_TYPE.setValidStrings(new HashSet<>(schema.getDocumentTypes()));
 		SELECTOR_TYPE.setValidStrings(new HashSet<>(schema.getSelectorTypes()));
@@ -79,6 +87,20 @@ public class HbaseIndexingServiceController {
 			return ResponseEntity.ok(index.getDataType(type, uid));
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(INVERTED_INDEX_LOOKUP_PATH)
+	public ResponseEntity<?> invertedIndexLookup(String type, String uid) {
+		if (SELECTOR_TYPE.isValid(type) && UID.isValid(uid)) {
+			final InvertedIndexLookupBuilder builder = new InvertedIndexLookupBuilder(index, lookupExecutor);
+			builder.setIndexables(schema.getIndexables(type));
+			builder.setSelector((Selector) index.getDataType(type, uid));
+			final InvertedIndexLookup lookup = builder.build();
+			return ResponseEntity.ok(lookup.execute());
+		} else {
+			return badRequest().body(SELECTOR_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
 	}
 

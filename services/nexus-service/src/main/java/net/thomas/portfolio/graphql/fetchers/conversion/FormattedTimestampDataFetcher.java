@@ -1,8 +1,9 @@
 package net.thomas.portfolio.graphql.fetchers.conversion;
 
+import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<String> {
 
@@ -11,6 +12,15 @@ public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<Str
 	public FormattedTimestampDataFetcher(Adaptors adaptor) {
 		super(adaptor);
 		dateFormatter = adaptors.getDateConverter();
+	}
+
+	protected String formatTimestamp(DataFetchingEnvironment environment, long timestamp) {
+		if (environment.getArgument("format") != null) {
+			return formatTimestamp(environment.getArgument("format")
+				.toString(), timestamp);
+		} else {
+			return formatTimestamp((String) null, timestamp);
+		}
 	}
 
 	protected String formatTimestamp(String format, long timestamp) {

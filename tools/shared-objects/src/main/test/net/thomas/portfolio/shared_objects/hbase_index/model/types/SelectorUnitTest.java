@@ -16,12 +16,15 @@ public class SelectorUnitTest {
 
 	@Before
 	public void setupForTest() {
-		localname = new Selector("Localname");
-		localname.setUid("ABCD01");
-		final Selector domain = new Selector("Domain");
-		domain.setUid("ABCD02");
-		emailAddress = new Selector("EmailAddress");
-		emailAddress.setUid("ABCD03");
+		localname = new Selector();
+		localname.setId(new DataTypeId("Localname", "ABCD01"));
+		localname.setUid("");
+		localname.put("name", "xyz");
+		final Selector domain = new Selector();
+		domain.setId(new DataTypeId("Domain", "ABCD02"));
+		domain.put("name", "xyz.vw");
+		emailAddress = new Selector();
+		emailAddress.setId(new DataTypeId("EmailAddress", "ABCD03"));
 		emailAddress.put("localname", localname);
 		emailAddress.put("domain", domain);
 		mapper = new ObjectMapper();

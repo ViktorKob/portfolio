@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.adaptors;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;

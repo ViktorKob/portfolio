@@ -2,8 +2,9 @@ package net.thomas.portfolio.graphql.fetchers.fields.document;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
 public class TimeOfInterceptionDataFetcher extends ModelDataFetcher<Long> {
 
@@ -13,7 +14,14 @@ public class TimeOfInterceptionDataFetcher extends ModelDataFetcher<Long> {
 
 	@Override
 	public Long _get(DataFetchingEnvironment environment) {
-		final Document document = environment.getSource();
-		return document.getTimeOfInterception();
+		final Object entity = environment.getSource();
+		if (environment.getSource() instanceof Document) {
+			return ((Document) entity).getTimeOfInterception();
+		} else if (entity instanceof DocumentInfo) {
+			return ((DocumentInfo) entity).getTimeOfInterception();
+		} else {
+			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
+				.getSimpleName());
+		}
 	}
 }

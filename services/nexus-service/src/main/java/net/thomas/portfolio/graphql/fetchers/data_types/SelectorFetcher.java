@@ -3,9 +3,9 @@ package net.thomas.portfolio.graphql.fetchers.data_types;
 import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.Adaptors;
 
 public class SelectorFetcher extends EntityFetcher<Selector> {
 
