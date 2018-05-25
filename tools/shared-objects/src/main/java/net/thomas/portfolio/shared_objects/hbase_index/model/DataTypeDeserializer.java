@@ -96,7 +96,7 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 				return deserializeDocument(node, mapper);
 			case "Selector":
 				return deserializeSelector(node, mapper);
-			case "RawDataType":
+			case "DataType":
 				return deserializeRawDataType(node, mapper);
 			default:
 				throw new RuntimeException("Unable to deserialize " + node);
