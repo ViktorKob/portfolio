@@ -40,7 +40,9 @@ public class HttpRestClient {
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		try {
+			final long stamp = System.nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms calling " + request);
 			if (OK.equals(response.getStatusCode())) {
 				return response.getBody();
 			} else {
