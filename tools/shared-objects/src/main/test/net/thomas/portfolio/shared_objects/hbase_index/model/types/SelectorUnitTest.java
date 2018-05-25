@@ -18,13 +18,16 @@ public class SelectorUnitTest {
 	public void setupForTest() {
 		localname = new Selector();
 		localname.setId(new DataTypeId("Localname", "ABCD01"));
-		localname.setUid("");
 		localname.put("name", "xyz");
+		final Selector topLevelDomain = new Selector();
+		topLevelDomain.setId(new DataTypeId("Domain", "ABCD02"));
+		topLevelDomain.put("domainPart", "vw");
 		final Selector domain = new Selector();
-		domain.setId(new DataTypeId("Domain", "ABCD02"));
-		domain.put("name", "xyz.vw");
+		domain.setId(new DataTypeId("Domain", "ABCD03"));
+		domain.put("domainPart", "xyz");
+		domain.put("domain", topLevelDomain);
 		emailAddress = new Selector();
-		emailAddress.setId(new DataTypeId("EmailAddress", "ABCD03"));
+		emailAddress.setId(new DataTypeId("EmailAddress", "ABCD04"));
 		emailAddress.put("localname", localname);
 		emailAddress.put("domain", domain);
 		mapper = new ObjectMapper();

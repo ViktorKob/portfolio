@@ -14,6 +14,6 @@ public class ReferenceOriginalIdFetcher extends ModelDataFetcher<String> {
 	@Override
 	public String _get(DataFetchingEnvironment environment) {
 		final Reference reference = (Reference) environment.getSource();
-		return reference.originalId;
+		return reference.getOriginalId();
 	}
 }

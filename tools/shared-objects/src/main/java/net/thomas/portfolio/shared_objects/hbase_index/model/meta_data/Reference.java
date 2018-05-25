@@ -5,14 +5,17 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 public class Reference {
-	public Source source;
-	public Set<Classification> classifications;
-	public String originalId;
+	private Source source;
+	private String originalId;
+	private Set<Classification> classifications;
 
-	public Reference(Source source, Set<Classification> classifications, String originalId) {
+	public Reference() {
+	}
+
+	public Reference(Source source, String originalId, Set<Classification> classifications) {
 		this.source = source;
-		this.classifications = classifications;
 		this.originalId = originalId;
+		this.classifications = classifications;
 	}
 
 	public Source getSource() {

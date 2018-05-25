@@ -11,6 +11,7 @@ import java.util.Map;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -58,7 +59,7 @@ public class EmailGenerator extends DocumentGenerator {
 	}
 
 	private DataType createEmailEndpoint(DataType address) {
-		final DataType endpoint = new DataType();
+		final DataType endpoint = new RawDataType();
 		final DataType displayedName = determineDisplayedName(address);
 		if (displayedName != null) {
 			endpoint.put("displayedName", displayedName);

@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
@@ -75,6 +76,7 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
+	@Cacheable(sync = true)
 	public DataType getDataType(DataTypeId id) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", id.getType()),
 				new PreSerializedParameter("uid", id.getUid()));

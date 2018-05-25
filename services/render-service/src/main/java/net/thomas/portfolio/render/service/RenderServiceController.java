@@ -86,7 +86,6 @@ public class RenderServiceController {
 				return ResponseEntity.notFound()
 					.build();
 			}
-
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -100,6 +99,7 @@ public class RenderServiceController {
 			if (entity != null) {
 				return ResponseEntity.ok(textRenderer.render(entity, new TextRenderContextBuilder().build()));
 			} else {
+				System.out.println(type + ", " + uid);
 				return ResponseEntity.notFound()
 					.build();
 			}

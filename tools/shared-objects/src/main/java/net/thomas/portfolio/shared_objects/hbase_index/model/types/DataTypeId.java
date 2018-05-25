@@ -31,6 +31,11 @@ public class DataTypeId {
 	}
 
 	@Override
+	public int hashCode() {
+		return type.hashCode() * uid.hashCode() % 254147;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DataTypeId) {
 			final DataTypeId other = (DataTypeId) obj;

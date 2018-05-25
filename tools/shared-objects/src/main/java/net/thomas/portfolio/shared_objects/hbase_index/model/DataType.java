@@ -35,11 +35,6 @@ public class DataType {
 		this.fields = fields;
 	}
 
-	@JsonIgnore
-	public void setUid(String uid) {
-		id.setUid(uid);
-	}
-
 	public void setId(DataTypeId id) {
 		this.id = id;
 	}

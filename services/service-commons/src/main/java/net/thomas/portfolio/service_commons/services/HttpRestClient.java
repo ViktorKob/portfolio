@@ -2,6 +2,7 @@ package net.thomas.portfolio.service_commons.services;
 
 import static java.util.Arrays.asList;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.net.URI;
@@ -11,6 +12,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -37,21 +39,39 @@ public class HttpRestClient {
 
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-		if (OK.equals(response.getStatusCode())) {
-			return response.getBody();
-		} else {
-			throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+		try {
+			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			if (OK.equals(response.getStatusCode())) {
+				return response.getBody();
+			} else {
+				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+			}
+		} catch (final HttpClientErrorException e) {
+			if (NOT_FOUND.equals(e.getStatusCode())) {
+				return null;
+			} else {
+				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
+						e);
+			}
 		}
 	}
 
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-		if (OK.equals(response.getStatusCode())) {
-			return response.getBody();
-		} else {
-			throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+		try {
+			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			if (OK.equals(response.getStatusCode())) {
+				return response.getBody();
+			} else {
+				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+			}
+		} catch (final HttpClientErrorException e) {
+			if (NOT_FOUND.equals(e.getStatusCode())) {
+				return null;
+			} else {
+				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
+						e);
+			}
 		}
 	}
 
