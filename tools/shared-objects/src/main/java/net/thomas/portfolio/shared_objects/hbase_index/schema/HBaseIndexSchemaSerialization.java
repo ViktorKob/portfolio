@@ -13,6 +13,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 
 public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 
+	// TODO[Thomas]: These must also be serialized to be truly model agnostic
+	@JsonIgnore
 	private SimpleRepresentationParserLibrary simpleRepParsers;
 
 	protected Map<String, Map<String, Field>> dataTypeFields;

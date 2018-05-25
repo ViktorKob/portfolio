@@ -3,6 +3,7 @@ package net.thomas.portfolio.graphql.fetchers.data_types;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class EntityFetcher<ENTITY_TYPE> extends ModelDataFetcher<ENTITY_TYPE> {
 
@@ -18,7 +19,7 @@ public class EntityFetcher<ENTITY_TYPE> extends ModelDataFetcher<ENTITY_TYPE> {
 	public ENTITY_TYPE _get(DataFetchingEnvironment environment) {
 		final Object uid = environment.getArgument("uid");
 		if (uid != null) {
-			return (ENTITY_TYPE) adaptors.getDataTypeByUid(type, uid.toString());
+			return (ENTITY_TYPE) adaptors.getDataType(new DataTypeId(type, uid.toString()));
 		}
 		return null;
 	}

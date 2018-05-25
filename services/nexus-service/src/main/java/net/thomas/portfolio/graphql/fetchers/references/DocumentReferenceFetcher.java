@@ -16,7 +16,7 @@ public class DocumentReferenceFetcher extends ModelDataFetcher<Collection<Refere
 
 	@Override
 	public Collection<Reference> _get(DataFetchingEnvironment environment) {
-		final Document document = (Document) environment.getSource();
-		return adaptors.getReferences(document);
+		final Document document = (Document) extractOrFetchDataType(environment);
+		return adaptors.getReferences(document.getId());
 	}
 }

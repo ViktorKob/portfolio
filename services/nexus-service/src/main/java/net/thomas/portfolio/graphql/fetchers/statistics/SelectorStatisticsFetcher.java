@@ -24,7 +24,7 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 		if (isDanish(selector) && justificationIsMissing(selector)) {
 			return Collections.emptyMap();
 		}
-		final Map<StatisticsPeriod, Long> statistics = adaptors.getStatistics(selector);
+		final Map<StatisticsPeriod, Long> statistics = adaptors.getStatistics(selector.getId());
 		if (statistics != null) {
 			return statistics;
 		} else {

@@ -7,9 +7,7 @@ import static net.thomas.portfolio.enums.Service.RENDER_SERVICE;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class RenderingAdaptorImpl implements RenderingAdaptor {
 
@@ -20,26 +18,15 @@ public class RenderingAdaptorImpl implements RenderingAdaptor {
 	}
 
 	@Override
-	public String renderAsSimpleRepresentation(Selector selector) {
-		final DataTypeId id = selector.getId();
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_SIMPLE_REPRESENTATION, String.class, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
-	}
-
-	@Override
-	public String renderAsText(DataType entity) {
-		return renderAsText(entity.getId());
+	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
+		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_SIMPLE_REPRESENTATION, String.class, new PreSerializedParameter("type", selectorId.getType()),
+				new PreSerializedParameter("uid", selectorId.getUid()));
 	}
 
 	@Override
 	public String renderAsText(DataTypeId id) {
 		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_TEXT, String.class, new PreSerializedParameter("type", id.getType()),
 				new PreSerializedParameter("uid", id.getUid()));
-	}
-
-	@Override
-	public String renderAsHtml(DataType entity) {
-		return renderAsHtml(entity.getId());
 	}
 
 	@Override

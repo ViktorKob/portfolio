@@ -37,7 +37,7 @@ public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESUL
 			return (DataType) entity;
 		} else if (entity instanceof DocumentInfo) {
 			final DataTypeId id = ((DocumentInfo) entity).getId();
-			return adaptors.getDataTypeByUid(id.getType(), id.getUid());
+			return adaptors.getDataType(id);
 		}
 		throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 			.getSimpleName());

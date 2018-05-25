@@ -4,6 +4,7 @@ import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 
@@ -20,7 +21,7 @@ public class SelectorFetcher extends EntityFetcher<Selector> {
 	public Selector _get(DataFetchingEnvironment environment) {
 		final Object uid = environment.getArgument("uid");
 		if (uid != null) {
-			final Selector selector = (Selector) adaptors.getDataTypeByUid(type, uid.toString());
+			final Selector selector = (Selector) adaptors.getDataType(new DataTypeId(type, uid.toString()));
 			if (selector != null) {
 				if (environment.getArgument("justification") != null) {
 					selector.put("justification", environment.getArgument("justification"));
