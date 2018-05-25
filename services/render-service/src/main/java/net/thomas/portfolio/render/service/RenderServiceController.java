@@ -78,10 +78,15 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_SIMPLE_REPRESENTATION_PATH)
 	public ResponseEntity<String> renderAsSimpleRepresentation(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
-					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-			return ResponseEntity.ok(simpleRepRenderer.render(datatype, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
-				.build()));
+			final DataType datatype = loadFromHbaseIndex(type, uid);
+			if (datatype != null) {
+				return ResponseEntity.ok(simpleRepRenderer.render(datatype, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
+					.build()));
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
+
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -91,9 +96,13 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_TEXT_PATH)
 	public ResponseEntity<String> renderAsText(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
-					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-			return ResponseEntity.ok(textRenderer.render(datatype, new TextRenderContextBuilder().build()));
+			final DataType datatype = loadFromHbaseIndex(type, uid);
+			if (datatype != null) {
+				return ResponseEntity.ok(textRenderer.render(datatype, new TextRenderContextBuilder().build()));
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
@@ -103,11 +112,20 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_HTML_PATH)
 	public ResponseEntity<String> renderAsHtml(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class,
-					new PreSerializedParameter("type", type), new PreSerializedParameter("uid", uid));
-			return ResponseEntity.ok(htmlRenderer.render(datatype, new HtmlRenderContextBuilder().build()));
+			final DataType datatype = loadFromHbaseIndex(type, uid);
+			if (datatype != null) {
+				return ResponseEntity.ok(htmlRenderer.render(datatype, new HtmlRenderContextBuilder().build()));
+			} else {
+				return ResponseEntity.notFound()
+					.build();
+			}
 		} else {
 			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
 		}
+	}
+
+	private DataType loadFromHbaseIndex(String type, String uid) {
+		return hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", type),
+				new PreSerializedParameter("uid", uid));
 	}
 }

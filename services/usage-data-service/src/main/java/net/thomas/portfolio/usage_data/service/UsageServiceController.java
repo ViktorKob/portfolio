@@ -9,7 +9,7 @@ import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_A
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -111,8 +111,13 @@ public class UsageServiceController {
 				limit = 20;
 			}
 			try {
-				final List<UsageActivityItem> activities = proxy.fetchUsageActivities(uid, type, offset, limit);
-				return ResponseEntity.ok(activities);
+				final Collection<UsageActivityItem> activities = proxy.fetchUsageActivities(uid, type, offset, limit);
+				if (activities != null && activities.size() > 0) {
+					return ResponseEntity.ok(activities);
+				} else {
+					return ResponseEntity.notFound()
+						.build();
+				}
 			} catch (final Throwable t) {
 				t.printStackTrace();
 				return ResponseEntity.status(INTERNAL_SERVER_ERROR)
