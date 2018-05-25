@@ -28,6 +28,6 @@ public class ReferenceGenerator {
 		while (classifications.size() < classificationCount) {
 			classifications.add(Classification.values()[random.nextInt(Classification.values().length)]);
 		}
-		return new Reference(source, classifications, stringGenerator.generate() + "-" + numberGenerator.generate());
+		return new Reference(source, stringGenerator.generate() + "-" + numberGenerator.generate(), classifications);
 	}
 }

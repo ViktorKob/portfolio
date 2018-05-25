@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -31,7 +32,7 @@ public abstract class DataTypeGenerator implements Iterable<DataType>, Iterator<
 
 	@Override
 	public DataType next() {
-		final DataType sample = new DataType();
+		final DataType sample = new RawDataType();
 		populateFields(sample);
 		return sample;
 	}

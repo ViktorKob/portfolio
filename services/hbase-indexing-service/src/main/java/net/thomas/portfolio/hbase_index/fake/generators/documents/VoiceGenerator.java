@@ -7,6 +7,7 @@ import java.util.Map;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -40,7 +41,7 @@ public class VoiceGenerator extends DocumentGenerator {
 	}
 
 	private DataType createPstnEndpoint(String numberField, DataType number) {
-		final DataType endpoint = new DataType();
+		final DataType endpoint = new RawDataType();
 		endpoint.put(numberField, number);
 		endpoint.setId(uidTool.calculateId("PstnEndpoint", endpoint));
 		return endpoint;

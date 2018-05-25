@@ -85,6 +85,8 @@ public class FakeDataSetGenerator {
 		pstnEndpoints = new HashMap<>();
 		generateSmss();
 		generateVoice();
+		indexEndpoints(emailEndpoints);
+		indexEndpoints(pstnEndpoints);
 		storage.setInvertedIndex(generateInvertedIndex());
 		storage.setSelectorStatistics(generateSelectorStatistics());
 		storage.setReferences(generateSourceReferences());
@@ -177,6 +179,12 @@ public class FakeDataSetGenerator {
 			final DataType called = (DataType) voice.get("called");
 			pstnEndpoints.put(called.getId()
 				.getUid(), called);
+		}
+	}
+
+	private void indexEndpoints(Map<String, DataType> endpoints) {
+		for (final DataType entity : endpoints.values()) {
+			storage.addDataType(entity);
 		}
 	}
 

@@ -15,6 +15,6 @@ public class ReferenceSourceFetcher extends ModelDataFetcher<Source> {
 	@Override
 	public Source _get(DataFetchingEnvironment environment) {
 		final Reference reference = (Reference) environment.getSource();
-		return reference.source;
+		return reference.getSource();
 	}
 }

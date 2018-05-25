@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
@@ -38,19 +37,33 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	@Override
 	public DataType deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
-		final ObjectNode node = mapper.readTree(parser);
-		return deserializeDataType(node, mapper);
+		final JsonNode node = mapper.readTree(parser);
+		return (DataType) deserializeDataType(node, mapper);
 	}
 
-	public DataType deserializeDataType(final JsonNode node, final ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException {
-		switch (node.get("dataType")
-			.asText()) {
-		case "Document":
-			return deserializeDocument(node, mapper);
-		case "Selector":
-			return deserializeSelector(node, mapper);
-		default:
-			return null;
+	private Object deserializeDataType(JsonNode node, ObjectMapper mapper)
+			throws JsonParseException, JsonMappingException, IOException, JsonProcessingException {
+		if (node.has("dataType")) {
+			switch (node.get("dataType")
+				.asText()) {
+			case "Document":
+				return deserializeDocument(node, mapper);
+			case "Selector":
+				return deserializeSelector(node, mapper);
+			case "RawDataType":
+				return deserializeRawDataType(node, mapper);
+			default:
+				throw new RuntimeException("Unable to deserialize " + node);
+			}
+		} else if (node instanceof ArrayNode) {
+			final List<Object> values = new LinkedList<>();
+			final ArrayNode arrayNode = (ArrayNode) node;
+			for (final JsonNode subNode : arrayNode) {
+				values.add(deserializeDataType(subNode, mapper));
+			}
+			return values;
+		} else {
+			return mapper.treeToValue(node, Object.class);
 		}
 	}
 
@@ -83,33 +96,8 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 		final Iterator<Entry<String, JsonNode>> sourceFields = node.fields();
 		while (sourceFields.hasNext()) {
 			final Entry<String, JsonNode> fieldEntry = sourceFields.next();
-			fields.put(fieldEntry.getKey(), deserializeNode(fieldEntry.getValue(), mapper));
+			fields.put(fieldEntry.getKey(), deserializeDataType(fieldEntry.getValue(), mapper));
 		}
 		return fields;
-	}
-
-	private Object deserializeNode(JsonNode node, ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException, JsonProcessingException {
-		if (node.has("dataType")) {
-			switch (node.get("dataType")
-				.asText()) {
-			case "Document":
-				return deserializeDocument(node, mapper);
-			case "Selector":
-				return deserializeSelector(node, mapper);
-			case "DataType":
-				return deserializeRawDataType(node, mapper);
-			default:
-				throw new RuntimeException("Unable to deserialize " + node);
-			}
-		} else if (node instanceof ArrayNode) {
-			final List<Object> values = new LinkedList<>();
-			final ArrayNode arrayNode = (ArrayNode) node;
-			for (final JsonNode subNode : arrayNode) {
-				values.add(deserializeNode(subNode, mapper));
-			}
-			return values;
-		} else {
-			return mapper.treeToValue(node, Object.class);
-		}
 	}
 }
