@@ -78,9 +78,9 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_SIMPLE_REPRESENTATION_PATH)
 	public ResponseEntity<String> renderAsSimpleRepresentation(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = loadFromHbaseIndex(type, uid);
-			if (datatype != null) {
-				return ResponseEntity.ok(simpleRepRenderer.render(datatype, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
+			final DataType entity = loadFromHbaseIndex(type, uid);
+			if (entity != null) {
+				return ResponseEntity.ok(simpleRepRenderer.render(entity, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
 					.build()));
 			} else {
 				return ResponseEntity.notFound()
@@ -96,9 +96,9 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_TEXT_PATH)
 	public ResponseEntity<String> renderAsText(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = loadFromHbaseIndex(type, uid);
-			if (datatype != null) {
-				return ResponseEntity.ok(textRenderer.render(datatype, new TextRenderContextBuilder().build()));
+			final DataType entity = loadFromHbaseIndex(type, uid);
+			if (entity != null) {
+				return ResponseEntity.ok(textRenderer.render(entity, new TextRenderContextBuilder().build()));
 			} else {
 				return ResponseEntity.notFound()
 					.build();
@@ -112,9 +112,9 @@ public class RenderServiceController {
 	@RequestMapping(RENDER_AS_HTML_PATH)
 	public ResponseEntity<String> renderAsHtml(String type, String uid) {
 		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType datatype = loadFromHbaseIndex(type, uid);
-			if (datatype != null) {
-				return ResponseEntity.ok(htmlRenderer.render(datatype, new HtmlRenderContextBuilder().build()));
+			final DataType entity = loadFromHbaseIndex(type, uid);
+			if (entity != null) {
+				return ResponseEntity.ok(htmlRenderer.render(entity, new HtmlRenderContextBuilder().build()));
 			} else {
 				return ResponseEntity.notFound()
 					.build();
