@@ -1,5 +1,6 @@
 package net.thomas.portfolio.service_commons.services;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_REFERENCES;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
@@ -10,9 +11,13 @@ import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.shared_objects.SelectorSearch;
@@ -31,10 +36,20 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 
 	private final HttpRestClient client;
 	private final HbaseIndexSchema schema;
+	private final Cache<DataTypeId, DataType> dataTypeCache;
 
 	public HbaseModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class);
+		dataTypeCache = CacheBuilder.newBuilder()
+			.refreshAfterWrite(10, MINUTES)
+			.maximumSize(10000)
+			.build(new CacheLoader<DataTypeId, DataType>() {
+				@Override
+				public DataType load(DataTypeId id) throws Exception {
+					return fetchDataType(id);
+				}
+			});
 	}
 
 	@Override
@@ -76,8 +91,18 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
-	@Cacheable(sync = true)
 	public DataType getDataType(DataTypeId id) {
+		try {
+			return dataTypeCache.get(id, () -> {
+				return fetchDataType(id);
+			});
+		} catch (final ExecutionException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	private DataType fetchDataType(DataTypeId id) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", id.getType()),
 				new PreSerializedParameter("uid", id.getUid()));
 	}
