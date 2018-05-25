@@ -16,9 +16,9 @@ public class HtmlDataFetcher extends ModelDataFetcher<String> {
 	public String _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
-			return adaptors.renderAsHtml((DataType) entity);
+			return adaptors.renderAsHtml(((DataType) entity).getId());
 		} else if (entity instanceof DocumentInfo) {
-			return adaptors.renderAsHtml((DocumentInfo) entity);
+			return adaptors.renderAsHtml(((DocumentInfo) entity).getId());
 		} else {
 			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 				.getSimpleName());

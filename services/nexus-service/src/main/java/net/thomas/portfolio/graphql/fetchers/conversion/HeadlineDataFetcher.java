@@ -16,9 +16,9 @@ public class HeadlineDataFetcher extends ModelDataFetcher<String> {
 	public String _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
-			return adaptors.renderAsText((DataType) entity);
+			return adaptors.renderAsText(((DataType) entity).getId());
 		} else if (entity instanceof DocumentInfo) {
-			return adaptors.renderAsText((DocumentInfo) entity);
+			return adaptors.renderAsText(((DocumentInfo) entity).getId());
 		} else {
 			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 				.getSimpleName());

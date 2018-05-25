@@ -6,7 +6,6 @@ import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
-	// private final Renderer<String> renderer;
 
 	public SimpleRepresentationDataFetcher(Adaptors adaptors) {
 		super(adaptors);
@@ -15,6 +14,6 @@ public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
 	@Override
 	public Object _get(DataFetchingEnvironment environment) {
 		final Selector selector = (Selector) environment.getSource();
-		return adaptors.renderAsSimpleRepresentation(selector);
+		return adaptors.renderAsSimpleRepresentation(selector.getId());
 	}
 }

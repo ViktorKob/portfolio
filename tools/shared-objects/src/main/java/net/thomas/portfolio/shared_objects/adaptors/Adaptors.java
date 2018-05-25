@@ -12,7 +12,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousK
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
@@ -55,52 +54,36 @@ public class Adaptors {
 		return hbaseModelAdaptor.getIndexables(selector);
 	}
 
-	public Selector getDataTypeBySimpleRepresentation(String type, String simpleRep) {
-		return hbaseModelAdaptor.getDataTypeBySimpleRep(type, simpleRep);
+	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
+		return hbaseModelAdaptor.getIdFromSimpleRep(type, simpleRep);
 	}
 
-	public DataType getDataTypeByUid(String type, String uid) {
-		return hbaseModelAdaptor.getDataTypeByUid(type, uid);
+	public DataType getDataType(DataTypeId id) {
+		return hbaseModelAdaptor.getDataType(id);
 	}
 
-	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
-		return hbaseModelAdaptor.getStatistics(selector);
+	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
+		return hbaseModelAdaptor.getStatistics(selectorId);
 	}
 
-	public Collection<Reference> getReferences(Document document) {
-		return getReferences(document.getId());
-	}
-
-	public Collection<Reference> getReferences(DocumentInfo info) {
-		return getReferences(info.getId());
-	}
-
-	private Collection<Reference> getReferences(DataTypeId id) {
-		return hbaseModelAdaptor.getReferences(id.getType(), id.getUid());
+	public Collection<Reference> getReferences(DataTypeId id) {
+		return hbaseModelAdaptor.getReferences(id);
 	}
 
 	public List<DocumentInfo> invertedIndexLookup(SelectorSearch search, Indexable indexable) {
 		return hbaseModelAdaptor.invertedIndexLookup(search, indexable);
 	}
 
-	public String renderAsText(DataType entity) {
-		return renderingAdaptor.renderAsText(entity);
+	public String renderAsSimpleRepresentation(DataTypeId id) {
+		return renderingAdaptor.renderAsSimpleRepresentation(id);
 	}
 
-	public String renderAsText(DocumentInfo info) {
-		return renderingAdaptor.renderAsText(info.getId());
+	public String renderAsText(DataTypeId id) {
+		return renderingAdaptor.renderAsText(id);
 	}
 
-	public String renderAsHtml(DataType entity) {
-		return renderingAdaptor.renderAsHtml(entity);
-	}
-
-	public String renderAsHtml(DocumentInfo info) {
-		return renderingAdaptor.renderAsHtml(info.getId());
-	}
-
-	public String renderAsSimpleRepresentation(Selector selector) {
-		return renderingAdaptor.renderAsSimpleRepresentation(selector);
+	public String renderAsHtml(DataTypeId id) {
+		return renderingAdaptor.renderAsHtml(id);
 	}
 
 	public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {

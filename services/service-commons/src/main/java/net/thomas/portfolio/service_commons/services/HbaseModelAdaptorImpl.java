@@ -23,7 +23,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -41,6 +40,11 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	public boolean isSimpleRepresentable(String dataType) {
 		return schema.getSimpleRepresentableTypes()
 			.contains(dataType);
+	}
+
+	@Override
+	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
+		return new DataTypeId(type, schema.calculateUid(type, simpleRep));
 	}
 
 	@Override
@@ -71,33 +75,25 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
-	public DataType getDataTypeByUid(String type, String uid) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", type),
-				new PreSerializedParameter("uid", uid));
+	public DataType getDataType(DataTypeId id) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", id.getType()),
+				new PreSerializedParameter("uid", id.getUid()));
 	}
 
 	@Override
-	public Selector getDataTypeBySimpleRep(String type, String simpleRep) {
-		final String uid = schema.calculateUid(type, simpleRep);
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, Selector.class, new PreSerializedParameter("type", type),
-				new PreSerializedParameter("uid", uid));
-	}
-
-	@Override
-	public Collection<Reference> getReferences(String type, String uid) {
+	public Collection<Reference> getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Collection<Reference>> typeReference = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, typeReference, new PreSerializedParameter("type", type),
-				new PreSerializedParameter("uid", uid));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, typeReference, new PreSerializedParameter("type", documentId.getType()),
+				new PreSerializedParameter("uid", documentId.getUid()));
 	}
 
 	@Override
-	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
+	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> typeReference = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
-		final DataTypeId id = selector.getId();
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, typeReference, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, typeReference, new PreSerializedParameter("type", selectorId.getType()),
+				new PreSerializedParameter("uid", selectorId.getUid()));
 	}
 
 	@Override
