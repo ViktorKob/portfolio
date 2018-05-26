@@ -4,12 +4,12 @@ import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
 
-public class IndexableDocumentSearchFetcher extends ModelDataFetcher<SelectorSearch> {
+public class IndexableDocumentSearchFetcher extends ModelDataFetcher<InvertedIndexLookup> {
 
 	private final DateConverter dateFormatter;
 
@@ -19,17 +19,17 @@ public class IndexableDocumentSearchFetcher extends ModelDataFetcher<SelectorSea
 	}
 
 	@Override
-	public SelectorSearch _get(DataFetchingEnvironment environment) {
+	public InvertedIndexLookup _get(DataFetchingEnvironment environment) {
 		final Selector selector = environment.getSource();
 		return convertToSearch(selector, environment.getArguments());
 	}
 
-	private SelectorSearch convertToSearch(Selector selector, Map<String, Object> arguments) {
+	private InvertedIndexLookup convertToSearch(Selector selector, Map<String, Object> arguments) {
 		final Integer offset = (Integer) arguments.get("offset");
 		final Integer limit = (Integer) arguments.get("limit");
 		final Long after = determineAfter(arguments);
 		final Long before = determineBefore(arguments);
-		return new SelectorSearch(selector, offset, limit, after, before);
+		return new InvertedIndexLookup(selector.getId(), offset, limit, after, before);
 	}
 
 	private Long determineAfter(Map<String, Object> arguments) {

@@ -4,8 +4,10 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.data.FieldTy
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = ReferenceField.class)
 public class ReferenceField implements Field {
 	private String name;

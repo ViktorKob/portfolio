@@ -69,8 +69,7 @@ public class IdGenerator {
 				.getBytes());
 		} else if (field instanceof ReferenceField) {
 			final DataTypeId id = ((DataType) value).getId();
-			hasher.update(id.getUid()
-				.getBytes());
+			hasher.update(id.uid.getBytes());
 		}
 	}
 

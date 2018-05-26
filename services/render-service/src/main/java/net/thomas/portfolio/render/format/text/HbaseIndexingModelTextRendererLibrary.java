@@ -37,14 +37,12 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 
 	@Override
 	public String render(DataType element, TextRenderContext context) {
-		final String type = element.getId()
-			.getType();
+		final String type = element.getId().type;
 		if (renderers.containsKey(type)) {
 			return renderers.get(type)
 				.render(element, context);
 		} else {
-			return "<Unable to render element of type " + element.getId()
-				.getType() + ">";
+			return "<Unable to render element of type " + element.getId().type + ">";
 		}
 	}
 
@@ -58,7 +56,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final String headline = String.valueOf(element.get(field));
-			// if (adaptor.isSelector(element.getType()) && requiresJustification((Selector) element)) {
+			// if (adaptor.isSelector(element.type) && requiresJustification((Selector) element)) {
 			// headline += "!";
 			// }
 			return headline;

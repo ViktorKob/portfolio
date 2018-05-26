@@ -70,8 +70,7 @@ public class EmailGenerator extends DocumentGenerator {
 	}
 
 	private DataType determineDisplayedName(DataType address) {
-		final String uid = address.getId()
-			.getUid();
+		final String uid = address.getId().uid;
 		if (previousDisplayedNameMatches.containsKey(uid)) {
 			if (random.nextDouble() < 0.95) {
 				return randomSample(previousDisplayedNameMatches.get(uid));

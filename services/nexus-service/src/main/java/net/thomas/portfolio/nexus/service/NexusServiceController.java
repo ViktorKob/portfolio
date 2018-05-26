@@ -1,6 +1,6 @@
 package net.thomas.portfolio.nexus.service;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel.UNKNOWN;
+import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.UNKNOWN;
 
 import java.io.IOException;
 
@@ -21,8 +21,8 @@ import net.thomas.portfolio.service_commons.services.HbaseModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -57,7 +57,7 @@ public class NexusServiceController {
 		schemaBuilder.setRenderingAdaptor(new RenderingAdaptorImpl(renderingClient));
 		schemaBuilder.setAnalyticsAdaptor(new AnalyticsAdaptor() {
 			@Override
-			public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {
+			public PreviousKnowledge getPreviousKnowledgeFor(DataTypeId selectorId) {
 				return new PreviousKnowledge(UNKNOWN, UNKNOWN);
 			}
 		});

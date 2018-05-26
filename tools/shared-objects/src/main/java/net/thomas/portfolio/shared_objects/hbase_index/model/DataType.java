@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -17,12 +17,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
-//@JsonTypeInfo(use = Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "dataType")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(using = DataTypeSerializer.class)
 @JsonDeserialize(using = DataTypeDeserializer.class)
 @JsonSubTypes({ @Type(value = Selector.class), @Type(value = Document.class), @Type(value = RawDataType.class) })
 public class DataType {
-	@JsonProperty
 	protected DataTypeId id;
 	protected Map<String, Object> fields;
 

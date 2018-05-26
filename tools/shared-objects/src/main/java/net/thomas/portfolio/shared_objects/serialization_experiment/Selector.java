@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects;
+package net.thomas.portfolio.shared_objects.serialization_experiment;
 
 import java.io.IOException;
 import java.lang.reflect.Method;

@@ -16,11 +16,9 @@ public class TypeDataFetcher extends ModelDataFetcher<Object> {
 	public Object _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
-			return ((DataType) entity).getId()
-				.getType();
+			return ((DataType) entity).getId().type;
 		} else if (entity instanceof DocumentInfo) {
-			return ((DocumentInfo) entity).getId()
-				.getType();
+			return ((DocumentInfo) entity).getId().type;
 		}
 		throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 			.getSimpleName());

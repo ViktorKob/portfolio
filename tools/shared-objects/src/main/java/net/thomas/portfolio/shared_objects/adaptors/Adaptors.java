@@ -4,17 +4,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import net.thomas.portfolio.shared_objects.SelectorSearch;
+import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
 
 public class Adaptors {
@@ -70,7 +69,7 @@ public class Adaptors {
 		return hbaseModelAdaptor.getReferences(id);
 	}
 
-	public List<DocumentInfo> invertedIndexLookup(SelectorSearch search, Indexable indexable) {
+	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookup search, Indexable indexable) {
 		return hbaseModelAdaptor.invertedIndexLookup(search, indexable);
 	}
 
@@ -86,8 +85,8 @@ public class Adaptors {
 		return renderingAdaptor.renderAsHtml(id);
 	}
 
-	public PreviousKnowledge getPreviousKnowledgeFor(Selector selector) {
-		return analyticsAdaptor.getPreviousKnowledgeFor(selector);
+	public PreviousKnowledge getPreviousKnowledgeFor(DataTypeId selectorId) {
+		return analyticsAdaptor.getPreviousKnowledgeFor(selectorId);
 	}
 
 	public DateConverter getDateConverter() {

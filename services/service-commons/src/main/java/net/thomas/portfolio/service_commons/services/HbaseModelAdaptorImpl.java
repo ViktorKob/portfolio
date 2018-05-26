@@ -20,7 +20,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
-import net.thomas.portfolio.shared_objects.SelectorSearch;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
@@ -29,6 +28,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -103,32 +103,32 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	private DataType fetchDataType(DataTypeId id) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", id.type),
+				new PreSerializedParameter("uid", id.uid));
 	}
 
 	@Override
 	public Collection<Reference> getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Collection<Reference>> typeReference = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, typeReference, new PreSerializedParameter("type", documentId.getType()),
-				new PreSerializedParameter("uid", documentId.getUid()));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, typeReference, new PreSerializedParameter("type", documentId.type),
+				new PreSerializedParameter("uid", documentId.uid));
 	}
 
 	@Override
 	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> typeReference = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, typeReference, new PreSerializedParameter("type", selectorId.getType()),
-				new PreSerializedParameter("uid", selectorId.getUid()));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, typeReference, new PreSerializedParameter("type", selectorId.type),
+				new PreSerializedParameter("uid", selectorId.uid));
 	}
 
 	@Override
-	public List<DocumentInfo> invertedIndexLookup(SelectorSearch search, Indexable indexable) {
+	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookup search, Indexable indexable) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
-		final DataTypeId id = search.selector.getId();
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, INVERTED_INDEX_LOOKUP, responseType, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
+		final DataTypeId id = search.selectorId;
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, INVERTED_INDEX_LOOKUP, responseType, new PreSerializedParameter("type", id.type),
+				new PreSerializedParameter("uid", id.uid));
 	}
 }

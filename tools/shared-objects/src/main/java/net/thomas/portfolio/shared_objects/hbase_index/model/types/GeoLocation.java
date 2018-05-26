@@ -1,5 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeoLocation {
 	public double longitude;
 	public double latitude;
