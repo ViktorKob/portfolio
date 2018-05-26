@@ -1,10 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 public interface IndexableFilter {
@@ -13,8 +11,8 @@ public interface IndexableFilter {
 	public static class DataTypeFilter implements IndexableFilter {
 		private final Set<String> dataTypes;
 
-		public DataTypeFilter(String... dataTypes) {
-			this.dataTypes = new HashSet<>(asList(dataTypes));
+		public DataTypeFilter(Set<String> dataTypes) {
+			this.dataTypes = dataTypes;
 		}
 
 		@Override
@@ -25,11 +23,11 @@ public interface IndexableFilter {
 		}
 	}
 
-	public static class PathFilter implements IndexableFilter {
+	public static class RelationFilter implements IndexableFilter {
 		private final Set<String> relations;
 
-		public PathFilter(String... paths) {
-			this.relations = new HashSet<>(asList(paths));
+		public RelationFilter(Set<String> relations) {
+			this.relations = relations;
 		}
 
 		@Override

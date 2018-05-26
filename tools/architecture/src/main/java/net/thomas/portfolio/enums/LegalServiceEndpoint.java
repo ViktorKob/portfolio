@@ -2,7 +2,7 @@ package net.thomas.portfolio.enums;
 
 import static net.thomas.portfolio.globals.LegalServiceGlobals.CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP_PATH;
 
-import net.thomas.portfolio.entities.ServiceEndpoint;
+import net.thomas.portfolio.services.ServiceEndpoint;
 
 public enum LegalServiceEndpoint implements ServiceEndpoint {
 	CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP(CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP_PATH);

@@ -5,8 +5,12 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import net.thomas.portfolio.common.services.Parameter;
+import net.thomas.portfolio.common.services.ParameterGroup;
+import net.thomas.portfolio.common.services.PreSerializedParameter;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LegalInformation {
+public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
 	public String justification;
 	@JsonIgnore
@@ -50,6 +54,13 @@ public class LegalInformation {
 	@Override
 	public int hashCode() {
 		return (int) (justification.hashCode() * lowerBound * upperBound * 1009);
+	}
+
+	@Override
+	@JsonIgnore
+	public Parameter[] getParameters() {
+		return new Parameter[] { new PreSerializedParameter("li_justification", justification), new PreSerializedParameter("li_lowerBound", lowerBound),
+				new PreSerializedParameter("li_upperBound", upperBound) };
 	}
 
 	@Override

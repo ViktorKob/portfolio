@@ -2,12 +2,12 @@ package net.thomas.portfolio.common.services.validation;
 
 import static java.util.Collections.emptySet;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class SpecificStringPresenceValidator extends StringPresenceValidator {
 
-	private Set<String> validStrings;
+	private Collection<String> validStrings;
 	private String validStringsAsString;
 
 	public SpecificStringPresenceValidator(String parameterName, boolean required) {
@@ -16,7 +16,7 @@ public class SpecificStringPresenceValidator extends StringPresenceValidator {
 		validStringsAsString = "";
 	}
 
-	public void setValidStrings(Set<String> validStrings) {
+	public void setValidStrings(Collection<String> validStrings) {
 		this.validStrings = validStrings;
 		validStringsAsString = "[ " + validStrings.stream()
 			.collect(Collectors.joining(", ")) + " ]";

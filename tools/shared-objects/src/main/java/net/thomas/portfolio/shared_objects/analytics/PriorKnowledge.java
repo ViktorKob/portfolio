@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PreviousKnowledge {
+public class PriorKnowledge {
 	@JsonIgnore
 	public String alias;
 	@JsonIgnore
@@ -14,10 +14,10 @@ public class PreviousKnowledge {
 	@JsonIgnore
 	public RecognitionLevel isDanish;
 
-	public PreviousKnowledge() {
+	public PriorKnowledge() {
 	}
 
-	public PreviousKnowledge(String alias, RecognitionLevel recognition, RecognitionLevel isDanish) {
+	public PriorKnowledge(String alias, RecognitionLevel recognition, RecognitionLevel isDanish) {
 		this.alias = alias;
 		this.recognition = recognition;
 		this.isDanish = isDanish;
@@ -49,8 +49,8 @@ public class PreviousKnowledge {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PreviousKnowledge) {
-			final PreviousKnowledge other = (PreviousKnowledge) obj;
+		if (obj instanceof PriorKnowledge) {
+			final PriorKnowledge other = (PriorKnowledge) obj;
 			return alias.equals(other.alias) && recognition == other.recognition && isDanish == other.isDanish;
 		} else {
 			return super.equals(obj);

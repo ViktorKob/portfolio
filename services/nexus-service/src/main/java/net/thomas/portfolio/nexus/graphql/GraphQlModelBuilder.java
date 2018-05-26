@@ -63,8 +63,10 @@ import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatistics
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.HbaseModelAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
@@ -74,15 +76,27 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
 
 public class GraphQlModelBuilder {
-	private HbaseModelAdaptor hbaseModelAdaptor;
-	private RenderingAdaptor renderingAdaptor;
 	private AnalyticsAdaptor analyticsAdaptor;
+	private HbaseIndexModelAdaptor hbaseModelAdaptor;
+	private LegalAdaptor legalAdaptor;
+	private RenderingAdaptor renderingAdaptor;
+	private UsageAdaptor usageAdaptor;
 
 	public GraphQlModelBuilder() {
 	}
 
-	public GraphQlModelBuilder setHbaseModelAdaptor(HbaseModelAdaptor hbaseModelAdaptor) {
+	public GraphQlModelBuilder setAnalyticsAdaptor(AnalyticsAdaptor analyticsAdaptor) {
+		this.analyticsAdaptor = analyticsAdaptor;
+		return this;
+	}
+
+	public GraphQlModelBuilder setHbaseModelAdaptor(HbaseIndexModelAdaptor hbaseModelAdaptor) {
 		this.hbaseModelAdaptor = hbaseModelAdaptor;
+		return this;
+	}
+
+	public GraphQlModelBuilder setLegalAdaptor(LegalAdaptor legalAdaptor) {
+		this.legalAdaptor = legalAdaptor;
 		return this;
 	}
 
@@ -91,13 +105,13 @@ public class GraphQlModelBuilder {
 		return this;
 	}
 
-	public GraphQlModelBuilder setAnalyticsAdaptor(AnalyticsAdaptor analyticsAdaptor) {
-		this.analyticsAdaptor = analyticsAdaptor;
+	public GraphQlModelBuilder setUsageAdaptor(UsageAdaptor usageAdaptor) {
+		this.usageAdaptor = usageAdaptor;
 		return this;
 	}
 
 	public GraphQLSchema build() {
-		final Adaptors adaptors = new Adaptors(hbaseModelAdaptor, renderingAdaptor, analyticsAdaptor);
+		final Adaptors adaptors = new Adaptors(analyticsAdaptor, hbaseModelAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 		final List<GraphQLFieldDefinition> fieldDefinitions = buildFieldDefinitions(adaptors);
 		final GraphQLObjectType query = new GraphQLObjectType("NexusModel", "Model enabling use of all sub-services as one data structure", fieldDefinitions,
 				emptyList());

@@ -5,8 +5,12 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import net.thomas.portfolio.common.services.Parameter;
+import net.thomas.portfolio.common.services.ParameterGroup;
+import net.thomas.portfolio.common.services.PreSerializedParameter;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DataTypeId {
+public class DataTypeId implements ParameterGroup {
 	@JsonIgnore
 	public String type;
 	@JsonIgnore
@@ -34,6 +38,12 @@ public class DataTypeId {
 
 	public String getDti_uid() {
 		return uid;
+	}
+
+	@Override
+	@JsonIgnore
+	public Parameter[] getParameters() {
+		return new Parameter[] { new PreSerializedParameter("dti_type", type), new PreSerializedParameter("dti_uid", uid) };
 	}
 
 	@Override

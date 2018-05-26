@@ -1,5 +1,7 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
+import static java.util.Collections.emptySet;
+
 import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
@@ -7,7 +9,9 @@ import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
+import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 public class IndexableDocumentSearchFetcher extends ModelDataFetcher<InvertedIndexLookupRequest> {
 
@@ -29,7 +33,7 @@ public class IndexableDocumentSearchFetcher extends ModelDataFetcher<InvertedInd
 		final Integer limit = (Integer) arguments.get("limit");
 		final Long after = determineAfter(arguments);
 		final Long before = determineBefore(arguments);
-		return new InvertedIndexLookupRequest(selector.getId(), offset, limit, after, before);
+		return new InvertedIndexLookupRequest(selector.getId(), new LegalInformation(), new Bounds(offset, limit, after, before), emptySet(), emptySet());
 	}
 
 	private Long determineAfter(Map<String, Object> arguments) {

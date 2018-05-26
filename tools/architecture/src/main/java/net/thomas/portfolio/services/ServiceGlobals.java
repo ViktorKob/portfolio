@@ -1,4 +1,4 @@
-package net.thomas.portfolio.entities;
+package net.thomas.portfolio.services;
 
 public class ServiceGlobals {
 	public static final String ANALYTICS_SERVICE_PATH = "/AnalyticsService";

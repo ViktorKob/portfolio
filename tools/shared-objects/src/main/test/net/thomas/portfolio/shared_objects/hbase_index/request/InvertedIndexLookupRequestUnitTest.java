@@ -1,9 +1,10 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import static java.util.Collections.singleton;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -11,20 +12,21 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 public class InvertedIndexLookupRequestUnitTest {
 	private static final DataTypeId ID = new DataTypeId("TYPE", "ABCD");
-	private static final Integer OFFSET = 1;
-	private static final Integer LIMIT = 2;
-	private static final Long AFTER = 3l;
-	private static final Long BEFORE = 4l;
+	private static final LegalInformation LEGAL_INFO = new LegalInformation("JUSTIFICATION", 1l, 2l);
+	private static final Bounds BOUNDS = new Bounds(3, 4, 5l, 6l);
+	private static final Set<String> DOCUMENT_TYPES = singleton("DOCUMENT_TYPE");
+	private static final Set<String> RELATIONS = singleton("RELATION");
 
 	private InvertedIndexLookupRequest lookup;
 	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
-		lookup = new InvertedIndexLookupRequest(ID, OFFSET, LIMIT, AFTER, BEFORE);
+		lookup = new InvertedIndexLookupRequest(ID, LEGAL_INFO, BOUNDS, DOCUMENT_TYPES, RELATIONS);
 		mapper = new ObjectMapper();
 	}
 
@@ -33,29 +35,5 @@ public class InvertedIndexLookupRequestUnitTest {
 		final String serializedForm = mapper.writeValueAsString(lookup);
 		final InvertedIndexLookupRequest deserializedObject = mapper.readValue(serializedForm, InvertedIndexLookupRequest.class);
 		assertEquals(lookup, deserializedObject);
-	}
-
-	@Test
-	public void shouldSerializeAsIil_offset() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(lookup);
-		assertTrue(serializedForm.contains("\"iil_offset\":" + OFFSET));
-	}
-
-	@Test
-	public void shouldSerializeAsIil_limit() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(lookup);
-		assertTrue(serializedForm.contains("\"iil_limit\":" + LIMIT));
-	}
-
-	@Test
-	public void shouldSerializeAsIil_after() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(lookup);
-		assertTrue(serializedForm.contains("\"iil_after\":" + AFTER));
-	}
-
-	@Test
-	public void shouldSerializeAsIil_before() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(lookup);
-		assertTrue(serializedForm.contains("\"iil_before\":" + BEFORE));
 	}
 }
