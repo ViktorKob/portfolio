@@ -1,9 +1,9 @@
 package net.thomas.portfolio.usage_data.service;
 
 import static java.lang.Integer.MAX_VALUE;
+import static net.thomas.portfolio.entities.Service.HBASE_INDEXING_SERVICE;
+import static net.thomas.portfolio.entities.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
-import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
-import static net.thomas.portfolio.globals.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.FETCH_USAGE_ACTIVITY_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -31,6 +31,7 @@ import net.thomas.portfolio.common.services.validation.SpecificStringPresenceVal
 import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
@@ -39,8 +40,8 @@ import net.thomas.portfolio.usage_data.sql.SqlProxy;
 @Controller
 @RequestMapping(USAGE_DATA_SERVICE_PATH)
 public class UsageServiceController {
-	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("type", true);
-	private static final UidValidator UID = new UidValidator("uid", true);
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final UidValidator UID = new UidValidator("dti_uid", true);
 	private static final StringPresenceValidator USERNAME = new StringPresenceValidator("username", true);
 	private static final EnumValueValidator<UsageActivityType> USAGE_ACTIVITY_TYPE = new EnumValueValidator<>("activityType", UsageActivityType.values(), true);
 	private static final IntegerRangeValidator OFFSET = new IntegerRangeValidator("offset", 0, MAX_VALUE, false);
@@ -80,14 +81,14 @@ public class UsageServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(STORE_USAGE_ACTIVITY_PATH)
-	public ResponseEntity<?> storeUsageActivity(String type, String uid, String username, UsageActivityType activityType, Long timeOfActivity) {
-		if (TYPE.isValid(type) && UID.isValid(uid) && USERNAME.isValid(username) && USAGE_ACTIVITY_TYPE.isValid(activityType)
+	public ResponseEntity<?> storeUsageActivity(DataTypeId id, String username, UsageActivityType activityType, Long timeOfActivity) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(username) && USAGE_ACTIVITY_TYPE.isValid(activityType)
 				&& TIME_OF_ACTIVITY.isValid(timeOfActivity)) {
 			if (timeOfActivity == null) {
 				timeOfActivity = System.currentTimeMillis();
 			}
 			try {
-				proxy.storeUsageActivity(uid, type, username, activityType, timeOfActivity);
+				proxy.storeUsageActivity(id, username, activityType, timeOfActivity);
 				return ResponseEntity.ok("Activity stored.");
 			} catch (final Throwable t) {
 				t.printStackTrace();
@@ -95,15 +96,15 @@ public class UsageServiceController {
 					.body("The server was unable to complete the request.");
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid) + "<BR>" + USERNAME.getReason(username) + "<BR>"
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + USERNAME.getReason(username) + "<BR>"
 					+ USAGE_ACTIVITY_TYPE.getReason(activityType) + "<BR>" + TIME_OF_ACTIVITY.getReason(timeOfActivity));
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(FETCH_USAGE_ACTIVITY_PATH)
-	public ResponseEntity<?> fetchUsageActivity(String type, String uid, Integer offset, Integer limit) {
-		if (TYPE.isValid(type) && UID.isValid(uid) && OFFSET.isValid(offset) && LIMIT.isValid(limit)) {
+	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Integer offset, Integer limit) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(offset) && LIMIT.isValid(limit)) {
 			if (offset == null) {
 				offset = 0;
 			}
@@ -111,7 +112,7 @@ public class UsageServiceController {
 				limit = 20;
 			}
 			try {
-				final Collection<UsageActivityItem> activities = proxy.fetchUsageActivities(uid, type, offset, limit);
+				final Collection<UsageActivityItem> activities = proxy.fetchUsageActivities(id, offset, limit);
 				if (activities != null && activities.size() > 0) {
 					return ResponseEntity.ok(activities);
 				} else {
@@ -124,7 +125,8 @@ public class UsageServiceController {
 					.body("The server was unable to complete the request.");
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid) + "<BR>" + OFFSET.getReason(offset) + "<BR>" + LIMIT.getReason(limit));
+			return badRequest()
+				.body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + OFFSET.getReason(offset) + "<BR>" + LIMIT.getReason(limit));
 		}
 	}
 }

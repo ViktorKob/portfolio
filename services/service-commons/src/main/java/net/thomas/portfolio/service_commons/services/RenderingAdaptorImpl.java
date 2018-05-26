@@ -1,9 +1,9 @@
 package net.thomas.portfolio.service_commons.services;
 
+import static net.thomas.portfolio.entities.Service.RENDER_SERVICE;
 import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_HTML;
 import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_SIMPLE_REPRESENTATION;
 import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_TEXT;
-import static net.thomas.portfolio.enums.Service.RENDER_SERVICE;
 
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;

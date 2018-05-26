@@ -1,4 +1,4 @@
-package net.thomas.portfolio.enums;
+package net.thomas.portfolio.entities;
 
 public interface ServiceEndpoint {
 	String getPath();

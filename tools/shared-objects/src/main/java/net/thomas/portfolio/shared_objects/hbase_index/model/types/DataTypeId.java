@@ -17,7 +17,7 @@ public class DataTypeId {
 
 	public DataTypeId(String type, String uid) {
 		this.type = type;
-		this.uid = uid;
+		this.uid = uid.toUpperCase();
 	}
 
 	public void setDti_type(String type) {
@@ -25,7 +25,7 @@ public class DataTypeId {
 	}
 
 	public void setDti_uid(String uid) {
-		this.uid = uid;
+		this.uid = uid.toUpperCase();
 	}
 
 	public String getDti_type() {

@@ -11,7 +11,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
 public interface HbaseModelAdaptor {
 
@@ -38,6 +38,6 @@ public interface HbaseModelAdaptor {
 
 	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
 
-	List<DocumentInfo> invertedIndexLookup(InvertedIndexLookup search, Indexable indexable);
+	List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest search, Indexable indexable);
 
 }

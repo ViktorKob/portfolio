@@ -1,12 +1,12 @@
 package net.thomas.portfolio.service_commons.services;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static net.thomas.portfolio.entities.Service.HBASE_INDEXING_SERVICE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_REFERENCES;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_STATISTICS;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.INVERTED_INDEX_LOOKUP;
-import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,7 +28,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -124,7 +124,7 @@ public class HbaseModelAdaptorImpl implements HbaseModelAdaptor {
 	}
 
 	@Override
-	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookup search, Indexable indexable) {
+	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest search, Indexable indexable) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
 		final DataTypeId id = search.selectorId;

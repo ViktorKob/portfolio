@@ -1,13 +1,13 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.lang.Integer.MAX_VALUE;
+import static net.thomas.portfolio.entities.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_DATA_TYPE_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_REFERENCES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_STATISTICS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -38,16 +38,16 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 @Controller
 @RequestMapping(HBASE_INDEXING_SERVICE_PATH)
 public class HbaseIndexingServiceController {
-	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("type", true);
-	private static final SpecificStringPresenceValidator DOCUMENT_TYPE = new SpecificStringPresenceValidator("type", true);
-	private static final SpecificStringPresenceValidator SELECTOR_TYPE = new SpecificStringPresenceValidator("type", true);
-	private static final UidValidator UID = new UidValidator("uid", true);
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final SpecificStringPresenceValidator DOCUMENT_TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final SpecificStringPresenceValidator SELECTOR_TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final UidValidator UID = new UidValidator("dti_uid", true);
 	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, true);
 
 	private final HbaseIndexingServiceConfiguration config;
@@ -80,9 +80,9 @@ public class HbaseIndexingServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(GET_SAMPLES_PATH)
-	public ResponseEntity<?> getSamples(String type, Integer amount) {
-		if (TYPE.isValid(type) && AMOUNT.isValid(amount)) {
-			final Collection<DataType> samples = index.getSamples(type, amount);
+	public ResponseEntity<?> getSamples(String dti_type, Integer amount) {
+		if (TYPE.isValid(dti_type) && AMOUNT.isValid(amount)) {
+			final Collection<DataType> samples = index.getSamples(dti_type, amount);
 			if (samples != null && samples.size() > 0) {
 				return ResponseEntity.ok(samples);
 			} else {
@@ -90,7 +90,7 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + AMOUNT.getReason(amount));
+			return badRequest().body(TYPE.getReason(dti_type) + "<BR>" + AMOUNT.getReason(amount));
 		}
 	}
 
@@ -112,11 +112,11 @@ public class HbaseIndexingServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(INVERTED_INDEX_LOOKUP_PATH)
-	public ResponseEntity<?> invertedIndexLookup(DataTypeId id) {
-		if (SELECTOR_TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+	public ResponseEntity<?> invertedIndexLookup(InvertedIndexLookupRequest request) {
+		if (SELECTOR_TYPE.isValid(request.selectorId.type) && UID.isValid(request.selectorId.uid)) {
 			final InvertedIndexLookupBuilder builder = new InvertedIndexLookupBuilder(index, lookupExecutor);
-			builder.setIndexables(schema.getIndexables(id.type));
-			builder.setSelector((Selector) index.getDataType(id));
+			builder.setIndexables(schema.getIndexables(request.selectorId.type));
+			builder.setSelectorId(request.selectorId);
 			final InvertedIndexLookup lookup = builder.build();
 			final List<DocumentInfo> results = lookup.execute();
 			if (results != null && results.size() > 0) {
@@ -126,7 +126,7 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(SELECTOR_TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
+			return badRequest().body(SELECTOR_TYPE.getReason(request.selectorId.type) + "<BR>" + UID.getReason(request.selectorId.uid));
 		}
 	}
 
@@ -148,9 +148,9 @@ public class HbaseIndexingServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(GET_STATISTICS_PATH)
-	public ResponseEntity<?> getStatistics(String type, String uid) {
-		if (SELECTOR_TYPE.isValid(type) && UID.isValid(uid)) {
-			final Map<StatisticsPeriod, Long> references = index.getStatistics(uid);
+	public ResponseEntity<?> getStatistics(DataTypeId selectorId) {
+		if (SELECTOR_TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
+			final Map<StatisticsPeriod, Long> references = index.getStatistics(selectorId.uid);
 			if (references != null) {
 				return ResponseEntity.ok(references);
 			} else {
@@ -158,7 +158,7 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(SELECTOR_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(SELECTOR_TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
 	}
 }

@@ -1,0 +1,29 @@
+spring.application.name: legal-service
+
+server.port: 8350
+
+security:
+  user:
+    name: service-user 
+    password: password 
+    roles: USER 
+
+legalService:
+  analytics:
+    name: analytics-service
+    credentials:
+      user: service-user
+      password: password
+  hbaseIndexing:
+    name: hbase-indexing-service
+    credentials:
+      user: service-user
+      password: password
+
+eureka:
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+#      defaultZone: http://ec2-34-209-142-238.us-west-2.compute.amazonaws.com:8000/
+      defaultZone: http://localhost:8000/eureka

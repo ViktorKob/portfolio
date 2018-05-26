@@ -14,24 +14,24 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class InvertedIndexLookup {
 	public static final long MAX_TIMEOUT_IN_SECONDS = 10;
 
 	private final HbaseIndex index;
+	private final DataTypeId selectorId;
 	private final Collection<Indexable> indexables;
-	private final Executor executor;
 	private final int offset;
 	private final int limit;
-	private final Selector selector;
+	private final Executor executor;
 
-	public InvertedIndexLookup(HbaseIndex index, Selector selector, Collection<Indexable> indexables, int offset, int limit, Executor executor) {
+	public InvertedIndexLookup(HbaseIndex index, DataTypeId selectorId, Collection<Indexable> indexables, int offset, int limit, Executor executor) {
 		this.index = index;
-		this.selector = selector;
+		this.selectorId = selectorId;
 		this.indexables = indexables;
 		this.offset = offset;
 		this.limit = limit;
@@ -55,7 +55,7 @@ public class InvertedIndexLookup {
 		final Collection<Collection<Document>> resultSets = synchronizedCollection(new LinkedList<>());
 		for (final Indexable indexable : indexables) {
 			executor.execute(() -> {
-				resultSets.add(index.invertedIndexLookup(selector, indexable));
+				resultSets.add(index.invertedIndexLookup(selectorId, indexable));
 				latch.countDown();
 			});
 		}

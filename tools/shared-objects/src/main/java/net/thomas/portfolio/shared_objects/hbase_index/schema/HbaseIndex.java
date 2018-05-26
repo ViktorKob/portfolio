@@ -10,16 +10,15 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public interface HbaseIndex {
 
 	DataType getDataType(DataTypeId id);
 
-	List<Document> invertedIndexLookup(Selector selector, Indexable indexable);
+	List<Document> invertedIndexLookup(DataTypeId selectorId, Indexable indexable);
 
-	Map<StatisticsPeriod, Long> getStatistics(Selector selector);
+	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
 
-	Collection<Reference> getReferences(Document document);
+	Collection<Reference> getReferences(DataTypeId documentId);
 
 }

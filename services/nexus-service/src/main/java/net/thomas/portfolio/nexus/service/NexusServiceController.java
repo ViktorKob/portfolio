@@ -58,7 +58,7 @@ public class NexusServiceController {
 		schemaBuilder.setAnalyticsAdaptor(new AnalyticsAdaptor() {
 			@Override
 			public PreviousKnowledge getPreviousKnowledgeFor(DataTypeId selectorId) {
-				return new PreviousKnowledge(UNKNOWN, UNKNOWN);
+				return new PreviousKnowledge(null, UNKNOWN, UNKNOWN);
 			}
 		});
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());

@@ -13,7 +13,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
 
 public class Adaptors {
@@ -69,7 +69,7 @@ public class Adaptors {
 		return hbaseModelAdaptor.getReferences(id);
 	}
 
-	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookup search, Indexable indexable) {
+	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest search, Indexable indexable) {
 		return hbaseModelAdaptor.invertedIndexLookup(search, indexable);
 	}
 
