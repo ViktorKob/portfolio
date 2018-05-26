@@ -1,12 +1,12 @@
 package net.thomas.portfolio.render.service;
 
+import static net.thomas.portfolio.entities.Service.HBASE_INDEXING_SERVICE;
+import static net.thomas.portfolio.entities.ServiceGlobals.RENDER_SERVICE_PATH;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_DATA_TYPE;
 import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
-import static net.thomas.portfolio.enums.Service.HBASE_INDEXING_SERVICE;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
-import static net.thomas.portfolio.globals.ServiceGlobals.RENDER_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 
 import java.util.Set;
@@ -34,13 +34,14 @@ import net.thomas.portfolio.render.format.text.HbaseIndexingModelTextRendererLib
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 
 @Controller
 @RequestMapping(RENDER_SERVICE_PATH)
 public class RenderServiceController {
-	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("type", true);
-	private static final UidValidator UID = new UidValidator("uid", true);
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
 	private final RenderServiceConfiguration configuration;
 	private final HbaseIndexingModelSimpleRepresentationRendererLibrary simpleRepRenderer;
@@ -76,9 +77,9 @@ public class RenderServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_SIMPLE_REPRESENTATION_PATH)
-	public ResponseEntity<String> renderAsSimpleRepresentation(String type, String uid) {
-		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType entity = loadFromHbaseIndex(type, uid);
+	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			final DataType entity = loadFromHbaseIndex(id);
 			if (entity != null) {
 				return ResponseEntity.ok(simpleRepRenderer.render(entity, new SimpleRepresentationRenderContextBuilder().setSchema(schema)
 					.build()));
@@ -87,32 +88,32 @@ public class RenderServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_TEXT_PATH)
-	public ResponseEntity<String> renderAsText(String type, String uid) {
-		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType entity = loadFromHbaseIndex(type, uid);
+	public ResponseEntity<String> renderAsText(DataTypeId id) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			final DataType entity = loadFromHbaseIndex(id);
 			if (entity != null) {
 				return ResponseEntity.ok(textRenderer.render(entity, new TextRenderContextBuilder().build()));
 			} else {
-				System.out.println(type + ", " + uid);
+				System.out.println(id.type + ", " + id.uid);
 				return ResponseEntity.notFound()
 					.build();
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(RENDER_AS_HTML_PATH)
-	public ResponseEntity<String> renderAsHtml(String type, String uid) {
-		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType entity = loadFromHbaseIndex(type, uid);
+	public ResponseEntity<String> renderAsHtml(DataTypeId id) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			final DataType entity = loadFromHbaseIndex(id);
 			if (entity != null) {
 				return ResponseEntity.ok(htmlRenderer.render(entity, new HtmlRenderContextBuilder().build()));
 			} else {
@@ -120,12 +121,12 @@ public class RenderServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
-	private DataType loadFromHbaseIndex(String type, String uid) {
-		return hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("type", type),
-				new PreSerializedParameter("uid", uid));
+	private DataType loadFromHbaseIndex(DataTypeId id) {
+		return hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, new PreSerializedParameter("dti_type", id.type),
+				new PreSerializedParameter("dti_uid", id.uid));
 	}
 }

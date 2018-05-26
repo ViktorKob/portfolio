@@ -28,6 +28,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
@@ -72,8 +73,6 @@ public class SqlProxy {
 			statement.execute("USE " + databaseConfig.getSchema());
 			final Path schemaPath = Paths.get("schema", databaseConfig.getSchema() + "_schema.sql");
 			try (final BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(schemaPath, READ)))) {
-				// try (final BufferedReader reader = new BufferedReader(
-				// new InputStreamReader(SqlProxy.class.getResourceAsStream("schema/" + databaseConfig.getSchema() + "_schema.sql")))) {
 				final String sql = reader.lines()
 					.collect(Collectors.joining(" "));
 				for (final String sqlStatement : sql.split(";")) {
@@ -85,7 +84,7 @@ public class SqlProxy {
 		}
 	}
 
-	public void storeUsageActivity(String uid, String type, String username, UsageActivityType accessType, Long timeOfActivity) {
+	public void storeUsageActivity(DataTypeId id, String username, UsageActivityType accessType, Long timeOfActivity) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			create.transaction(configuration -> {
@@ -94,7 +93,7 @@ public class SqlProxy {
 				DSL.using(configuration)
 					.insertInto(USER_ACCESSED_DOCUMENT, USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE, USER_ACCESSED_DOCUMENT.DOCUMENT_UID,
 							USER_ACCESSED_DOCUMENT.USER_ID, USER_ACCESSED_DOCUMENT.ACCESS_TYPE_ID, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
-					.values(type, uid, userId, accessTypeId, new Timestamp(timeOfActivity))
+					.values(id.type, id.uid, userId, accessTypeId, new Timestamp(timeOfActivity))
 					.execute();
 			});
 		} catch (final SQLException e) {
@@ -132,7 +131,7 @@ public class SqlProxy {
 			.get(ACCESS_TYPE.ID);
 	}
 
-	public List<UsageActivityItem> fetchUsageActivities(String uid, String type, int offset, int limit) {
+	public List<UsageActivityItem> fetchUsageActivities(DataTypeId id, int offset, int limit) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			final Result<Record3<String, String, Timestamp>> result = create.select(USER.NAME, ACCESS_TYPE.NAME, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
@@ -141,8 +140,8 @@ public class SqlProxy {
 				.on(USER_ACCESSED_DOCUMENT.USER_ID.eq(USER.ID))
 				.join(ACCESS_TYPE)
 				.on(USER_ACCESSED_DOCUMENT.ACCESS_TYPE_ID.eq(ACCESS_TYPE.ID))
-				.where(USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE.eq(type))
-				.and(USER_ACCESSED_DOCUMENT.DOCUMENT_UID.eq(uid))
+				.where(USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE.eq(id.type))
+				.and(USER_ACCESSED_DOCUMENT.DOCUMENT_UID.eq(id.uid))
 				.offset(offset)
 				.limit(limit)
 				.fetch();

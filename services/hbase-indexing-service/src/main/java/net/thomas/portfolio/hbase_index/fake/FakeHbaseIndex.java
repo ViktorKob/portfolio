@@ -2,7 +2,6 @@ package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
 import static java.util.Collections.emptyList;
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.UNKNOWN;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,14 +16,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
 
-import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
@@ -32,7 +29,6 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	private Map<String, Map<StatisticsPeriod, Long>> selectorStatistics;
 	private Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex;
 	private Map<String, Collection<Reference>> sourceReferences;
-	private Map<String, PreviousKnowledge> previousKnowledge;
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
@@ -107,8 +103,8 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	@Override
-	public List<Document> invertedIndexLookup(Selector selector, Indexable indexable) {
-		final String uid = selector.getId().uid;
+	public List<Document> invertedIndexLookup(DataTypeId selectorId, Indexable indexable) {
+		final String uid = selectorId.uid;
 		if (invertedIndex.containsKey(uid)) {
 			final Map<String, SortedMap<Long, Document>> entityData = invertedIndex.get(uid);
 			if (entityData.containsKey(indexable.path)) {
@@ -120,40 +116,20 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	@Override
-	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
-		return selectorStatistics.get(selector.getId().uid);
+	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
+		return selectorStatistics.get(selectorId.uid);
 	}
 
 	public Map<StatisticsPeriod, Long> getStatistics(String uid) {
 		return selectorStatistics.get(uid);
 	}
 
-	public void setPreviousKnowledge(Map<String, PreviousKnowledge> previousKnowledge) {
-		this.previousKnowledge = previousKnowledge;
-	}
-
 	@Override
-	public Collection<Reference> getReferences(Document document) {
-		if (sourceReferences.containsKey(document.getId().uid)) {
-			return sourceReferences.get(document.getId().uid);
-		}
-		return emptyList();
-	}
-
 	public Collection<Reference> getReferences(DataTypeId documentId) {
 		if (sourceReferences.containsKey(documentId.uid)) {
 			return sourceReferences.get(documentId.uid);
 		}
 		return emptyList();
-	}
-
-	public PreviousKnowledge lookupPreviousKnowledgeFor(DataType selector) {
-		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getId().uid);
-		if (knowledge == null) {
-			return new PreviousKnowledge(UNKNOWN, UNKNOWN);
-		} else {
-			return knowledge;
-		}
 	}
 
 	public Collection<DataType> getSamples(String type, int amount) {

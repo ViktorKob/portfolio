@@ -9,7 +9,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InvertedIndexLookup {
+public class InvertedIndexLookupRequest {
 	@JsonIgnore
 	public DataTypeId selectorId;
 	@JsonIgnore
@@ -23,10 +23,10 @@ public class InvertedIndexLookup {
 	@JsonIgnore
 	public Long before;
 
-	public InvertedIndexLookup() {
+	public InvertedIndexLookupRequest() {
 	}
 
-	public InvertedIndexLookup(DataTypeId selectorId, Integer offset, Integer limit, Long after, Long before) {
+	public InvertedIndexLookupRequest(DataTypeId selectorId, Integer offset, Integer limit, Long after, Long before) {
 		this.selectorId = selectorId;
 		this.offset = offset;
 		this.limit = limit;
@@ -76,8 +76,8 @@ public class InvertedIndexLookup {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof InvertedIndexLookup) {
-			final InvertedIndexLookup other = (InvertedIndexLookup) obj;
+		if (obj instanceof InvertedIndexLookupRequest) {
+			final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
 			return selectorId.equals(other.selectorId) && offset == other.offset && limit == other.limit && after == other.after && before == other.before;
 		}
 		return false;

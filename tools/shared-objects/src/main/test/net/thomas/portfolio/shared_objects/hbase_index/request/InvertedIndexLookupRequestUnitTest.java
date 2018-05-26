@@ -12,26 +12,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-public class InvertedIndexLookupUnitTest {
+public class InvertedIndexLookupRequestUnitTest {
 	private static final DataTypeId ID = new DataTypeId("TYPE", "ABCD");
 	private static final Integer OFFSET = 1;
 	private static final Integer LIMIT = 2;
 	private static final Long AFTER = 3l;
 	private static final Long BEFORE = 4l;
 
-	private InvertedIndexLookup lookup;
+	private InvertedIndexLookupRequest lookup;
 	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
-		lookup = new InvertedIndexLookup(ID, OFFSET, LIMIT, AFTER, BEFORE);
+		lookup = new InvertedIndexLookupRequest(ID, OFFSET, LIMIT, AFTER, BEFORE);
 		mapper = new ObjectMapper();
 	}
 
 	@Test
 	public void shouldSerializeAndDeserialize() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(lookup);
-		final InvertedIndexLookup deserializedObject = mapper.readValue(serializedForm, InvertedIndexLookup.class);
+		final InvertedIndexLookupRequest deserializedObject = mapper.readValue(serializedForm, InvertedIndexLookupRequest.class);
 		assertEquals(lookup, deserializedObject);
 	}
 

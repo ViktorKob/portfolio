@@ -4,6 +4,8 @@ import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_P
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
 
+import net.thomas.portfolio.entities.ServiceEndpoint;
+
 public enum RenderServiceEndpoint implements ServiceEndpoint {
 	RENDER_AS_SIMPLE_REPRESENTATION(RENDER_AS_SIMPLE_REPRESENTATION_PATH), RENDER_AS_TEXT(RENDER_AS_TEXT_PATH), RENDER_AS_HTML(RENDER_AS_HTML_PATH);
 	private final String path;

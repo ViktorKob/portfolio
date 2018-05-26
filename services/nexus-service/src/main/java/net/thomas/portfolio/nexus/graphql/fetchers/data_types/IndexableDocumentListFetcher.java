@@ -11,7 +11,7 @@ import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookup;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 public class IndexableDocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
@@ -25,7 +25,7 @@ public class IndexableDocumentListFetcher extends ModelDataFetcher<List<Document
 
 	@Override
 	public List<DocumentInfo> _get(DataFetchingEnvironment environment) {
-		final InvertedIndexLookup search = environment.getSource();
+		final InvertedIndexLookupRequest search = environment.getSource();
 		if (isDanish(search.selectorId) && justificationIsMissing(search.legalInfo)) {
 			return emptyList();
 		} else {

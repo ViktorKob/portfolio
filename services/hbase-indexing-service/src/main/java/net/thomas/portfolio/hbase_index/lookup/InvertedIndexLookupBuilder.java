@@ -4,13 +4,13 @@ import java.util.Collection;
 import java.util.concurrent.Executor;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class InvertedIndexLookupBuilder {
 	private final HbaseIndex index;
 	private final Executor executor;
-	private Selector selector;
+	private DataTypeId selectorId;
 	private Collection<Indexable> indexables;
 	private int offset;
 	private int limit;
@@ -23,8 +23,8 @@ public class InvertedIndexLookupBuilder {
 		this.executor = executor;
 	}
 
-	public InvertedIndexLookupBuilder setSelector(Selector selector) {
-		this.selector = selector;
+	public InvertedIndexLookupBuilder setSelectorId(DataTypeId selectorId) {
+		this.selectorId = selectorId;
 		return this;
 	}
 
@@ -46,9 +46,9 @@ public class InvertedIndexLookupBuilder {
 	public InvertedIndexLookup build() {
 		if (indexables == null || indexables.isEmpty()) {
 			throw new RuntimeException("Indexable(s) must be specified");
-		} else if (selector == null) {
+		} else if (selectorId == null) {
 			throw new RuntimeException("Selector must be specified");
 		}
-		return new InvertedIndexLookup(index, selector, indexables, offset, limit, executor);
+		return new InvertedIndexLookup(index, selectorId, indexables, offset, limit, executor);
 	}
 }

@@ -2,35 +2,59 @@ package net.thomas.portfolio.shared_objects.analytics;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PreviousKnowledge {
+	@JsonIgnore
+	public String alias;
+	@JsonIgnore
 	public RecognitionLevel recognition;
+	@JsonIgnore
 	public RecognitionLevel isDanish;
 
 	public PreviousKnowledge() {
 	}
 
-	public PreviousKnowledge(RecognitionLevel recognition, RecognitionLevel isDanish) {
+	public PreviousKnowledge(String alias, RecognitionLevel recognition, RecognitionLevel isDanish) {
+		this.alias = alias;
 		this.recognition = recognition;
 		this.isDanish = isDanish;
 	}
 
-	public RecognitionLevel getRecognition() {
+	public String getPk_alias() {
+		return alias;
+	}
+
+	public void setPk_alias(String alias) {
+		this.alias = alias;
+	}
+
+	public RecognitionLevel getPk_recognition() {
 		return recognition;
 	}
 
-	public void setRecognition(RecognitionLevel recognition) {
+	public void setPk_recognition(RecognitionLevel recognition) {
 		this.recognition = recognition;
 	}
 
-	public RecognitionLevel getIsDanish() {
+	public RecognitionLevel getPk_isDanish() {
 		return isDanish;
 	}
 
-	public void setIsDanish(RecognitionLevel isDanish) {
+	public void setPk_isDanish(RecognitionLevel isDanish) {
 		this.isDanish = isDanish;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PreviousKnowledge) {
+			final PreviousKnowledge other = (PreviousKnowledge) obj;
+			return alias.equals(other.alias) && recognition == other.recognition && isDanish == other.isDanish;
+		} else {
+			return super.equals(obj);
+		}
 	}
 
 	@Override

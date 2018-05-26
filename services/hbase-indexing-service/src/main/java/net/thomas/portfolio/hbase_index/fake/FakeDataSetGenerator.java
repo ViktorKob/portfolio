@@ -20,7 +20,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.documents.PreviousKnowledgeGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.SmsGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.VoiceGenerator;
@@ -28,7 +27,6 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.DomainGenerato
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.EmailAddressGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NumberGenerator;
-import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
@@ -90,7 +88,6 @@ public class FakeDataSetGenerator {
 		storage.setInvertedIndex(generateInvertedIndex());
 		storage.setSelectorStatistics(generateSelectorStatistics());
 		storage.setReferences(generateSourceReferences());
-		storage.setPreviousKnowledge(generatePreviousKnowledge());
 	}
 
 	private void generateLocalnames() {
@@ -330,19 +327,6 @@ public class FakeDataSetGenerator {
 			}
 		}
 		return allReferences;
-	}
-
-	private Map<String, PreviousKnowledge> generatePreviousKnowledge() {
-		final Random random = new Random(randomSeed++);
-		final PreviousKnowledgeGenerator generator = new PreviousKnowledgeGenerator(random.nextLong());
-		final Map<String, PreviousKnowledge> allPreviousKnowledge = new HashMap<>();
-		for (final DataType entity : storage) {
-			if (schema.getSimpleRepresentableTypes()
-				.contains(entity.getId().type)) {
-				allPreviousKnowledge.put(entity.getId().uid, generator.generate());
-			}
-		}
-		return allPreviousKnowledge;
 	}
 
 	public FakeHbaseIndex getSampleDataSet() {

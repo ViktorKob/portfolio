@@ -22,8 +22,8 @@ import com.netflix.discovery.EurekaClient;
 import net.thomas.portfolio.common.services.Credentials;
 import net.thomas.portfolio.common.services.Parameter;
 import net.thomas.portfolio.common.services.ServiceDependency;
-import net.thomas.portfolio.enums.Service;
-import net.thomas.portfolio.enums.ServiceEndpoint;
+import net.thomas.portfolio.entities.Service;
+import net.thomas.portfolio.entities.ServiceEndpoint;
 
 public class HttpRestClient {
 	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 60;

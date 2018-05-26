@@ -20,6 +20,8 @@
 		<module>hbase-indexing-service</module>
 		<module>usage-data-service</module>
 		<module>render-service</module>
+		<module>legal-service</module>
+		<module>analytics-service</module>
 		<module>nexus-service</module>
 		<module>sample-service</module>
 	</modules>
