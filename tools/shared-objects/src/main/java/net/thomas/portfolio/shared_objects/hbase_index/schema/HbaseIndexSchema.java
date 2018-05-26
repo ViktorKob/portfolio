@@ -2,10 +2,13 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
 import java.util.Collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public interface HbaseIndexSchema {
 
 	Collection<String> getDataTypes();

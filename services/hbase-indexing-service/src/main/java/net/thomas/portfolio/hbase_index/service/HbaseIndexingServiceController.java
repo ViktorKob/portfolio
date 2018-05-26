@@ -36,6 +36,7 @@ import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
@@ -95,9 +96,9 @@ public class HbaseIndexingServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(GET_DATA_TYPE_PATH)
-	public ResponseEntity<?> getDatatype(String type, String uid) {
-		if (TYPE.isValid(type) && UID.isValid(uid)) {
-			final DataType entity = index.getDataType(type, uid);
+	public ResponseEntity<?> getDatatype(DataTypeId id) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			final DataType entity = index.getDataType(id);
 			if (entity != null) {
 				return ResponseEntity.ok(entity);
 			} else {
@@ -105,17 +106,17 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(INVERTED_INDEX_LOOKUP_PATH)
-	public ResponseEntity<?> invertedIndexLookup(String type, String uid) {
-		if (SELECTOR_TYPE.isValid(type) && UID.isValid(uid)) {
+	public ResponseEntity<?> invertedIndexLookup(DataTypeId id) {
+		if (SELECTOR_TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final InvertedIndexLookupBuilder builder = new InvertedIndexLookupBuilder(index, lookupExecutor);
-			builder.setIndexables(schema.getIndexables(type));
-			builder.setSelector((Selector) index.getDataType(type, uid));
+			builder.setIndexables(schema.getIndexables(id.type));
+			builder.setSelector((Selector) index.getDataType(id));
 			final InvertedIndexLookup lookup = builder.build();
 			final List<DocumentInfo> results = lookup.execute();
 			if (results != null && results.size() > 0) {
@@ -125,15 +126,15 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(SELECTOR_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(SELECTOR_TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(GET_REFERENCES_PATH)
-	public ResponseEntity<?> getReferences(String type, String uid) {
-		if (DOCUMENT_TYPE.isValid(type) && UID.isValid(uid)) {
-			final Collection<Reference> references = index.getReferences(uid);
+	public ResponseEntity<?> getReferences(DataTypeId documentId) {
+		if (DOCUMENT_TYPE.isValid(documentId.type) && UID.isValid(documentId.uid)) {
+			final Collection<Reference> references = index.getReferences(documentId);
 			if (references != null && references.size() > 0) {
 				return ResponseEntity.ok(references);
 			} else {
@@ -141,7 +142,7 @@ public class HbaseIndexingServiceController {
 					.build();
 			}
 		} else {
-			return badRequest().body(DOCUMENT_TYPE.getReason(type) + "<BR>" + UID.getReason(uid));
+			return badRequest().body(DOCUMENT_TYPE.getReason(documentId.type) + "<BR>" + UID.getReason(documentId.uid));
 		}
 	}
 

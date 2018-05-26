@@ -3,7 +3,7 @@ package net.thomas.portfolio.hbase_index.fake.generators.documents;
 import java.util.Random;
 
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.RecognitionLevelGenerator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 
 public class PreviousKnowledgeGenerator {
 	private final Random random;

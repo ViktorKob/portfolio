@@ -1,17 +1,17 @@
-package net.thomas.portfolio.shared_objects.documents;
+package net.thomas.portfolio.shared_objects.serialization_experiment.document_summaries;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(AtypeDocument.class), @Type(BtypeDocument.class) })
-public abstract class Document {
+@JsonSubTypes({ @Type(AtypeDocumentSummary.class), @Type(BtypeDocumentSummary.class) })
+public abstract class DocumentSummary {
 
 	private long timeOfCreation;
 	private String headline;
 
-	public Document() {}
+	public DocumentSummary() {}
 
 	public long getTimeOfCreation() {
 		return timeOfCreation;

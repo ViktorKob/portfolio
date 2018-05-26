@@ -27,14 +27,11 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 
 	@Override
 	public String render(DataType element, SimpleRepresentationRenderContext context) {
-		if (renderers.containsKey(element.getId()
-			.getType())) {
-			return renderers.get(element.getId()
-				.getType())
+		if (renderers.containsKey(element.getId().type)) {
+			return renderers.get(element.getId().type)
 				.render(element, context);
 		} else {
-			return "<Unable to render element of type " + element.getId()
-				.getType() + ">";
+			return "<Unable to render element of type " + element.getId().type + ">";
 		}
 	}
 

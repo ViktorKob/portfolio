@@ -1,12 +1,12 @@
-package net.thomas.portfolio.shared_objects.document_summaries;
+package net.thomas.portfolio.shared_objects.serialization_experiment.documents;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BtypeDocumentSummary extends DocumentSummary {
+public class BtypeDocument extends Document {
 	private String btypeDocumentExtraField;
 
-	public BtypeDocumentSummary() {}
+	public BtypeDocument() {}
 
 	public String getBtypeDocumentExtraField() {
 		return btypeDocumentExtraField;

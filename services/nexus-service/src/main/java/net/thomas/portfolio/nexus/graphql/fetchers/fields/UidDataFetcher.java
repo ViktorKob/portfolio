@@ -16,11 +16,9 @@ public class UidDataFetcher extends ModelDataFetcher<Object> {
 	public Object _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
-			return ((DataType) entity).getId()
-				.getUid();
+			return ((DataType) entity).getId().uid;
 		} else if (entity instanceof DocumentInfo) {
-			return ((DocumentInfo) entity).getId()
-				.getUid();
+			return ((DocumentInfo) entity).getId().uid;
 		}
 		throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 			.getSimpleName());

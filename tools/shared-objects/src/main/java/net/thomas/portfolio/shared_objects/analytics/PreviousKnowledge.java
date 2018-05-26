@@ -1,7 +1,10 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
+package net.thomas.portfolio.shared_objects.analytics;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PreviousKnowledge {
 	public RecognitionLevel recognition;
 	public RecognitionLevel isDanish;

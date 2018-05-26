@@ -28,11 +28,11 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.DomainGenerato
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.EmailAddressGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NumberGenerator;
+import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
@@ -136,22 +136,18 @@ public class FakeDataSetGenerator {
 		emails = generateSamples(2000, generator);
 		for (final DataType sms : emails.values()) {
 			final DataType sender = (DataType) sms.get("from");
-			emailEndpoints.put(sender.getId()
-				.getUid(), sender);
+			emailEndpoints.put(sender.getId().uid, sender);
 			final List<DataType> toReceivers = (List<DataType>) sms.get("to");
 			for (final DataType receiver : toReceivers) {
-				emailEndpoints.put(receiver.getId()
-					.getUid(), receiver);
+				emailEndpoints.put(receiver.getId().uid, receiver);
 			}
 			final List<DataType> ccReceivers = (List<DataType>) sms.get("cc");
 			for (final DataType receiver : ccReceivers) {
-				emailEndpoints.put(receiver.getId()
-					.getUid(), receiver);
+				emailEndpoints.put(receiver.getId().uid, receiver);
 			}
 			final List<DataType> bccReceivers = (List<DataType>) sms.get("bcc");
 			for (final DataType receiver : bccReceivers) {
-				emailEndpoints.put(receiver.getId()
-					.getUid(), receiver);
+				emailEndpoints.put(receiver.getId().uid, receiver);
 			}
 		}
 	}
@@ -161,11 +157,9 @@ public class FakeDataSetGenerator {
 		smss = generateSamples(2000, generator);
 		for (final DataType sms : smss.values()) {
 			final DataType sender = (DataType) sms.get("sender");
-			pstnEndpoints.put(sender.getId()
-				.getUid(), sender);
+			pstnEndpoints.put(sender.getId().uid, sender);
 			final DataType receiver = (DataType) sms.get("receiver");
-			pstnEndpoints.put(receiver.getId()
-				.getUid(), receiver);
+			pstnEndpoints.put(receiver.getId().uid, receiver);
 		}
 	}
 
@@ -174,11 +168,9 @@ public class FakeDataSetGenerator {
 		voiceData = generateSamples(2000, generator);
 		for (final DataType voice : voiceData.values()) {
 			final DataType caller = (DataType) voice.get("caller");
-			pstnEndpoints.put(caller.getId()
-				.getUid(), caller);
+			pstnEndpoints.put(caller.getId().uid, caller);
 			final DataType called = (DataType) voice.get("called");
-			pstnEndpoints.put(called.getId()
-				.getUid(), called);
+			pstnEndpoints.put(called.getId().uid, called);
 		}
 	}
 
@@ -192,8 +184,7 @@ public class FakeDataSetGenerator {
 		final Map<String, DataType> values = new HashMap<>();
 		for (final DataType sample : generator) {
 			storage.addDataType(sample);
-			values.put(sample.getId()
-				.getUid(), sample);
+			values.put(sample.getId().uid, sample);
 			if (values.size() == sampleCount) {
 				break;
 			}
@@ -205,11 +196,9 @@ public class FakeDataSetGenerator {
 		final InvertedIndexBuilder builder = new InvertedIndexBuilder();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId()
-					.getType())) {
+				.contains(entity.getId().type)) {
 				final Document document = (Document) entity;
-				for (final Indexable indexable : schema.getIndexables(document.getId()
-					.getType())) {
+				for (final Indexable indexable : schema.getIndexables(document.getId().type)) {
 					if (schema.getFieldForIndexable(indexable)
 						.isArray()) {
 						builder.addSelectorListSubtreeIndex((List<?>) document.get(indexable.documentField), indexable, document);
@@ -239,8 +228,7 @@ public class FakeDataSetGenerator {
 		public InvertedIndexBuilder addSelectorSubtreeIndex(DataType selectorTree, Indexable indexable, Document document) {
 			final Map<String, DataType> selectors = grabSelectorsFromSubtree(selectorTree);
 			for (final DataType selector : selectors.values()) {
-				final String uid = selector.getId()
-					.getUid();
+				final String uid = selector.getId().uid;
 				if (!invertedIndex.containsKey(uid)) {
 					invertedIndex.put(uid, new HashMap<>());
 				}
@@ -269,13 +257,11 @@ public class FakeDataSetGenerator {
 		final Map<String, Map<StatisticsPeriod, Long>> allSelectorTotalCounts = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId()
-					.getType())) {
+				.contains(entity.getId().type)) {
 				final Document document = (Document) entity;
 				final Map<String, DataType> selectors = grabSelectorsFromSubtree(entity);
 				for (final DataType selector : selectors.values()) {
-					final String uid = selector.getId()
-						.getUid();
+					final String uid = selector.getId().uid;
 					if (!allSelectorTotalCounts.containsKey(uid)) {
 						allSelectorTotalCounts.put(uid, blankSelectorStatistics());
 					}
@@ -308,13 +294,10 @@ public class FakeDataSetGenerator {
 		if (entity != null) {
 			final Map<String, DataType> selectors = new HashMap<>();
 			if (schema.getSelectorTypes()
-				.contains(entity.getId()
-					.getType())) {
-				selectors.put(entity.getId()
-					.getUid(), entity);
+				.contains(entity.getId().type)) {
+				selectors.put(entity.getId().uid, entity);
 			}
-			for (final Field field : schema.getFieldsForDataType(entity.getId()
-				.getType())) {
+			for (final Field field : schema.getFieldsForDataType(entity.getId().type)) {
 				if (field instanceof ReferenceField) {
 					if (field.isArray()) {
 						for (final Object dataType : (List<?>) entity.get(field.getName())) {
@@ -337,15 +320,13 @@ public class FakeDataSetGenerator {
 		final Map<String, Collection<Reference>> allReferences = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId()
-					.getType())) {
+				.contains(entity.getId().type)) {
 				final Collection<Reference> references = new LinkedList<>();
 				final int referenceCount = random.nextInt(3) + 1;
 				while (references.size() < referenceCount) {
 					references.add(generator.generate());
 				}
-				allReferences.put(entity.getId()
-					.getUid(), references);
+				allReferences.put(entity.getId().uid, references);
 			}
 		}
 		return allReferences;
@@ -357,10 +338,8 @@ public class FakeDataSetGenerator {
 		final Map<String, PreviousKnowledge> allPreviousKnowledge = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getSimpleRepresentableTypes()
-				.contains(entity.getId()
-					.getType())) {
-				allPreviousKnowledge.put(entity.getId()
-					.getUid(), generator.generate());
+				.contains(entity.getId().type)) {
+				allPreviousKnowledge.put(entity.getId().uid, generator.generate());
 			}
 		}
 		return allPreviousKnowledge;

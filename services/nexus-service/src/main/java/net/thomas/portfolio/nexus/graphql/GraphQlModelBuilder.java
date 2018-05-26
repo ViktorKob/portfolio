@@ -65,12 +65,12 @@ import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseModelAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
+import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
 
 public class GraphQlModelBuilder {

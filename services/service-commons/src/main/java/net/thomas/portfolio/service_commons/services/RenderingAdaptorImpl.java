@@ -19,19 +19,19 @@ public class RenderingAdaptorImpl implements RenderingAdaptor {
 
 	@Override
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_SIMPLE_REPRESENTATION, String.class, new PreSerializedParameter("type", selectorId.getType()),
-				new PreSerializedParameter("uid", selectorId.getUid()));
+		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_SIMPLE_REPRESENTATION, String.class, new PreSerializedParameter("type", selectorId.type),
+				new PreSerializedParameter("uid", selectorId.uid));
 	}
 
 	@Override
 	public String renderAsText(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_TEXT, String.class, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
+		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_TEXT, String.class, new PreSerializedParameter("type", id.type),
+				new PreSerializedParameter("uid", id.uid));
 	}
 
 	@Override
 	public String renderAsHtml(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_HTML, String.class, new PreSerializedParameter("type", id.getType()),
-				new PreSerializedParameter("uid", id.getUid()));
+		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_HTML, String.class, new PreSerializedParameter("type", id.type),
+				new PreSerializedParameter("uid", id.uid));
 	}
 }

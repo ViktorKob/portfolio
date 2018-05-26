@@ -2,11 +2,10 @@ package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
 import static java.util.Collections.emptyList;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.RecognitionLevel.UNKNOWN;
+import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.UNKNOWN;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,11 +17,12 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Stack;
 
+import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.PreviousKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
@@ -39,15 +39,11 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	public void addDataType(DataType sample) {
-		if (!storage.containsKey(sample.getId()
-			.getType())) {
-			storage.put(sample.getId()
-				.getType(), new HashMap<>());
+		if (!storage.containsKey(sample.getId().type)) {
+			storage.put(sample.getId().type, new HashMap<>());
 		}
-		storage.get(sample.getId()
-			.getType())
-			.put(sample.getId()
-				.getUid(), sample);
+		storage.get(sample.getId().type)
+			.put(sample.getId().uid, sample);
 	}
 
 	public void setSelectorStatistics(Map<String, Map<StatisticsPeriod, Long>> selectorStatistics) {
@@ -100,12 +96,11 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	@Override
-	public DataType getDataType(String type, String uid) {
-		if (storage.containsKey(type)) {
-			if (storage.get(type)
-				.containsKey(uid)) {
-				return storage.get(type)
-					.get(uid);
+	public DataType getDataType(DataTypeId id) {
+		if (storage.containsKey(id.type)) {
+			final Map<String, DataType> typeStorage = storage.get(id.type);
+			if (typeStorage.containsKey(id.uid)) {
+				return typeStorage.get(id.uid);
 			}
 		}
 		return null;
@@ -113,23 +108,20 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	@Override
 	public List<Document> invertedIndexLookup(Selector selector, Indexable indexable) {
-		final String uid = selector.getId()
-			.getUid();
+		final String uid = selector.getId().uid;
 		if (invertedIndex.containsKey(uid)) {
-			if (invertedIndex.get(uid)
-				.containsKey(indexable.path)) {
-				return new LinkedList<>(invertedIndex.get(uid)
-					.get(indexable.path)
+			final Map<String, SortedMap<Long, Document>> entityData = invertedIndex.get(uid);
+			if (entityData.containsKey(indexable.path)) {
+				return new LinkedList<>(entityData.get(indexable.path)
 					.values());
 			}
 		}
-		return Collections.<Document>emptyList();
+		return emptyList();
 	}
 
 	@Override
 	public Map<StatisticsPeriod, Long> getStatistics(Selector selector) {
-		return selectorStatistics.get(selector.getId()
-			.getUid());
+		return selectorStatistics.get(selector.getId().uid);
 	}
 
 	public Map<StatisticsPeriod, Long> getStatistics(String uid) {
@@ -142,24 +134,21 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	@Override
 	public Collection<Reference> getReferences(Document document) {
-		if (sourceReferences.containsKey(document.getId()
-			.getUid())) {
-			return sourceReferences.get(document.getId()
-				.getUid());
+		if (sourceReferences.containsKey(document.getId().uid)) {
+			return sourceReferences.get(document.getId().uid);
 		}
 		return emptyList();
 	}
 
-	public Collection<Reference> getReferences(String uid) {
-		if (sourceReferences.containsKey(uid)) {
-			return sourceReferences.get(uid);
+	public Collection<Reference> getReferences(DataTypeId documentId) {
+		if (sourceReferences.containsKey(documentId.uid)) {
+			return sourceReferences.get(documentId.uid);
 		}
 		return emptyList();
 	}
 
 	public PreviousKnowledge lookupPreviousKnowledgeFor(DataType selector) {
-		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getId()
-			.getUid());
+		final PreviousKnowledge knowledge = previousKnowledge.get(selector.getId().uid);
 		if (knowledge == null) {
 			return new PreviousKnowledge(UNKNOWN, UNKNOWN);
 		} else {

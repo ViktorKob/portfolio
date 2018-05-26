@@ -4,11 +4,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeDeserializer;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = Selector.class, using = DataTypeDeserializer.class)
 public class Selector extends DataType {
 

@@ -5,12 +5,14 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	// TODO[Thomas]: These must also be serialized to be truly model agnostic
@@ -108,7 +110,6 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@JsonIgnore
 	public String calculateUid(String type, String simpleRep) {
 		return simpleRepParsers.parse(type, simpleRep)
-			.getId()
-			.getUid();
+			.getId().uid;
 	}
 }

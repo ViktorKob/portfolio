@@ -2,6 +2,9 @@ package net.thomas.portfolio.shared_objects.usage_data;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UsageActivityItem {
 	private String username;
 	private UsageActivityType type;
