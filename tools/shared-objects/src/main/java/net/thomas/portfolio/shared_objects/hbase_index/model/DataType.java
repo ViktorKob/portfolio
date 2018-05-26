@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -68,7 +70,12 @@ public class DataType {
 
 	@JsonIgnore
 	public String getInRawForm() {
-		return toString();
+		try {
+			return new ObjectMapper().writeValueAsString(this);
+		} catch (final JsonProcessingException e) {
+			e.printStackTrace();
+			return "Unable to fetch data";
+		}
 	}
 
 	@Override
