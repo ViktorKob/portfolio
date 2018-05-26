@@ -13,7 +13,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
-public interface HbaseModelAdaptor {
+public interface HbaseIndexModelAdaptor {
 
 	/*** Schema ***/
 	boolean isSimpleRepresentable(String type);
@@ -38,6 +38,6 @@ public interface HbaseModelAdaptor {
 
 	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
 
-	List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest search, Indexable indexable);
+	List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest request);
 
 }

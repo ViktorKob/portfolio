@@ -1,84 +1,80 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import java.util.Set;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InvertedIndexLookupRequest {
-	@JsonIgnore
 	public DataTypeId selectorId;
-	@JsonIgnore
 	public LegalInformation legalInfo;
-	@JsonIgnore
-	public Integer offset;
-	@JsonIgnore
-	public Integer limit;
-	@JsonIgnore
-	public Long after;
-	@JsonIgnore
-	public Long before;
+	public Bounds bounds;
+	public Set<String> documentTypes;
+	public Set<String> relations;
 
 	public InvertedIndexLookupRequest() {
 	}
 
-	public InvertedIndexLookupRequest(DataTypeId selectorId, Integer offset, Integer limit, Long after, Long before) {
+	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
 		this.selectorId = selectorId;
-		this.offset = offset;
-		this.limit = limit;
-		this.after = after;
-		this.before = before;
+		this.legalInfo = legalInfo;
+		this.bounds = bounds;
+		this.documentTypes = documentTypes;
+		this.relations = relations;
 	}
 
-	public DataTypeId getIil_Id() {
+	public DataTypeId getSelectorId() {
 		return selectorId;
 	}
 
-	public void setIil_Id(DataTypeId selectorId) {
+	public void setSelectorId(DataTypeId selectorId) {
 		this.selectorId = selectorId;
 	}
 
-	public Integer getIil_offset() {
-		return offset;
+	public LegalInformation getLegalInfo() {
+		return legalInfo;
 	}
 
-	public void setIil_offset(Integer offset) {
-		this.offset = offset;
+	public void setLegalInfo(LegalInformation legalInfo) {
+		this.legalInfo = legalInfo;
 	}
 
-	public Integer getIil_limit() {
-		return limit;
+	public Bounds getBounds() {
+		return bounds;
 	}
 
-	public void setIil_limit(Integer limit) {
-		this.limit = limit;
+	public void setBounds(Bounds bounds) {
+		this.bounds = bounds;
 	}
 
-	public Long getIil_after() {
-		return after;
+	public Set<String> getDocumentTypes() {
+		return documentTypes;
 	}
 
-	public void setIil_after(Long after) {
-		this.after = after;
+	public void setDocumentTypes(Set<String> documentTypes) {
+		this.documentTypes = documentTypes;
 	}
 
-	public Long getIil_before() {
-		return before;
+	public Set<String> getRelations() {
+		return relations;
 	}
 
-	public void setIil_before(Long before) {
-		this.before = before;
+	public void setRelations(Set<String> relations) {
+		this.relations = relations;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof InvertedIndexLookupRequest) {
 			final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
-			return selectorId.equals(other.selectorId) && offset == other.offset && limit == other.limit && after == other.after && before == other.before;
+			return selectorId.equals(other.selectorId) && legalInfo.equals(other.legalInfo) && bounds.equals(other.bounds)
+					&& documentTypes.equals(other.documentTypes) && relations.equals(other.relations);
 		}
 		return false;
 	}
@@ -86,5 +82,10 @@ public class InvertedIndexLookupRequest {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
+	}
+
+	public ParameterGroup[] getGroups() {
+		return new ParameterGroup[] { selectorId, legalInfo, bounds, new ParameterGroup.CollectionParameterGroup("documentType", documentTypes),
+				new ParameterGroup.CollectionParameterGroup("relation", relations) };
 	}
 }

@@ -1,5 +1,6 @@
 package net.thomas.portfolio.hbase_index.lookup;
 
+import static java.lang.Long.MAX_VALUE;
 import static java.util.Collections.synchronizedCollection;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toCollection;
@@ -17,6 +18,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class InvertedIndexLookup {
@@ -25,16 +27,14 @@ public class InvertedIndexLookup {
 	private final HbaseIndex index;
 	private final DataTypeId selectorId;
 	private final Collection<Indexable> indexables;
-	private final int offset;
-	private final int limit;
+	private final Bounds bounds;
 	private final Executor executor;
 
-	public InvertedIndexLookup(HbaseIndex index, DataTypeId selectorId, Collection<Indexable> indexables, int offset, int limit, Executor executor) {
+	public InvertedIndexLookup(DataTypeId selectorId, Collection<Indexable> indexables, Bounds bounds, HbaseIndex index, Executor executor) {
 		this.index = index;
 		this.selectorId = selectorId;
 		this.indexables = indexables;
-		this.offset = offset;
-		this.limit = limit;
+		this.bounds = bounds;
 		this.executor = executor;
 	}
 
@@ -71,23 +71,42 @@ public class InvertedIndexLookup {
 	}
 
 	private List<DocumentInfo> extractResult(final Collection<Collection<Document>> resultSets) {
-		final Supplier<PriorityQueue<Document>> supplier = createPriorityQueueSupplier();
-		final PriorityQueue<Document> allDocuments = resultSets.stream()
-			.flatMap(Collection::stream)
-			.collect(toCollection(supplier));
-		final List<DocumentInfo> documentInfos = new LinkedList<>();
+		final Comparator<Document> byTimeOfEventInversed = Comparator.comparingLong((document) -> MAX_VALUE - document.getTimeOfEvent());
+		final PriorityQueue<Document> allDocuments = convertToSortedQueue(resultSets, byTimeOfEventInversed);
+		skipUntilDate(allDocuments, bounds.before);
+		skipUntilOffset(allDocuments, bounds.offset);
 		int count = 0;
-		while (count++ < offset && !allDocuments.isEmpty()) {
-			allDocuments.poll();
-		}
-		while (count++ < offset + limit && !allDocuments.isEmpty()) {
+		final List<DocumentInfo> documentInfos = new LinkedList<>();
+		while (!allDocuments.isEmpty() && allDocuments.peek()
+			.getTimeOfEvent() >= bounds.after && count++ < bounds.limit) {
 			documentInfos.add(extractInfo(allDocuments.poll()));
 		}
 		return documentInfos;
 	}
 
-	private Supplier<PriorityQueue<Document>> createPriorityQueueSupplier() {
-		final Comparator<Document> byTimeOfEventInversed = Comparator.comparingLong((document) -> Long.MAX_VALUE - document.getTimeOfEvent());
+	private PriorityQueue<Document> convertToSortedQueue(final Collection<Collection<Document>> resultSets, final Comparator<Document> byTimeOfEventInversed) {
+		final Supplier<PriorityQueue<Document>> supplier = createPriorityQueueSupplier(byTimeOfEventInversed);
+		final PriorityQueue<Document> allDocuments = resultSets.stream()
+			.flatMap(Collection::stream)
+			.collect(toCollection(supplier));
+		return allDocuments;
+	}
+
+	private void skipUntilDate(final PriorityQueue<Document> allDocuments, Long before) {
+		while (!allDocuments.isEmpty() && allDocuments.peek()
+			.getTimeOfEvent() > before) {
+			allDocuments.poll();
+		}
+	}
+
+	private void skipUntilOffset(final PriorityQueue<Document> allDocuments, Integer offset) {
+		int count = 0;
+		while (!allDocuments.isEmpty() && count++ < offset) {
+			allDocuments.poll();
+		}
+	}
+
+	private Supplier<PriorityQueue<Document>> createPriorityQueueSupplier(Comparator<Document> byTimeOfEventInversed) {
 		final Supplier<PriorityQueue<Document>> supplier = () -> new PriorityQueue<>(byTimeOfEventInversed);
 		return supplier;
 	}

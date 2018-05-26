@@ -9,7 +9,12 @@ security:
 
 hbaseIndexingService:
   randomSeed: 1234
-    
+  legal:
+    name: legal-service
+    credentials:
+      user: service-user
+      password: password
+          
 eureka:
   client:
     registerWithEureka: true

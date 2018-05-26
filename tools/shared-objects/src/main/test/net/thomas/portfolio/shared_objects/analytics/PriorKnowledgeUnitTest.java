@@ -11,16 +11,16 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PreviousKnowledgeUnitTest {
+public class PriorKnowledgeUnitTest {
 	private static final String ALIAS = "ALIAS";
 	private static final RecognitionLevel KNOWLEDGE = KNOWN;
 
-	private PreviousKnowledge knowledge;
+	private PriorKnowledge knowledge;
 	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
-		knowledge = new PreviousKnowledge(ALIAS, KNOWLEDGE, KNOWLEDGE);
+		knowledge = new PriorKnowledge(ALIAS, KNOWLEDGE, KNOWLEDGE);
 		mapper = new ObjectMapper();
 	}
 
@@ -28,7 +28,7 @@ public class PreviousKnowledgeUnitTest {
 	public void shouldSerializeAndDeserialize() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(knowledge);
 		System.out.println(serializedForm);
-		final PreviousKnowledge deserializedObject = mapper.readValue(serializedForm, PreviousKnowledge.class);
+		final PriorKnowledge deserializedObject = mapper.readValue(serializedForm, PriorKnowledge.class);
 		assertEquals(knowledge, deserializedObject);
 	}
 

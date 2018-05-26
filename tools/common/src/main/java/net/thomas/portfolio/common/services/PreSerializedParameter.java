@@ -2,11 +2,11 @@ package net.thomas.portfolio.common.services;
 
 public class PreSerializedParameter implements Parameter {
 	private final String name;
-	private final Object[] values;
+	private final Object value;
 
-	public PreSerializedParameter(String name, Object... values) {
+	public PreSerializedParameter(String name, Object value) {
 		this.name = name;
-		this.values = values;
+		this.value = value;
 	}
 
 	@Override
@@ -15,7 +15,7 @@ public class PreSerializedParameter implements Parameter {
 	}
 
 	@Override
-	public Object[] getValues() {
-		return values;
+	public Object getValue() {
+		return value;
 	}
 }

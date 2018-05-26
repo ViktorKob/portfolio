@@ -1,12 +1,15 @@
 package net.thomas.portfolio.service_commons.services;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -21,9 +24,10 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.Credentials;
 import net.thomas.portfolio.common.services.Parameter;
+import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.common.services.ServiceDependency;
-import net.thomas.portfolio.entities.Service;
-import net.thomas.portfolio.entities.ServiceEndpoint;
+import net.thomas.portfolio.services.Service;
+import net.thomas.portfolio.services.ServiceEndpoint;
 
 public class HttpRestClient {
 	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 60;
@@ -37,8 +41,22 @@ public class HttpRestClient {
 		this.serviceInfo = serviceInfo;
 	}
 
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType) {
+		final URI request = buildUri(service, endpoint);
+		return execute(request, responseType);
+	}
+
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, ParameterGroup... parameters) {
+		final URI request = buildUri(service, endpoint, parameters);
+		return execute(request, responseType);
+	}
+
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
+		return execute(request, responseType);
+	}
+
+	private <T> T execute(final URI request, Class<T> responseType) {
 		try {
 			final long stamp = System.nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
@@ -58,8 +76,17 @@ public class HttpRestClient {
 		}
 	}
 
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, ParameterGroup... parameters) {
+		final URI request = buildUri(service, endpoint, parameters);
+		return execute(request, responseType);
+	}
+
 	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
+		return execute(request, responseType);
+	}
+
+	private <T> T execute(final URI request, ParameterizedTypeReference<T> responseType) {
 		try {
 			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			if (OK.equals(response.getStatusCode())) {
@@ -112,8 +139,20 @@ public class HttpRestClient {
 		return instanceInfo;
 	}
 
+	private URI buildUri(Service serviceId, ServiceEndpoint endpoint) {
+		return buildUri(serviceId, endpoint, emptySet());
+	}
+
 	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Parameter... parameters) {
 		return buildUri(serviceId, endpoint, asList(parameters));
+	}
+
+	private URI buildUri(Service service, ServiceEndpoint endpoint, ParameterGroup... groups) {
+		final Collection<Parameter> parameters = Arrays.stream(groups)
+			.map(ParameterGroup::getParameters)
+			.flatMap(Arrays::stream)
+			.collect(Collectors.toList());
+		return buildUri(service, endpoint, parameters);
 	}
 
 	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Collection<Parameter> parameters) {
@@ -128,7 +167,9 @@ public class HttpRestClient {
 
 	private void addParametersToBuilder(UriComponentsBuilder builder, Collection<Parameter> parameters) {
 		for (final Parameter parameter : parameters) {
-			builder.queryParam(parameter.getName(), parameter.getValues());
+			if (parameter.getValue() != null) {
+				builder.queryParam(parameter.getName(), parameter.getValue());
+			}
 		}
 	}
 

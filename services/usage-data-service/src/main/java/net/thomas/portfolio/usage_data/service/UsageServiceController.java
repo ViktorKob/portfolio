@@ -1,16 +1,13 @@
 package net.thomas.portfolio.usage_data.service;
 
 import static java.lang.Integer.MAX_VALUE;
-import static net.thomas.portfolio.entities.Service.HBASE_INDEXING_SERVICE;
-import static net.thomas.portfolio.entities.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
-import static net.thomas.portfolio.enums.HbaseDataServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.FETCH_USAGE_ACTIVITY_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
+import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 
 import java.util.Collection;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -29,10 +26,11 @@ import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.validation.LongRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
+import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
@@ -67,10 +65,11 @@ public class UsageServiceController {
 
 	@PostConstruct
 	public void loadHbaseIndexingSchema() {
-		final HttpRestClient hbaseIndexClient = new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing());
-		final Set<String> documentTypes = hbaseIndexClient.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class)
-			.getDocumentTypes();
-		TYPE.setValidStrings(documentTypes);
+		new Thread(() -> {
+			final HbaseIndexModelAdaptor hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
+					new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
+			TYPE.setValidStrings(hbaseIndexAdaptor.getDataTypes());
+		}).run();
 	}
 
 	@Bean

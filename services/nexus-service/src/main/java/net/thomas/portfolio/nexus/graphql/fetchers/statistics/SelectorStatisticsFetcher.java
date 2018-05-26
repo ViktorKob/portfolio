@@ -34,7 +34,7 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 	}
 
 	private boolean isDanish(final DataTypeId selectorId) {
-		return KNOWN == adaptors.getPreviousKnowledgeFor(selectorId).isDanish;
+		return KNOWN == adaptors.getPriorKnowledge(selectorId).isDanish;
 	}
 
 	private boolean justificationIsMissing(final Selector selector) {

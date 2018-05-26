@@ -25,16 +25,16 @@ public class IndexableDocumentListFetcher extends ModelDataFetcher<List<Document
 
 	@Override
 	public List<DocumentInfo> _get(DataFetchingEnvironment environment) {
-		final InvertedIndexLookupRequest search = environment.getSource();
-		if (isDanish(search.selectorId) && justificationIsMissing(search.legalInfo)) {
+		final InvertedIndexLookupRequest request = environment.getSource();
+		if (isDanish(request.selectorId) && justificationIsMissing(request.legalInfo)) {
 			return emptyList();
 		} else {
-			return adaptors.invertedIndexLookup(search, indexable);
+			return adaptors.invertedIndexLookup(request);
 		}
 	}
 
 	private boolean isDanish(DataTypeId id) {
-		return KNOWN == adaptors.getPreviousKnowledgeFor(id).isDanish;
+		return KNOWN == adaptors.getPriorKnowledge(id).isDanish;
 	}
 
 	private boolean justificationIsMissing(final LegalInformation legalInfo) {

@@ -1,19 +1,19 @@
 package net.thomas.portfolio.render.common.context;
 
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 
 public class SimpleRepresentationRenderContextBuilder {
-	private HBaseIndexSchemaSerialization schema;
+	private HbaseIndexModelAdaptor adaptor;
 
 	public SimpleRepresentationRenderContextBuilder() {
 	}
 
-	public SimpleRepresentationRenderContextBuilder setSchema(HBaseIndexSchemaSerialization schema) {
-		this.schema = schema;
+	public SimpleRepresentationRenderContextBuilder setHbaseModelAdaptor(HbaseIndexModelAdaptor adaptor) {
+		this.adaptor = adaptor;
 		return this;
 	}
 
 	public SimpleRepresentationRenderContext build() {
-		return new SimpleRepresentationRenderContext(schema);
+		return new SimpleRepresentationRenderContext(adaptor);
 	}
 }

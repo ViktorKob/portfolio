@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import net.thomas.portfolio.shared_objects.analytics.PreviousKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
@@ -15,18 +15,30 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
+import net.thomas.portfolio.shared_objects.legal.LegalInformation;
+import net.thomas.portfolio.shared_objects.legal.Legality;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 
 public class Adaptors {
-	private final HbaseModelAdaptor hbaseModelAdaptor;
-	private final RenderingAdaptor renderingAdaptor;
 	private final AnalyticsAdaptor analyticsAdaptor;
+	private final HbaseIndexModelAdaptor hbaseModelAdaptor;
+	private final LegalAdaptor legalAdaptor;
+	private final RenderingAdaptor renderingAdaptor;
+	private final UsageAdaptor usageAdaptor;
 	private final ModelUtilities utilities;
 
-	public Adaptors(HbaseModelAdaptor hbaseModelAdaptor, RenderingAdaptor renderingAdaptor, AnalyticsAdaptor analyticsAdaptor) {
-		this.hbaseModelAdaptor = hbaseModelAdaptor;
-		this.renderingAdaptor = renderingAdaptor;
+	public Adaptors(AnalyticsAdaptor analyticsAdaptor, HbaseIndexModelAdaptor hbaseModelAdaptor, LegalAdaptor legalAdaptor, RenderingAdaptor renderingAdaptor,
+			UsageAdaptor usageAdaptor) {
 		this.analyticsAdaptor = analyticsAdaptor;
+		this.hbaseModelAdaptor = hbaseModelAdaptor;
+		this.legalAdaptor = legalAdaptor;
+		this.renderingAdaptor = renderingAdaptor;
+		this.usageAdaptor = usageAdaptor;
 		utilities = new ModelUtilities();
+	}
+
+	public PriorKnowledge getPriorKnowledge(DataTypeId selectorId) {
+		return analyticsAdaptor.getPriorKnowledge(selectorId);
 	}
 
 	public Collection<String> getDataTypes() {
@@ -69,8 +81,12 @@ public class Adaptors {
 		return hbaseModelAdaptor.getReferences(id);
 	}
 
-	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest search, Indexable indexable) {
-		return hbaseModelAdaptor.invertedIndexLookup(search, indexable);
+	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest request) {
+		return hbaseModelAdaptor.invertedIndexLookup(request);
+	}
+
+	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
 	}
 
 	public String renderAsSimpleRepresentation(DataTypeId id) {
@@ -85,8 +101,12 @@ public class Adaptors {
 		return renderingAdaptor.renderAsHtml(id);
 	}
 
-	public PreviousKnowledge getPreviousKnowledgeFor(DataTypeId selectorId) {
-		return analyticsAdaptor.getPreviousKnowledgeFor(selectorId);
+	public boolean storeUsageActivity(DataTypeId documentId, UsageActivityItem item) {
+		return usageAdaptor.storeUsageActivity(documentId, item);
+	}
+
+	public List<UsageActivityItem> storeUsageActivity(DataTypeId documentId, Integer offset, Integer limit) {
+		return usageAdaptor.fetchUsageActivity(documentId, offset, limit);
 	}
 
 	public DateConverter getDateConverter() {

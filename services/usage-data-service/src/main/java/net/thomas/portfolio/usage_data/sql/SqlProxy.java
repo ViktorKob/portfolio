@@ -147,8 +147,11 @@ public class SqlProxy {
 				.fetch();
 			final LinkedList<UsageActivityItem> activities = new LinkedList<>();
 			for (final Record3<String, String, Timestamp> activity : result) {
-				activities
-					.add(new UsageActivityItem(activity.get(USER.NAME), activity.get(ACCESS_TYPE.NAME), activity.get(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)));
+				final String username = activity.get(USER.NAME);
+				final UsageActivityType activityType = UsageActivityType.valueOf(activity.get(ACCESS_TYPE.NAME));
+				final long timeOfActivity = activity.get(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
+					.getTime();
+				activities.add(new UsageActivityItem(username, activityType, timeOfActivity));
 			}
 
 			return activities;

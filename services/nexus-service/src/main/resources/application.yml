@@ -17,13 +17,28 @@ server:
     min-spare-threads: 10
     
 nexusService:
+  analytics:
+    name: analytics-service
+    credentials:
+      user: service-user
+      password: password
   hbaseIndexing:
     name: hbase-indexing-service
     credentials:
       user: service-user
       password: password
+  legal:
+    name: legal-service
+    credentials:
+      user: service-user
+      password: password
   rendering:
     name: render-service
+    credentials:
+      user: service-user
+      password: password
+  usage:
+    name: usage-data-service
     credentials:
       user: service-user
       password: password
