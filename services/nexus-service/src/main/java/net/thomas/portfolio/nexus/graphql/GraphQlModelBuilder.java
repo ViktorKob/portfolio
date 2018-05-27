@@ -7,6 +7,7 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLArgument.newArgument;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLList.list;
+import static graphql.schema.GraphQLNonNull.nonNull;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static graphql.schema.GraphQLSchema.newSchema;
 import static java.util.Collections.emptyList;
@@ -130,9 +131,6 @@ public class GraphQlModelBuilder {
 			if (adaptors.isSimpleRepresentable(dataType)) {
 				arguments = simpleRepAnd(arguments);
 			}
-			if (adaptors.isSelector(dataType)) {
-				arguments = justificationAnd(dateBoundsAnd(arguments));
-			}
 			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptors);
 			fields.add(newFieldDefinition().name(dataType)
 				.type(dataTypeObjectType)
@@ -235,7 +233,9 @@ public class GraphQlModelBuilder {
 
 		if (adaptors.isSelector(dataType)) {
 			builder.field(newFieldDefinition().name("statistics")
+				.description("Lookup statstics over how often the selector occurs in the index")
 				.type(new GraphQLTypeReference("SelectorStatistics"))
+				.argument(justificationAnd(new LinkedList<>()))
 				.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("knowledge")
@@ -334,6 +334,10 @@ public class GraphQlModelBuilder {
 		arguments.add(newArgument().name("justification")
 			.description("Justification for executing query")
 			.type(GraphQLString)
+			.build());
+		arguments.add(newArgument().name("user")
+			.description("ID of the user trying to justify the query")
+			.type(nonNull(GraphQLString))
 			.build());
 		return arguments;
 	}
