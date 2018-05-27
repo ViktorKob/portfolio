@@ -21,7 +21,12 @@ public class DataTypeId implements ParameterGroup {
 
 	public DataTypeId(String type, String uid) {
 		this.type = type;
-		this.uid = uid.toUpperCase();
+		setDti_uid(uid);
+	}
+
+	public DataTypeId(DataTypeId source) {
+		type = source.type;
+		uid = source.uid;
 	}
 
 	public void setDti_type(String type) {
@@ -29,7 +34,11 @@ public class DataTypeId implements ParameterGroup {
 	}
 
 	public void setDti_uid(String uid) {
-		this.uid = uid.toUpperCase();
+		if (uid != null) {
+			this.uid = uid.toUpperCase();
+		} else {
+			uid = null;
+		}
 	}
 
 	public String getDti_type() {

@@ -10,11 +10,13 @@ import static graphql.schema.GraphQLList.list;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static graphql.schema.GraphQLSchema.newSchema;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.joining;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.DAY;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.QUARTER;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.WEEK;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,8 +37,8 @@ import net.thomas.portfolio.nexus.graphql.fetchers.conversion.HeadlineDataFetche
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.HtmlDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.SimpleRepresentationDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentListFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.EntityFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_types.IndexableDocumentListFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.IndexableDocumentSearchFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SimpleRepresentationFetcher;
@@ -53,6 +55,8 @@ import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.DecimalField
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.IntegerFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.StringFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.TimestampFieldDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorAliasFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsDanishFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsKnownFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorKnowledgeFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.DocumentReferenceFetcher;
@@ -72,7 +76,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
 
 public class GraphQlModelBuilder {
@@ -239,9 +242,13 @@ public class GraphQlModelBuilder {
 				.type(new GraphQLTypeReference("PreviousKnowledge"))
 				.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
 				.build());
-			builder.field(newFieldDefinition().name("indexables")
+			List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
+			arguments = relationsAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
+			arguments = documentTypesAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
+			arguments = justificationAnd(arguments);
+			builder.field(newFieldDefinition().name("events")
 				.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
-				.argument(pagingAnd(dateBoundsAnd(new LinkedList<>())))
+				.argument(arguments)
 				.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
 				.build());
 		}
@@ -325,7 +332,7 @@ public class GraphQlModelBuilder {
 
 	private List<GraphQLArgument> justificationAnd(List<GraphQLArgument> arguments) {
 		arguments.add(newArgument().name("justification")
-			.description("Justification for search")
+			.description("Justification for executing query")
 			.type(GraphQLString)
 			.build());
 		return arguments;
@@ -335,6 +342,28 @@ public class GraphQlModelBuilder {
 		arguments.add(newArgument().name("format")
 			.description("Date rendering format; 'dateOnly' to only render year-month-date")
 			.type(GraphQLString)
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> documentTypesAnd(List<GraphQLArgument> arguments, Collection<String> documentTypes) {
+		final String documentTypeList = "[ " + documentTypes.stream()
+			.sorted()
+			.collect(joining(", ")) + " ]";
+		arguments.add(newArgument().name("documentTypes")
+			.description("Document types that should be included in the response (from the set " + documentTypeList + " )")
+			.type(list(GraphQLString))
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> relationsAnd(List<GraphQLArgument> arguments, Collection<String> relationTypes) {
+		final String relationTypeList = "[ " + relationTypes.stream()
+			.sorted()
+			.collect(joining(", ")) + " ]";
+		arguments.add(newArgument().name("relations")
+			.description("Relation types that should be included in the response (from the set " + relationTypeList + " )")
+			.type(list(GraphQLString))
 			.build());
 		return arguments;
 	}
@@ -374,12 +403,13 @@ public class GraphQlModelBuilder {
 	}
 
 	private GraphQLObjectType createInvertedIndexLookupTypeForSelector(String dataType, Adaptors adaptors) {
-		final GraphQLObjectType.Builder builder = newObject().name(dataType + "Indexables")
-			.description("Indexables for specific selector");
-		for (final Indexable indexable : adaptors.getIndexables(dataType)) {
-			builder.field(newFieldDefinition().name(indexable.path + "_" + indexable.documentType)
-				.type(list(new GraphQLTypeReference(indexable.documentType)))
-				.dataFetcher(new IndexableDocumentListFetcher(indexable, adaptors))
+		final GraphQLObjectType.Builder builder = newObject().name(dataType + "_documentTypes")
+			.description("Document types that can result from a search on this type");
+		// TODO[Thomas]: Change when Interfaces are added in GraphQL model
+		for (final String documentType : adaptors.getIndexedDocumentTypes(dataType)) {
+			builder.field(newFieldDefinition().name(documentType)
+				.type(list(new GraphQLTypeReference(documentType)))
+				.dataFetcher(new DocumentListFetcher(documentType, adaptors))
 				.build());
 		}
 		return builder.build();
@@ -410,13 +440,20 @@ public class GraphQlModelBuilder {
 	private GraphQLObjectType buildPreviousKnowledgeType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("PreviousKnowledge")
 			.description("Previous knowledge about selector");
+		builder.field(newFieldDefinition().name("alias")
+			.description("Alternative name for selector")
+			.type(GraphQLString)
+			.dataFetcher(new SelectorAliasFetcher(adaptors))
+			.build());
 		builder.field(newFieldDefinition().name("isKnown")
+			.description("Whether we are already interested in this selector")
 			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
 			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("isDanish")
+			.description("Whether this selector is known to belong to a danish citizen")
 			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
-			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
+			.dataFetcher(new SelectorIsDanishFetcher(adaptors))
 			.build());
 		return builder.build();
 	}

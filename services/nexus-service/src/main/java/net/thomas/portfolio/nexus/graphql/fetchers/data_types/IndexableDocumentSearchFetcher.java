@@ -25,15 +25,28 @@ public class IndexableDocumentSearchFetcher extends ModelDataFetcher<InvertedInd
 	@Override
 	public InvertedIndexLookupRequest _get(DataFetchingEnvironment environment) {
 		final Selector selector = environment.getSource();
+		// TODO[Thomas]: Change when Interfaces are added in GraphQL model
 		return convertToSearch(selector, environment.getArguments());
 	}
 
 	private InvertedIndexLookupRequest convertToSearch(Selector selector, Map<String, Object> arguments) {
+		final Bounds bounds = extractBounds(arguments);
+		final LegalInformation legalInfo = extractLegalInformation(arguments, bounds);
+		return new InvertedIndexLookupRequest(selector.getId(), legalInfo, bounds, emptySet(), emptySet());
+	}
+
+	private LegalInformation extractLegalInformation(Map<String, Object> arguments, Bounds bounds) {
+		final String user = (String) arguments.get("user");
+		final String justification = (String) arguments.get("justification");
+		return new LegalInformation(user, justification, bounds.after, bounds.before);
+	}
+
+	private Bounds extractBounds(Map<String, Object> arguments) {
 		final Integer offset = (Integer) arguments.get("offset");
 		final Integer limit = (Integer) arguments.get("limit");
 		final Long after = determineAfter(arguments);
 		final Long before = determineBefore(arguments);
-		return new InvertedIndexLookupRequest(selector.getId(), new LegalInformation(), new Bounds(offset, limit, after, before), emptySet(), emptySet());
+		return new Bounds(offset, limit, after, before);
 	}
 
 	private Long determineAfter(Map<String, Object> arguments) {

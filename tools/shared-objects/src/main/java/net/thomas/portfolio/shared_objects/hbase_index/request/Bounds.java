@@ -30,6 +30,13 @@ public class Bounds implements ParameterGroup {
 		this.before = before;
 	}
 
+	public Bounds(Bounds source) {
+		offset = source.offset;
+		limit = source.limit;
+		after = source.after;
+		before = source.before;
+	}
+
 	public void update(Bounds bounds) {
 		if (bounds.offset != null) {
 			offset = bounds.offset;

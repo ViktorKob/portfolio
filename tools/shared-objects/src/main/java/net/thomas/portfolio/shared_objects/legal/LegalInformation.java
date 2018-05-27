@@ -12,6 +12,8 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
+	public String user;
+	@JsonIgnore
 	public String justification;
 	@JsonIgnore
 	public Long lowerBound;
@@ -21,10 +23,30 @@ public class LegalInformation implements ParameterGroup {
 	public LegalInformation() {
 	}
 
-	public LegalInformation(String justification, Long lowerBound, Long upperBound) {
-		this.justification = justification.trim();
+	public LegalInformation(String user, String justification, Long lowerBound, Long upperBound) {
+		setLi_user(user);
+		setLi_justification(justification);
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
+	}
+
+	public LegalInformation(LegalInformation source) {
+		user = source.user;
+		justification = source.justification;
+		lowerBound = source.lowerBound;
+		upperBound = source.upperBound;
+	}
+
+	public String getLi_user() {
+		return user;
+	}
+
+	public void setLi_user(String user) {
+		if (user != null) {
+			this.user = user.trim();
+		} else {
+			user = null;
+		}
 	}
 
 	public String getLi_justification() {
@@ -32,7 +54,11 @@ public class LegalInformation implements ParameterGroup {
 	}
 
 	public void setLi_justification(String justification) {
-		this.justification = justification.trim();
+		if (justification != null) {
+			this.justification = justification.trim();
+		} else {
+			justification = null;
+		}
 	}
 
 	public Long getLi_lowerBound() {
@@ -59,8 +85,8 @@ public class LegalInformation implements ParameterGroup {
 	@Override
 	@JsonIgnore
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("li_justification", justification), new PreSerializedParameter("li_lowerBound", lowerBound),
-				new PreSerializedParameter("li_upperBound", upperBound) };
+		return new Parameter[] { new PreSerializedParameter("li_user", user), new PreSerializedParameter("li_justification", justification),
+				new PreSerializedParameter("li_lowerBound", lowerBound), new PreSerializedParameter("li_upperBound", upperBound) };
 	}
 
 	@Override

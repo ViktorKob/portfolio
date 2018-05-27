@@ -1,5 +1,6 @@
 package net.thomas.portfolio.hbase_index.fake;
 
+import static java.util.stream.Collectors.toSet;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
@@ -55,8 +57,23 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		createSmsIndexables(builder, "Pstn", "Imsi", "Imei");
 		createVoiceIndexables(builder, "Pstn", "Imsi", "Imei");
 		indexables = builder.build();
+		indexableDocumentTypes = buildIndexableMap(indexables, Indexable::getDocumentType);
+		indexableRelations = buildIndexableMap(indexables, Indexable::getPath);
 
 		initialize();
+	}
+
+	private Map<String, Collection<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables,
+			Function<? super Indexable, ? extends String> mapper) {
+
+		final HashMap<String, Collection<String>> relationMap = new HashMap<>();
+		for (final String selectorType : selectorTypes) {
+			final Collection<Indexable> selectorIndexables = indexables.get(selectorType);
+			relationMap.put(selectorType, selectorIndexables.stream()
+				.map(mapper)
+				.collect(toSet()));
+		}
+		return relationMap;
 	}
 
 	private Set<String> setOf(String... values) {

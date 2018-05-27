@@ -25,6 +25,14 @@ public interface HbaseIndexModelAdaptor {
 
 	Collection<String> getDataTypes();
 
+	Collection<String> getSelectorTypes();
+
+	Collection<String> getDocumentTypes();
+
+	Collection<String> getIndexedDocumentTypes(String selectorType);
+
+	Collection<String> getIndexedRelations(String selectorType);
+
 	Collection<Field> getDataTypeFields(String dataType);
 
 	/*** Data ***/
@@ -36,5 +44,4 @@ public interface HbaseIndexModelAdaptor {
 	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
 
 	List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest request);
-
 }

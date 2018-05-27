@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LegalInformationUnitTest {
+	private static final String USER = "USER";
 	private static final String JUSTIFICATION = "JUSTIFICATION";
 	private static final Long LOWER_BOUND = 3l;
 	private static final Long UPPER_BOUND = 4l;
@@ -20,7 +21,7 @@ public class LegalInformationUnitTest {
 
 	@Before
 	public void setup() {
-		info = new LegalInformation(JUSTIFICATION, LOWER_BOUND, UPPER_BOUND);
+		info = new LegalInformation(USER, JUSTIFICATION, LOWER_BOUND, UPPER_BOUND);
 		mapper = new ObjectMapper();
 	}
 
@@ -29,6 +30,12 @@ public class LegalInformationUnitTest {
 		final String serializedForm = mapper.writeValueAsString(info);
 		final LegalInformation deserializedObject = mapper.readValue(serializedForm, LegalInformation.class);
 		assertEquals(info, deserializedObject);
+	}
+
+	@Test
+	public void shouldSerializeAsLi_user() throws IOException {
+		final String serializedForm = mapper.writeValueAsString(info);
+		assertTrue(serializedForm.contains("\"li_user\":\"" + USER + "\""));
 	}
 
 	@Test
