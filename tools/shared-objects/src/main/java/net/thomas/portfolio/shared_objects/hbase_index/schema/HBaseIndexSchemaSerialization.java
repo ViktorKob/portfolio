@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -25,6 +24,8 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	protected Set<String> selectorTypes;
 	protected Set<String> simpleRepresentableTypes;
 	protected Map<String, Collection<Indexable>> indexables;
+	protected Map<String, Collection<String>> indexableDocumentTypes;
+	protected Map<String, Collection<String>> indexableRelations;
 
 	public HBaseIndexSchemaSerialization() {
 	}
@@ -69,6 +70,12 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	}
 
 	@Override
+	public Collection<Field> getFieldsForDataType(String dataType) {
+		return dataTypeFields.get(dataType)
+			.values();
+	}
+
+	@Override
 	public Set<String> getSimpleRepresentableTypes() {
 		return simpleRepresentableTypes;
 	}
@@ -85,22 +92,39 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		this.indexables = indexables;
 	}
 
-	@Override
-	public Collection<Indexable> getIndexables(String selectorType, IndexableFilter... filters) {
-		Collection<Indexable> indexables = this.indexables.get(selectorType);
-		for (final IndexableFilter filter : filters) {
-			indexables = filter.filter(indexables);
-		}
-		return indexables;
+	public Map<String, Collection<String>> getIndexableDocumentTypes() {
+		return indexableDocumentTypes;
+	}
+
+	public void setIndexableDocumentTypes(Map<String, Collection<String>> indexableDocumentTypes) {
+		this.indexableDocumentTypes = indexableDocumentTypes;
 	}
 
 	@Override
-	public Collection<Field> getFieldsForDataType(String dataType) {
-		return dataTypeFields.get(dataType)
-			.values();
+	@JsonIgnore
+	public Collection<String> setIndexableDocumentTypes(String selectorType) {
+		return indexableDocumentTypes.get(selectorType);
+	}
+
+	public Map<String, Collection<String>> getIndexableRelations() {
+		return indexableRelations;
+	}
+
+	public void setIndexableRelations(Map<String, Collection<String>> indexableRelations) {
+		this.indexableRelations = indexableRelations;
 	}
 
 	@Override
+	@JsonIgnore
+	public Collection<String> getIndexableRelations(String selectorType) {
+		return indexableRelations.get(selectorType);
+	}
+
+	public Collection<Indexable> getIndexables(String selectorType) {
+		return indexables.get(selectorType);
+	}
+
+	@JsonIgnore
 	public Field getFieldForIndexable(Indexable indexable) {
 		return dataTypeFields.get(indexable.documentType)
 			.get(indexable.documentField);

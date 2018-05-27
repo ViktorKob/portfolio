@@ -22,7 +22,6 @@ import com.google.common.cache.CacheLoader;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -81,11 +80,6 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	@Override
 	public Collection<Field> getDataTypeFields(String dataType) {
 		return schema.getFieldsForDataType(dataType);
-	}
-
-	@Override
-	public Collection<Indexable> getIndexables(String selector) {
-		return schema.getIndexables(selector);
 	}
 
 	@Override

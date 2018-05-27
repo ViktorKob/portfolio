@@ -5,8 +5,6 @@ import java.util.Collection;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface HbaseIndexSchema {
@@ -19,11 +17,11 @@ public interface HbaseIndexSchema {
 
 	Collection<String> getSimpleRepresentableTypes();
 
-	Collection<Indexable> getIndexables(String selectorType, IndexableFilter... filters);
-
 	Collection<Field> getFieldsForDataType(String dataType);
 
-	Field getFieldForIndexable(Indexable indexable);
-
 	String calculateUid(String type, String simpleRep);
+
+	Collection<String> setIndexableDocumentTypes(String selectorType);
+
+	Collection<String> getIndexableRelations(String selectorType);
 }

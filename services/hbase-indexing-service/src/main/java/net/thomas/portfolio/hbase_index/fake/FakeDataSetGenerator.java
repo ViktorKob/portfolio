@@ -34,8 +34,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 public class FakeDataSetGenerator {
 	private static final long A_DAY = 1000 * 60 * 60 * 24;
@@ -44,7 +42,7 @@ public class FakeDataSetGenerator {
 
 	private long randomSeed = 1234l;
 
-	private final HbaseIndexSchema schema;
+	private final FakeHbaseIndexSchemaImpl schema;
 	private FakeHbaseIndex storage;
 	private Map<String, DataType> localnames;
 	private Map<String, DataType> displayedNames;
@@ -62,10 +60,10 @@ public class FakeDataSetGenerator {
 	private Map<String, DataType> voiceData;
 
 	public FakeDataSetGenerator() {
-		schema = new HbaseIndexSchemaImpl();
+		schema = new FakeHbaseIndexSchemaImpl();
 	}
 
-	public HbaseIndexSchema getSchema() {
+	public FakeHbaseIndexSchemaImpl getSchema() {
 		return schema;
 	}
 
