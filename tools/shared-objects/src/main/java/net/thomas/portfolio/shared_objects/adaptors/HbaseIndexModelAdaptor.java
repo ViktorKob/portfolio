@@ -6,7 +6,6 @@ import java.util.Map;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -27,8 +26,6 @@ public interface HbaseIndexModelAdaptor {
 	Collection<String> getDataTypes();
 
 	Collection<Field> getDataTypeFields(String dataType);
-
-	Collection<Indexable> getIndexables(String selector);
 
 	/*** Data ***/
 

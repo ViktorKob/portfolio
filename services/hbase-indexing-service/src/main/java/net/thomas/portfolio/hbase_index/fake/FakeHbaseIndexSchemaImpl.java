@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema;
+package net.thomas.portfolio.hbase_index.fake;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
@@ -17,15 +17,16 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 
-public class HbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
+public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 
 	private static final boolean IS_NOT_ARRAY = false;
 	private static final boolean IS_ARRAY = true;
 	private static final boolean IS_NOT_PART_OF_KEY = false;
 	private static final boolean IS_PART_OF_KEY = true;
 
-	public HbaseIndexSchemaImpl() {
+	public FakeHbaseIndexSchemaImpl() {
 		dataTypeFields = new HashMap<>();
 		dataTypeFields.put("Localname", fields(string("name")));
 		dataTypeFields.put("DisplayedName", fields(string("name")));

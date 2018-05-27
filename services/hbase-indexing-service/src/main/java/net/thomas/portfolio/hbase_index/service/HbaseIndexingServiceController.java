@@ -37,6 +37,7 @@ import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
+import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaImpl;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
@@ -49,7 +50,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @Controller
@@ -64,7 +64,7 @@ public class HbaseIndexingServiceController {
 	private final HbaseIndexingServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private HbaseIndexSchema schema;
+	private FakeHbaseIndexSchemaImpl schema;
 	private FakeHbaseIndex index;
 	private ExecutorService lookupExecutor;
 	private LegalAdaptorImpl legalAdaptor;

@@ -7,7 +7,6 @@ import java.util.Map;
 import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -59,10 +58,6 @@ public class Adaptors {
 
 	public Collection<Field> getDataTypeFields(String dataType) {
 		return hbaseModelAdaptor.getDataTypeFields(dataType);
-	}
-
-	public Collection<Indexable> getIndexables(String selector) {
-		return hbaseModelAdaptor.getIndexables(selector);
 	}
 
 	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
