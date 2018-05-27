@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_DATA_TYPE_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_REFERENCES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SAMPLES_PATH;
@@ -18,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.annotation.PostConstruct;
 
@@ -80,7 +80,7 @@ public class HbaseIndexingServiceController {
 		schema = generator.getSchema();
 		generator.buildSampleDataSet(config.getRandomSeed());
 		index = generator.getSampleDataSet();
-		lookupExecutor = Executors.newSingleThreadExecutor();
+		lookupExecutor = newSingleThreadExecutor();
 		TYPE.setValidStrings(new HashSet<>(schema.getDataTypes()));
 		DOCUMENT_TYPE.setValidStrings(new HashSet<>(schema.getDocumentTypes()));
 		SELECTOR_TYPE.setValidStrings(new HashSet<>(schema.getSelectorTypes()));
@@ -149,7 +149,7 @@ public class HbaseIndexingServiceController {
 	}
 
 	private boolean lookupIsLegal(DataTypeId selectorId, LegalInformation legalInfo) {
-		return LEGAL == legalAdaptor.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
+		return LEGAL == legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
 	}
 
 	private InvertedIndexLookup buildLookup(DataTypeId selectorId, Bounds bounds, HashSet<String> documentTypes, HashSet<String> relations) {

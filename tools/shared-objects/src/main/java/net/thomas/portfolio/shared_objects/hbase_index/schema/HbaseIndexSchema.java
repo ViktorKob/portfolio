@@ -21,7 +21,7 @@ public interface HbaseIndexSchema {
 
 	String calculateUid(String type, String simpleRep);
 
-	Collection<String> setIndexableDocumentTypes(String selectorType);
+	Collection<String> getIndexableDocumentTypes(String selectorType);
 
 	Collection<String> getIndexableRelations(String selectorType);
 }

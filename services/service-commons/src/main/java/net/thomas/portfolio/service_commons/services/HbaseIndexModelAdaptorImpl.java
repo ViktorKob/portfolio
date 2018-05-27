@@ -78,6 +78,26 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	public Collection<String> getDocumentTypes() {
+		return schema.getDocumentTypes();
+	}
+
+	@Override
+	public Collection<String> getSelectorTypes() {
+		return schema.getSelectorTypes();
+	}
+
+	@Override
+	public Collection<String> getIndexedDocumentTypes(String selectorType) {
+		return schema.getIndexableDocumentTypes(selectorType);
+	}
+
+	@Override
+	public Collection<String> getIndexedRelations(String selectorType) {
+		return schema.getIndexableRelations(selectorType);
+	}
+
+	@Override
 	public Collection<Field> getDataTypeFields(String dataType) {
 		return schema.getFieldsForDataType(dataType);
 	}

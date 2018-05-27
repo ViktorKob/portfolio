@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -27,6 +28,14 @@ public class InvertedIndexLookupRequest {
 		this.bounds = bounds;
 		this.documentTypes = documentTypes;
 		this.relations = relations;
+	}
+
+	public InvertedIndexLookupRequest(InvertedIndexLookupRequest source) {
+		selectorId = new DataTypeId(source.selectorId);
+		legalInfo = new LegalInformation(source.legalInfo);
+		bounds = new Bounds(source.bounds);
+		documentTypes = new HashSet<>(source.documentTypes);
+		relations = new HashSet<>(source.relations);
 	}
 
 	public DataTypeId getSelectorId() {

@@ -16,7 +16,7 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 public class InvertedIndexLookupRequestUnitTest {
 	private static final DataTypeId ID = new DataTypeId("TYPE", "ABCD");
-	private static final LegalInformation LEGAL_INFO = new LegalInformation("JUSTIFICATION", 1l, 2l);
+	private static final LegalInformation LEGAL_INFO = new LegalInformation("USER", "JUSTIFICATION", 1l, 2l);
 	private static final Bounds BOUNDS = new Bounds(3, 4, 5l, 6l);
 	private static final Set<String> DOCUMENT_TYPES = singleton("DOCUMENT_TYPE");
 	private static final Set<String> RELATIONS = singleton("RELATION");

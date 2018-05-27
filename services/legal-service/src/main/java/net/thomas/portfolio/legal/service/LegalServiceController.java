@@ -1,6 +1,8 @@
 package net.thomas.portfolio.legal.service;
 
-import static net.thomas.portfolio.globals.LegalServiceGlobals.CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_STATISTICS_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.LEGAL_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.KNOWN;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
@@ -62,11 +64,34 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP_PATH)
-	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId id, LegalInformation legalInfo) {
+	@RequestMapping(AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH)
+	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId id, LegalInformation legalInfo) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			// TODO[Thomas]: Pending implementation
+			return ok(true);
+		} else {
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(AUDIT_LOG_STATISTICS_LOOKUP_PATH)
+	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
+			// TODO[Thomas]: Pending implementation
+			return ok(true);
+		} else {
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH)
+	public ResponseEntity<?> checkLegalityOfQueryOnSelector(DataTypeId id, LegalInformation legalInfo) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final PriorKnowledge knowledge = analyticsAdaptor.getPriorKnowledge(id);
-			if (knowledge.isDanish == KNOWN && (legalInfo.justification == null || legalInfo.justification.isEmpty())) {
+			if (legalInfo.user == null || legalInfo.user.isEmpty()
+					|| knowledge.isDanish == KNOWN && (legalInfo.justification == null || legalInfo.justification.isEmpty())) {
 				return ok(ILLEGAL);
 			} else {
 				return ok(LEGAL);

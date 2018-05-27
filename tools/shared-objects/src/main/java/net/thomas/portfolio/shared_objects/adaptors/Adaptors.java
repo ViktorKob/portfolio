@@ -44,6 +44,22 @@ public class Adaptors {
 		return hbaseModelAdaptor.getDataTypes();
 	}
 
+	public Collection<String> getDocumentTypes() {
+		return hbaseModelAdaptor.getDocumentTypes();
+	}
+
+	public Collection<String> getSelectorTypes() {
+		return hbaseModelAdaptor.getSelectorTypes();
+	}
+
+	public Collection<String> getIndexedDocumentTypes(String selectorType) {
+		return hbaseModelAdaptor.getIndexedDocumentTypes(selectorType);
+	}
+
+	public Collection<String> getIndexedRelationTypes(String selectorType) {
+		return hbaseModelAdaptor.getIndexedRelations(selectorType);
+	}
+
 	public boolean isSimpleRepresentable(String dataType) {
 		return hbaseModelAdaptor.isSimpleRepresentable(dataType);
 	}
@@ -80,8 +96,16 @@ public class Adaptors {
 		return hbaseModelAdaptor.invertedIndexLookup(request);
 	}
 
-	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return legalAdaptor.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
+	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.auditLogInvertedIndexLookup(selectorId, legalInfo);
+	}
+
+	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.auditLogStatisticsLookup(selectorId, legalInfo);
+	}
+
+	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
 	}
 
 	public String renderAsSimpleRepresentation(DataTypeId id) {

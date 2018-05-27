@@ -5,5 +5,9 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
 public interface LegalAdaptor {
-	Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo);
+	Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo);
+
+	Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo);
+
+	Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo);
 }

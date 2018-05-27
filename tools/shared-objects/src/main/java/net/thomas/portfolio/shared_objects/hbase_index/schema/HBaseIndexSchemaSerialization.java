@@ -84,14 +84,6 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		this.simpleRepresentableTypes = simpleRepresentableTypes;
 	}
 
-	public Map<String, Collection<Indexable>> getIndexables() {
-		return indexables;
-	}
-
-	public void setIndexables(Map<String, Collection<Indexable>> indexables) {
-		this.indexables = indexables;
-	}
-
 	public Map<String, Collection<String>> getIndexableDocumentTypes() {
 		return indexableDocumentTypes;
 	}
@@ -102,7 +94,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	@Override
 	@JsonIgnore
-	public Collection<String> setIndexableDocumentTypes(String selectorType) {
+	public Collection<String> getIndexableDocumentTypes(String selectorType) {
 		return indexableDocumentTypes.get(selectorType);
 	}
 
