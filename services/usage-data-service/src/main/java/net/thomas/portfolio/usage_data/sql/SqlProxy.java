@@ -106,8 +106,7 @@ public class SqlProxy {
 			.insertInto(USER, USER.NAME)
 			.values(username)
 			.onDuplicateKeyIgnore()
-			.returning(USER.ID)
-			.fetchOne();
+			.execute();
 		return DSL.using(configuration)
 			.select(USER.ID)
 			.from(USER)
@@ -121,8 +120,7 @@ public class SqlProxy {
 			.insertInto(ACCESS_TYPE, ACCESS_TYPE.NAME)
 			.values(accessType.name())
 			.onDuplicateKeyIgnore()
-			.returning(ACCESS_TYPE.ID)
-			.fetchOne();
+			.execute();
 		return DSL.using(configuration)
 			.select(ACCESS_TYPE.ID)
 			.from(ACCESS_TYPE)

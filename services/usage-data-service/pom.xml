@@ -15,20 +15,14 @@
 		<dependency>
 		  <groupId>org.jooq</groupId>
 		  <artifactId>jooq</artifactId>
-		  <systemPath>${basedir}/lib/jooq-3.10.7.jar</systemPath>
-		  <scope>system</scope>
 		</dependency>
 		<dependency>
 		  <groupId>org.jooq</groupId>
 		  <artifactId>jooq-meta</artifactId>
-		  <systemPath>${basedir}/lib/jooq-meta-3.10.7.jar</systemPath>
-		  <scope>system</scope>
 		</dependency>
 		<dependency>
 		  <groupId>org.jooq</groupId>
 		  <artifactId>jooq-codegen</artifactId>
-		  <systemPath>${basedir}/lib/jooq-codegen-3.10.7.jar</systemPath>
-		  <scope>system</scope>
 		</dependency>
 		<dependency>
 		    <groupId>mysql</groupId>
