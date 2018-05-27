@@ -112,7 +112,7 @@ public class UsageServiceController {
 			}
 			try {
 				final Collection<UsageActivityItem> activities = proxy.fetchUsageActivities(id, offset, limit);
-				if (activities != null && activities.size() > 0) {
+				if (activities != null) {
 					return ResponseEntity.ok(activities);
 				} else {
 					return ResponseEntity.notFound()
