@@ -11,10 +11,11 @@ _Simple discovery service implementation_
 
 [Source](https://github.com/ViktorKob/portfolio/tree/master/infrastructure "Infrastructure root")
 
-| | |
+| Data | |
 |---|---|
-|*Default port*|8000|
-|*Technologies*|Eureka, Spring|
+|**port**|8000|
+|**endpoint**|/, /eureka|
+|**Technologies**|Eureka, Spring|
 
 This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. When using a reverse-proxy setup, the status page is used as the root entry point for the server.
 
