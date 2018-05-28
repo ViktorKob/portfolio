@@ -63,8 +63,9 @@ _Rendering service that can lookup data in the Hbase index and then renderer it 
 
 [Source](https://github.com/ViktorKob/portfolio/tree/master/services/render-service "Render root")
 
-|**Port**|8150|
+| Settings | |
 |---|---|
+|**Port**|8150|
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
