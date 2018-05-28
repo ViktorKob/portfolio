@@ -161,3 +161,4 @@ Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup
 - [ ] Add Hystrix integration
 - [ ] Look into replacing / supplementing proxy with Zuul
 - [ ] Add authentication layer, e.g. using UAA, JWS, OAuth2, JWT, JWA and OpenID
+- [ ] Containerization of services (probably using Docker)
