@@ -11,6 +11,7 @@ _Simple discovery service implementation_
 
 [Source](https://github.com/ViktorKob/portfolio/tree/master/infrastructure "Infrastructure root")
 
+|---|---|
 |*Default port*|8000|
 |*Technologies*|Eureka, Spring|
 
