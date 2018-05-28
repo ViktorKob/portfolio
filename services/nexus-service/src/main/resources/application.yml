@@ -2,7 +2,7 @@ spring.application.name: nexus-service
 
 security:
   user:
-    name: user 
+    name: service-user 
     password: password 
     roles: USER 
 
