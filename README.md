@@ -14,9 +14,7 @@ _Simple discovery service implementation_
 | Settings | |
 |---|---|
 |**port**|8000|
-|**endpoints**|
--/
--/eureka |
+|**endpoints**|<ul><li>/</li><li>/eureka/*</li> |
 |**Technologies**|Eureka, Spring|
 
 This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. When using a reverse-proxy setup, the status page is used as the root entry point for the server.
