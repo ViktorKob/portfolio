@@ -1,5 +1,7 @@
 package net.thomas.portfolio.nexus.service;
 
+import static net.thomas.portfolio.services.ServiceGlobals.NEXUS_SERVICE_PATH;
+
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +32,7 @@ import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 @SpringBootApplication
 public class NexusServiceController {
 
-	private static final String GRAPHQL_SERVLET_MAPPING = "/graphql/*";
+	private static final String GRAPHQL_SERVLET_MAPPING = NEXUS_SERVICE_PATH + "/graphql/*";
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
@@ -68,6 +70,6 @@ public class NexusServiceController {
 		schemaBuilder.setRenderingAdaptor(renderingAdaptor);
 		schemaBuilder.setUsageAdaptor(usageAdaptor);
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
-		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING);
+		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
 	}
 }
