@@ -1,0 +1,41 @@
+server {
+    server_name ec2-35-163-101-53.us-west-2.compute.amazonaws.com;
+    listen 80;
+
+    location = / {
+            proxy_pass http://eureka/;
+    }
+    location /eureka {
+            proxy_pass http://eureka/eureka;
+    }
+    location /HbaseIndexingService {
+            proxy_pass http://hbase_index/HbaseIndexingService;
+    }
+    location /RenderService {
+            proxy_pass http://render/RenderService;
+    }
+    location /AnalyticsService {
+            proxy_pass http://analytics/AnalyticsService;
+    }
+    location /LegalService {
+            proxy_pass http://legal/LegalService;
+    }
+    location /UsageDataService {
+            proxy_pass http://usage_data/UsageDataService;
+    }
+    location = /schema.json {
+            proxy_pass http://nexus/NexusService/schema.json;
+    }
+    location = /NexusService/graphiql {
+            proxy_pass http://nexus/graphiql;
+    }
+    location /NexusService/vendor {
+            proxy_pass http://nexus/vendor;
+    }
+    location /graphql {
+            proxy_pass http://nexus/NexusService;
+    }
+    location /NexusService {
+            proxy_pass http://nexus/NexusService;
+    }
+}
