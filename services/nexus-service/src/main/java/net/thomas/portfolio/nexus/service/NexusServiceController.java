@@ -32,7 +32,7 @@ import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 @SpringBootApplication
 public class NexusServiceController {
 
-	private static final String GRAPHQL_SERVLET_MAPPING = NEXUS_SERVICE_PATH + "/graphql/*";
+	private static final String GRAPHQL_SERVLET_MAPPING = NEXUS_SERVICE_PATH + "/*";
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
