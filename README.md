@@ -12,7 +12,7 @@ Click the play button, and you are running a query on the AWS instance I have se
 
 Feel free to experiment, but also note that the resources are very limited (1 core, 2 GB of ram, and it is running 8 services simultaneously). If it is very slow, or starts hanging and/or failing, either scale back your queries, or come back at a later time and try again.  
 
-To familiarize yourself with GraphiQL, I recommend going to [their introduction of queries](https://graphql.github.io/learn/queries/). 
+To familiarize yourself with GraphiQL, I recommend going to [their introduction of queries](https://graphql.github.io/learn/queries/). The model can be browsed directly from the tool (in the right pane), and it will try to auto-complete queries when typing. 
 
 ### For a local setup
 - To experiment locally, check out the entire repository.
