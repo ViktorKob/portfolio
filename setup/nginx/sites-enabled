@@ -1,7 +1,8 @@
 server {
     server_name ec2-35-163-101-53.us-west-2.compute.amazonaws.com;
     listen 80;
-
+	large_client_header_buffers 10 64k;
+	
     location = / {
             proxy_pass http://eureka/;
     }
