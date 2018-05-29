@@ -22,6 +22,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
@@ -89,6 +90,10 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	public void setReferences(Map<String, Collection<Reference>> sourceReferences) {
 		this.sourceReferences = sourceReferences;
+	}
+
+	public List<Selector> getSelectorSuggestions(String selectorString) {
+		return new LinkedList<>();
 	}
 
 	@Override

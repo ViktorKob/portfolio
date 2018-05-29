@@ -10,6 +10,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
 public interface HbaseIndexModelAdaptor {
@@ -36,6 +37,7 @@ public interface HbaseIndexModelAdaptor {
 	Collection<Field> getDataTypeFields(String dataType);
 
 	/*** Data ***/
+	List<Selector> getSelectorSuggestions(String selectorString);
 
 	DataType getDataType(DataTypeId id);
 

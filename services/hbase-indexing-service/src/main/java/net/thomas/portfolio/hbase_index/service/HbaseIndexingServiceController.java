@@ -6,6 +6,7 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_DATA_
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_REFERENCES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SCHEMA_PATH;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SELECTOR_SUGGESTIONS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_STATISTICS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_LOOKUP_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
@@ -35,6 +36,7 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
 import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaImpl;
@@ -49,6 +51,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
@@ -58,8 +61,9 @@ public class HbaseIndexingServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final SpecificStringPresenceValidator DOCUMENT_TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final SpecificStringPresenceValidator SELECTOR_TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final StringPresenceValidator SELECTOR_STRING = new StringPresenceValidator("selectorString", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
-	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, true);
+	private static final IntegerRangeValidator AMOUNT = new IntegerRangeValidator("amount", 1, MAX_VALUE, false);
 
 	private final HbaseIndexingServiceConfiguration config;
 	@Autowired
@@ -105,6 +109,9 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(GET_SAMPLES_PATH)
 	public ResponseEntity<?> getSamples(String dti_type, Integer amount) {
 		if (TYPE.isValid(dti_type) && AMOUNT.isValid(amount)) {
+			if (amount == null) {
+				amount = 10;
+			}
 			final Collection<DataType> samples = index.getSamples(dti_type, amount);
 			if (samples != null && samples.size() > 0) {
 				return ok(samples);
@@ -113,6 +120,21 @@ public class HbaseIndexingServiceController {
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(dti_type) + "<BR>" + AMOUNT.getReason(amount));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(GET_SELECTOR_SUGGESTIONS_PATH)
+	public ResponseEntity<?> getSelectorSuggestions(String selectorString) {
+		if (SELECTOR_STRING.isValid(selectorString)) {
+			final List<Selector> suggestions = index.getSelectorSuggestions(selectorString);
+			if (suggestions != null && suggestions.size() > 0) {
+				return ok(suggestions);
+			} else {
+				return notFound().build();
+			}
+		} else {
+			return badRequest().body(SELECTOR_STRING.getReason(selectorString));
 		}
 	}
 
