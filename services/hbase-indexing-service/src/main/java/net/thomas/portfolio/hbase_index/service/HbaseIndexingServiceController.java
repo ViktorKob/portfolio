@@ -8,7 +8,7 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SAMPL
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SELECTOR_SUGGESTIONS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_STATISTICS_PATH;
-import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.LOOKUP_SELECTOR_IN_INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.springframework.http.ResponseEntity.badRequest;
@@ -154,8 +154,8 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(INVERTED_INDEX_LOOKUP_PATH)
-	public ResponseEntity<?> invertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds,
+	@RequestMapping(LOOKUP_SELECTOR_IN_INVERTED_INDEX_PATH)
+	public ResponseEntity<?> lookupSelectorInInvertedIndex(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds,
 			@RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
 			@RequestParam(value = "relation", required = false) HashSet<String> relations) {
 		if (SELECTOR_TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
