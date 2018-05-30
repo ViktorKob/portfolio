@@ -1,6 +1,7 @@
 package net.thomas.portfolio.service_commons.services;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -110,7 +111,7 @@ public class HttpRestClient {
 		return new HttpEntity<>(headers);
 	}
 
-	private InstanceInfo getHbaseServiceInfo(String serviceName) {
+	private InstanceInfo getServiceInfo(String serviceName) {
 		InstanceInfo instanceInfo = null;
 		int tries = 0;
 		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
@@ -118,10 +119,10 @@ public class HttpRestClient {
 				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
 			} catch (final RuntimeException e) {
 				if (e.getMessage()
-					.contains("No matches for the virtual host")) {
+						.contains("No matches for the virtual host")) {
 					tries++;
 					System.out
-						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
+							.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
 					try {
 						Thread.sleep(5000);
 					} catch (final InterruptedException e1) {
@@ -148,21 +149,21 @@ public class HttpRestClient {
 	}
 
 	private URI buildUri(Service service, ServiceEndpoint endpoint, ParameterGroup... groups) {
-		final Collection<Parameter> parameters = Arrays.stream(groups)
-			.map(ParameterGroup::getParameters)
-			.flatMap(Arrays::stream)
-			.collect(Collectors.toList());
+		final Collection<Parameter> parameters = stream(groups)
+				.map(ParameterGroup::getParameters)
+				.flatMap(Arrays::stream)
+				.collect(Collectors.toList());
 		return buildUri(service, endpoint, parameters);
 	}
 
 	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Collection<Parameter> parameters) {
-		final InstanceInfo instanceInfo = getHbaseServiceInfo(serviceInfo.getName());
+		final InstanceInfo instanceInfo = getServiceInfo(serviceInfo.getName());
 		final String serviceUrl = instanceInfo.getHomePageUrl();
 		final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serviceUrl + buildResourceUrl(serviceId, endpoint));
 		addParametersToBuilder(builder, parameters);
 		return builder.build()
-			.encode()
-			.toUri();
+				.encode()
+				.toUri();
 	}
 
 	private void addParametersToBuilder(UriComponentsBuilder builder, Collection<Parameter> parameters) {
