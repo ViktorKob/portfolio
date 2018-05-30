@@ -120,7 +120,8 @@ public interface HbaseIndexModelAdaptor {
 	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
 
 	/***
-	 * This method allows for lookups of data using the inverted index using selectors and bounds.<BR>
+	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds, legal information and a set of optional filtering
+	 * values.<BR>
 	 *
 	 * <B>All queries into the inverted index are validated using the legal service before the query is executed.</B>
 	 *

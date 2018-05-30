@@ -41,7 +41,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link AnalyticsAdaptor#getPriorKnowledge}
+	 * Using {@link AnalyticsAdaptor#getPriorKnowledge}<BR>
 	 *
 	 * @param selectorId
 	 *            The ID of the selector to query about
@@ -52,7 +52,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getDataTypes}
+	 * Using {@link HbaseIndexModelAdaptor#getDataTypes}<BR>
 	 *
 	 * @return All data types present in the current schema
 	 */
@@ -61,7 +61,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getDocumentTypes}
+	 * Using {@link HbaseIndexModelAdaptor#getDocumentTypes}<BR>
 	 *
 	 * @return All document types in the current schema
 	 */
@@ -70,7 +70,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getSelectorTypes}
+	 * Using {@link HbaseIndexModelAdaptor#getSelectorTypes}<BR>
 	 *
 	 * @return All selector types in the current schema
 	 */
@@ -79,7 +79,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getIndexedDocumentTypes}
+	 * Using {@link HbaseIndexModelAdaptor#getIndexedDocumentTypes}<BR>
 	 *
 	 * @param selectorType
 	 *            The selector type in question
@@ -90,7 +90,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelationTypes}
+	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelationTypes}<BR>
 	 *
 	 * @param selectorType
 	 *            The selector type in question
@@ -101,7 +101,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getSelectorSuggestions}
+	 * Using {@link HbaseIndexModelAdaptor#getSelectorSuggestions}<BR>
 	 *
 	 * @param simpleRepresentation
 	 *            A simple, human readable representation of a selector
@@ -112,7 +112,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getIdFromSimpleRep}
+	 * Using {@link HbaseIndexModelAdaptor#getIdFromSimpleRep}<BR>
 	 *
 	 * @param type
 	 *            Type of the selector
@@ -125,7 +125,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#isSimpleRepresentable}
+	 * Using {@link HbaseIndexModelAdaptor#isSimpleRepresentable}<BR>
 	 *
 	 * @param type
 	 *            Type of the selector
@@ -136,7 +136,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#isSelector}
+	 * Using {@link HbaseIndexModelAdaptor#isSelector}<BR>
 	 *
 	 * @param type
 	 *            The data type is question
@@ -147,7 +147,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#isDocument}
+	 * Using {@link HbaseIndexModelAdaptor#isDocument}<BR>
 	 *
 	 * @param type
 	 *            The data type is question
@@ -158,7 +158,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getDataTypeFields}
+	 * Using {@link HbaseIndexModelAdaptor#getDataTypeFields}<BR>
 	 *
 	 * @param dataType
 	 *            The data type in question
@@ -169,7 +169,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getDataType}
+	 * Using {@link HbaseIndexModelAdaptor#getDataType}<BR>
 	 *
 	 * @param id
 	 *            Id of the data type to load
@@ -180,7 +180,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getReferences}
+	 * Using {@link HbaseIndexModelAdaptor#getReferences}<BR>
 	 *
 	 * @param documentId
 	 *            The ID of the document to load references for
@@ -191,7 +191,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getStatistics}
+	 * Using {@link HbaseIndexModelAdaptor#getStatistics}<BR>
 	 *
 	 * <B>All queries into the selector statistics are validated using the legal service before the query is executed.</B>
 	 *
@@ -204,9 +204,10 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#lookupSelectorInInvertedIndex}
+	 * Using {@link HbaseIndexModelAdaptor#lookupSelectorInInvertedIndex}<BR>
 	 *
-	 * This method allows for lookups of data using the inverted index using selectors and bounds.<BR>
+	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds, legal information and a set of optional filtering
+	 * values.<BR>
 	 *
 	 * <B>All queries into the inverted index are validated using the legal service before the query is executed.</B>
 	 *
