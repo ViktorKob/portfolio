@@ -7,7 +7,7 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_REFERE
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_SCHEMA;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_SELECTOR_SUGGESTIONS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_STATISTICS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX_LOOKUP;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.LOOKUP_SELECTOR_IN_INVERTED_INDEX;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 
 import java.util.Collection;
@@ -144,9 +144,9 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
-	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest request) {
+	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, INVERTED_INDEX_LOOKUP, responseType, request.getGroups());
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, LOOKUP_SELECTOR_IN_INVERTED_INDEX, responseType, request.getGroups());
 	}
 }
