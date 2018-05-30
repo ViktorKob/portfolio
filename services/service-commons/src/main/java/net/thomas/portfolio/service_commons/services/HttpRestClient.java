@@ -128,7 +128,7 @@ public class HttpRestClient {
 					} catch (final InterruptedException e1) {
 					}
 				} else {
-					throw new RuntimeException("Unable to perform GET", e);
+					throw new RuntimeException("Unable to complete service discovery", e);
 				}
 			}
 		}
