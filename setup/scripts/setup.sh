@@ -1,9 +1,9 @@
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get -y upgrade
 sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw enable
-sudo apt-get install maven git openjdk-8-jdk nginx
+sudo apt-get -y install maven git openjdk-8-jdk nginx
 mkdir git
 cd git
 git config credential.helper store
