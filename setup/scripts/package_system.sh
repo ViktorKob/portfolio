@@ -11,6 +11,7 @@ mvn package
 cd 
 
 echo "Moving services to staging folder"
+mkdir -p ~/services 
 cp ~/git/portfolio/infrastructure/target/infrastructure-service.jar ~/services/
 
 cp ~/git/portfolio/services/analytics-service/target/analytics-service.jar ~/services/
