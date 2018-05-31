@@ -33,7 +33,7 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 			throw new GraphQLException("Search for selector " + id.type + "-" + id.uid + " must be justified by a specific user");
 		} else {
 			if (adaptors.auditLogInvertedIndexLookup(id, request.legalInfo)) {
-				return adaptors.invertedIndexLookup(request);
+				return adaptors.lookupSelectorInInvertedIndex(request);
 			}
 			return emptyList();
 		}

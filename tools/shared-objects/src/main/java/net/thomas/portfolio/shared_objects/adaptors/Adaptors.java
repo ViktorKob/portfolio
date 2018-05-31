@@ -11,6 +11,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
@@ -18,6 +19,9 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 
+/***
+ * This collection of adaptors allows usage of all endpoints in the service infrastructure as java methods.
+ */
 public class Adaptors {
 	private final AnalyticsAdaptor analyticsAdaptor;
 	private final HbaseIndexModelAdaptor hbaseModelAdaptor;
@@ -36,64 +40,183 @@ public class Adaptors {
 		utilities = new ModelUtilities();
 	}
 
+	/***
+	 * Using {@link AnalyticsAdaptor#getPriorKnowledge}<BR>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector to query about
+	 * @return A summary of the knowledge about this exact selector present in the system
+	 */
 	public PriorKnowledge getPriorKnowledge(DataTypeId selectorId) {
 		return analyticsAdaptor.getPriorKnowledge(selectorId);
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getDataTypes}<BR>
+	 *
+	 * @return All data types present in the current schema
+	 */
 	public Collection<String> getDataTypes() {
 		return hbaseModelAdaptor.getDataTypes();
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getDocumentTypes}<BR>
+	 *
+	 * @return All document types in the current schema
+	 */
 	public Collection<String> getDocumentTypes() {
 		return hbaseModelAdaptor.getDocumentTypes();
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getSelectorTypes}<BR>
+	 *
+	 * @return All selector types in the current schema
+	 */
 	public Collection<String> getSelectorTypes() {
 		return hbaseModelAdaptor.getSelectorTypes();
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getIndexedDocumentTypes}<BR>
+	 *
+	 * @param selectorType
+	 *            The selector type in question
+	 * @return All document types in the current schema, that can be hit when querying for this selector type
+	 */
 	public Collection<String> getIndexedDocumentTypes(String selectorType) {
 		return hbaseModelAdaptor.getIndexedDocumentTypes(selectorType);
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelationTypes}<BR>
+	 *
+	 * @param selectorType
+	 *            The selector type in question
+	 * @return All types of relations in the current schema, that can be hit when querying for this selector type
+	 */
 	public Collection<String> getIndexedRelationTypes(String selectorType) {
 		return hbaseModelAdaptor.getIndexedRelations(selectorType);
 	}
 
-	public boolean isSimpleRepresentable(String dataType) {
-		return hbaseModelAdaptor.isSimpleRepresentable(dataType);
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getSelectorSuggestions}<BR>
+	 *
+	 * @param simpleRepresentation
+	 *            A simple, human readable representation of a selector
+	 * @return A list of possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
+	 */
+	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
+		return hbaseModelAdaptor.getSelectorSuggestions(simpleRepresentation);
 	}
 
-	public boolean isSelector(String dataType) {
-		return hbaseModelAdaptor.isSelector(dataType);
-	}
-
-	public boolean isDocument(String dataType) {
-		return hbaseModelAdaptor.isDocument(dataType);
-	}
-
-	public Collection<Field> getDataTypeFields(String dataType) {
-		return hbaseModelAdaptor.getDataTypeFields(dataType);
-	}
-
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getIdFromSimpleRep}<BR>
+	 *
+	 * @param type
+	 *            Type of the selector
+	 * @param simpleRep
+	 *            A simple, human readable representation of the selector
+	 * @return The ID for the selector in the current schema
+	 */
 	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
 		return hbaseModelAdaptor.getIdFromSimpleRep(type, simpleRep);
 	}
 
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#isSimpleRepresentable}<BR>
+	 *
+	 * @param type
+	 *            Type of the selector
+	 * @return true, if the selector has a simple, human readable representation
+	 */
+	public boolean isSimpleRepresentable(String dataType) {
+		return hbaseModelAdaptor.isSimpleRepresentable(dataType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#isSelector}<BR>
+	 *
+	 * @param type
+	 *            The data type is question
+	 * @return true, if this type is a Selector in the current schema
+	 */
+	public boolean isSelector(String dataType) {
+		return hbaseModelAdaptor.isSelector(dataType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#isDocument}<BR>
+	 *
+	 * @param type
+	 *            The data type is question
+	 * @return true, if this type is a Document in the current schema
+	 */
+	public boolean isDocument(String dataType) {
+		return hbaseModelAdaptor.isDocument(dataType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getDataTypeFields}<BR>
+	 *
+	 * @param dataType
+	 *            The data type in question
+	 * @return All fields belonging to this type in the current schema
+	 */
+	public Collection<Field> getDataTypeFields(String dataType) {
+		return hbaseModelAdaptor.getDataTypeFields(dataType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getDataType}<BR>
+	 *
+	 * @param id
+	 *            Id of the data type to load
+	 * @return The complete set of values for this data type with all sub-types
+	 */
 	public DataType getDataType(DataTypeId id) {
 		return hbaseModelAdaptor.getDataType(id);
 	}
 
-	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
-		return hbaseModelAdaptor.getStatistics(selectorId);
-	}
-
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getReferences}<BR>
+	 *
+	 * @param documentId
+	 *            The ID of the document to load references for
+	 * @return All references for this data type in the index
+	 */
 	public Collection<Reference> getReferences(DataTypeId id) {
 		return hbaseModelAdaptor.getReferences(id);
 	}
 
-	public List<DocumentInfo> invertedIndexLookup(InvertedIndexLookupRequest request) {
-		return hbaseModelAdaptor.invertedIndexLookup(request);
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getStatistics}<BR>
+	 *
+	 * <B>All queries into the selector statistics are validated using the legal service before the query is executed.</B>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector to load statistics for
+	 * @return An occurrence count for how often this selector is seen in the data, grouped by a set of time periods from today backwards
+	 */
+	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
+		return hbaseModelAdaptor.getStatistics(selectorId);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#lookupSelectorInInvertedIndex}<BR>
+	 *
+	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds, legal information and a set of optional filtering
+	 * values.<BR>
+	 *
+	 * <B>All queries into the inverted index are validated using the legal service before the query is executed.</B>
+	 *
+	 * @param request
+	 *            The description of a lookup in the inverted index
+	 * @return A list of document information containers ordered by time of event (descending)
+	 */
+	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
+		return hbaseModelAdaptor.lookupSelectorInInvertedIndex(request);
 	}
 
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
