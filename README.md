@@ -13,7 +13,7 @@ To log in, use **service-user** and **password**.
 
 Click the play button, and you are running a query on the AWS instance I have setup for this purpose. 
 
-Feel free to experiment, but also note that the resources are very limited (AWS t2.small service with 1 core and 2 GiB of ram, that is running 8 services simultaneously). If it is very slow, or starts hanging and/or failing, either scale back your queries, or come back at a later time and try again.  
+Feel free to experiment, but also note that the resources are very limited (AWS t2.medium service with 2 cores and 4 GiB of ram, that is running 8 services simultaneously). If it is very slow, or starts hanging and/or failing, either scale back your queries, or come back at a later time and try again.  
 
 To familiarize yourself with GraphiQL, I recommend going to [their introduction of queries](https://graphql.github.io/learn/queries/). The model can be browsed directly from the tool (in the right pane), and it will try to auto-complete queries when typing. 
 
