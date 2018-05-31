@@ -18,7 +18,7 @@ public class SubTypeArrayFetcher extends ModelDataFetcher<List<?>> {
 
 	@Override
 	public List<?> _get(DataFetchingEnvironment environment) {
-		final DataType parent = environment.getSource();
+		final DataType parent = extractOrFetchDataType(environment);
 		return (List<?>) parent.get(fieldName);
 	}
 }
