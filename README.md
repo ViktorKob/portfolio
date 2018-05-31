@@ -55,7 +55,7 @@ _Fake HBASE service, allowing for model-discovery and emulating lookups in HBASE
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/HbaseIndexingService/getSchema</li><li>/HbaseIndexingService/getSamples</li><li>/HbaseIndexingService/getDataType</li><li>/HbaseIndexingService/invertedIndexLookup</li><li>/HbaseIndexingService/getStatistics</li><li>/HbaseIndexingService/getReferences</li></ul>|
+|**Endpoints**|<ul><li>/HbaseIndexingService/getSchema</li><li>/HbaseIndexingService/getSamples</li><li>/HbaseIndexingService/getDataType</li><li>/HbaseIndexingService/lookupSelectorInInvertedIndex</li><li>/HbaseIndexingService/getStatistics</li><li>/HbaseIndexingService/getReferences</li></ul>|
 
 The purpose of this service is to emulate lookups into HBASE tables. This should be seen as an index build on top of whatever data is ingested into the infrastructure, with a data model representing the content of the index.
 
