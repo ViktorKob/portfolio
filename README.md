@@ -157,6 +157,7 @@ Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup
 
 # Plans for the future
 - [ ] Automated service level acceptance testing
+- [ ] Failover for services and red-green deployment of changes 
 - [ ] Make Eureka and the clients AWS aware
 - [ ] Add OpenAPI 3 integration to the services
 - [ ] Add support for the build-in spring rest endpoints (info, health, mappings, metrics, etc.)
