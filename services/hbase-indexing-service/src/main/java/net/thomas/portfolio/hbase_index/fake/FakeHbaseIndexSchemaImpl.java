@@ -1,18 +1,21 @@
 package net.thomas.portfolio.hbase_index.fake;
 
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.function.Function;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
@@ -77,15 +80,11 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 	}
 
 	private Set<String> setOf(String... values) {
-		return new HashSet<>(Arrays.asList(values));
+		return new HashSet<>(asList(values));
 	}
 
 	private Map<String, Field> fields(Field... fields) {
-		final Map<String, Field> mappedFields = new TreeMap<>();
-		for (final Field field : fields) {
-			mappedFields.put(field.getName(), field);
-		}
-		return mappedFields;
+		return stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new));
 	}
 
 	private PrimitiveField string(String name) {
