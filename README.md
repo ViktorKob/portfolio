@@ -24,7 +24,7 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 - Start the infrastructure service from the infrastructure folder. 
 - Run each service using its respective *Application.java. Order should not matter, if you start all of them shortly after each other.
 
-Now you can do as described above, but locally. Note that unless you also setup a local nginx, you will need to specify ports directly when running queries, though. An example is the nexus, that should be running at (localhost:8100/NexusService/graphiql).
+Now you can do as described above, but locally. Note that unless you also setup a local reverse proxy, you will need to specify ports directly when running queries, though. An example is the nexus, that should be running at (localhost:8100/NexusService/graphiql).
 
 # Status at the moment
 The project contains a set of services:
