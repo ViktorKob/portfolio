@@ -2,12 +2,13 @@ package net.thomas.portfolio.service_commons.services;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_DATA_TYPE;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_REFERENCES;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_SCHEMA;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_SELECTOR_SUGGESTIONS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.GET_STATISTICS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.LOOKUP_SELECTOR_IN_INVERTED_INDEX;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 
 import java.util.Collection;
@@ -20,7 +21,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 
-import net.thomas.portfolio.common.services.PreSerializedParameter;
+import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
@@ -28,20 +29,20 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
+	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
 	private final HttpRestClient client;
 	private final HbaseIndexSchema schema;
 	private final Cache<DataTypeId, DataType> dataTypeCache;
 
 	public HbaseIndexModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SCHEMA, HBaseIndexSchemaSerialization.class);
+		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, HBaseIndexSchemaSerialization.class);
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 			.maximumSize(10000)
 			.build(new CacheLoader<DataTypeId, DataType>() {
@@ -106,11 +107,12 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
-	public List<Selector> getSelectorSuggestions(String selectorString) {
-		final ParameterizedTypeReference<List<Selector>> responseType = new ParameterizedTypeReference<List<Selector>>() {
+	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
+		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_SELECTOR_SUGGESTIONS, responseType,
-				new PreSerializedParameter("selectorString", selectorString));
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
+			return SUGGESTIONS.getPath() + "/" + selectorString;
+		}, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -126,27 +128,36 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	private DataType fetchDataType(DataTypeId id) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_DATA_TYPE, DataType.class, id);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
+			return "/" + id.getDti_type() + "/" + id.getDti_uid();
+		}, DataType.class);
 	}
 
 	@Override
 	public Collection<Reference> getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Collection<Reference>> responseType = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_REFERENCES, responseType, documentId);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
+			return DOCUMENTS.getPath() + "/" + documentId.getDti_type() + "/" + documentId.getDti_uid() + REFERENCES.getPath();
+		}, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
 	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> responseType = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, GET_STATISTICS, responseType, selectorId);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
+			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + STATISTICS.getPath();
+		}, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
 	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, LOOKUP_SELECTOR_IN_INVERTED_INDEX, responseType, request.getGroups());
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
+			final DataTypeId selectorId = request.getSelectorId();
+			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + INVERTED_INDEX.getPath();
+		}, responseType, request.getGroups());
 	}
 }

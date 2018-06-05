@@ -2,6 +2,7 @@ package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +23,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
@@ -92,10 +92,6 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		this.sourceReferences = sourceReferences;
 	}
 
-	public List<Selector> getSelectorSuggestions(String selectorString) {
-		return new LinkedList<>();
-	}
-
 	@Override
 	public DataType getDataType(DataTypeId id) {
 		if (storage.containsKey(id.type)) {
@@ -138,18 +134,22 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	public Collection<DataType> getSamples(String type, int amount) {
-		if (amount >= storage.get(type)
-			.size()) {
-			return storage.get(type)
-				.values();
-		} else {
-			final List<DataType> instances = new ArrayList<>(storage.get(type)
-				.values());
-			final Set<DataType> samples = new HashSet<>();
-			while (samples.size() < amount) {
-				samples.add(getRandomInstance(instances));
+		if (storage.containsKey(type)) {
+			if (amount >= storage.get(type)
+				.size()) {
+				return storage.get(type)
+					.values();
+			} else {
+				final List<DataType> instances = new ArrayList<>(storage.get(type)
+					.values());
+				final Set<DataType> samples = new HashSet<>();
+				while (samples.size() < amount) {
+					samples.add(getRandomInstance(instances));
+				}
+				return samples;
 			}
-			return samples;
+		} else {
+			return emptySet();
 		}
 	}
 

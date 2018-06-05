@@ -19,6 +19,9 @@ import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.SmsGenerator;
@@ -35,6 +38,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
+@Component
+@Scope("singleton")
 public class FakeDataSetGenerator {
 	private static final long A_DAY = 1000 * 60 * 60 * 24;
 	private static final long A_WEEK = 7 * A_DAY;
@@ -43,7 +48,7 @@ public class FakeDataSetGenerator {
 	private long randomSeed = 1234l;
 
 	private final FakeHbaseIndexSchemaImpl schema;
-	private FakeHbaseIndex storage;
+	private final FakeHbaseIndex storage;
 	private Map<String, DataType> localnames;
 	private Map<String, DataType> displayedNames;
 	private Map<String, DataType> topLevelDomains;
@@ -61,15 +66,19 @@ public class FakeDataSetGenerator {
 
 	public FakeDataSetGenerator() {
 		schema = new FakeHbaseIndexSchemaImpl();
+		storage = new FakeHbaseIndex();
 	}
 
 	public FakeHbaseIndexSchemaImpl getSchema() {
 		return schema;
 	}
 
+	public FakeHbaseIndex getSampleDataSet() {
+		return storage;
+	}
+
 	public void buildSampleDataSet(long randomSeed) {
 		this.randomSeed = randomSeed;
-		storage = new FakeHbaseIndex();
 		generateLocalnames();
 		generateDisplayedNames();
 		generateDomains();
@@ -325,10 +334,6 @@ public class FakeDataSetGenerator {
 			}
 		}
 		return allReferences;
-	}
-
-	public FakeHbaseIndex getSampleDataSet() {
-		return storage;
 	}
 
 	public static void main(String[] args) {
