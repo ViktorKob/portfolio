@@ -55,7 +55,7 @@ _Fake HBASE service, allowing for model-discovery and emulating lookups in HBASE
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/HbaseIndexingService/{version}/getSchema</li><li>/HbaseIndexingService/{version}/documents/{type}/getSamples</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/references</li><li>/HbaseIndexingService/{version}/selectors/{type}/getSamples</li><li>/HbaseIndexingService/{version}/selectors/{type}/{uid}</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/statistics</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/invertedIndex</li><li>/HbaseIndexingService/{version}/entities/{type}/getSamples</li><li>/HbaseIndexingService/{version}/entities/{type}/{uid}</li></ul>|
+|**Endpoints**|<ul><li>/HbaseIndexingService/{version}/schema</li><li>/HbaseIndexingService/{version}/documents/{type}/samples</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/references</li><li>/HbaseIndexingService/{version}/selectors/{type}/samples</li><li>/HbaseIndexingService/{version}/selectors/{type}/{uid}</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/statistics</li><li>/HbaseIndexingService/{version}/documents/{type}/{uid}/invertedIndex</li><li>/HbaseIndexingService/{version}/entities/{type}/samples</li><li>/HbaseIndexingService/{version}/entities/{type}/{uid}</li></ul>|
 
 The purpose of this service is to emulate lookups into HBASE tables. This should be seen as an index build on top of whatever data is ingested into the infrastructure, with a data model representing the content of the index.
 
