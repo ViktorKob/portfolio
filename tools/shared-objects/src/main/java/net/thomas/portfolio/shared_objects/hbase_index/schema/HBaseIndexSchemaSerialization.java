@@ -1,6 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -120,6 +123,23 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	public Field getFieldForIndexable(Indexable indexable) {
 		return dataTypeFields.get(indexable.documentType)
 			.get(indexable.documentField);
+	}
+
+	@Override
+	@JsonIgnore
+	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
+		final LinkedList<DataTypeId> selectorIds = new LinkedList<>();
+		for (final String selectorType : getSelectorTypes()) {
+			try {
+				final DataTypeId selectorId = new DataTypeId(selectorType, calculateUid(selectorType, selectorString));
+				if (selectorId != null) {
+					selectorIds.add(selectorId);
+				}
+			} catch (final Throwable t) {
+				// Ignored
+			}
+		}
+		return selectorIds;
 	}
 
 	@Override

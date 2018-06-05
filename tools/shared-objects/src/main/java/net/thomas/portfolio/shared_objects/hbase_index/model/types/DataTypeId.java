@@ -11,6 +11,7 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataTypeId implements ParameterGroup {
+	public static final String GET_REQUEST_PATH = "";
 	@JsonIgnore
 	public String type;
 	@JsonIgnore

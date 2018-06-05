@@ -28,7 +28,7 @@ public class SmsGenerator extends DocumentGenerator {
 
 	@Override
 	protected final boolean keyShouldBeUnique() {
-		return true;
+		return false;
 	}
 
 	@Override

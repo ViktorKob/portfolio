@@ -11,7 +11,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
@@ -105,9 +104,9 @@ public class Adaptors {
 	 *
 	 * @param simpleRepresentation
 	 *            A simple, human readable representation of a selector
-	 * @return A list of possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
+	 * @return A list of IDs for possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
 	 */
-	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
+	public List<DataTypeId> getSelectorSuggestions(String simpleRepresentation) {
 		return hbaseModelAdaptor.getSelectorSuggestions(simpleRepresentation);
 	}
 

@@ -10,7 +10,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
 /***
@@ -25,9 +24,9 @@ public interface HbaseIndexModelAdaptor {
 	/***
 	 * @param simpleRepresentation
 	 *            A simple, human readable representation of a selector
-	 * @return A list of possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
+	 * @return A list of IDs for possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
 	 */
-	List<Selector> getSelectorSuggestions(String simpleRepresentation);
+	List<DataTypeId> getSelectorSuggestions(String simpleRepresentation);
 
 	/***
 	 * @param type

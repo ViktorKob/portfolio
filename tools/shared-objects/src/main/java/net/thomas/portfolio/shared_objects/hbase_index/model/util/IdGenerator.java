@@ -19,7 +19,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 public class IdGenerator {
 	private final Collection<Field> fields;
 	private final boolean keyShouldBeUnique;
-	private final int counter;
+	private int counter;
 
 	public IdGenerator(Collection<Field> fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
@@ -31,7 +31,7 @@ public class IdGenerator {
 		try {
 			final MessageDigest hasher = MessageDigest.getInstance("MD5");
 			if (keyShouldBeUnique) {
-				hasher.digest(String.valueOf(counter)
+				hasher.digest(String.valueOf(counter++)
 					.getBytes());
 			}
 

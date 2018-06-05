@@ -94,7 +94,7 @@ public class InvertedIndexLookupRequest {
 	}
 
 	public ParameterGroup[] getGroups() {
-		return new ParameterGroup[] { selectorId, legalInfo, bounds, new ParameterGroup.CollectionParameterGroup("documentType", documentTypes),
+		return new ParameterGroup[] { legalInfo, bounds, new ParameterGroup.CollectionParameterGroup("documentType", documentTypes),
 				new ParameterGroup.CollectionParameterGroup("relation", relations) };
 	}
 }
