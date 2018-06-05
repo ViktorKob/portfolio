@@ -62,13 +62,13 @@ public class HttpRestClient {
 			final long stamp = System.nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms calling " + request);
-			if (OK.equals(response.getStatusCode())) {
+			if (OK == response.getStatusCode()) {
 				return response.getBody();
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 			}
 		} catch (final HttpClientErrorException e) {
-			if (NOT_FOUND.equals(e.getStatusCode())) {
+			if (NOT_FOUND == e.getStatusCode()) {
 				return null;
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
@@ -119,10 +119,10 @@ public class HttpRestClient {
 				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
 			} catch (final RuntimeException e) {
 				if (e.getMessage()
-						.contains("No matches for the virtual host")) {
+					.contains("No matches for the virtual host")) {
 					tries++;
 					System.out
-							.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
+						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
 					try {
 						Thread.sleep(5000);
 					} catch (final InterruptedException e1) {
@@ -149,10 +149,9 @@ public class HttpRestClient {
 	}
 
 	private URI buildUri(Service service, ServiceEndpoint endpoint, ParameterGroup... groups) {
-		final Collection<Parameter> parameters = stream(groups)
-				.map(ParameterGroup::getParameters)
-				.flatMap(Arrays::stream)
-				.collect(Collectors.toList());
+		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters)
+			.flatMap(Arrays::stream)
+			.collect(Collectors.toList());
 		return buildUri(service, endpoint, parameters);
 	}
 
@@ -162,8 +161,8 @@ public class HttpRestClient {
 		final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serviceUrl + buildResourceUrl(serviceId, endpoint));
 		addParametersToBuilder(builder, parameters);
 		return builder.build()
-				.encode()
-				.toUri();
+			.encode()
+			.toUri();
 	}
 
 	private void addParametersToBuilder(UriComponentsBuilder builder, Collection<Parameter> parameters) {
