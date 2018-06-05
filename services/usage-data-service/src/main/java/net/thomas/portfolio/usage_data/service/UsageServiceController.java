@@ -3,7 +3,6 @@ package net.thomas.portfolio.usage_data.service;
 import static java.lang.Integer.MAX_VALUE;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.FETCH_USAGE_ACTIVITY_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
-import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 
@@ -36,7 +35,6 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @Controller
-@RequestMapping(USAGE_DATA_SERVICE_PATH)
 public class UsageServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);

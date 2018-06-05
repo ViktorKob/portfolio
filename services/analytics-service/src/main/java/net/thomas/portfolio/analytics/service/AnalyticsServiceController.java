@@ -1,7 +1,6 @@
 package net.thomas.portfolio.analytics.service;
 
 import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_PRIOR_KNOWLEDGE_PATH;
-import static net.thomas.portfolio.services.ServiceGlobals.ANALYTICS_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.KNOWN;
 import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.PARTIALLY_KNOWN;
 import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.UNKNOWN;
@@ -30,7 +29,6 @@ import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @Controller
-@RequestMapping(ANALYTICS_SERVICE_PATH)
 public class AnalyticsServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
