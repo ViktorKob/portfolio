@@ -1,6 +1,10 @@
 spring.application.name: hbase-indexing-service
 server.port: 8120
 
+http:
+  mappers:
+    jsonPrettyPrint: true
+
 security:
   user:
     name: service-user 
@@ -19,6 +23,7 @@ eureka:
   client:
     registerWithEureka: true
     fetchRegistry: true
+    registryFetchIntervalSeconds: 5    
     serviceUrl:
       defaultZone: http://localhost:8000/eureka
     
