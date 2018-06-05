@@ -1,0 +1,1 @@
+org.springframework.context.ApplicationListener=net.thomas.portfolio.hbase_index.service.HbaseIndexingServiceBasepathInitializer

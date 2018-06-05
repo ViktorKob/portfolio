@@ -1,7 +1,5 @@
 package net.thomas.portfolio.nexus.service;
 
-import static net.thomas.portfolio.services.ServiceGlobals.NEXUS_SERVICE_PATH;
-
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +30,7 @@ import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 @SpringBootApplication
 public class NexusServiceController {
 
-	private static final String GRAPHQL_SERVLET_MAPPING = NEXUS_SERVICE_PATH + "/*";
+	private static final String GRAPHQL_SERVLET_MAPPING = "/*";
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;

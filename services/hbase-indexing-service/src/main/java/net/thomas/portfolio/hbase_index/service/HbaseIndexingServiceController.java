@@ -9,7 +9,6 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SCHEM
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_SELECTOR_SUGGESTIONS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.GET_STATISTICS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.LOOKUP_SELECTOR_IN_INVERTED_INDEX_PATH;
-import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
@@ -56,7 +55,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @Controller
-@RequestMapping(HBASE_INDEXING_SERVICE_PATH)
 public class HbaseIndexingServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final SpecificStringPresenceValidator DOCUMENT_TYPE = new SpecificStringPresenceValidator("dti_type", true);

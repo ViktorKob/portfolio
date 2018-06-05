@@ -3,7 +3,6 @@ package net.thomas.portfolio.render.service;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
-import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +31,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @Controller
-@RequestMapping(RENDER_SERVICE_PATH)
 public class RenderServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
