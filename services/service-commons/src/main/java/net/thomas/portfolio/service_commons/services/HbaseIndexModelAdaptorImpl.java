@@ -3,6 +3,7 @@ package net.thomas.portfolio.service_commons.services;
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.ENTITIES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
@@ -20,6 +21,7 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 
 import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
@@ -121,6 +123,13 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 			return dataTypeCache.get(id, () -> {
 				return fetchDataType(id);
 			});
+		} catch (final InvalidCacheLoadException e) {
+			if (e.getMessage()
+				.contains("CacheLoader returned null for key")) {
+				return null;
+			} else {
+				throw new RuntimeException("Unable to fetch data type", e);
+			}
 		} catch (final ExecutionException e) {
 			e.printStackTrace();
 			return null;
@@ -129,7 +138,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	private DataType fetchDataType(DataTypeId id) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return "/" + id.getDti_type() + "/" + id.getDti_uid();
+			return ENTITIES.getPath() + "/" + id.getDti_type() + "/" + id.getDti_uid();
 		}, DataType.class);
 	}
 
