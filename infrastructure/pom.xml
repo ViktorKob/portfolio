@@ -18,15 +18,17 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
-	<properties> 
+	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
 	</properties>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/de.codecentric/spring-boot-admin-server -->
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-hystrix-dashboard</artifactId>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-server</artifactId>
+			<version>1.5.7</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

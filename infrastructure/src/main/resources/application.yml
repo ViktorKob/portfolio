@@ -4,7 +4,9 @@ server:
   port: 8000
 
 eureka:
-  instance.hostname: localhost
+  instance:
+    hostname: localhost
+    leaseRenewalIntervalInSeconds: 10
   client:
     registerWithEureka: false
     fetchRegistry: false

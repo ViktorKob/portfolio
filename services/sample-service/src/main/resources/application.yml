@@ -12,6 +12,7 @@ eureka:
   client:
     registerWithEureka: true
     fetchRegistry: true
+    registryFetchIntervalSeconds: 5    
     serviceUrl:
 #      defaultZone: http://ec2-34-209-142-238.us-west-2.compute.amazonaws.com:8000/
       defaultZone: http://localhost:8000/eureka
