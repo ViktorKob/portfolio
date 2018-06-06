@@ -12,4 +12,3 @@ cd
 cp ~/git/portfolio/setup/scripts/*.sh .
 chmod a+x *.sh
 ./package_system.sh
-
