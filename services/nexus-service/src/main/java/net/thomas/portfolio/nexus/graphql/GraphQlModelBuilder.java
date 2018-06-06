@@ -6,6 +6,7 @@ import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLArgument.newArgument;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
+import static graphql.schema.GraphQLInterfaceType.newInterface;
 import static graphql.schema.GraphQLList.list;
 import static graphql.schema.GraphQLNonNull.nonNull;
 import static graphql.schema.GraphQLObjectType.newObject;
@@ -27,6 +28,7 @@ import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLEnumValueDefinition;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLFieldDefinition.Builder;
+import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
@@ -139,6 +141,18 @@ public class GraphQlModelBuilder {
 				.dataFetcher(fetcher)
 				.build());
 		}
+		fields.add(newFieldDefinition().name("DataType")
+			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDataTypes()) + ")")
+			.type(buildDataTypeInterfaceType(adaptors))
+			.build());
+		fields.add(newFieldDefinition().name("Document")
+			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
+			.type(buildDocumentInterfaceType(adaptors))
+			.build());
+		fields.add(newFieldDefinition().name("Selector")
+			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getSelectorTypes()) + ")")
+			.type(buildSelectorInterfaceType(adaptors))
+			.build());
 		fields.add(newFieldDefinition().name("SelectorStatistics")
 			.description("Various statistics for specific selectors")
 			.type(buildSelectorStatisticsType(adaptors))
@@ -185,92 +199,35 @@ public class GraphQlModelBuilder {
 
 	private GraphQLObjectType buildObjectType(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType);
-		builder.field(newFieldDefinition().name("uid")
-			.description("Unique id for entity")
-			.type(GraphQLString)
-			.dataFetcher(new UidDataFetcher(adaptors)));
-		builder.field(newFieldDefinition().name("type")
-			.description("Data type of the entity")
-			.type(GraphQLString)
-			.dataFetcher(new TypeDataFetcher(adaptors)));
-		builder.field(newFieldDefinition().name("headline")
-			.description("Simple textual representation of the entity")
-			.type(GraphQLString)
-			.dataFetcher(new HeadlineDataFetcher(adaptors)));
-		builder.field(newFieldDefinition().name("html")
-			.description("HTML representation of the entity")
-			.type(GraphQLString)
-			.dataFetcher(new HtmlDataFetcher(adaptors)));
+		builder.withInterface(new GraphQLTypeReference("DataType"));
+		builder.field(createUidField(adaptors));
+		builder.field(createTypeField(adaptors));
+		builder.field(createHeadlineField(adaptors));
+		builder.field(createHtmlField(adaptors));
 
 		if (adaptors.isSimpleRepresentable(dataType)) {
-			builder.description("Simple representable selector");
-			builder.field(newFieldDefinition().name("simpleRep")
-				.description("Simple representation for the selector")
-				.type(GraphQLString)
-				.dataFetcher(new SimpleRepresentationDataFetcher(adaptors))
-				.build());
+			builder.description("A selector with a simple, easily recognizable representation like for instance an email address or a name");
+			builder.field(createSimpleRepresentationField(adaptors));
 		} else if (adaptors.isDocument(dataType)) {
-			builder.description("Document");
-			builder.field(newFieldDefinition().name("references")
-				.description("References describing how the document was obtained and restrictions on its usage")
-				.type(list(new GraphQLTypeReference("DocumentReference")))
-				.dataFetcher(new DocumentReferenceFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("rawData")
-				.description("Raw representation of the document as stored in the index")
-				.type(GraphQLString)
-				.dataFetcher(new RawDataFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("timeOfEvent")
-				.description("The best guess for when the event, defined by the document, occurred, in milliseconds since the epoch")
-				.type(GraphQLLong)
-				.dataFetcher(new TimeOfEventDataFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("timeOfInterception")
-				.description("The exact time for when the event, defined by the document, was intercepted, in milliseconds since the epoch")
-				.type(GraphQLLong)
-				.dataFetcher(new TimeOfInterceptionDataFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("formattedTimeOfEvent")
-				.description("The best guess for when the event, defined by the document, occurred, in IEC 8601 format")
-				.type(GraphQLString)
-				.argument(format(new LinkedList<>()))
-				.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("formattedTimeOfInterception")
-				.description("The exact time for when the event, defined by the document, was intercepted, in IEC 8601 format")
-				.type(GraphQLString)
-				.argument(format(new LinkedList<>()))
-				.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
-				.build());
+			builder.description("A document describing an event that occurred at some point in time");
+			builder.withInterface(new GraphQLTypeReference("Document"));
+			builder.field(createReferencesField(adaptors));
+			builder.field(createRawDataField(adaptors));
+			builder.field(createTimeOfEventField(adaptors));
+			builder.field(createTimeOfInterceptionField(adaptors));
+			builder.field(createFormattedTimeOfEventField(adaptors));
+			builder.field(createFormattedTimeOfInterceptionField(adaptors));
 		} else if (adaptors.isSelector(dataType)) {
-			builder.description("Selector without simple representation");
+			builder.description("A selector without a simple, easily recognizable representation like for instance a geo-tile");
 		} else {
-			builder.description("Composition type");
+			builder.description("A composition type that show a relation between multiple selectors, without being a selector itself");
 		}
 
 		if (adaptors.isSelector(dataType)) {
-			builder.field(newFieldDefinition().name("statistics")
-				.description("Lookup statstics over how often the selector occurs in the index")
-				.type(new GraphQLTypeReference("SelectorStatistics"))
-				.argument(justificationAnd(new LinkedList<>()))
-				.dataFetcher(new SelectorStatisticsFetcher(adaptors))
-				.build());
-			builder.field(newFieldDefinition().name("knowledge")
-				.description("Fetch prior knowledge about the selector from the analytics platform")
-				.type(new GraphQLTypeReference("Knowledge"))
-				.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
-				.build());
-			List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
-			arguments = relationsAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
-			arguments = documentTypesAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
-			arguments = justificationAnd(arguments);
-			builder.field(newFieldDefinition().name("events")
-				.description("Events that this " + dataType + " has been linked to in the index")
-				.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
-				.argument(arguments)
-				.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
-				.build());
+			builder.withInterface(new GraphQLTypeReference("Selector"));
+			builder.field(createStatisticsField(adaptors));
+			builder.field(createKnowledgeField(adaptors));
+			builder.field(createInvertedIndexLookupField(dataType, adaptors));
 		}
 
 		for (final Field field : adaptors.getDataTypeFields(dataType)) {
@@ -383,9 +340,7 @@ public class GraphQlModelBuilder {
 	}
 
 	private List<GraphQLArgument> documentTypesAnd(List<GraphQLArgument> arguments, Collection<String> documentTypes) {
-		final String documentTypeList = "[ " + documentTypes.stream()
-			.sorted()
-			.collect(joining(", ")) + " ]";
+		final String documentTypeList = buildPresentationListFromCollection(documentTypes);
 		arguments.add(newArgument().name("documentTypes")
 			.description("Document types that should be included in the response (from the set " + documentTypeList + " )")
 			.type(list(GraphQLString))
@@ -394,9 +349,7 @@ public class GraphQlModelBuilder {
 	}
 
 	private List<GraphQLArgument> relationsAnd(List<GraphQLArgument> arguments, Collection<String> relationTypes) {
-		final String relationTypeList = "[ " + relationTypes.stream()
-			.sorted()
-			.collect(joining(", ")) + " ]";
+		final String relationTypeList = buildPresentationListFromCollection(relationTypes);
 		arguments.add(newArgument().name("relations")
 			.description("Relation types that should be included in the response (from the set " + relationTypeList + " )")
 			.type(list(GraphQLString))
@@ -441,14 +394,45 @@ public class GraphQlModelBuilder {
 	private GraphQLObjectType createInvertedIndexLookupTypeForSelector(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType + "_documentTypes")
 			.description("Document types that can result from a search on this type");
-		// TODO[Thomas]: Change when Interfaces are added in GraphQL model
+		builder.field(createLookupField(adaptors, "Document"));
 		for (final String documentType : adaptors.getIndexedDocumentTypes(dataType)) {
-			builder.field(newFieldDefinition().name(documentType)
-				.description("Document types that this selector type occurs inside")
-				.type(list(new GraphQLTypeReference(documentType)))
-				.dataFetcher(new DocumentListFetcher(documentType, adaptors))
-				.build());
+			builder.field(createLookupField(adaptors, documentType));
 		}
+		return builder.build();
+	}
+
+	private GraphQLOutputType buildDataTypeInterfaceType(Adaptors adaptors) {
+		final GraphQLInterfaceType.Builder builder = newInterface().name("DataType")
+			.description("General interface for the different data types (from the set " + buildPresentationListFromCollection(adaptors.getDataTypes()) + ")")
+			.typeResolver(new DataTypeResolver(adaptors));
+		builder.field(createUidField(adaptors));
+		builder.field(createTypeField(adaptors));
+		builder.field(createHeadlineField(adaptors));
+		builder.field(createHtmlField(adaptors));
+		return builder.build();
+	}
+
+	private GraphQLOutputType buildDocumentInterfaceType(Adaptors adaptors) {
+		final GraphQLInterfaceType.Builder builder = newInterface().name("Document")
+			.description(
+					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
+			.typeResolver(new DocumentResolver(adaptors));
+		builder.field(createReferencesField(adaptors));
+		builder.field(createTimeOfEventField(adaptors));
+		builder.field(createTimeOfInterceptionField(adaptors));
+		builder.field(createFormattedTimeOfEventField(adaptors));
+		builder.field(createFormattedTimeOfInterceptionField(adaptors));
+		builder.field(createRawDataField(adaptors));
+		return builder.build();
+	}
+
+	private GraphQLOutputType buildSelectorInterfaceType(Adaptors adaptors) {
+		final GraphQLInterfaceType.Builder builder = newInterface().name("Selector")
+			.description(
+					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
+			.typeResolver(new SelectorResolver(adaptors));
+		builder.field(createStatisticsField(adaptors));
+		builder.field(createKnowledgeField(adaptors));
 		return builder.build();
 	}
 
@@ -536,5 +520,141 @@ public class GraphQlModelBuilder {
 			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptors))
 			.build());
 		return builder.build();
+	}
+
+	private GraphQLFieldDefinition createFormattedTimeOfInterceptionField(Adaptors adaptors) {
+		return newFieldDefinition().name("formattedTimeOfInterception")
+			.description("The exact time for when the event, defined by the document, was intercepted, in IEC 8601 format")
+			.type(GraphQLString)
+			.argument(format(new LinkedList<>()))
+			.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createFormattedTimeOfEventField(Adaptors adaptors) {
+		return newFieldDefinition().name("formattedTimeOfEvent")
+			.description("The best guess for when the event, defined by the document, occurred, in IEC 8601 format")
+			.type(GraphQLString)
+			.argument(format(new LinkedList<>()))
+			.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createTimeOfInterceptionField(Adaptors adaptors) {
+		return newFieldDefinition().name("timeOfInterception")
+			.description("The exact time for when the event, defined by the document, was intercepted, in milliseconds since the epoch")
+			.type(GraphQLLong)
+			.dataFetcher(new TimeOfInterceptionDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createTimeOfEventField(Adaptors adaptors) {
+		return newFieldDefinition().name("timeOfEvent")
+			.description("The best guess for when the event, defined by the document, occurred, in milliseconds since the epoch")
+			.type(GraphQLLong)
+			.dataFetcher(new TimeOfEventDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createRawDataField(Adaptors adaptors) {
+		return newFieldDefinition().name("rawData")
+			.description("Raw representation of the document as stored in the index")
+			.type(GraphQLString)
+			.dataFetcher(new RawDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createReferencesField(Adaptors adaptors) {
+		return newFieldDefinition().name("references")
+			.description("References describing how the document was obtained and restrictions on its usage")
+			.type(list(new GraphQLTypeReference("DocumentReference")))
+			.dataFetcher(new DocumentReferenceFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createHtmlField(Adaptors adaptors) {
+		return newFieldDefinition().name("html")
+			.description("HTML representation of the entity")
+			.type(GraphQLString)
+			.dataFetcher(new HtmlDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createHeadlineField(Adaptors adaptors) {
+		return newFieldDefinition().name("headline")
+			.description("Simple textual representation of the entity")
+			.type(GraphQLString)
+			.dataFetcher(new HeadlineDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createTypeField(Adaptors adaptors) {
+		return newFieldDefinition().name("type")
+			.description("Data type of the entity")
+			.type(GraphQLString)
+			.dataFetcher(new TypeDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createUidField(Adaptors adaptors) {
+		return newFieldDefinition().name("uid")
+			.description("Unique id for entity")
+			.type(GraphQLString)
+			.dataFetcher(new UidDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createSimpleRepresentationField(Adaptors adaptors) {
+		return newFieldDefinition().name("simpleRep")
+			.description("Simple representation for the selector")
+			.type(GraphQLString)
+			.dataFetcher(new SimpleRepresentationDataFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createInvertedIndexLookupField(String dataType, Adaptors adaptors) {
+		List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
+		arguments = relationsAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
+		arguments = documentTypesAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
+		arguments = justificationAnd(arguments);
+		final GraphQLFieldDefinition field = newFieldDefinition().name("events")
+			.description("Events that this " + dataType + " has been linked to in the index")
+			.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
+			.argument(arguments)
+			.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
+			.build();
+		return field;
+	}
+
+	private GraphQLFieldDefinition createLookupField(Adaptors adaptors, final String documentType) {
+		return newFieldDefinition().name(documentType)
+			.description("Document types that this selector type occurs inside")
+			.type(list(new GraphQLTypeReference(documentType)))
+			.dataFetcher(new DocumentListFetcher(documentType, adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createKnowledgeField(Adaptors adaptors) {
+		return newFieldDefinition().name("knowledge")
+			.description("Fetch prior knowledge about the selector from the analytics platform")
+			.type(new GraphQLTypeReference("Knowledge"))
+			.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
+			.build();
+	}
+
+	private GraphQLFieldDefinition createStatisticsField(Adaptors adaptors) {
+		return newFieldDefinition().name("statistics")
+			.description("Lookup statstics over how often the selector occurs in the index")
+			.type(new GraphQLTypeReference("SelectorStatistics"))
+			.argument(justificationAnd(new LinkedList<>()))
+			.dataFetcher(new SelectorStatisticsFetcher(adaptors))
+			.build();
+	}
+
+	private String buildPresentationListFromCollection(Collection<String> values) {
+		final String listOfValues = "[ " + values.stream()
+			.sorted()
+			.collect(joining(", ")) + " ]";
+		return listOfValues;
 	}
 }
