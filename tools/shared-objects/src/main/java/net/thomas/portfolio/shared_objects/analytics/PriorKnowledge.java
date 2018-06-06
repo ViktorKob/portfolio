@@ -10,17 +10,17 @@ public class PriorKnowledge {
 	@JsonIgnore
 	public String alias;
 	@JsonIgnore
-	public RecognitionLevel recognition;
+	public ConfidenceLevel recognition;
 	@JsonIgnore
-	public RecognitionLevel isDanish;
+	public ConfidenceLevel isRestricted;
 
 	public PriorKnowledge() {
 	}
 
-	public PriorKnowledge(String alias, RecognitionLevel recognition, RecognitionLevel isDanish) {
+	public PriorKnowledge(String alias, ConfidenceLevel recognition, ConfidenceLevel isDanish) {
 		this.alias = alias;
 		this.recognition = recognition;
-		this.isDanish = isDanish;
+		this.isRestricted = isDanish;
 	}
 
 	public String getPk_alias() {
@@ -31,27 +31,27 @@ public class PriorKnowledge {
 		this.alias = alias;
 	}
 
-	public RecognitionLevel getPk_recognition() {
+	public ConfidenceLevel getPk_recognition() {
 		return recognition;
 	}
 
-	public void setPk_recognition(RecognitionLevel recognition) {
+	public void setPk_recognition(ConfidenceLevel recognition) {
 		this.recognition = recognition;
 	}
 
-	public RecognitionLevel getPk_isDanish() {
-		return isDanish;
+	public ConfidenceLevel getPk_isDanish() {
+		return isRestricted;
 	}
 
-	public void setPk_isDanish(RecognitionLevel isDanish) {
-		this.isDanish = isDanish;
+	public void setPk_isDanish(ConfidenceLevel isDanish) {
+		this.isRestricted = isDanish;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PriorKnowledge) {
 			final PriorKnowledge other = (PriorKnowledge) obj;
-			return alias.equals(other.alias) && recognition == other.recognition && isDanish == other.isDanish;
+			return alias.equals(other.alias) && recognition == other.recognition && isRestricted == other.isRestricted;
 		} else {
 			return super.equals(obj);
 		}

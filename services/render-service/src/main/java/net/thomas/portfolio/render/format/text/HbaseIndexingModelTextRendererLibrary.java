@@ -10,16 +10,16 @@ import net.thomas.portfolio.render.common.context.TextRenderContext;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.SimpleDateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.Iec8601DateConverter;
 
 public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, TextRenderContext> {
 	private final HbaseIndexingModelTextRendererLibrary library;
-	private final SimpleDateConverter converter;
+	private final Iec8601DateConverter converter;
 	private final Map<String, Renderer<String, TextRenderContext>> renderers;
 
 	public HbaseIndexingModelTextRendererLibrary() {
 		library = this;
-		converter = new DateConverter.SimpleDateConverter();
+		converter = new DateConverter.Iec8601DateConverter();
 		renderers = new HashMap<>();
 		renderers.put("Localname", new SimpleFieldRenderer("name"));
 		renderers.put("DisplayedName", new SimpleFieldRenderer("name"));

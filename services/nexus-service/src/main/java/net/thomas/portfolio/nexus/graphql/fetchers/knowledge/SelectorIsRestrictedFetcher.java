@@ -4,17 +4,17 @@ import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
-import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
+import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 
-public class SelectorIsDanishFetcher extends ModelDataFetcher<RecognitionLevel> {
+public class SelectorIsRestrictedFetcher extends ModelDataFetcher<ConfidenceLevel> {
 
-	public SelectorIsDanishFetcher(Adaptors adaptors) {
+	public SelectorIsRestrictedFetcher(Adaptors adaptors) {
 		super(adaptors);
 	}
 
 	@Override
-	public RecognitionLevel _get(DataFetchingEnvironment environment) {
+	public ConfidenceLevel _get(DataFetchingEnvironment environment) {
 		final PriorKnowledge knowledge = (PriorKnowledge) environment.getSource();
-		return knowledge.isDanish;
+		return knowledge.isRestricted;
 	}
 }

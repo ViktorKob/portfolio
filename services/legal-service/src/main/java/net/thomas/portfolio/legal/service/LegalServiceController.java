@@ -3,7 +3,7 @@ package net.thomas.portfolio.legal.service;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_STATISTICS_LOOKUP_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH;
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.KNOWN;
+import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.springframework.http.ResponseEntity.badRequest;
@@ -89,7 +89,7 @@ public class LegalServiceController {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final PriorKnowledge knowledge = analyticsAdaptor.getPriorKnowledge(id);
 			if (legalInfo.user == null || legalInfo.user.isEmpty()
-					|| knowledge.isDanish == KNOWN && (legalInfo.justification == null || legalInfo.justification.isEmpty())) {
+					|| knowledge.isRestricted == CERTAIN && (legalInfo.justification == null || legalInfo.justification.isEmpty())) {
 				return ok(ILLEGAL);
 			} else {
 				return ok(LEGAL);

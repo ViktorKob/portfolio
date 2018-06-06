@@ -1,9 +1,9 @@
 package net.thomas.portfolio.analytics.service;
 
 import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_PRIOR_KNOWLEDGE_PATH;
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.KNOWN;
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.PARTIALLY_KNOWN;
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.UNKNOWN;
+import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
+import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.POSSIBLY;
+import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -25,7 +25,7 @@ import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
-import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
+import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @Controller
@@ -60,40 +60,40 @@ public class AnalyticsServiceController {
 	@RequestMapping(LOOKUP_PRIOR_KNOWLEDGE_PATH)
 	public ResponseEntity<?> lookupPriorKnowledge(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
-			final RecognitionLevel recognition = determineFakeRecognizedValue(id);
-			final RecognitionLevel isDanish = determineFakeIsDanishValue(id);
+			final ConfidenceLevel recognition = determineFakeRecognizedValue(id);
+			final ConfidenceLevel isRestricted = determineFakeIsRestrictedValue(id);
 			final String alias = determineFakeAlias(id, recognition);
-			return ok(new PriorKnowledge(alias, recognition, isDanish));
+			return ok(new PriorKnowledge(alias, recognition, isRestricted));
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
 		}
 	}
 
-	private RecognitionLevel determineFakeRecognizedValue(DataTypeId id) {
+	private ConfidenceLevel determineFakeRecognizedValue(DataTypeId id) {
 		final char firstChar = id.uid.charAt(0);
-		RecognitionLevel recognition = UNKNOWN;
+		ConfidenceLevel recognition = UNLIKELY;
 		if (firstChar >= 'A' && firstChar <= 'C') {
-			recognition = PARTIALLY_KNOWN;
+			recognition = POSSIBLY;
 		} else if (firstChar > 'C' && firstChar <= 'F') {
-			recognition = KNOWN;
+			recognition = CERTAIN;
 		}
 		return recognition;
 	}
 
-	private RecognitionLevel determineFakeIsDanishValue(DataTypeId id) {
+	private ConfidenceLevel determineFakeIsRestrictedValue(DataTypeId id) {
 		final char secondChar = id.uid.charAt(1);
-		RecognitionLevel isDanish = UNKNOWN;
+		ConfidenceLevel isRestricted = UNLIKELY;
 		if (secondChar >= 'A' && secondChar <= 'C') {
-			isDanish = PARTIALLY_KNOWN;
+			isRestricted = POSSIBLY;
 		} else if (secondChar > 'C' && secondChar <= 'F') {
-			isDanish = KNOWN;
+			isRestricted = CERTAIN;
 		}
-		return isDanish;
+		return isRestricted;
 	}
 
-	private String determineFakeAlias(DataTypeId id, RecognitionLevel recognition) {
+	private String determineFakeAlias(DataTypeId id, ConfidenceLevel recognition) {
 		String alias = null;
-		if (recognition == KNOWN) {
+		if (recognition == CERTAIN) {
 			alias = "Target " + id.uid.substring(0, 6);
 		}
 		return alias;

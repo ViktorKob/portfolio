@@ -1,16 +1,16 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.SimpleDateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.Iec8601DateConverter;
 
 public class ModelUtilities {
-	private final SimpleDateConverter dateConverter;
+	private final Iec8601DateConverter iec8601dateConverter;
 
 	public ModelUtilities() {
-		dateConverter = new DateConverter.SimpleDateConverter();
+		iec8601dateConverter = new DateConverter.Iec8601DateConverter();
 	}
 
-	public DateConverter getDateConverter() {
-		return dateConverter;
+	public DateConverter getIec8601DateConverter() {
+		return iec8601dateConverter;
 	}
 }
