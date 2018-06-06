@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.analytics;
 
-import static net.thomas.portfolio.shared_objects.analytics.RecognitionLevel.KNOWN;
+import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PriorKnowledgeUnitTest {
 	private static final String ALIAS = "ALIAS";
-	private static final RecognitionLevel KNOWLEDGE = KNOWN;
+	private static final ConfidenceLevel KNOWLEDGE = CERTAIN;
 
 	private PriorKnowledge knowledge;
 	private ObjectMapper mapper;

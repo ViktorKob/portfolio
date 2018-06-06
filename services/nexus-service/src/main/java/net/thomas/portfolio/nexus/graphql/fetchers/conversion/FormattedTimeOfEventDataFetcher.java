@@ -23,6 +23,6 @@ public class FormattedTimeOfEventDataFetcher extends FormattedTimestampDataFetch
 			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 				.getSimpleName());
 		}
-		return formatTimestamp(environment, timestamp);
+		return formatTimestampAsIec8601(environment, timestamp);
 	}
 }

@@ -19,7 +19,7 @@ public class IndexableDocumentSearchFetcher extends ModelDataFetcher<InvertedInd
 
 	public IndexableDocumentSearchFetcher(Adaptors adaptors) {
 		super(adaptors/* , 10 */);
-		dateFormatter = adaptors.getDateConverter();
+		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override

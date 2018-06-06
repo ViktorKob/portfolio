@@ -57,8 +57,8 @@ import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.IntegerField
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.StringFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.TimestampFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorAliasFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsDanishFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsKnownFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsRestrictedFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorKnowledgeFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.DocumentReferenceFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceClassificationsFetcher;
@@ -72,7 +72,7 @@ import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
-import net.thomas.portfolio.shared_objects.analytics.RecognitionLevel;
+import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
@@ -133,31 +133,39 @@ public class GraphQlModelBuilder {
 			}
 			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptors);
 			fields.add(newFieldDefinition().name(dataType)
+				.description("Fields and functions in the " + dataType + " type")
 				.type(dataTypeObjectType)
 				.argument(arguments)
 				.dataFetcher(fetcher)
 				.build());
 		}
 		fields.add(newFieldDefinition().name("SelectorStatistics")
+			.description("Various statistics for specific selectors")
 			.type(buildSelectorStatisticsType(adaptors))
 			.build());
-		fields.add(newFieldDefinition().name("PreviousKnowledge")
-			.type(buildPreviousKnowledgeType(adaptors))
+		fields.add(newFieldDefinition().name("Knowledge")
+			.description("Existing in-house knowledge about selectors")
+			.type(buildKnowledgeType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("DocumentReference")
+			.description("Reference information element describing how a document was obtained and restrictions on its usage")
 			.type(buildDocumentReferenceType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("GeoLocation")
+			.description("Longitude and lattitude for position related to selectors or documents")
 			.type(buildGeoLocationType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("ClassificationEnum")
+			.description("Possible classifications for documents")
 			.type(enumType(Classification.values()))
 			.build());
 		fields.add(newFieldDefinition().name("SourceEnum")
+			.description("Enumeration of the various sources for the indexed documents")
 			.type(enumType(Source.values()))
 			.build());
-		fields.add(newFieldDefinition().name("RecognitionLevelEnum")
-			.type(enumType(RecognitionLevel.values()))
+		fields.add(newFieldDefinition().name("ConfidenceLevelEnum")
+			.description("Confidence level for various properties for selectors")
+			.type(enumType(ConfidenceLevel.values()))
 			.build());
 
 		return fields;
@@ -178,49 +186,59 @@ public class GraphQlModelBuilder {
 	private GraphQLObjectType buildObjectType(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType);
 		builder.field(newFieldDefinition().name("uid")
+			.description("Unique id for entity")
 			.type(GraphQLString)
 			.dataFetcher(new UidDataFetcher(adaptors)));
 		builder.field(newFieldDefinition().name("type")
+			.description("Data type of the entity")
 			.type(GraphQLString)
 			.dataFetcher(new TypeDataFetcher(adaptors)));
 		builder.field(newFieldDefinition().name("headline")
+			.description("Simple textual representation of the entity")
 			.type(GraphQLString)
 			.dataFetcher(new HeadlineDataFetcher(adaptors)));
 		builder.field(newFieldDefinition().name("html")
+			.description("HTML representation of the entity")
 			.type(GraphQLString)
 			.dataFetcher(new HtmlDataFetcher(adaptors)));
 
 		if (adaptors.isSimpleRepresentable(dataType)) {
 			builder.description("Simple representable selector");
 			builder.field(newFieldDefinition().name("simpleRep")
+				.description("Simple representation for the selector")
 				.type(GraphQLString)
 				.dataFetcher(new SimpleRepresentationDataFetcher(adaptors))
 				.build());
 		} else if (adaptors.isDocument(dataType)) {
 			builder.description("Document");
 			builder.field(newFieldDefinition().name("references")
+				.description("References describing how the document was obtained and restrictions on its usage")
 				.type(list(new GraphQLTypeReference("DocumentReference")))
 				.dataFetcher(new DocumentReferenceFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("rawData")
+				.description("Raw representation of the document as stored in the index")
 				.type(GraphQLString)
 				.dataFetcher(new RawDataFetcher(adaptors))
 				.build());
-
 			builder.field(newFieldDefinition().name("timeOfEvent")
+				.description("The best guess for when the event, defined by the document, occurred, in milliseconds since the epoch")
 				.type(GraphQLLong)
 				.dataFetcher(new TimeOfEventDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("timeOfInterception")
+				.description("The exact time for when the event, defined by the document, was intercepted, in milliseconds since the epoch")
 				.type(GraphQLLong)
 				.dataFetcher(new TimeOfInterceptionDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("formattedTimeOfEvent")
+				.description("The best guess for when the event, defined by the document, occurred, in IEC 8601 format")
 				.type(GraphQLString)
 				.argument(format(new LinkedList<>()))
 				.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("formattedTimeOfInterception")
+				.description("The exact time for when the event, defined by the document, was intercepted, in IEC 8601 format")
 				.type(GraphQLString)
 				.argument(format(new LinkedList<>()))
 				.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
@@ -239,7 +257,8 @@ public class GraphQlModelBuilder {
 				.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 				.build());
 			builder.field(newFieldDefinition().name("knowledge")
-				.type(new GraphQLTypeReference("PreviousKnowledge"))
+				.description("Fetch prior knowledge about the selector from the analytics platform")
+				.type(new GraphQLTypeReference("Knowledge"))
 				.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
 				.build());
 			List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
@@ -247,6 +266,7 @@ public class GraphQlModelBuilder {
 			arguments = documentTypesAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
 			arguments = justificationAnd(arguments);
 			builder.field(newFieldDefinition().name("events")
+				.description("Events that this " + dataType + " has been linked to in the index")
 				.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
 				.argument(arguments)
 				.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
@@ -255,42 +275,47 @@ public class GraphQlModelBuilder {
 
 		for (final Field field : adaptors.getDataTypeFields(dataType)) {
 			if (field instanceof PrimitiveField) {
-				builder.field(buildFieldDefinition((PrimitiveField) field, adaptors));
+				builder.field(buildFieldDefinition((PrimitiveField) field, dataType, adaptors));
 			} else if (field instanceof ReferenceField) {
-				builder.field(buildFieldDefinition((ReferenceField) field, adaptors));
+				builder.field(buildFieldDefinition((ReferenceField) field, dataType, adaptors));
 			}
 		}
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition buildFieldDefinition(PrimitiveField field, Adaptors adaptors) {
+	private GraphQLFieldDefinition buildFieldDefinition(PrimitiveField field, String parentType, Adaptors adaptors) {
 		final Builder builder = newFieldDefinition().name(field.getName());
 		GraphQLOutputType graphQlType = null;
 		DataFetcher<?> fetcher = null;
+		String description = "";
 		switch (field.getType()) {
 		case DECIMAL:
 			fetcher = new DecimalFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLBigDecimal;
+			description = buildDescription("Decimal field", field, parentType);
 			break;
 		case INTEGER:
 			fetcher = new IntegerFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLLong;
+			description = buildDescription("Integer field", field, parentType);
 			break;
 		case TIMESTAMP:
 			fetcher = new TimestampFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLString;
+			description = buildDescription("Timestamp", field, parentType);
 			break;
 		case GEO_LOCATION:
 			fetcher = new GeoLocationFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = new GraphQLTypeReference("GeoLocation");
+			description = buildDescription("Geolocation", field, parentType);
 			break;
 		case STRING:
 		default:
 			fetcher = new StringFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLString;
+			description = buildDescription("Textual field", field, parentType);
 			break;
 		}
-
 		if (field.isArray()) {
 			builder.type(list(graphQlType))
 				.dataFetcher(fetcher);
@@ -298,10 +323,15 @@ public class GraphQlModelBuilder {
 			builder.type(graphQlType)
 				.dataFetcher(fetcher);
 		}
+		builder.description(description);
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition buildFieldDefinition(ReferenceField field, Adaptors adaptors) {
+	private String buildDescription(String prefix, Field field, String parentType) {
+		return prefix + (field.isArray() ? "s '" : " '") + field.getName() + "' inside " + parentType;
+	}
+
+	private GraphQLFieldDefinition buildFieldDefinition(ReferenceField field, String parentType, Adaptors adaptors) {
 		final Builder builder = newFieldDefinition().name(field.getName());
 		final GraphQLOutputType graphQlType = new GraphQLTypeReference(field.getType());
 		if (field.isArray()) {
@@ -311,12 +341,14 @@ public class GraphQlModelBuilder {
 			builder.type(graphQlType)
 				.dataFetcher(new SubTypeFetcher(field.getName(), adaptors));
 		}
+		builder.description(
+				"Relational field" + (field.isArray() ? "s '" : " '") + field.getName() + "' referencing type " + field.getType() + " inside " + parentType);
 		return builder.build();
 	}
 
 	private List<GraphQLArgument> uidAnd(List<GraphQLArgument> arguments) {
 		arguments.add(newArgument().name("uid")
-			.description("DataType UID")
+			.description("Unique id for entity")
 			.type(GraphQLString)
 			.build());
 		return arguments;
@@ -324,7 +356,7 @@ public class GraphQlModelBuilder {
 
 	private List<GraphQLArgument> simpleRepAnd(List<GraphQLArgument> arguments) {
 		arguments.add(newArgument().name("simpleRep")
-			.description("Selector simple representation")
+			.description("Simple representation for selector")
 			.type(GraphQLString)
 			.build());
 		return arguments;
@@ -336,15 +368,15 @@ public class GraphQlModelBuilder {
 			.type(GraphQLString)
 			.build());
 		arguments.add(newArgument().name("user")
-			.description("ID of the user trying to justify the query")
+			.description("ID of the user trying to execute the query")
 			.type(nonNull(GraphQLString))
 			.build());
 		return arguments;
 	}
 
 	private List<GraphQLArgument> format(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("format")
-			.description("Date rendering format; 'dateOnly' to only render year-month-date")
+		arguments.add(newArgument().name("detailLevel")
+			.description("Date rendering detail level; use 'dateOnly' to only render year-month-date or leave it out for date and time")
 			.type(GraphQLString)
 			.build());
 		return arguments;
@@ -374,12 +406,12 @@ public class GraphQlModelBuilder {
 
 	private List<GraphQLArgument> pagingAnd(List<GraphQLArgument> arguments) {
 		arguments.add(newArgument().name("offset")
-			.description("First index to include")
+			.description("Index of first element in result to include")
 			.type(GraphQLInt)
 			.defaultValue(0)
 			.build());
 		arguments.add(newArgument().name("limit")
-			.description("Number of elements to include")
+			.description("Number of elements from result to include")
 			.type(GraphQLInt)
 			.defaultValue(20)
 			.build());
@@ -388,19 +420,19 @@ public class GraphQlModelBuilder {
 
 	private List<GraphQLArgument> dateBoundsAnd(List<GraphQLArgument> arguments) {
 		arguments.add(newArgument().name("after")
-			.description("Lower bound unix timestamp")
+			.description("Lower bound in milliseconds since the epoch")
 			.type(GraphQLLong)
 			.build());
 		arguments.add(newArgument().name("before")
-			.description("Upper bound unix timestamp")
+			.description("Upper bound in milliseconds since the epoch")
 			.type(GraphQLLong)
 			.build());
 		arguments.add(newArgument().name("afterDate")
-			.description("Lower bound formatted date, e.g. '2017-11-23' or '2017-11-23 12:34:56 +0200'")
+			.description("Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
 			.type(GraphQLString)
 			.build());
 		arguments.add(newArgument().name("beforeDate")
-			.description("Upper bound formatted date, e.g. '2017-11-23' or '2017-11-23 12:34:56 +0200'")
+			.description("Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
 			.type(GraphQLString)
 			.build());
 		return arguments;
@@ -412,6 +444,7 @@ public class GraphQlModelBuilder {
 		// TODO[Thomas]: Change when Interfaces are added in GraphQL model
 		for (final String documentType : adaptors.getIndexedDocumentTypes(dataType)) {
 			builder.field(newFieldDefinition().name(documentType)
+				.description("Document types that this selector type occurs inside")
 				.type(list(new GraphQLTypeReference(documentType)))
 				.dataFetcher(new DocumentListFetcher(documentType, adaptors))
 				.build());
@@ -441,23 +474,23 @@ public class GraphQlModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLObjectType buildPreviousKnowledgeType(Adaptors adaptors) {
-		final GraphQLObjectType.Builder builder = newObject().name("PreviousKnowledge")
-			.description("Previous knowledge about selector");
+	private GraphQLObjectType buildKnowledgeType(Adaptors adaptors) {
+		final GraphQLObjectType.Builder builder = newObject().name("Knowledge")
+			.description("Existing knowledge about this selector");
 		builder.field(newFieldDefinition().name("alias")
-			.description("Alternative name for selector")
+			.description("Alternative name for the selector")
 			.type(GraphQLString)
 			.dataFetcher(new SelectorAliasFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("isKnown")
-			.description("Whether we are already interested in this selector")
-			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
+			.description("How well do we know this selector")
+			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
 			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
 			.build());
-		builder.field(newFieldDefinition().name("isDanish")
-			.description("Whether this selector is known to belong to a danish citizen")
-			.type(new GraphQLTypeReference("RecognitionLevelEnum"))
-			.dataFetcher(new SelectorIsDanishFetcher(adaptors))
+		builder.field(newFieldDefinition().name("isRestricted")
+			.description("Whether queries for this selector have to be justified")
+			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
+			.dataFetcher(new SelectorIsRestrictedFetcher(adaptors))
 			.build());
 		return builder.build();
 	}
@@ -493,7 +526,7 @@ public class GraphQlModelBuilder {
 
 	private GraphQLOutputType buildGeoLocationType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("GeoLocation")
-			.description("Location on Earth in Longitude and Latitude");
+			.description("Location in Longitude and Latitude");
 		builder.field(newFieldDefinition().name("longitude")
 			.type(GraphQLBigDecimal)
 			.dataFetcher(new GeoLocationValueFetcher("longitude", adaptors))

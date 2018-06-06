@@ -250,7 +250,7 @@ public class Adaptors {
 		return usageAdaptor.fetchUsageActivity(documentId, offset, limit);
 	}
 
-	public DateConverter getDateConverter() {
-		return utilities.getDateConverter();
+	public DateConverter getIec8601DateConverter() {
+		return utilities.getIec8601DateConverter();
 	}
 }

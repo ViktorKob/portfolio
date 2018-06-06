@@ -14,7 +14,7 @@ public class SelectorFetcher extends EntityFetcher<Selector> {
 
 	public SelectorFetcher(String type, Adaptors adaptors) {
 		super(type, adaptors);
-		dateFormatter = adaptors.getDateConverter();
+		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override

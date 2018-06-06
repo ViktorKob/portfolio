@@ -11,10 +11,10 @@ public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<Str
 
 	public FormattedTimestampDataFetcher(Adaptors adaptor) {
 		super(adaptor);
-		dateFormatter = adaptors.getDateConverter();
+		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
-	protected String formatTimestamp(DataFetchingEnvironment environment, long timestamp) {
+	protected String formatTimestampAsIec8601(DataFetchingEnvironment environment, long timestamp) {
 		if (environment.getArgument("format") != null) {
 			return formatTimestamp(environment.getArgument("format")
 				.toString(), timestamp);

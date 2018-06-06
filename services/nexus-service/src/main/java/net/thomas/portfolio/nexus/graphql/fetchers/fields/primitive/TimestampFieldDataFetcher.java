@@ -13,7 +13,7 @@ public class TimestampFieldDataFetcher extends ModelDataFetcher<String> {
 	public TimestampFieldDataFetcher(String fieldName, Adaptors adaptors) {
 		super(adaptors);
 		this.fieldName = fieldName;
-		dateFormatter = adaptors.getDateConverter();
+		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override

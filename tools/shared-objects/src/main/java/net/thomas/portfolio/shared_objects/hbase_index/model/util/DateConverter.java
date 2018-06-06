@@ -18,11 +18,11 @@ public interface DateConverter {
 
 	String formatDateTimestamp(long timestamp);
 
-	public static class SimpleDateConverter implements DateConverter {
+	public static class Iec8601DateConverter implements DateConverter {
 		private final ThreadLocal<SimpleDateFormat> completeFormatter = new ThreadLocal<SimpleDateFormat>() {
 			@Override
 			protected SimpleDateFormat initialValue() {
-				return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+				return new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
 			}
 		};
 
