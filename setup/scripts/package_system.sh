@@ -2,11 +2,11 @@ echo "Updating sources and building packages"
 cd ~/git/portfolio
 git pull
 cd ~/git/portfolio/tools
-mvn install
+mvn clean install
 cd ~/git/portfolio/infrastructure
-mvn package
+mvn clean package
 cd ~/git/portfolio/services
-mvn package
+mvn clean package
 
 cd 
 
