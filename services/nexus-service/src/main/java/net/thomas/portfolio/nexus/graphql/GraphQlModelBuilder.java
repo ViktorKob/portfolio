@@ -42,7 +42,6 @@ import net.thomas.portfolio.nexus.graphql.fetchers.conversion.SimpleRepresentati
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentListFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.EntityFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_types.IndexableDocumentSearchFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SimpleRepresentationFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeArrayFetcher;
@@ -303,104 +302,6 @@ public class GraphQlModelBuilder {
 		return builder.build();
 	}
 
-	private List<GraphQLArgument> uidAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("uid")
-			.description("Unique id for entity")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> simpleRepAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("simpleRep")
-			.description("Simple representation for selector")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> justificationAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("justification")
-			.description("Justification for executing query")
-			.type(GraphQLString)
-			.build());
-		arguments.add(newArgument().name("user")
-			.description("ID of the user trying to execute the query")
-			.type(nonNull(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> format(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("detailLevel")
-			.description("Date rendering detail level; use 'dateOnly' to only render year-month-date or leave it out for date and time")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> documentTypesAnd(List<GraphQLArgument> arguments, Collection<String> documentTypes) {
-		final String documentTypeList = buildPresentationListFromCollection(documentTypes);
-		arguments.add(newArgument().name("documentTypes")
-			.description("Document types that should be included in the response (from the set " + documentTypeList + " )")
-			.type(list(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> relationsAnd(List<GraphQLArgument> arguments, Collection<String> relationTypes) {
-		final String relationTypeList = buildPresentationListFromCollection(relationTypes);
-		arguments.add(newArgument().name("relations")
-			.description("Relation types that should be included in the response (from the set " + relationTypeList + " )")
-			.type(list(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> pagingAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("offset")
-			.description("Index of first element in result to include")
-			.type(GraphQLInt)
-			.defaultValue(0)
-			.build());
-		arguments.add(newArgument().name("limit")
-			.description("Number of elements from result to include")
-			.type(GraphQLInt)
-			.defaultValue(20)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> dateBoundsAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("after")
-			.description("Lower bound in milliseconds since the epoch")
-			.type(GraphQLLong)
-			.build());
-		arguments.add(newArgument().name("before")
-			.description("Upper bound in milliseconds since the epoch")
-			.type(GraphQLLong)
-			.build());
-		arguments.add(newArgument().name("afterDate")
-			.description("Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
-			.type(GraphQLString)
-			.build());
-		arguments.add(newArgument().name("beforeDate")
-			.description("Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private GraphQLObjectType createInvertedIndexLookupTypeForSelector(String dataType, Adaptors adaptors) {
-		final GraphQLObjectType.Builder builder = newObject().name(dataType + "_documentTypes")
-			.description("Document types that can result from a search on this type");
-		builder.field(createLookupField(adaptors, "Document"));
-		for (final String documentType : adaptors.getIndexedDocumentTypes(dataType)) {
-			builder.field(createLookupField(adaptors, documentType));
-		}
-		return builder.build();
-	}
-
 	private GraphQLOutputType buildDataTypeInterfaceType(Adaptors adaptors) {
 		final GraphQLInterfaceType.Builder builder = newInterface().name("DataType")
 			.description("General interface for the different data types (from the set " + buildPresentationListFromCollection(adaptors.getDataTypes()) + ")")
@@ -614,24 +515,17 @@ public class GraphQlModelBuilder {
 
 	private GraphQLFieldDefinition createInvertedIndexLookupField(String dataType, Adaptors adaptors) {
 		List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
-		arguments = relationsAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
-		arguments = documentTypesAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
+		arguments = relationsAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
+		arguments = documentTypesAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
 		arguments = justificationAnd(arguments);
-		final GraphQLFieldDefinition field = newFieldDefinition().name("events")
-			.description("Events that this " + dataType + " has been linked to in the index")
-			.type(createInvertedIndexLookupTypeForSelector(dataType, adaptors))
-			.argument(arguments)
-			.dataFetcher(new IndexableDocumentSearchFetcher(adaptors))
-			.build();
-		return field;
-	}
 
-	private GraphQLFieldDefinition createLookupField(Adaptors adaptors, final String documentType) {
-		return newFieldDefinition().name(documentType)
-			.description("Document types that this selector type occurs inside")
-			.type(list(new GraphQLTypeReference(documentType)))
-			.dataFetcher(new DocumentListFetcher(documentType, adaptors))
+		return newFieldDefinition().name("events")
+			.description("Events that this \" + dataType + \" has been linked to in the index")
+			.argument(arguments)
+			.type(list(new GraphQLTypeReference("Document")))
+			.dataFetcher(new DocumentListFetcher(adaptors))
 			.build();
+
 	}
 
 	private GraphQLFieldDefinition createKnowledgeField(Adaptors adaptors) {
@@ -649,6 +543,94 @@ public class GraphQlModelBuilder {
 			.argument(justificationAnd(new LinkedList<>()))
 			.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 			.build();
+	}
+
+	private List<GraphQLArgument> uidAnd(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("uid")
+			.description("Unique id for entity")
+			.type(GraphQLString)
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> simpleRepAnd(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("simpleRep")
+			.description("Simple representation for selector")
+			.type(GraphQLString)
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> justificationAnd(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("justification")
+			.description("Justification for executing query")
+			.type(GraphQLString)
+			.build());
+		arguments.add(newArgument().name("user")
+			.description("ID of the user trying to execute the query")
+			.type(nonNull(GraphQLString))
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> format(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("detailLevel")
+			.description("Date rendering detail level; use 'dateOnly' to only render year-month-date or leave it out for date and time")
+			.type(GraphQLString)
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> documentTypesAnd(List<GraphQLArgument> arguments, Collection<String> documentTypes) {
+		final String documentTypeList = buildPresentationListFromCollection(documentTypes);
+		arguments.add(newArgument().name("documentTypes")
+			.description("Document types that should be included in the response (from the set " + documentTypeList + " )")
+			.type(list(GraphQLString))
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> relationsAnd(List<GraphQLArgument> arguments, Collection<String> relationTypes) {
+		final String relationTypeList = buildPresentationListFromCollection(relationTypes);
+		arguments.add(newArgument().name("relations")
+			.description("Relation types that should be included in the response (from the set " + relationTypeList + " )")
+			.type(list(GraphQLString))
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> pagingAnd(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("offset")
+			.description("Index of first element in result to include")
+			.type(GraphQLInt)
+			.defaultValue(0)
+			.build());
+		arguments.add(newArgument().name("limit")
+			.description("Number of elements from result to include")
+			.type(GraphQLInt)
+			.defaultValue(20)
+			.build());
+		return arguments;
+	}
+
+	private List<GraphQLArgument> dateBoundsAnd(List<GraphQLArgument> arguments) {
+		arguments.add(newArgument().name("after")
+			.description("Lower bound in milliseconds since the epoch")
+			.type(GraphQLLong)
+			.build());
+		arguments.add(newArgument().name("before")
+			.description("Upper bound in milliseconds since the epoch")
+			.type(GraphQLLong)
+			.build());
+		arguments.add(newArgument().name("afterDate")
+			.description("Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
+			.type(GraphQLString)
+			.build());
+		arguments.add(newArgument().name("beforeDate")
+			.description("Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
+			.type(GraphQLString)
+			.build());
+		return arguments;
 	}
 
 	private String buildPresentationListFromCollection(Collection<String> values) {

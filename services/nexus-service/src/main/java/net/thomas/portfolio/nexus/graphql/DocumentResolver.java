@@ -16,8 +16,11 @@ public class DocumentResolver implements TypeResolver {
 
 	@Override
 	public GraphQLObjectType getType(TypeResolutionEnvironment env) {
-		final DocumentInfo documentInfo = (DocumentInfo) env.getObject();
-		return env.getSchema()
-			.getObjectType(documentInfo.getId().type);
+		if (env.getObject() instanceof DocumentInfo) {
+			final DocumentInfo documentInfo = (DocumentInfo) env.getObject();
+			return env.getSchema()
+				.getObjectType(documentInfo.getId().type);
+		}
+		return null;
 	}
 }
