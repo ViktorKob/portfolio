@@ -4,6 +4,7 @@ import graphql.TypeResolutionEnvironment;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.TypeResolver;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 
 public class DataTypeResolver implements TypeResolver {
 
@@ -12,7 +13,9 @@ public class DataTypeResolver implements TypeResolver {
 
 	@Override
 	public GraphQLObjectType getType(TypeResolutionEnvironment env) {
-		return null;
+		final DataType documentInfo = (DataType) env.getObject();
+		return env.getSchema()
+			.getObjectType(documentInfo.getId().type);
 	}
 
 }

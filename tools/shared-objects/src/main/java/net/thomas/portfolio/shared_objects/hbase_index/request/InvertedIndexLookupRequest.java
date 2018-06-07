@@ -1,7 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -16,13 +16,14 @@ public class InvertedIndexLookupRequest {
 	public DataTypeId selectorId;
 	public LegalInformation legalInfo;
 	public Bounds bounds;
-	public Set<String> documentTypes;
-	public Set<String> relations;
+	public Collection<String> documentTypes;
+	public Collection<String> relations;
 
 	public InvertedIndexLookupRequest() {
 	}
 
-	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
+	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Collection<String> documentTypes,
+			Collection<String> relations) {
 		this.selectorId = selectorId;
 		this.legalInfo = legalInfo;
 		this.bounds = bounds;
@@ -62,19 +63,19 @@ public class InvertedIndexLookupRequest {
 		this.bounds = bounds;
 	}
 
-	public Set<String> getDocumentTypes() {
+	public Collection<String> getDocumentTypes() {
 		return documentTypes;
 	}
 
-	public void setDocumentTypes(Set<String> documentTypes) {
+	public void setDocumentTypes(Collection<String> documentTypes) {
 		this.documentTypes = documentTypes;
 	}
 
-	public Set<String> getRelations() {
+	public Collection<String> getRelations() {
 		return relations;
 	}
 
-	public void setRelations(Set<String> relations) {
+	public void setRelations(Collection<String> relations) {
 		this.relations = relations;
 	}
 
