@@ -15,16 +15,16 @@ public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<Str
 	}
 
 	protected String formatTimestampAsIec8601(DataFetchingEnvironment environment, long timestamp) {
-		if (environment.getArgument("format") != null) {
-			return formatTimestamp(environment.getArgument("format")
+		if (environment.getArgument("detailLevel") != null) {
+			return formatTimestamp(environment.getArgument("detailLevel")
 				.toString(), timestamp);
 		} else {
 			return formatTimestamp((String) null, timestamp);
 		}
 	}
 
-	protected String formatTimestamp(String format, long timestamp) {
-		if ("dateOnly".equals(format)) {
+	protected String formatTimestamp(String detailLevel, long timestamp) {
+		if ("dateOnly".equals(detailLevel)) {
 			return dateFormatter.formatDateTimestamp(timestamp);
 		} else {
 			return dateFormatter.formatTimestamp(timestamp);

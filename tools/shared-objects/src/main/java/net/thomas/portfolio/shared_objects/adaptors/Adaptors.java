@@ -12,6 +12,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
@@ -246,8 +247,8 @@ public class Adaptors {
 		return usageAdaptor.storeUsageActivity(documentId, item);
 	}
 
-	public List<UsageActivityItem> storeUsageActivity(DataTypeId documentId, Integer offset, Integer limit) {
-		return usageAdaptor.fetchUsageActivity(documentId, offset, limit);
+	public List<UsageActivityItem> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
+		return usageAdaptor.fetchUsageActivity(documentId, bounds);
 	}
 
 	public DateConverter getIec8601DateConverter() {

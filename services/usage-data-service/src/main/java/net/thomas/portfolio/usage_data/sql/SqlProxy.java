@@ -29,6 +29,7 @@ import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
@@ -129,7 +130,7 @@ public class SqlProxy {
 			.get(ACCESS_TYPE.ID);
 	}
 
-	public List<UsageActivityItem> fetchUsageActivities(DataTypeId id, int offset, int limit) {
+	public List<UsageActivityItem> fetchUsageActivities(DataTypeId id, Bounds bounds) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			final Result<Record3<String, String, Timestamp>> result = create.select(USER.NAME, ACCESS_TYPE.NAME, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
@@ -140,8 +141,9 @@ public class SqlProxy {
 				.on(USER_ACCESSED_DOCUMENT.ACCESS_TYPE_ID.eq(ACCESS_TYPE.ID))
 				.where(USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE.eq(id.type))
 				.and(USER_ACCESSED_DOCUMENT.DOCUMENT_UID.eq(id.uid))
-				.offset(offset)
-				.limit(limit)
+				.and(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS.between(new Timestamp(bounds.after), new Timestamp(bounds.before)))
+				.offset(bounds.offset)
+				.limit(bounds.limit)
 				.fetch();
 			final LinkedList<UsageActivityItem> activities = new LinkedList<>();
 			for (final Record3<String, String, Timestamp> activity : result) {

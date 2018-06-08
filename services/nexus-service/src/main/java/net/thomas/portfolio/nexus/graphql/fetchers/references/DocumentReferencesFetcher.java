@@ -8,9 +8,9 @@ import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
-public class DocumentReferenceFetcher extends ModelDataFetcher<Collection<Reference>> {
+public class DocumentReferencesFetcher extends ModelDataFetcher<Collection<Reference>> {
 
-	public DocumentReferenceFetcher(Adaptors adaptors) {
+	public DocumentReferencesFetcher(Adaptors adaptors) {
 		super(adaptors/* , 50 */);
 	}
 

@@ -61,12 +61,17 @@ import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorAliasFetche
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsKnownFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsRestrictedFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorKnowledgeFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.references.DocumentReferenceFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.references.DocumentReferencesFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceClassificationsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceOriginalIdFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceSourceFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityItemsFetcher;
+import net.thomas.portfolio.nexus.graphql.resolvers.DataTypeResolver;
+import net.thomas.portfolio.nexus.graphql.resolvers.DocumentResolver;
+import net.thomas.portfolio.nexus.graphql.resolvers.SelectorResolver;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
@@ -79,6 +84,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class GraphQlModelBuilder {
 	private AnalyticsAdaptor analyticsAdaptor;
@@ -164,6 +171,10 @@ public class GraphQlModelBuilder {
 			.description("Reference information element describing how a document was obtained and restrictions on its usage")
 			.type(buildDocumentReferenceType(adaptors))
 			.build());
+		fields.add(newFieldDefinition().name("UsageActivityItem")
+			.description("Activity by specific user on a specific document at a specific point in time")
+			.type(buildUsageActivityItemType(adaptors))
+			.build());
 		fields.add(newFieldDefinition().name("GeoLocation")
 			.description("Longitude and lattitude for position related to selectors or documents")
 			.type(buildGeoLocationType(adaptors))
@@ -180,7 +191,10 @@ public class GraphQlModelBuilder {
 			.description("Confidence level for various properties for selectors")
 			.type(enumType(ConfidenceLevel.values()))
 			.build());
-
+		fields.add(newFieldDefinition().name("UsageActivityTypeEnum")
+			.description("Confidence level for various properties for selectors")
+			.type(enumType(UsageActivityType.values()))
+			.build());
 		return fields;
 	}
 
@@ -323,6 +337,7 @@ public class GraphQlModelBuilder {
 		builder.field(createTimeOfInterceptionField(adaptors));
 		builder.field(createFormattedTimeOfEventField(adaptors));
 		builder.field(createFormattedTimeOfInterceptionField(adaptors));
+		builder.field(createUsageDataItemsField(adaptors));
 		builder.field(createRawDataField(adaptors));
 		return builder.build();
 	}
@@ -398,15 +413,30 @@ public class GraphQlModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLEnumType enumType(Enum<?>[] values) {
-		final List<GraphQLEnumValueDefinition> enumValues = new LinkedList<>();
-		String name = null;
-		for (final Enum<?> value : values) {
-			name = value.getClass()
-				.getSimpleName();
-			enumValues.add(new GraphQLEnumValueDefinition(value.name(), value.name() + " in Enum " + name, value));
-		}
-		return new GraphQLEnumType(name + "Enum", "Mapping of Enum " + name + " to GraphQL", enumValues);
+	private GraphQLOutputType buildUsageActivityItemType(Adaptors adaptors) {
+		final GraphQLObjectType.Builder builder = newObject().name("UsageDataItem")
+			.description("Activity by specific user on a specific document at a specific point in time");
+		builder.field(newFieldDefinition().name("user")
+			.description("Identity of the user who executed the action")
+			.type(GraphQLString)
+			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).user)
+			.build());
+		builder.field(newFieldDefinition().name("activityType")
+			.description("The activity type in question")
+			.type(list(new GraphQLTypeReference("ActivityTypeEnum")))
+			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).type)
+			.build());
+		builder.field(newFieldDefinition().name("timeOfActivity")
+			.description("The exact time for when the activity occurred, in milliseconds since the epoch")
+			.type(GraphQLLong)
+			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).timeOfActivity)
+			.build());
+		builder.field(newFieldDefinition().name("formattedTimeOfActivity")
+			.description("The exact time for when the activity occurred, in IEC 8601 format")
+			.type(GraphQLLong)
+			.dataFetcher(new FormattedTimeOfActivityFetcher(adaptors))
+			.build());
+		return builder.build();
 	}
 
 	private GraphQLOutputType buildGeoLocationType(Adaptors adaptors) {
@@ -421,6 +451,17 @@ public class GraphQlModelBuilder {
 			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptors))
 			.build());
 		return builder.build();
+	}
+
+	private GraphQLEnumType enumType(Enum<?>[] values) {
+		final List<GraphQLEnumValueDefinition> enumValues = new LinkedList<>();
+		String name = null;
+		for (final Enum<?> value : values) {
+			name = value.getClass()
+				.getSimpleName();
+			enumValues.add(new GraphQLEnumValueDefinition(value.name(), value.name() + " in Enum " + name, value));
+		}
+		return new GraphQLEnumType(name + "Enum", "Mapping of Enum " + name + " to GraphQL", enumValues);
 	}
 
 	private GraphQLFieldDefinition createFormattedTimeOfInterceptionField(Adaptors adaptors) {
@@ -457,6 +498,15 @@ public class GraphQlModelBuilder {
 			.build();
 	}
 
+	private GraphQLFieldDefinition createUsageDataItemsField(Adaptors adaptors) {
+		return newFieldDefinition().name("usageActivities")
+			.description("Registered user interaction with this document")
+			.argument(pagingAnd(dateBoundsAnd(new LinkedList<>())))
+			.type(list(new GraphQLTypeReference("UsageActivityItem")))
+			.dataFetcher(new UsageActivityItemsFetcher(adaptors))
+			.build();
+	}
+
 	private GraphQLFieldDefinition createRawDataField(Adaptors adaptors) {
 		return newFieldDefinition().name("rawData")
 			.description("Raw representation of the document as stored in the index")
@@ -469,7 +519,7 @@ public class GraphQlModelBuilder {
 		return newFieldDefinition().name("references")
 			.description("References describing how the document was obtained and restrictions on its usage")
 			.type(list(new GraphQLTypeReference("DocumentReference")))
-			.dataFetcher(new DocumentReferenceFetcher(adaptors))
+			.dataFetcher(new DocumentReferencesFetcher(adaptors))
 			.build();
 	}
 

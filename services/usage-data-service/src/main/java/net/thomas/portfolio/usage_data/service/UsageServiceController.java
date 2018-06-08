@@ -6,7 +6,7 @@ import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_A
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 
-import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -30,6 +30,7 @@ import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
@@ -100,16 +101,11 @@ public class UsageServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(FETCH_USAGE_ACTIVITY_PATH)
-	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Integer offset, Integer limit) {
-		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(offset) && LIMIT.isValid(limit)) {
-			if (offset == null) {
-				offset = 0;
-			}
-			if (limit == null) {
-				limit = 20;
-			}
+	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Bounds bounds) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(bounds.offset) && LIMIT.isValid(bounds.limit)) {
+			bounds.replaceMissing(0, 20, Long.MIN_VALUE, Long.MAX_VALUE);
 			try {
-				final Collection<UsageActivityItem> activities = proxy.fetchUsageActivities(id, offset, limit);
+				final List<UsageActivityItem> activities = proxy.fetchUsageActivities(id, bounds);
 				if (activities != null) {
 					return ResponseEntity.ok(activities);
 				} else {
@@ -122,8 +118,8 @@ public class UsageServiceController {
 					.body("The server was unable to complete the request.");
 			}
 		} else {
-			return badRequest()
-				.body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + OFFSET.getReason(offset) + "<BR>" + LIMIT.getReason(limit));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + OFFSET.getReason(bounds.offset) + "<BR>"
+					+ LIMIT.getReason(bounds.limit));
 		}
 	}
 }

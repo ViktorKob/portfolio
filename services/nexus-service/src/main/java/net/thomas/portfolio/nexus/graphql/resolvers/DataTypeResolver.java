@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.graphql;
+package net.thomas.portfolio.nexus.graphql.resolvers;
 
 import graphql.TypeResolutionEnvironment;
 import graphql.schema.GraphQLObjectType;
