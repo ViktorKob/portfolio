@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.graphql;
+package net.thomas.portfolio.nexus.graphql.resolvers;
 
 import graphql.TypeResolutionEnvironment;
 import graphql.schema.GraphQLObjectType;
@@ -8,10 +8,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
 public class DocumentResolver implements TypeResolver {
 
-	private final Adaptors adaptors;
-
 	public DocumentResolver(Adaptors adaptors) {
-		this.adaptors = adaptors;
 	}
 
 	@Override

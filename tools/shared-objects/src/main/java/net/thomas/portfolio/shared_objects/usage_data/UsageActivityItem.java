@@ -12,7 +12,7 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UsageActivityItem implements ParameterGroup {
 	@JsonIgnore
-	public String username;
+	public String user;
 	@JsonIgnore
 	public UsageActivityType type;
 	@JsonIgnore
@@ -22,17 +22,17 @@ public class UsageActivityItem implements ParameterGroup {
 	}
 
 	public UsageActivityItem(String username, UsageActivityType type, Long timeOfActivity) {
-		this.username = username;
+		user = username;
 		this.type = type;
 		this.timeOfActivity = timeOfActivity;
 	}
 
-	public String getUai_username() {
-		return username;
+	public String getUai_user() {
+		return user;
 	}
 
-	public void setUai_Username(String username) {
-		this.username = username;
+	public void setUai_Username(String user) {
+		this.user = user;
 	}
 
 	public UsageActivityType getUai_type() {
@@ -54,7 +54,7 @@ public class UsageActivityItem implements ParameterGroup {
 	@Override
 	@JsonIgnore
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("uai_username", username), new PreSerializedParameter("uai_type", type),
+		return new Parameter[] { new PreSerializedParameter("uai_user", user), new PreSerializedParameter("uai_type", type),
 				new PreSerializedParameter("uai_timeOfActivity", timeOfActivity) };
 	}
 
@@ -62,7 +62,7 @@ public class UsageActivityItem implements ParameterGroup {
 	public boolean equals(Object obj) {
 		if (obj instanceof UsageActivityItem) {
 			final UsageActivityItem other = (UsageActivityItem) obj;
-			return username.equals(other.username) && type == other.type && timeOfActivity == other.timeOfActivity;
+			return user.equals(other.user) && type == other.type && timeOfActivity == other.timeOfActivity;
 		} else {
 			return super.equals(obj);
 		}

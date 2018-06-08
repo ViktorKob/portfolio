@@ -52,6 +52,22 @@ public class Bounds implements ParameterGroup {
 		}
 	}
 
+	public void replaceMissing(int offset, int limit, long after, long before) {
+		if (this.offset == null) {
+			this.offset = offset;
+		}
+		if (this.limit == null) {
+			this.limit = limit;
+		}
+		if (this.after == null) {
+			this.after = after;
+		}
+		if (this.before == null) {
+			this.before = before;
+		}
+
+	}
+
 	public Integer getB_offset() {
 		return offset;
 	}
