@@ -22,7 +22,7 @@ public interface DateConverter {
 		private final ThreadLocal<SimpleDateFormat> completeFormatter = new ThreadLocal<SimpleDateFormat>() {
 			@Override
 			protected SimpleDateFormat initialValue() {
-				return new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
+				return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 			}
 		};
 
