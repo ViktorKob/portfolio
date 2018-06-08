@@ -6,7 +6,7 @@ import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_A
 import net.thomas.portfolio.services.ServiceEndpoint;
 
 public enum UsageDataServiceEndpoint implements ServiceEndpoint {
-	STORE_USAGE_ACTIVITY(FETCH_USAGE_ACTIVITY_PATH), FETCH_USAGE_ACTIVITY(STORE_USAGE_ACTIVITY_PATH);
+	STORE_USAGE_ACTIVITY(STORE_USAGE_ACTIVITY_PATH), FETCH_USAGE_ACTIVITY(FETCH_USAGE_ACTIVITY_PATH);
 	private final String path;
 
 	private UsageDataServiceEndpoint(String path) {
