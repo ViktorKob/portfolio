@@ -225,6 +225,7 @@ public class GraphQlModelBuilder {
 			builder.description("A document describing an event that occurred at some point in time");
 			builder.withInterface(new GraphQLTypeReference("Document"));
 			builder.field(createReferencesField(adaptors));
+			builder.field(createUsageDataItemsField(adaptors));
 			builder.field(createRawDataField(adaptors));
 			builder.field(createTimeOfEventField(adaptors));
 			builder.field(createTimeOfInterceptionField(adaptors));
@@ -414,7 +415,7 @@ public class GraphQlModelBuilder {
 	}
 
 	private GraphQLOutputType buildUsageActivityItemType(Adaptors adaptors) {
-		final GraphQLObjectType.Builder builder = newObject().name("UsageDataItem")
+		final GraphQLObjectType.Builder builder = newObject().name("UsageActivityItem")
 			.description("Activity by specific user on a specific document at a specific point in time");
 		builder.field(newFieldDefinition().name("user")
 			.description("Identity of the user who executed the action")
@@ -423,7 +424,7 @@ public class GraphQlModelBuilder {
 			.build());
 		builder.field(newFieldDefinition().name("activityType")
 			.description("The activity type in question")
-			.type(list(new GraphQLTypeReference("ActivityTypeEnum")))
+			.type(list(new GraphQLTypeReference("UsageActivityTypeEnum")))
 			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).type)
 			.build());
 		builder.field(newFieldDefinition().name("timeOfActivity")
