@@ -23,11 +23,7 @@ import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
-import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -36,11 +32,7 @@ public class NexusServiceController {
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private AnalyticsAdaptor analyticsAdaptor;
-	private HbaseIndexModelAdaptor hbaseIndexAdaptor;
-	private LegalAdaptor legalAdaptor;
-	private RenderingAdaptor renderingAdaptor;
-	private UsageAdaptor usageAdaptor;
+	private Adaptors adaptors;
 
 	public NexusServiceController(NexusServiceConfiguration config) {
 		this.config = config;
@@ -48,11 +40,13 @@ public class NexusServiceController {
 
 	@PostConstruct
 	public void buildHttpClient() {
-		analyticsAdaptor = new AnalyticsAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getAnalytics()));
-		hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-		legalAdaptor = new LegalAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getLegal()));
-		renderingAdaptor = new RenderingAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getRendering()));
-		usageAdaptor = new UsageAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getUsage()));
+		final AnalyticsAdaptorImpl analyticsAdaptor = new AnalyticsAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getAnalytics()));
+		final HbaseIndexModelAdaptorImpl hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
+				new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
+		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getLegal()));
+		final RenderingAdaptorImpl renderingAdaptor = new RenderingAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getRendering()));
+		final UsageAdaptorImpl usageAdaptor = new UsageAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getUsage()));
+		adaptors = new Adaptors(analyticsAdaptor, hbaseIndexAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 	}
 
 	@Bean
@@ -64,11 +58,7 @@ public class NexusServiceController {
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
 		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder();
-		schemaBuilder.setAnalyticsAdaptor(analyticsAdaptor);
-		schemaBuilder.setHbaseModelAdaptor(hbaseIndexAdaptor);
-		schemaBuilder.setLegalAdaptor(legalAdaptor);
-		schemaBuilder.setRenderingAdaptor(renderingAdaptor);
-		schemaBuilder.setUsageAdaptor(usageAdaptor);
+		schemaBuilder.setAdaptor(adaptors);
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
 		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
 	}
