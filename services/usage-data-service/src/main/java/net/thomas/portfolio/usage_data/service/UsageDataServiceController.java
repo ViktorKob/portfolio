@@ -31,19 +31,21 @@ import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @Controller
-public class UsageServiceController {
+public class UsageDataServiceController {
+	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
+	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
-	private static final StringPresenceValidator USERNAME = new StringPresenceValidator("username", true);
-	private static final EnumValueValidator<UsageActivityType> USAGE_ACTIVITY_TYPE = new EnumValueValidator<>("activityType", UsageActivityType.values(), true);
+	private static final StringPresenceValidator USERNAME = new StringPresenceValidator("uai_user", true);
+	private static final EnumValueValidator<UsageActivityType> USAGE_ACTIVITY_TYPE = new EnumValueValidator<>("uai_type", UsageActivityType.values(), true);
 	private static final IntegerRangeValidator OFFSET = new IntegerRangeValidator("offset", 0, MAX_VALUE, false);
 	private static final IntegerRangeValidator LIMIT = new IntegerRangeValidator("limit", 1, MAX_VALUE, false);
-	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
+	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 
 	@Autowired
 	private EurekaClient discoveryClient;
@@ -52,7 +54,7 @@ public class UsageServiceController {
 	private final SqlProxy proxy;
 
 	@Autowired
-	public UsageServiceController(UsageDataServiceConfiguration config) {
+	public UsageDataServiceController(UsageDataServiceConfiguration config) {
 		this.config = config;
 		proxy = new SqlProxy(config.getDatabase());
 	}
@@ -79,23 +81,23 @@ public class UsageServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(STORE_USAGE_ACTIVITY_PATH)
-	public ResponseEntity<?> storeUsageActivity(DataTypeId id, String username, UsageActivityType activityType, Long timeOfActivity) {
-		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(username) && USAGE_ACTIVITY_TYPE.isValid(activityType)
-				&& TIME_OF_ACTIVITY.isValid(timeOfActivity)) {
-			if (timeOfActivity == null) {
-				timeOfActivity = System.currentTimeMillis();
+	public ResponseEntity<?> storeUsageActivity(DataTypeId id, UsageActivity activity) {
+		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(activity.user) && USAGE_ACTIVITY_TYPE.isValid(activity.type)
+				&& TIME_OF_ACTIVITY.isValid(activity.timeOfActivity)) {
+			if (activity.timeOfActivity == null) {
+				activity.timeOfActivity = System.currentTimeMillis();
 			}
 			try {
-				proxy.storeUsageActivity(id, username, activityType, timeOfActivity);
-				return ResponseEntity.ok("Activity stored.");
+				proxy.storeUsageActivity(id, activity);
+				return ResponseEntity.ok(activity);
 			} catch (final Throwable t) {
 				t.printStackTrace();
 				return ResponseEntity.status(INTERNAL_SERVER_ERROR)
 					.body("The server was unable to complete the request.");
 			}
 		} else {
-			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + USERNAME.getReason(username) + "<BR>"
-					+ USAGE_ACTIVITY_TYPE.getReason(activityType) + "<BR>" + TIME_OF_ACTIVITY.getReason(timeOfActivity));
+			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + USERNAME.getReason(activity.user) + "<BR>"
+					+ USAGE_ACTIVITY_TYPE.getReason(activity.type) + "<BR>" + TIME_OF_ACTIVITY.getReason(activity.timeOfActivity));
 		}
 	}
 
@@ -103,9 +105,9 @@ public class UsageServiceController {
 	@RequestMapping(FETCH_USAGE_ACTIVITY_PATH)
 	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Bounds bounds) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(bounds.offset) && LIMIT.isValid(bounds.limit)) {
-			bounds.replaceMissing(0, 20, Long.MIN_VALUE, Long.MAX_VALUE);
+			bounds.replaceMissing(0, 20, AROUND_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW);
 			try {
-				final List<UsageActivityItem> activities = proxy.fetchUsageActivities(id, bounds);
+				final List<UsageActivity> activities = proxy.fetchUsageActivities(id, bounds);
 				if (activities != null) {
 					return ResponseEntity.ok(activities);
 				} else {

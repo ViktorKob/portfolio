@@ -10,7 +10,7 @@ import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.common.services.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsageActivityItem implements ParameterGroup {
+public class UsageActivity implements ParameterGroup {
 	@JsonIgnore
 	public String user;
 	@JsonIgnore
@@ -18,11 +18,11 @@ public class UsageActivityItem implements ParameterGroup {
 	@JsonIgnore
 	public Long timeOfActivity;
 
-	public UsageActivityItem() {
+	public UsageActivity() {
 	}
 
-	public UsageActivityItem(String username, UsageActivityType type, Long timeOfActivity) {
-		user = username;
+	public UsageActivity(String user, UsageActivityType type, Long timeOfActivity) {
+		this.user = user;
 		this.type = type;
 		this.timeOfActivity = timeOfActivity;
 	}
@@ -31,7 +31,7 @@ public class UsageActivityItem implements ParameterGroup {
 		return user;
 	}
 
-	public void setUai_Username(String user) {
+	public void setUai_user(String user) {
 		this.user = user;
 	}
 
@@ -60,8 +60,8 @@ public class UsageActivityItem implements ParameterGroup {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof UsageActivityItem) {
-			final UsageActivityItem other = (UsageActivityItem) obj;
+		if (obj instanceof UsageActivity) {
+			final UsageActivity other = (UsageActivity) obj;
 			return user.equals(other.user) && type == other.type && timeOfActivity == other.timeOfActivity;
 		} else {
 			return super.equals(obj);

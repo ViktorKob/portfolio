@@ -17,7 +17,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLook
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ModelUtilities;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 /***
  * This collection of adaptors allows usage of all endpoints in the service infrastructure as java methods.
@@ -243,11 +243,11 @@ public class Adaptors {
 		return renderingAdaptor.renderAsHtml(id);
 	}
 
-	public boolean storeUsageActivity(DataTypeId documentId, UsageActivityItem item) {
-		return usageAdaptor.storeUsageActivity(documentId, item);
+	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
+		return usageAdaptor.storeUsageActivity(documentId, activity);
 	}
 
-	public List<UsageActivityItem> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
+	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
 		return usageAdaptor.fetchUsageActivity(documentId, bounds);
 	}
 

@@ -4,10 +4,10 @@ import java.util.List;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public interface UsageAdaptor {
-	boolean storeUsageActivity(DataTypeId documentId, UsageActivityItem item);
+	UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity);
 
-	List<UsageActivityItem> fetchUsageActivity(DataTypeId documentId, Bounds bounds);
+	List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds);
 }

@@ -3,7 +3,7 @@ package net.thomas.portfolio.nexus.graphql.fetchers.usage_data;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimestampDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public class FormattedTimeOfActivityFetcher extends FormattedTimestampDataFetcher {
 
@@ -13,7 +13,7 @@ public class FormattedTimeOfActivityFetcher extends FormattedTimestampDataFetche
 
 	@Override
 	public String _get(DataFetchingEnvironment environment) {
-		final UsageActivityItem item = (UsageActivityItem) environment.getSource();
+		final UsageActivity item = (UsageActivity) environment.getSource();
 		return formatTimestampAsIec8601(environment, item.timeOfActivity);
 	}
 }
