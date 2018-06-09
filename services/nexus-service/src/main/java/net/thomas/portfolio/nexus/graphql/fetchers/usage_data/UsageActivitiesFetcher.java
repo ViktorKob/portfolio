@@ -9,19 +9,19 @@ import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
-public class UsageActivityItemsFetcher extends ModelDataFetcher<List<UsageActivityItem>> {
+public class UsageActivitiesFetcher extends ModelDataFetcher<List<UsageActivity>> {
 
 	private final DateConverter dateFormatter;
 
-	public UsageActivityItemsFetcher(Adaptors adaptors) {
+	public UsageActivitiesFetcher(Adaptors adaptors) {
 		super(adaptors/* , 50 */);
 		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override
-	public List<UsageActivityItem> _get(DataFetchingEnvironment environment) {
+	public List<UsageActivity> _get(DataFetchingEnvironment environment) {
 		final Document document = (Document) extractOrFetchDataType(environment);
 		final Bounds bounds = extractBounds(environment.getArguments());
 		return adaptors.fetchUsageActivity(document.getId(), bounds);

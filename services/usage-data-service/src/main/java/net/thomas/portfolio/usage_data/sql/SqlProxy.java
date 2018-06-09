@@ -30,7 +30,7 @@ import org.jooq.types.UInteger;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
 
@@ -85,16 +85,16 @@ public class SqlProxy {
 		}
 	}
 
-	public void storeUsageActivity(DataTypeId id, String username, UsageActivityType accessType, Long timeOfActivity) {
+	public void storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			create.transaction(configuration -> {
-				final UInteger userId = addOrGetUser(username, configuration);
-				final UInteger accessTypeId = addOrGetAccessType(accessType, configuration);
+				final UInteger userId = addOrGetUser(activity.user, configuration);
+				final UInteger accessTypeId = addOrGetAccessType(activity.type, configuration);
 				DSL.using(configuration)
 					.insertInto(USER_ACCESSED_DOCUMENT, USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE, USER_ACCESSED_DOCUMENT.DOCUMENT_UID,
 							USER_ACCESSED_DOCUMENT.USER_ID, USER_ACCESSED_DOCUMENT.ACCESS_TYPE_ID, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
-					.values(id.type, id.uid, userId, accessTypeId, new Timestamp(timeOfActivity))
+					.values(id.type, id.uid, userId, accessTypeId, new Timestamp(activity.timeOfActivity))
 					.execute();
 			});
 		} catch (final SQLException e) {
@@ -130,7 +130,7 @@ public class SqlProxy {
 			.get(ACCESS_TYPE.ID);
 	}
 
-	public List<UsageActivityItem> fetchUsageActivities(DataTypeId id, Bounds bounds) {
+	public List<UsageActivity> fetchUsageActivities(DataTypeId id, Bounds bounds) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			final Result<Record3<String, String, Timestamp>> result = create.select(USER.NAME, ACCESS_TYPE.NAME, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
@@ -142,16 +142,17 @@ public class SqlProxy {
 				.where(USER_ACCESSED_DOCUMENT.DOCUMENT_TYPE.eq(id.type))
 				.and(USER_ACCESSED_DOCUMENT.DOCUMENT_UID.eq(id.uid))
 				.and(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS.between(new Timestamp(bounds.after), new Timestamp(bounds.before)))
+				.orderBy(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS.desc())
 				.offset(bounds.offset)
 				.limit(bounds.limit)
 				.fetch();
-			final LinkedList<UsageActivityItem> activities = new LinkedList<>();
+			final LinkedList<UsageActivity> activities = new LinkedList<>();
 			for (final Record3<String, String, Timestamp> activity : result) {
 				final String username = activity.get(USER.NAME);
 				final UsageActivityType activityType = UsageActivityType.valueOf(activity.get(ACCESS_TYPE.NAME));
 				final long timeOfActivity = activity.get(USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
 					.getTime();
-				activities.add(new UsageActivityItem(username, activityType, timeOfActivity));
+				activities.add(new UsageActivity(username, activityType, timeOfActivity));
 			}
 
 			return activities;

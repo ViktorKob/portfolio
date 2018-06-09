@@ -1,14 +1,11 @@
 package net.thomas.portfolio.nexus.graphql;
 
 import static graphql.Scalars.GraphQLBigDecimal;
-import static graphql.Scalars.GraphQLInt;
 import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
-import static graphql.schema.GraphQLArgument.newArgument;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInterfaceType.newInterface;
 import static graphql.schema.GraphQLList.list;
-import static graphql.schema.GraphQLNonNull.nonNull;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
@@ -22,7 +19,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import graphql.schema.DataFetcher;
-import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLEnumValueDefinition;
 import graphql.schema.GraphQLFieldDefinition;
@@ -66,7 +62,7 @@ import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceSourceFet
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityItemsFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
 import net.thomas.portfolio.nexus.graphql.resolvers.DataTypeResolver;
 import net.thomas.portfolio.nexus.graphql.resolvers.DocumentResolver;
 import net.thomas.portfolio.nexus.graphql.resolvers.SelectorResolver;
@@ -77,7 +73,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
-import net.thomas.portfolio.shared_objects.usage_data.UsageActivityItem;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class GraphQlQueryModelBuilder {
@@ -101,15 +97,15 @@ public class GraphQlQueryModelBuilder {
 		final LinkedList<GraphQLFieldDefinition> fields = new LinkedList<>();
 		for (final String dataType : adaptors.getDataTypes()) {
 			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
-			List<GraphQLArgument> arguments = uidAnd(new LinkedList<>());
+			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid();
 			if (adaptors.isSimpleRepresentable(dataType)) {
-				arguments = simpleRepAnd(arguments);
+				arguments.addSimpleRep();
 			}
 			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptors);
 			fields.add(newFieldDefinition().name(dataType)
 				.description("Fields and functions in the " + dataType + " type")
 				.type(dataTypeObjectType)
-				.argument(arguments)
+				.argument(arguments.build())
 				.dataFetcher(fetcher)
 				.build());
 		}
@@ -137,9 +133,9 @@ public class GraphQlQueryModelBuilder {
 			.description("Reference information element describing how a document was obtained and restrictions on its usage")
 			.type(buildDocumentReferenceType(adaptors))
 			.build());
-		fields.add(newFieldDefinition().name("UsageActivityItem")
+		fields.add(newFieldDefinition().name("UsageActivity")
 			.description("Activity by specific user on a specific document at a specific point in time")
-			.type(buildUsageActivityItemType(adaptors))
+			.type(buildUsageActivityType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("GeoLocation")
 			.description("Longitude and lattitude for position related to selectors or documents")
@@ -191,7 +187,7 @@ public class GraphQlQueryModelBuilder {
 			builder.description("A document describing an event that occurred at some point in time");
 			builder.withInterface(new GraphQLTypeReference("Document"));
 			builder.field(createReferencesField(adaptors));
-			builder.field(createUsageDataItemsField(adaptors));
+			builder.field(createUsageActivitiesField(adaptors));
 			builder.field(createRawDataField(adaptors));
 			builder.field(createTimeOfEventField(adaptors));
 			builder.field(createTimeOfInterceptionField(adaptors));
@@ -304,7 +300,7 @@ public class GraphQlQueryModelBuilder {
 		builder.field(createTimeOfInterceptionField(adaptors));
 		builder.field(createFormattedTimeOfEventField(adaptors));
 		builder.field(createFormattedTimeOfInterceptionField(adaptors));
-		builder.field(createUsageDataItemsField(adaptors));
+		builder.field(createUsageActivitiesField(adaptors));
 		builder.field(createRawDataField(adaptors));
 		return builder.build();
 	}
@@ -380,27 +376,27 @@ public class GraphQlQueryModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLOutputType buildUsageActivityItemType(Adaptors adaptors) {
-		final GraphQLObjectType.Builder builder = newObject().name("UsageActivityItem")
+	private GraphQLOutputType buildUsageActivityType(Adaptors adaptors) {
+		final GraphQLObjectType.Builder builder = newObject().name("UsageActivity")
 			.description("Activity by specific user on a specific document at a specific point in time");
 		builder.field(newFieldDefinition().name("user")
 			.description("Identity of the user who executed the action")
 			.type(GraphQLString)
-			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).user)
+			.dataFetcher(environment -> ((UsageActivity) environment.getSource()).user)
 			.build());
 		builder.field(newFieldDefinition().name("activityType")
 			.description("The activity type in question")
-			.type(list(new GraphQLTypeReference("UsageActivityTypeEnum")))
-			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).type)
+			.type(new GraphQLTypeReference("UsageActivityTypeEnum"))
+			.dataFetcher(environment -> ((UsageActivity) environment.getSource()).type)
 			.build());
 		builder.field(newFieldDefinition().name("timeOfActivity")
 			.description("The exact time for when the activity occurred, in milliseconds since the epoch")
 			.type(GraphQLLong)
-			.dataFetcher(environment -> ((UsageActivityItem) environment.getSource()).timeOfActivity)
+			.dataFetcher(environment -> ((UsageActivity) environment.getSource()).timeOfActivity)
 			.build());
 		builder.field(newFieldDefinition().name("formattedTimeOfActivity")
 			.description("The exact time for when the activity occurred, in IEC 8601 format")
-			.type(GraphQLLong)
+			.type(GraphQLString)
 			.dataFetcher(new FormattedTimeOfActivityFetcher(adaptors))
 			.build());
 		return builder.build();
@@ -432,19 +428,21 @@ public class GraphQlQueryModelBuilder {
 	}
 
 	private GraphQLFieldDefinition createFormattedTimeOfInterceptionField(Adaptors adaptors) {
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addFormat();
 		return newFieldDefinition().name("formattedTimeOfInterception")
 			.description("The exact time for when the event, defined by the document, was intercepted, in IEC 8601 format")
 			.type(GraphQLString)
-			.argument(format(new LinkedList<>()))
+			.argument(arguments.build())
 			.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
 			.build();
 	}
 
 	private GraphQLFieldDefinition createFormattedTimeOfEventField(Adaptors adaptors) {
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addFormat();
 		return newFieldDefinition().name("formattedTimeOfEvent")
 			.description("The best guess for when the event, defined by the document, occurred, in IEC 8601 format")
 			.type(GraphQLString)
-			.argument(format(new LinkedList<>()))
+			.argument(arguments.build())
 			.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
 			.build();
 	}
@@ -465,12 +463,14 @@ public class GraphQlQueryModelBuilder {
 			.build();
 	}
 
-	private GraphQLFieldDefinition createUsageDataItemsField(Adaptors adaptors) {
+	private GraphQLFieldDefinition createUsageActivitiesField(Adaptors adaptors) {
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addPaging()
+			.addDateBounds();
 		return newFieldDefinition().name("usageActivities")
 			.description("Registered user interaction with this document")
-			.argument(pagingAnd(dateBoundsAnd(new LinkedList<>())))
-			.type(list(new GraphQLTypeReference("UsageActivityItem")))
-			.dataFetcher(new UsageActivityItemsFetcher(adaptors))
+			.argument(arguments.build())
+			.type(list(new GraphQLTypeReference("UsageActivity")))
+			.dataFetcher(new UsageActivitiesFetcher(adaptors))
 			.build();
 	}
 
@@ -531,14 +531,16 @@ public class GraphQlQueryModelBuilder {
 	}
 
 	private GraphQLFieldDefinition createInvertedIndexLookupField(String dataType, Adaptors adaptors) {
-		List<GraphQLArgument> arguments = pagingAnd(dateBoundsAnd(new LinkedList<>()));
-		arguments = relationsAnd(arguments, adaptors.getIndexedRelationTypes(dataType));
-		arguments = documentTypesAnd(arguments, adaptors.getIndexedDocumentTypes(dataType));
-		arguments = justificationAnd(arguments);
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addPaging()
+			.addDateBounds()
+			.addJustification()
+			.addUser()
+			.addDocumentTypes(adaptors.getIndexedDocumentTypes(dataType))
+			.addRelations(adaptors.getIndexedRelationTypes(dataType));
 
 		return newFieldDefinition().name("events")
 			.description("Events that this \" + dataType + \" has been linked to in the index")
-			.argument(arguments)
+			.argument(arguments.build())
 			.type(list(new GraphQLTypeReference("Document")))
 			.dataFetcher(new DocumentListFetcher(adaptors))
 			.build();
@@ -554,100 +556,14 @@ public class GraphQlQueryModelBuilder {
 	}
 
 	private GraphQLFieldDefinition createStatisticsField(Adaptors adaptors) {
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addJustification()
+			.addUser();
 		return newFieldDefinition().name("statistics")
 			.description("Lookup statstics over how often the selector occurs in the index")
 			.type(new GraphQLTypeReference("SelectorStatistics"))
-			.argument(justificationAnd(new LinkedList<>()))
+			.argument(arguments.build())
 			.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 			.build();
-	}
-
-	private List<GraphQLArgument> uidAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("uid")
-			.description("Unique id for entity")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> simpleRepAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("simpleRep")
-			.description("Simple representation for selector")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> justificationAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("justification")
-			.description("Justification for executing query")
-			.type(GraphQLString)
-			.build());
-		arguments.add(newArgument().name("user")
-			.description("ID of the user trying to execute the query")
-			.type(nonNull(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> format(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("detailLevel")
-			.description("Date rendering detail level; use 'dateOnly' to only render year-month-date or leave it out for date and time")
-			.type(GraphQLString)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> documentTypesAnd(List<GraphQLArgument> arguments, Collection<String> documentTypes) {
-		final String documentTypeList = buildPresentationListFromCollection(documentTypes);
-		arguments.add(newArgument().name("documentTypes")
-			.description("Document types that should be included in the response (from the set " + documentTypeList + " )")
-			.type(list(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> relationsAnd(List<GraphQLArgument> arguments, Collection<String> relationTypes) {
-		final String relationTypeList = buildPresentationListFromCollection(relationTypes);
-		arguments.add(newArgument().name("relations")
-			.description("Relation types that should be included in the response (from the set " + relationTypeList + " )")
-			.type(list(GraphQLString))
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> pagingAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("offset")
-			.description("Index of first element in result to include")
-			.type(GraphQLInt)
-			.defaultValue(0)
-			.build());
-		arguments.add(newArgument().name("limit")
-			.description("Number of elements from result to include")
-			.type(GraphQLInt)
-			.defaultValue(20)
-			.build());
-		return arguments;
-	}
-
-	private List<GraphQLArgument> dateBoundsAnd(List<GraphQLArgument> arguments) {
-		arguments.add(newArgument().name("after")
-			.description("Lower bound in milliseconds since the epoch")
-			.type(GraphQLLong)
-			.build());
-		arguments.add(newArgument().name("before")
-			.description("Upper bound in milliseconds since the epoch")
-			.type(GraphQLLong)
-			.build());
-		arguments.add(newArgument().name("afterDate")
-			.description("Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
-			.type(GraphQLString)
-			.build());
-		arguments.add(newArgument().name("beforeDate")
-			.description("Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'")
-			.type(GraphQLString)
-			.build());
-		return arguments;
 	}
 
 	private String buildPresentationListFromCollection(Collection<String> values) {
