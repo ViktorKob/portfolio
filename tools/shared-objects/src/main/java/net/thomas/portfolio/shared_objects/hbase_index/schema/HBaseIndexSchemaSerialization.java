@@ -33,7 +33,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	public HBaseIndexSchemaSerialization() {
 	}
 
-	protected void initialize() {
+	public void initialize() {
 		simpleRepParsers = new SimpleRepresentationParserLibrary(this);
 	}
 
