@@ -73,6 +73,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
@@ -318,23 +319,19 @@ public class GraphQlQueryModelBuilder {
 	private GraphQLOutputType buildSelectorStatisticsType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("SelectorStatistics")
 			.description("Statistics for specific selector over time");
-		builder.field(newFieldDefinition().name("dayTotal")
-			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(DAY, adaptors))
-			.build());
-		builder.field(newFieldDefinition().name("weekTotal")
-			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(WEEK, adaptors))
-			.build());
-		builder.field(newFieldDefinition().name("quarterTotal")
-			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(QUARTER, adaptors))
-			.build());
-		builder.field(newFieldDefinition().name("infinityTotal")
-			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(INFINITY, adaptors))
-			.build());
+		builder.field(buildStatisticsTotalField("day", "yesterday", DAY, adaptors));
+		builder.field(buildStatisticsTotalField("week", "last week", WEEK, adaptors));
+		builder.field(buildStatisticsTotalField("quarter", "three months ago", QUARTER, adaptors));
+		builder.field(buildStatisticsTotalField("infinity", "forever", INFINITY, adaptors));
 		return builder.build();
+	}
+
+	private GraphQLFieldDefinition buildStatisticsTotalField(String namePrefix, String descriptionSuffix, StatisticsPeriod fieldName, Adaptors adaptors) {
+		return newFieldDefinition().name(namePrefix + "Total")
+			.description("How often have we seen this selector since " + descriptionSuffix)
+			.type(GraphQLLong)
+			.dataFetcher(new SelectorStatisticsForPeriodFetcher(fieldName, adaptors))
+			.build();
 	}
 
 	private GraphQLObjectType buildKnowledgeType(Adaptors adaptors) {
@@ -362,14 +359,17 @@ public class GraphQlQueryModelBuilder {
 		final GraphQLObjectType.Builder builder = newObject().name("DocumentReference")
 			.description("Source reference for specific document");
 		builder.field(newFieldDefinition().name("originalId")
+			.description("The ID of the original entity in the source")
 			.type(GraphQLString)
 			.dataFetcher(new ReferenceOriginalIdFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("classifications")
+			.description("The classifications required for working with this document")
 			.type(list(new GraphQLTypeReference("ClassificationEnum")))
 			.dataFetcher(new ReferenceClassificationsFetcher(adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("source")
+			.description("The original source of the document")
 			.type(new GraphQLTypeReference("SourceEnum"))
 			.dataFetcher(new ReferenceSourceFetcher(adaptors))
 			.build());
@@ -404,12 +404,14 @@ public class GraphQlQueryModelBuilder {
 
 	private GraphQLOutputType buildGeoLocationType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("GeoLocation")
-			.description("Location in Longitude and Latitude");
+			.description("Location in Longitude and Latitude on Earth");
 		builder.field(newFieldDefinition().name("longitude")
+			.description("The longitude relative to the Greenwich line")
 			.type(GraphQLBigDecimal)
 			.dataFetcher(new GeoLocationValueFetcher("longitude", adaptors))
 			.build());
 		builder.field(newFieldDefinition().name("latitude")
+			.description("The latitude relative to the Equator")
 			.type(GraphQLBigDecimal)
 			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptors))
 			.build());
