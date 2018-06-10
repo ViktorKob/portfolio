@@ -143,7 +143,7 @@ _Simple discovery service implementation_
 This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. When using a reverse-proxy setup, the status page is used as the root entry point for the server. All standard Eureka endpoints are accessible through /eureka.
 
 ### Nginx
-_Reverse proxy for hiding ports and simplifying some endpoints_
+_Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 
 [Source](https://github.com/ViktorKob/portfolio/tree/master/setup/nginx "Nginx root")
 
@@ -153,7 +153,7 @@ _Reverse proxy for hiding ports and simplifying some endpoints_
 |**Technologies**|Nginx|
 |**Endpoints**|<ul><li>__All of the above__</li><li>/schema.json</li><li>/graphql/*</li></ul>|
 
-Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup, but is used to hide ports and simplify the graphql / graphiql endpoints.
+Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup, but is used to hide ports and simplify the graphql / graphiql endpoints. Also responsible for diverting HTTP calls to HTTPS and is the only encrypted service in the infrastructure.
 
 # Plans for the future
 - [ ] Automated service level acceptance testing
