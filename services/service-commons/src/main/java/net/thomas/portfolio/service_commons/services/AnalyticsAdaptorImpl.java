@@ -2,6 +2,7 @@ package net.thomas.portfolio.service_commons.services;
 
 import static net.thomas.portfolio.enums.AnalyticsServiceEndpoint.LOOKUP_PRIOR_KNOWLEDGE;
 import static net.thomas.portfolio.services.Service.ANALYTICS_SERVICE;
+import static org.springframework.http.HttpMethod.GET;
 
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
@@ -17,6 +18,6 @@ public class AnalyticsAdaptorImpl implements AnalyticsAdaptor {
 
 	@Override
 	public PriorKnowledge getPriorKnowledge(DataTypeId selectorId) {
-		return client.loadUrlAsObject(ANALYTICS_SERVICE, LOOKUP_PRIOR_KNOWLEDGE, PriorKnowledge.class, selectorId);
+		return client.loadUrlAsObject(ANALYTICS_SERVICE, LOOKUP_PRIOR_KNOWLEDGE, GET, PriorKnowledge.class, selectorId);
 	}
 }

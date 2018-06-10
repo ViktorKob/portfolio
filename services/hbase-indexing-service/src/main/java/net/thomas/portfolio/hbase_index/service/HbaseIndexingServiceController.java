@@ -60,7 +60,7 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}")
+	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}", method = GET)
 	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String selectorString) {
 		final List<DataTypeId> suggestions = schema.getSelectorSuggestions(selectorString);
 		if (suggestions != null && suggestions.size() > 0) {
@@ -85,7 +85,7 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(ENTITIES_PATH + "/{dti_type}/{dti_uid}")
+	@RequestMapping(path = ENTITIES_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<?> getDataType(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final DataType entity = index.getDataType(id);

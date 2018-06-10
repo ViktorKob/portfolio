@@ -8,6 +8,8 @@ import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import javax.annotation.PostConstruct;
 
@@ -62,7 +64,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH)
+	@RequestMapping(path = AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH, method = POST)
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId id, LegalInformation legalInfo) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			// TODO[Thomas]: Pending implementation
@@ -73,7 +75,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(AUDIT_LOG_STATISTICS_LOOKUP_PATH)
+	@RequestMapping(path = AUDIT_LOG_STATISTICS_LOOKUP_PATH, method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			// TODO[Thomas]: Pending implementation
@@ -84,7 +86,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH)
+	@RequestMapping(path = CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfQueryOnSelector(DataTypeId id, LegalInformation legalInfo) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final PriorKnowledge knowledge = analyticsAdaptor.getPriorKnowledge(id);

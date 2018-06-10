@@ -5,6 +5,8 @@ import static net.thomas.portfolio.globals.UsageDataServiceGlobals.FETCH_USAGE_A
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.List;
 
@@ -80,7 +82,7 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(STORE_USAGE_ACTIVITY_PATH)
+	@RequestMapping(path = STORE_USAGE_ACTIVITY_PATH, method = POST)
 	public ResponseEntity<?> storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(activity.user) && USAGE_ACTIVITY_TYPE.isValid(activity.type)
 				&& TIME_OF_ACTIVITY.isValid(activity.timeOfActivity)) {
@@ -102,7 +104,7 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(FETCH_USAGE_ACTIVITY_PATH)
+	@RequestMapping(path = FETCH_USAGE_ACTIVITY_PATH, method = GET)
 	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Bounds bounds) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(bounds.offset) && LIMIT.isValid(bounds.limit)) {
 			bounds.replaceMissing(0, 20, AROUND_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW);

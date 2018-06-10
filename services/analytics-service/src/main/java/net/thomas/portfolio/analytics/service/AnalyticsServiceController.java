@@ -6,6 +6,7 @@ import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.POSS
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import javax.annotation.PostConstruct;
 
@@ -24,8 +25,8 @@ import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
-import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
+import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @Controller
@@ -57,7 +58,7 @@ public class AnalyticsServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(LOOKUP_PRIOR_KNOWLEDGE_PATH)
+	@RequestMapping(path = LOOKUP_PRIOR_KNOWLEDGE_PATH, method = GET)
 	public ResponseEntity<?> lookupPriorKnowledge(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final ConfidenceLevel recognition = determineFakeRecognizedValue(id);
