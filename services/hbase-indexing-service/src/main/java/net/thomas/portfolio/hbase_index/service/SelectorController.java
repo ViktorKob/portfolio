@@ -122,7 +122,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH)
+	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH, method = GET)
 	public ResponseEntity<?> lookupSelectorInInvertedIndex(@PathVariable String dti_type, @PathVariable String dti_uid, LegalInformation legalInfo,
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
 			@RequestParam(value = "relation", required = false) HashSet<String> relations) {

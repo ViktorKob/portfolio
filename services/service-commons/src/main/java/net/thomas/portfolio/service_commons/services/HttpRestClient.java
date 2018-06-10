@@ -3,7 +3,6 @@ package net.thomas.portfolio.service_commons.services;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
-import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -42,25 +42,25 @@ public class HttpRestClient {
 		this.serviceInfo = serviceInfo;
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType) {
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType) {
 		final URI request = buildUri(service, endpoint);
-		return execute(request, responseType);
+		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, ParameterGroup... parameters) {
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType, ParameterGroup... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		return execute(request, responseType);
+		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, Class<T> responseType, Parameter... parameters) {
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType, Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		return execute(request, responseType);
+		return execute(request, method, responseType);
 	}
 
-	private <T> T execute(final URI request, Class<T> responseType) {
+	private <T> T execute(final URI request, HttpMethod method, Class<T> responseType) {
 		try {
 			final long stamp = System.nanoTime();
-			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms calling " + request);
 			if (OK == response.getStatusCode()) {
 				return response.getBody();
@@ -77,19 +77,21 @@ public class HttpRestClient {
 		}
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, ParameterGroup... parameters) {
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, ParameterizedTypeReference<T> responseType,
+			ParameterGroup... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		return execute(request, responseType);
+		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, ParameterizedTypeReference<T> responseType, Parameter... parameters) {
+	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, ParameterizedTypeReference<T> responseType,
+			Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
-		return execute(request, responseType);
+		return execute(request, method, responseType);
 	}
 
-	private <T> T execute(final URI request, ParameterizedTypeReference<T> responseType) {
+	private <T> T execute(final URI request, HttpMethod method, ParameterizedTypeReference<T> responseType) {
 		try {
-			final ResponseEntity<T> response = restTemplate.exchange(request, GET, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			if (OK.equals(response.getStatusCode())) {
 				return response.getBody();
 			} else {

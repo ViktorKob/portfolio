@@ -11,6 +11,7 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
+import static org.springframework.http.HttpMethod.GET;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,7 +45,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	public HbaseIndexModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, HBaseIndexSchemaSerialization.class);
+		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HBaseIndexSchemaSerialization.class);
 		((HBaseIndexSchemaSerialization) schema).initialize();
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 			.maximumSize(10000)
@@ -115,7 +116,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			return SUGGESTIONS.getPath() + "/" + selectorString;
-		}, responseType, EMPTY_GROUP_LIST);
+		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -140,7 +141,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	private DataType fetchDataType(DataTypeId id) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			return ENTITIES.getPath() + "/" + id.getDti_type() + "/" + id.getDti_uid();
-		}, DataType.class);
+		}, GET, DataType.class);
 	}
 
 	@Override
@@ -149,7 +150,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			return DOCUMENTS.getPath() + "/" + documentId.getDti_type() + "/" + documentId.getDti_uid() + REFERENCES.getPath();
-		}, responseType, EMPTY_GROUP_LIST);
+		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -158,7 +159,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + STATISTICS.getPath();
-		}, responseType, EMPTY_GROUP_LIST);
+		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -168,6 +169,6 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			final DataTypeId selectorId = request.getSelectorId();
 			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + INVERTED_INDEX.getPath();
-		}, responseType, request.getGroups());
+		}, GET, responseType, request.getGroups());
 	}
 }

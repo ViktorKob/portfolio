@@ -4,6 +4,8 @@ import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_INVERTED
 import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_STATISTICS_LOOKUP;
 import static net.thomas.portfolio.enums.LegalServiceEndpoint.CHECK_LEGALITY_OF_QUERY_ON_SELECTOR;
 import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -20,16 +22,16 @@ public class LegalAdaptorImpl implements LegalAdaptor {
 
 	@Override
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, AUDIT_LOG_INVERTED_INDEX_LOOKUP, Boolean.class, selectorId, legalInfo);
+		return client.loadUrlAsObject(LEGAL_SERVICE, AUDIT_LOG_INVERTED_INDEX_LOOKUP, POST, Boolean.class, selectorId, legalInfo);
 	}
 
 	@Override
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, AUDIT_LOG_STATISTICS_LOOKUP, Boolean.class, selectorId, legalInfo);
+		return client.loadUrlAsObject(LEGAL_SERVICE, AUDIT_LOG_STATISTICS_LOOKUP, POST, Boolean.class, selectorId, legalInfo);
 	}
 
 	@Override
 	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, CHECK_LEGALITY_OF_QUERY_ON_SELECTOR, Legality.class, selectorId, legalInfo);
+		return client.loadUrlAsObject(LEGAL_SERVICE, CHECK_LEGALITY_OF_QUERY_ON_SELECTOR, GET, Legality.class, selectorId, legalInfo);
 	}
 }
