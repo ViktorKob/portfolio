@@ -155,12 +155,11 @@ _Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 
 Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup, but is used to hide ports and simplify the graphql / graphiql endpoints. Also responsible for diverting HTTP calls to HTTPS and is the only encrypted service in the infrastructure.
 
-# Plans for the future
+# Pending experimentation ideas
 - [ ] Automated service level acceptance testing
 - [ ] Failover for services and red-green deployment of changes 
 - [ ] Make Eureka and the clients AWS aware
 - [ ] Add OpenAPI 3 integration to the services
-- [X] Add support for the build-in spring rest endpoints (info, health, mappings, metrics, etc.)
 - [ ] Add circuit breakers where relevant
 - [ ] Add Hystrix integration
 - [ ] Look into replacing / supplementing proxy with Zuul
