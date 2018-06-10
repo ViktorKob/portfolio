@@ -149,7 +149,7 @@ _Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 
 | Settings | |
 |---|---|
-|**Port**|80|
+|**Port**|443, 80 (redirected)|
 |**Technologies**|Nginx|
 |**Endpoints**|<ul><li>__All of the above__</li><li>/schema.json</li><li>/graphql/*</li></ul>|
 
