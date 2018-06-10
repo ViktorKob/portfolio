@@ -42,6 +42,7 @@ public class Adaptors {
 
 	/***
 	 * Using {@link AnalyticsAdaptor#getPriorKnowledge}<BR>
+	 * This method will run a query in the analytics system to fetch relevant information about the selector.
 	 *
 	 * @param selectorId
 	 *            The ID of the selector to query about
@@ -219,38 +220,109 @@ public class Adaptors {
 		return hbaseModelAdaptor.lookupSelectorInInvertedIndex(request);
 	}
 
-	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return legalAdaptor.auditLogInvertedIndexLookup(selectorId, legalInfo);
-	}
-
-	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return legalAdaptor.auditLogStatisticsLookup(selectorId, legalInfo);
-	}
-
+	/***
+	 * Using {@link LegalAdaptor#checkLegalityOfSelectorQuery}<BR>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector is being queried
+	 * @param legalInfo
+	 *            The legal parameters supporting the lookup
+	 * @return An assessment of whether the lookup would be legal to complete
+	 */
 	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
 		return legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
 	}
 
-	public String renderAsSimpleRepresentation(DataTypeId id) {
-		return renderingAdaptor.renderAsSimpleRepresentation(id);
+	/***
+	 * Using {@link LegalAdaptor#auditLogInvertedIndexLookup}<BR>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector to lookup events for
+	 * @param legalInfo
+	 *            The legal parameters supporting the lookup
+	 * @return True if the logging is successful
+	 */
+	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.auditLogInvertedIndexLookup(selectorId, legalInfo);
 	}
 
+	/***
+	 * Using {@link LegalAdaptor#auditLogStatisticsLookup}<BR>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector to lookup statistics for
+	 * @param legalInfo
+	 *            The legal parameters supporting the lookup
+	 * @return True if the logging is successful
+	 */
+	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.auditLogStatisticsLookup(selectorId, legalInfo);
+	}
+
+	/***
+	 * Using {@link RenderingAdaptor#renderAsSimpleRepresentation}<BR>
+	 *
+	 * @param selectorId
+	 *            The ID of the selector to lookup a simple representation for
+	 * @return The simple representation, if the selector is known in the index, null otherwise.
+	 */
+	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
+		return renderingAdaptor.renderAsSimpleRepresentation(selectorId);
+	}
+
+	/***
+	 * Using {@link RenderingAdaptor#renderAsText}<BR>
+	 *
+	 * @param id
+	 *            The ID of the data type to render
+	 * @return A textual representation of the type, if the data type exists, null otherwise
+	 */
 	public String renderAsText(DataTypeId id) {
 		return renderingAdaptor.renderAsText(id);
 	}
 
+	/***
+	 * Using {@link RenderingAdaptor#renderAsHtml}<BR>
+	 *
+	 * @param id
+	 *            The ID of the data type to render
+	 * @return An HTML representation of the type, if the data type exists, null otherwise
+	 */
 	public String renderAsHtml(DataTypeId id) {
 		return renderingAdaptor.renderAsHtml(id);
 	}
 
+	/***
+	 * Using {@link UsageAdaptor#storeUsageActivity}<BR>
+	 *
+	 * @param documentId
+	 *            The ID of the document that has been used
+	 * @param activity
+	 *            A description of who used the document how, when
+	 * @return A copy of the activity entity as it was stored
+	 */
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
 		return usageAdaptor.storeUsageActivity(documentId, activity);
 	}
 
+	/***
+	 * Using {@link UsageAdaptor#fetchUsageActivity}<BR>
+	 *
+	 * @param documentId
+	 *            The ID of the document to fetch usage events for
+	 * @param bounds
+	 *            The parameters for the fetch
+	 * @return An ordered (newest first) list of events for the document
+	 */
 	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
 		return usageAdaptor.fetchUsageActivity(documentId, bounds);
 	}
 
+	/***
+	 * Using {@link ModelUtilities#getIec8601DateConverter}<BR>
+	 *
+	 * @return A thread-safe date converter for parsing and/or formatting dates
+	 */
 	public DateConverter getIec8601DateConverter() {
 		return utilities.getIec8601DateConverter();
 	}
