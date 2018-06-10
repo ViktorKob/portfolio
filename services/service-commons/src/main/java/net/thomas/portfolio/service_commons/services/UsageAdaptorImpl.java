@@ -4,7 +4,7 @@ import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.FETCH_USAGE_AC
 import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.STORE_USAGE_ACTIVITY;
 import static net.thomas.portfolio.services.Service.USAGE_DATA_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class UsageAdaptorImpl implements UsageAdaptor {
 
 	@Override
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
-		return client.loadUrlAsObject(USAGE_DATA_SERVICE, STORE_USAGE_ACTIVITY, POST, UsageActivity.class, documentId, activity);
+		return client.loadUrlAsObject(USAGE_DATA_SERVICE, STORE_USAGE_ACTIVITY, PUT, UsageActivity.class, documentId, activity);
 	}
 
 	@Override
