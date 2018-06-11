@@ -20,16 +20,18 @@ public class HeadlineDataFetcher extends ModelDataFetcher<String> {
 	public String _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
-			return execute(((DataType) entity).getId());
+			return usageLogAndRenderHeadline(((DataType) entity).getId());
+		} else if (entity instanceof DataTypeId) {
+			return usageLogAndRenderHeadline((DataTypeId) entity);
 		} else if (entity instanceof DocumentInfo) {
-			return execute(((DocumentInfo) entity).getId());
+			return usageLogAndRenderHeadline(((DocumentInfo) entity).getId());
 		} else {
 			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
 				.getSimpleName());
 		}
 	}
 
-	private String execute(final DataTypeId id) {
+	private String usageLogAndRenderHeadline(final DataTypeId id) {
 		if (adaptors.isDocument(id.type)) {
 			adaptors.storeUsageActivity(id, new UsageActivity("Tester", READ_DOCUMENT, System.currentTimeMillis()));
 		}

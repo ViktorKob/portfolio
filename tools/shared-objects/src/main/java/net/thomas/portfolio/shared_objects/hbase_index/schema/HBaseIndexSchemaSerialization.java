@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +31,8 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	protected Map<String, Collection<Indexable>> indexables;
 	protected Map<String, Collection<String>> indexableDocumentTypes;
 	protected Map<String, Collection<String>> indexableRelations;
+	@JsonIgnore
+	protected Collection<String> allIndexableRelations;
 
 	public HBaseIndexSchemaSerialization() {
 	}
@@ -107,12 +111,21 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	public void setIndexableRelations(Map<String, Collection<String>> indexableRelations) {
 		this.indexableRelations = indexableRelations;
+		allIndexableRelations = indexableRelations.values()
+			.stream()
+			.flatMap(Collection::stream)
+			.collect(toSet());
 	}
 
 	@Override
 	@JsonIgnore
 	public Collection<String> getIndexableRelations(String selectorType) {
 		return indexableRelations.get(selectorType);
+	}
+
+	@Override
+	public Collection<String> getAllIndexableRelations() {
+		return allIndexableRelations;
 	}
 
 	public Collection<Indexable> getIndexables(String selectorType) {

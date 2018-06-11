@@ -11,7 +11,7 @@ Either click [selector query example](https://viktorkob.tk/NexusService/graphiql
 
 To log in, use **service-user** and **password**.
 
-Click the play button, and you are running a query on the AWS instance I have setup for this purpose. 
+Click the play button, and you are running a query on the AWS instance I have set up for this purpose. 
 
 Feel free to experiment, but also note that the resources are very limited (AWS t2.medium service with 2 cores and 4 GiB of ram, that is running 8 services and a MySQL server simultaneously). If it is very slow, or starts hanging and/or failing, either scale back your queries, or come back at a later time and try again.  
 
@@ -21,10 +21,12 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 - To experiment locally, check out the entire repository.
 - I recommend hooking it up to an IDE (Eclipse project files are included, and there are three pom.xml's you can import as well).
 - Build everything (first tools, then infrastructure, then services).
-- Start the infrastructure service from the infrastructure folder. 
-- Run each service using its respective *Application.java. Order should not matter, if you start all of them shortly after each other.
+- Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication). 
+- Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
 
-Now you can do as described above, but locally. Note that unless you also setup a local reverse proxy, you will need to specify ports directly when running queries, though. An example is the nexus, that should be running at (localhost:8100/NexusService/graphiql).
+Now you can do as described above, but locally. <BR>
+Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).<BR>
+Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql).
 
 # Status at the moment
 The project contains a set of services:

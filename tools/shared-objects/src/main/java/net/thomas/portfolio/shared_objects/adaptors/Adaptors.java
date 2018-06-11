@@ -91,14 +91,23 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelationTypes}<BR>
+	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelations}<BR>
 	 *
 	 * @param selectorType
 	 *            The selector type in question
 	 * @return All types of relations in the current schema, that can be hit when querying for this selector type
 	 */
-	public Collection<String> getIndexedRelationTypes(String selectorType) {
+	public Collection<String> getIndexedRelations(String selectorType) {
 		return hbaseModelAdaptor.getIndexedRelations(selectorType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getAllIndexedRelations}<BR>
+	 * 
+	 * @return All types of relations in the current schema, that can be hit when querying for any selector type
+	 */
+	public Collection<String> getAllIndexedRelations() {
+		return hbaseModelAdaptor.getAllIndexedRelations();
 	}
 
 	/***

@@ -28,4 +28,6 @@ public interface HbaseIndexSchema {
 	Collection<String> getIndexableDocumentTypes(String selectorType);
 
 	Collection<String> getIndexableRelations(String selectorType);
+
+	Collection<String> getAllIndexableRelations();
 }

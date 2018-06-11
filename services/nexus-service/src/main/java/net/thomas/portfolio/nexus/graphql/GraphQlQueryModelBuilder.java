@@ -37,6 +37,7 @@ import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentListFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.EntityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorSuggestionsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SimpleRepresentationFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeArrayFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeFetcher;
@@ -63,7 +64,6 @@ import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatistics
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
-import net.thomas.portfolio.nexus.graphql.resolvers.DataTypeResolver;
 import net.thomas.portfolio.nexus.graphql.resolvers.DocumentResolver;
 import net.thomas.portfolio.nexus.graphql.resolvers.SelectorResolver;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
@@ -110,10 +110,7 @@ public class GraphQlQueryModelBuilder {
 				.dataFetcher(fetcher)
 				.build());
 		}
-		fields.add(newFieldDefinition().name("DataType")
-			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDataTypes()) + ")")
-			.type(buildDataTypeInterfaceType(adaptors))
-			.build());
+		fields.add(buildSelectorSuggestionField(adaptors));
 		fields.add(newFieldDefinition().name("Document")
 			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
 			.type(buildDocumentInterfaceType(adaptors))
@@ -175,7 +172,6 @@ public class GraphQlQueryModelBuilder {
 
 	private GraphQLObjectType buildObjectType(String dataType, Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name(dataType);
-		builder.withInterface(new GraphQLTypeReference("DataType"));
 		builder.field(createUidField(adaptors));
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));
@@ -280,22 +276,15 @@ public class GraphQlQueryModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLOutputType buildDataTypeInterfaceType(Adaptors adaptors) {
-		final GraphQLInterfaceType.Builder builder = newInterface().name("DataType")
-			.description("General interface for the different data types (from the set " + buildPresentationListFromCollection(adaptors.getDataTypes()) + ")")
-			.typeResolver(new DataTypeResolver(adaptors));
-		builder.field(createUidField(adaptors));
-		builder.field(createTypeField(adaptors));
-		builder.field(createHeadlineField(adaptors));
-		builder.field(createHtmlField(adaptors));
-		return builder.build();
-	}
-
 	private GraphQLOutputType buildDocumentInterfaceType(Adaptors adaptors) {
 		final GraphQLInterfaceType.Builder builder = newInterface().name("Document")
 			.description(
 					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
 			.typeResolver(new DocumentResolver(adaptors));
+		builder.field(createUidField(adaptors));
+		builder.field(createTypeField(adaptors));
+		builder.field(createHeadlineField(adaptors));
+		builder.field(createHtmlField(adaptors));
 		builder.field(createReferencesField(adaptors));
 		builder.field(createTimeOfEventField(adaptors));
 		builder.field(createTimeOfInterceptionField(adaptors));
@@ -311,22 +300,37 @@ public class GraphQlQueryModelBuilder {
 			.description(
 					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
 			.typeResolver(new SelectorResolver(adaptors));
+		builder.field(createUidField(adaptors));
+		builder.field(createTypeField(adaptors));
+		builder.field(createHeadlineField(adaptors));
+		builder.field(createHtmlField(adaptors));
 		builder.field(createStatisticsField(adaptors));
 		builder.field(createKnowledgeField(adaptors));
+		builder.field(createInvertedIndexLookupField("selector", adaptors));
 		return builder.build();
+	}
+
+	private GraphQLFieldDefinition buildSelectorSuggestionField(Adaptors adaptors) {
+		return newFieldDefinition().name("selectors")
+			.description("Lookup of selectors suggestions based on simple representation")
+			.argument(new ArgumentsBuilder().addSimpleRep()
+				.build())
+			.type(list(new GraphQLTypeReference("Selector")))
+			.dataFetcher(new SelectorSuggestionsFetcher(adaptors))
+			.build();
 	}
 
 	private GraphQLOutputType buildSelectorStatisticsType(Adaptors adaptors) {
 		final GraphQLObjectType.Builder builder = newObject().name("SelectorStatistics")
 			.description("Statistics for specific selector over time");
-		builder.field(buildStatisticsTotalField("day", "yesterday", DAY, adaptors));
-		builder.field(buildStatisticsTotalField("week", "last week", WEEK, adaptors));
-		builder.field(buildStatisticsTotalField("quarter", "three months ago", QUARTER, adaptors));
-		builder.field(buildStatisticsTotalField("infinity", "forever", INFINITY, adaptors));
+		builder.field(createStatisticsTotalField("day", "yesterday", DAY, adaptors));
+		builder.field(createStatisticsTotalField("week", "last week", WEEK, adaptors));
+		builder.field(createStatisticsTotalField("quarter", "three months ago", QUARTER, adaptors));
+		builder.field(createStatisticsTotalField("infinity", "forever", INFINITY, adaptors));
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition buildStatisticsTotalField(String namePrefix, String descriptionSuffix, StatisticsPeriod fieldName, Adaptors adaptors) {
+	private GraphQLFieldDefinition createStatisticsTotalField(String namePrefix, String descriptionSuffix, StatisticsPeriod fieldName, Adaptors adaptors) {
 		return newFieldDefinition().name(namePrefix + "Total")
 			.description("How often have we seen this selector since " + descriptionSuffix)
 			.type(GraphQLLong)
@@ -537,8 +541,8 @@ public class GraphQlQueryModelBuilder {
 			.addDateBounds()
 			.addJustification()
 			.addUser()
-			.addDocumentTypes(adaptors.getIndexedDocumentTypes(dataType))
-			.addRelations(adaptors.getIndexedRelationTypes(dataType));
+			.addDocumentTypes("selector".equals(dataType) ? adaptors.getDocumentTypes() : adaptors.getIndexedDocumentTypes(dataType))
+			.addRelations("selector".equals(dataType) ? adaptors.getAllIndexedRelations() : adaptors.getIndexedRelations(dataType));
 
 		return newFieldDefinition().name("events")
 			.description("Events that this \" + dataType + \" has been linked to in the index")
@@ -546,7 +550,6 @@ public class GraphQlQueryModelBuilder {
 			.type(list(new GraphQLTypeReference("Document")))
 			.dataFetcher(new DocumentListFetcher(adaptors))
 			.build();
-
 	}
 
 	private GraphQLFieldDefinition createKnowledgeField(Adaptors adaptors) {

@@ -35,6 +35,8 @@ public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESUL
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
 			return (DataType) entity;
+		} else if (entity instanceof DataTypeId) {
+			return adaptors.getDataType((DataTypeId) entity);
 		} else if (entity instanceof DocumentInfo) {
 			final DataTypeId id = ((DocumentInfo) entity).getId();
 			return adaptors.getDataType(id);

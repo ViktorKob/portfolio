@@ -88,6 +88,11 @@ public interface HbaseIndexModelAdaptor {
 	Collection<String> getIndexedRelations(String selectorType);
 
 	/***
+	 * @return All types of relations in the current schema, that can be hit when querying for any selector type
+	 */
+	Collection<String> getAllIndexedRelations();
+
+	/***
 	 * @param dataType
 	 *            The data type in question
 	 * @return All fields belonging to this type in the current schema
@@ -129,4 +134,5 @@ public interface HbaseIndexModelAdaptor {
 	 * @return A list of document information containers ordered by time of event (descending)
 	 */
 	List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request);
+
 }

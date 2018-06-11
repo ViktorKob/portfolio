@@ -22,13 +22,21 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 
 	@Override
 	public Map<StatisticsPeriod, Long> _get(DataFetchingEnvironment environment) {
+		if (environment.getSource() == null) {
+			return null;
+		}
+		DataTypeId selectorId = null;
+		if (environment.getSource() instanceof Selector) {
+			selectorId = ((Selector) environment.getSource()).getId();
+		} else if (environment.getSource() instanceof DataTypeId) {
+			selectorId = environment.getSource();
+		}
 		final LegalInformation legalInfo = extractLegalInformation(environment.getArguments());
-		final DataTypeId id = ((Selector) environment.getSource()).getId();
-		if (lookupIsIllegal(id, legalInfo)) {
-			throw new GraphQLException("Statistics lookup for selector " + id.type + "-" + id.uid + " must be justified by a specific user");
+		if (lookupIsIllegal(selectorId, legalInfo)) {
+			throw new GraphQLException("Statistics lookup for selector " + selectorId.type + "-" + selectorId.uid + " must be justified by a specific user");
 		} else {
-			if (adaptors.auditLogStatisticsLookup(id, legalInfo)) {
-				final Map<StatisticsPeriod, Long> statistics = adaptors.getStatistics(id);
+			if (adaptors.auditLogStatisticsLookup(selectorId, legalInfo)) {
+				final Map<StatisticsPeriod, Long> statistics = adaptors.getStatistics(selectorId);
 				if (statistics != null) {
 					return statistics;
 				}
