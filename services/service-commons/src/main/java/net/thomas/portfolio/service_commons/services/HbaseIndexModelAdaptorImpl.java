@@ -106,6 +106,11 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	public Collection<String> getAllIndexedRelations() {
+		return schema.getAllIndexableRelations();
+	}
+
+	@Override
 	public Collection<Field> getDataTypeFields(String dataType) {
 		return schema.getFieldsForDataType(dataType);
 	}
@@ -115,7 +120,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SUGGESTIONS.getPath() + "/" + selectorString;
+			return SELECTORS.getPath() + "/" + SUGGESTIONS.getPath() + "/" + selectorString;
 		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 

@@ -30,8 +30,14 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 
 	@Override
 	public List<DocumentInfo> _get(DataFetchingEnvironment environment) {
-		final Selector selector = environment.getSource();
-		final InvertedIndexLookupRequest request = convertToSearch(selector, environment.getArguments());
+		DataTypeId selectorId = null;
+		if (environment.getSource() instanceof Selector) {
+			selectorId = ((Selector) environment.getSource()).getId();
+		} else if (environment.getSource() instanceof DataTypeId) {
+			selectorId = environment.getSource();
+		}
+
+		final InvertedIndexLookupRequest request = convertToSearch(selectorId, environment.getArguments());
 		final DataTypeId id = request.selectorId;
 		if (isIllegal(id, request)) {
 			throw new GraphQLException("Search for selector " + id.type + "-" + id.uid + " must be justified by a specific user");
@@ -44,12 +50,12 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 		}
 	}
 
-	private InvertedIndexLookupRequest convertToSearch(Selector selector, Map<String, Object> arguments) {
+	private InvertedIndexLookupRequest convertToSearch(DataTypeId selectorId, Map<String, Object> arguments) {
 		final Bounds bounds = extractBounds(arguments);
 		final LegalInformation legalInfo = extractLegalInformation(arguments, bounds);
-		final Collection<String> documentTypes = determineDocumentTypes(selector.getId().type, arguments);
-		final Collection<String> relations = determineRelations(selector.getId().type, arguments);
-		return new InvertedIndexLookupRequest(selector.getId(), legalInfo, bounds, documentTypes, relations);
+		final Collection<String> documentTypes = determineDocumentTypes(selectorId.type, arguments);
+		final Collection<String> relations = determineRelations(selectorId.type, arguments);
+		return new InvertedIndexLookupRequest(selectorId, legalInfo, bounds, documentTypes, relations);
 	}
 
 	private LegalInformation extractLegalInformation(Map<String, Object> arguments, Bounds bounds) {
@@ -96,7 +102,7 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 		@SuppressWarnings("unchecked")
 		final List<String> relations = (List<String>) arguments.get("relations");
 		if (relations == null || relations.isEmpty()) {
-			return adaptors.getIndexedRelationTypes(selectorType);
+			return adaptors.getIndexedRelations(selectorType);
 		} else {
 			return relations;
 		}

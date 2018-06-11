@@ -4,6 +4,7 @@ import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
 public class UidDataFetcher extends ModelDataFetcher<Object> {
@@ -17,6 +18,8 @@ public class UidDataFetcher extends ModelDataFetcher<Object> {
 		final Object entity = environment.getSource();
 		if (entity instanceof DataType) {
 			return ((DataType) entity).getId().uid;
+		} else if (entity instanceof DataTypeId) {
+			return ((DataTypeId) entity).uid;
 		} else if (entity instanceof DocumentInfo) {
 			return ((DocumentInfo) entity).getId().uid;
 		}
