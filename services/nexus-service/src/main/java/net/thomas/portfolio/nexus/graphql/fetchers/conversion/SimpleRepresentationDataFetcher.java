@@ -3,6 +3,7 @@ package net.thomas.portfolio.nexus.graphql.fetchers.conversion;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
@@ -13,7 +14,15 @@ public class SimpleRepresentationDataFetcher extends ModelDataFetcher<Object> {
 
 	@Override
 	public Object _get(DataFetchingEnvironment environment) {
-		final Selector selector = (Selector) environment.getSource();
-		return adaptors.renderAsSimpleRepresentation(selector.getId());
+		if (environment.getSource() == null) {
+			return null;
+		}
+		DataTypeId selectorId = null;
+		if (environment.getSource() instanceof Selector) {
+			selectorId = ((Selector) environment.getSource()).getId();
+		} else if (environment.getSource() instanceof DataTypeId) {
+			selectorId = environment.getSource();
+		}
+		return adaptors.renderAsSimpleRepresentation(selectorId);
 	}
 }
