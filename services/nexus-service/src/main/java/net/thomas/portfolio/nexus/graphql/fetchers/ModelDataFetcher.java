@@ -26,7 +26,11 @@ public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESUL
 		// // Ignored
 		// }
 		// }
-		return _get(environment);
+		if (environment.getSource() != null) {
+			return _get(environment);
+		} else {
+			return null;
+		}
 	}
 
 	public abstract RESULT_TYPE _get(DataFetchingEnvironment environment);

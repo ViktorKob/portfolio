@@ -15,9 +15,7 @@ public class TimeOfInterceptionDataFetcher extends ModelDataFetcher<Long> {
 	@Override
 	public Long _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
-		if (entity == null) {
-			return null;
-		} else if (environment.getSource() instanceof Document) {
+		if (environment.getSource() instanceof Document) {
 			return ((Document) entity).getTimeOfInterception();
 		} else if (entity instanceof DocumentInfo) {
 			return ((DocumentInfo) entity).getTimeOfInterception();
