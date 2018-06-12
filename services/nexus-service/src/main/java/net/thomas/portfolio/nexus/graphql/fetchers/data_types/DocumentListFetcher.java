@@ -3,9 +3,10 @@ package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 import static java.util.Collections.emptyList;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
@@ -53,8 +54,8 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 	private InvertedIndexLookupRequest convertToSearch(DataTypeId selectorId, Map<String, Object> arguments) {
 		final Bounds bounds = extractBounds(arguments);
 		final LegalInformation legalInfo = extractLegalInformation(arguments, bounds);
-		final Collection<String> documentTypes = determineDocumentTypes(selectorId.type, arguments);
-		final Collection<String> relations = determineRelations(selectorId.type, arguments);
+		final Set<String> documentTypes = determineDocumentTypes(selectorId.type, arguments);
+		final Set<String> relations = determineRelations(selectorId.type, arguments);
 		return new InvertedIndexLookupRequest(selectorId, legalInfo, bounds, documentTypes, relations);
 	}
 
@@ -88,23 +89,23 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentInfo>> {
 		return before;
 	}
 
-	private Collection<String> determineDocumentTypes(String selectorType, Map<String, Object> arguments) {
+	private Set<String> determineDocumentTypes(String selectorType, Map<String, Object> arguments) {
 		@SuppressWarnings("unchecked")
 		final List<String> documentTypes = (List<String>) arguments.get("documentTypes");
 		if (documentTypes == null || documentTypes.isEmpty()) {
 			return adaptors.getIndexedDocumentTypes(selectorType);
 		} else {
-			return documentTypes;
+			return new HashSet<>(documentTypes);
 		}
 	}
 
-	private Collection<String> determineRelations(String selectorType, Map<String, Object> arguments) {
+	private Set<String> determineRelations(String selectorType, Map<String, Object> arguments) {
 		@SuppressWarnings("unchecked")
 		final List<String> relations = (List<String>) arguments.get("relations");
 		if (relations == null || relations.isEmpty()) {
 			return adaptors.getIndexedRelations(selectorType);
 		} else {
-			return relations;
+			return new HashSet<>(relations);
 		}
 	}
 

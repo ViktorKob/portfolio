@@ -3,6 +3,7 @@ package net.thomas.portfolio.shared_objects.adaptors;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
@@ -78,14 +79,14 @@ public interface HbaseIndexModelAdaptor {
 	 *            The selector type in question
 	 * @return All document types in the current schema, that can be hit when querying for this selector type
 	 */
-	Collection<String> getIndexedDocumentTypes(String selectorType);
+	Set<String> getIndexedDocumentTypes(String selectorType);
 
 	/***
 	 * @param selectorType
 	 *            The selector type in question
 	 * @return All types of relations in the current schema, that can be hit when querying for this selector type
 	 */
-	Collection<String> getIndexedRelations(String selectorType);
+	Set<String> getIndexedRelations(String selectorType);
 
 	/***
 	 * @return All types of relations in the current schema, that can be hit when querying for any selector type

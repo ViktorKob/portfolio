@@ -30,10 +30,10 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	protected Set<String> selectorTypes;
 	protected Set<String> simpleRepresentableTypes;
 	protected Map<String, Collection<Indexable>> indexables;
-	protected Map<String, Collection<String>> indexableDocumentTypes;
-	protected Map<String, Collection<String>> indexableRelations;
+	protected Map<String, Set<String>> indexableDocumentTypes;
+	protected Map<String, Set<String>> indexableRelations;
 	@JsonIgnore
-	protected Collection<String> allIndexableRelations;
+	protected Set<String> allIndexableRelations;
 
 	public HBaseIndexSchemaSerialization() {
 	}
@@ -92,25 +92,25 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		this.simpleRepresentableTypes = simpleRepresentableTypes;
 	}
 
-	public Map<String, Collection<String>> getIndexableDocumentTypes() {
+	public Map<String, Set<String>> getIndexableDocumentTypes() {
 		return indexableDocumentTypes;
 	}
 
-	public void setIndexableDocumentTypes(Map<String, Collection<String>> indexableDocumentTypes) {
+	public void setIndexableDocumentTypes(Map<String, Set<String>> indexableDocumentTypes) {
 		this.indexableDocumentTypes = indexableDocumentTypes;
 	}
 
 	@Override
 	@JsonIgnore
-	public Collection<String> getIndexableDocumentTypes(String selectorType) {
+	public Set<String> getIndexableDocumentTypes(String selectorType) {
 		return indexableDocumentTypes.get(selectorType);
 	}
 
-	public Map<String, Collection<String>> getIndexableRelations() {
+	public Map<String, Set<String>> getIndexableRelations() {
 		return indexableRelations;
 	}
 
-	public void setIndexableRelations(Map<String, Collection<String>> indexableRelations) {
+	public void setIndexableRelations(Map<String, Set<String>> indexableRelations) {
 		this.indexableRelations = indexableRelations;
 		allIndexableRelations = indexableRelations.values()
 			.stream()
@@ -120,12 +120,12 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	@Override
 	@JsonIgnore
-	public Collection<String> getIndexableRelations(String selectorType) {
+	public Set<String> getIndexableRelations(String selectorType) {
 		return indexableRelations.get(selectorType);
 	}
 
 	@Override
-	public Collection<String> getAllIndexableRelations() {
+	public Set<String> getAllIndexableRelations() {
 		return allIndexableRelations;
 	}
 

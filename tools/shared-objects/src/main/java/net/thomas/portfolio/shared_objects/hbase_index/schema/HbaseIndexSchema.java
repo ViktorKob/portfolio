@@ -2,6 +2,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -25,9 +26,9 @@ public interface HbaseIndexSchema {
 
 	List<DataTypeId> getSelectorSuggestions(String selectorString);
 
-	Collection<String> getIndexableDocumentTypes(String selectorType);
+	Set<String> getIndexableDocumentTypes(String selectorType);
 
-	Collection<String> getIndexableRelations(String selectorType);
+	Set<String> getIndexableRelations(String selectorType);
 
-	Collection<String> getAllIndexableRelations();
+	Set<String> getAllIndexableRelations();
 }

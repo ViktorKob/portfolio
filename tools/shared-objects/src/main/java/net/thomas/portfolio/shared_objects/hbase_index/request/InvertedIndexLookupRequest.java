@@ -2,9 +2,11 @@ package net.thomas.portfolio.shared_objects.hbase_index.request;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.common.services.ParameterGroup;
@@ -16,14 +18,13 @@ public class InvertedIndexLookupRequest {
 	public DataTypeId selectorId;
 	public LegalInformation legalInfo;
 	public Bounds bounds;
-	public Collection<String> documentTypes;
-	public Collection<String> relations;
+	public Set<String> documentTypes;
+	public Set<String> relations;
 
 	public InvertedIndexLookupRequest() {
 	}
 
-	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Collection<String> documentTypes,
-			Collection<String> relations) {
+	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
 		this.selectorId = selectorId;
 		this.legalInfo = legalInfo;
 		this.bounds = bounds;
@@ -67,7 +68,7 @@ public class InvertedIndexLookupRequest {
 		return documentTypes;
 	}
 
-	public void setDocumentTypes(Collection<String> documentTypes) {
+	public void setDocumentTypes(Set<String> documentTypes) {
 		this.documentTypes = documentTypes;
 	}
 
@@ -75,7 +76,7 @@ public class InvertedIndexLookupRequest {
 		return relations;
 	}
 
-	public void setRelations(Collection<String> relations) {
+	public void setRelations(Set<String> relations) {
 		this.relations = relations;
 	}
 
@@ -83,8 +84,10 @@ public class InvertedIndexLookupRequest {
 	public boolean equals(Object obj) {
 		if (obj instanceof InvertedIndexLookupRequest) {
 			final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
-			return selectorId.equals(other.selectorId) && legalInfo.equals(other.legalInfo) && bounds.equals(other.bounds)
-					&& documentTypes.equals(other.documentTypes) && relations.equals(other.relations);
+			final boolean documentTypesAreEqual = documentTypes.equals(other.documentTypes);
+			final boolean relationsAreEqual = relations.equals(other.relations);
+			return selectorId.equals(other.selectorId) && legalInfo.equals(other.legalInfo) && bounds.equals(other.bounds) && documentTypesAreEqual
+					&& relationsAreEqual;
 		}
 		return false;
 	}
@@ -94,6 +97,7 @@ public class InvertedIndexLookupRequest {
 		return ReflectionToStringBuilder.toString(this);
 	}
 
+	@JsonIgnore
 	public ParameterGroup[] getGroups() {
 		return new ParameterGroup[] { legalInfo, bounds, new ParameterGroup.CollectionParameterGroup("documentType", documentTypes),
 				new ParameterGroup.CollectionParameterGroup("relation", relations) };
