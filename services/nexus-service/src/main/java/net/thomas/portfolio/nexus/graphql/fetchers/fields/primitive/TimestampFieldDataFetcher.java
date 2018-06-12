@@ -19,7 +19,11 @@ public class TimestampFieldDataFetcher extends ModelDataFetcher<String> {
 	@Override
 	public String _get(DataFetchingEnvironment environment) {
 		final DataType entity = extractOrFetchDataType(environment);
-		final Long timestamp = (Long) entity.get(fieldName);
-		return dateFormatter.formatTimestamp(timestamp);
+		if (entity != null) {
+			final Long timestamp = (Long) entity.get(fieldName);
+			return dateFormatter.formatTimestamp(timestamp);
+		} else {
+			return null;
+		}
 	}
 }

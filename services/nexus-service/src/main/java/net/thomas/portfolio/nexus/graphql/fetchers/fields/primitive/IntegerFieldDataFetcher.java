@@ -16,13 +16,17 @@ public class IntegerFieldDataFetcher extends ModelDataFetcher<Long> {
 	@Override
 	public Long _get(DataFetchingEnvironment environment) {
 		final DataType entity = extractOrFetchDataType(environment);
-		final Object value = entity.get(fieldName);
-		if (value instanceof Long) {
-			return (Long) value;
-		} else if (value instanceof Integer) {
-			return Long.valueOf((int) value);
+		if (entity != null) {
+			final Object value = entity.get(fieldName);
+			if (value instanceof Long) {
+				return (Long) value;
+			} else if (value instanceof Integer) {
+				return Long.valueOf((int) value);
+			} else {
+				return Long.valueOf(value.toString());
+			}
 		} else {
-			return Long.valueOf(value.toString());
+			return null;
 		}
 	}
 }

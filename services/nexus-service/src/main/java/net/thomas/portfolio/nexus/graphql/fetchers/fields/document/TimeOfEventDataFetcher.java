@@ -15,13 +15,15 @@ public class TimeOfEventDataFetcher extends ModelDataFetcher<Long> {
 	@Override
 	public Long _get(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
-		if (environment.getSource() instanceof Document) {
+		if (entity == null) {
+			return null;
+		} else if (environment.getSource() instanceof Document) {
 			return ((Document) entity).getTimeOfEvent();
 		} else if (entity instanceof DocumentInfo) {
 			return ((DocumentInfo) entity).getTimeOfEvent();
 		} else {
 			throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
-				.getSimpleName());
+					.getSimpleName());
 		}
 	}
 }
