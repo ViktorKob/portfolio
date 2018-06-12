@@ -3,6 +3,7 @@ package net.thomas.portfolio.shared_objects.adaptors;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
@@ -86,7 +87,7 @@ public class Adaptors {
 	 *            The selector type in question
 	 * @return All document types in the current schema, that can be hit when querying for this selector type
 	 */
-	public Collection<String> getIndexedDocumentTypes(String selectorType) {
+	public Set<String> getIndexedDocumentTypes(String selectorType) {
 		return hbaseModelAdaptor.getIndexedDocumentTypes(selectorType);
 	}
 
@@ -97,13 +98,13 @@ public class Adaptors {
 	 *            The selector type in question
 	 * @return All types of relations in the current schema, that can be hit when querying for this selector type
 	 */
-	public Collection<String> getIndexedRelations(String selectorType) {
+	public Set<String> getIndexedRelations(String selectorType) {
 		return hbaseModelAdaptor.getIndexedRelations(selectorType);
 	}
 
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getAllIndexedRelations}<BR>
-	 * 
+	 *
 	 * @return All types of relations in the current schema, that can be hit when querying for any selector type
 	 */
 	public Collection<String> getAllIndexedRelations() {

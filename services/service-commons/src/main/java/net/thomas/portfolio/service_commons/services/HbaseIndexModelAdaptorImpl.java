@@ -16,6 +16,7 @@ import static org.springframework.http.HttpMethod.GET;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -96,17 +97,17 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
-	public Collection<String> getIndexedDocumentTypes(String selectorType) {
+	public Set<String> getIndexedDocumentTypes(String selectorType) {
 		return schema.getIndexableDocumentTypes(selectorType);
 	}
 
 	@Override
-	public Collection<String> getIndexedRelations(String selectorType) {
+	public Set<String> getIndexedRelations(String selectorType) {
 		return schema.getIndexableRelations(selectorType);
 	}
 
 	@Override
-	public Collection<String> getAllIndexedRelations() {
+	public Set<String> getAllIndexedRelations() {
 		return schema.getAllIndexableRelations();
 	}
 

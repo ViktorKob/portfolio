@@ -66,10 +66,9 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		initialize();
 	}
 
-	private Map<String, Collection<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables,
-			Function<? super Indexable, ? extends String> mapper) {
+	private Map<String, Set<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables, Function<? super Indexable, ? extends String> mapper) {
 
-		final HashMap<String, Collection<String>> relationMap = new HashMap<>();
+		final HashMap<String, Set<String>> relationMap = new HashMap<>();
 		for (final String selectorType : selectorTypes) {
 			final Collection<Indexable> selectorIndexables = indexables.get(selectorType);
 			relationMap.put(selectorType, selectorIndexables.stream()
