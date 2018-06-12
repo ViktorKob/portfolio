@@ -16,17 +16,13 @@ public class DecimalFieldDataFetcher extends ModelDataFetcher<Double> {
 	@Override
 	public Double _get(DataFetchingEnvironment environment) {
 		final DataType entity = extractOrFetchDataType(environment);
-		if (entity != null) {
-			final Object value = entity.get(fieldName);
-			if (value instanceof Double) {
-				return (Double) value;
-			} else if (value instanceof Float) {
-				return Double.valueOf((float) value);
-			} else {
-				return Double.valueOf(value.toString());
-			}
+		final Object value = entity.get(fieldName);
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Float) {
+			return Double.valueOf((float) value);
 		} else {
-			return null;
+			return Double.valueOf(value.toString());
 		}
 	}
 }

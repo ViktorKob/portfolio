@@ -14,10 +14,6 @@ public class RawDataFetcher extends ModelDataFetcher<Object> {
 	@Override
 	public Object _get(DataFetchingEnvironment environment) {
 		final DataType entity = extractOrFetchDataType(environment);
-		if (entity == null) {
-			return null;
-		} else {
-			return entity.getInRawForm();
-		}
+		return entity.getInRawForm();
 	}
 }

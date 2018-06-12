@@ -16,11 +16,7 @@ public class StringFieldDataFetcher extends ModelDataFetcher<String> {
 	@Override
 	public String _get(DataFetchingEnvironment environment) {
 		final DataType entity = extractOrFetchDataType(environment);
-		if (entity != null) {
-			return entity.get(fieldName)
-					.toString();
-		} else {
-			return null;
-		}
+		return entity.get(fieldName)
+				.toString();
 	}
 }
