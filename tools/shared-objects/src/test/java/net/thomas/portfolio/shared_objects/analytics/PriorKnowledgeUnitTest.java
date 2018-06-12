@@ -27,7 +27,6 @@ public class PriorKnowledgeUnitTest {
 	@Test
 	public void shouldSerializeAndDeserialize() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(knowledge);
-		System.out.println(serializedForm);
 		final PriorKnowledge deserializedObject = mapper.readValue(serializedForm, PriorKnowledge.class);
 		assertEquals(knowledge, deserializedObject);
 	}
