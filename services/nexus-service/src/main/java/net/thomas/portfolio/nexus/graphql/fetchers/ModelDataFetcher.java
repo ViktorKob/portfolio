@@ -33,6 +33,9 @@ public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESUL
 
 	protected DataType extractOrFetchDataType(DataFetchingEnvironment environment) {
 		final Object entity = environment.getSource();
+		if (entity == null) {
+			return null;
+		}
 		if (entity instanceof DataType) {
 			return (DataType) entity;
 		} else if (entity instanceof DataTypeId) {
@@ -42,6 +45,6 @@ public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESUL
 			return adaptors.getDataType(id);
 		}
 		throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
-			.getSimpleName());
+				.getSimpleName());
 	}
 }
