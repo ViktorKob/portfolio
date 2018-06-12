@@ -2,7 +2,6 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
@@ -17,11 +16,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
 public class IdGenerator {
-	private final Collection<Field> fields;
+	private final List<Field> fields;
 	private final boolean keyShouldBeUnique;
 	private int counter;
 
-	public IdGenerator(Collection<Field> fields, boolean keyShouldBeUnique) {
+	public IdGenerator(List<Field> fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
 		this.keyShouldBeUnique = keyShouldBeUnique;
 		counter = 0;

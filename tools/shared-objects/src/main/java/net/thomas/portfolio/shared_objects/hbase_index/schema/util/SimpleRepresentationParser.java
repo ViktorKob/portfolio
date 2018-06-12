@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -13,7 +13,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
 public abstract class SimpleRepresentationParser<PARSE_TYPE> implements Parser<PARSE_TYPE, Selector> {
 	private final IdGenerator idTool;
 
-	public SimpleRepresentationParser(Collection<Field> fields) {
+	public SimpleRepresentationParser(List<Field> fields) {
 		idTool = new IdGenerator(fields, false);
 	}
 

@@ -19,7 +19,7 @@ public interface HbaseIndexSchema {
 
 	Collection<String> getSimpleRepresentableTypes();
 
-	Collection<Field> getFieldsForDataType(String dataType);
+	List<Field> getFieldsForDataType(String dataType);
 
 	String calculateUid(String type, String simpleRep);
 

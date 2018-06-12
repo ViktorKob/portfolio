@@ -83,7 +83,7 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		return new HashSet<>(asList(values));
 	}
 
-	private Map<String, Field> fields(Field... fields) {
+	private LinkedHashMap<String, Field> fields(Field... fields) {
 		return stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new));
 	}
 
@@ -135,7 +135,7 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 	}
 
 	@Override
-	public Map<String, Map<String, Field>> getDataTypeFields() {
+	public Map<String, LinkedHashMap<String, Field>> getDataTypeFields() {
 		return dataTypeFields;
 	}
 
