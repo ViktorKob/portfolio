@@ -19,16 +19,16 @@ public abstract class SimpleRepresentationParser<PARSE_TYPE> implements Parser<P
 
 	@Override
 	public Selector parse(String type, PARSE_TYPE source) {
-		final Selector entity = new Selector();
-		populateValues(entity, source);
-		populateUid(entity, type);
-		return entity;
+		final Selector selector = new Selector();
+		populateValues(selector, source);
+		populateUid(selector, type);
+		return selector;
 	}
 
 	protected abstract void populateValues(DataType entity, PARSE_TYPE source);
 
-	protected void populateUid(final Selector sample, String type) {
-		sample.setId(idTool.calculateId(type, sample));
+	protected void populateUid(final Selector selector, String type) {
+		selector.setId(idTool.calculateId(type, selector));
 	}
 
 	@Override
