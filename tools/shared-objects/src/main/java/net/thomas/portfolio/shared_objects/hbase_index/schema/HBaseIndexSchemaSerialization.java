@@ -3,6 +3,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@JsonIgnore
 	private SimpleRepresentationParserLibrary simpleRepParsers;
 
-	protected Map<String, Map<String, Field>> dataTypeFields;
+	protected Map<String, LinkedHashMap<String, Field>> dataTypeFields;
 	protected Set<String> dataTypes;
 	protected Set<String> documentTypes;
 	protected Set<String> selectorTypes;
@@ -41,11 +42,11 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		simpleRepParsers = new SimpleRepresentationParserLibrary(this);
 	}
 
-	public Map<String, Map<String, Field>> getDataTypeFields() {
+	public Map<String, LinkedHashMap<String, Field>> getDataTypeFields() {
 		return dataTypeFields;
 	}
 
-	public void setDataTypeFields(Map<String, Map<String, Field>> dataTypeFields) {
+	public void setDataTypeFields(Map<String, LinkedHashMap<String, Field>> dataTypeFields) {
 		this.dataTypeFields = dataTypeFields;
 	}
 
@@ -77,9 +78,9 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	}
 
 	@Override
-	public Collection<Field> getFieldsForDataType(String dataType) {
-		return dataTypeFields.get(dataType)
-			.values();
+	public List<Field> getFieldsForDataType(String dataType) {
+		return new LinkedList<>(dataTypeFields.get(dataType)
+			.values());
 	}
 
 	@Override
