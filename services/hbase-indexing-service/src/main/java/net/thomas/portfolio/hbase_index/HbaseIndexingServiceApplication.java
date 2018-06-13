@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableDiscoveryClient
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class HbaseIndexingServiceApplication {
+
 	public static void main(String[] args) {
 		SpringApplication.run(HbaseIndexingServiceApplication.class, args);
 	}

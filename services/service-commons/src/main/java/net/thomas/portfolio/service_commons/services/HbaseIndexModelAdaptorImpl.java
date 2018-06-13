@@ -49,19 +49,19 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HBaseIndexSchemaSerialization.class);
 		((HBaseIndexSchemaSerialization) schema).initialize();
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
-			.maximumSize(10000)
-			.build(new CacheLoader<DataTypeId, DataType>() {
-				@Override
-				public DataType load(DataTypeId id) throws Exception {
-					return fetchDataType(id);
-				}
-			});
+				.maximumSize(10000)
+				.build(new CacheLoader<DataTypeId, DataType>() {
+					@Override
+					public DataType load(DataTypeId id) throws Exception {
+						return fetchDataType(id);
+					}
+				});
 	}
 
 	@Override
 	public boolean isSimpleRepresentable(String dataType) {
 		return schema.getSimpleRepresentableTypes()
-			.contains(dataType);
+				.contains(dataType);
 	}
 
 	@Override
@@ -72,13 +72,13 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	@Override
 	public boolean isSelector(String dataType) {
 		return schema.getSelectorTypes()
-			.contains(dataType);
+				.contains(dataType);
 	}
 
 	@Override
 	public boolean isDocument(String dataType) {
 		return schema.getDocumentTypes()
-			.contains(dataType);
+				.contains(dataType);
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SELECTORS.getPath() + "/" + SUGGESTIONS.getPath() + "/" + selectorString;
+			return SELECTORS.getPath() + "/" + SUGGESTIONS.getPath() + "/" + selectorString + "/";
 		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
@@ -133,7 +133,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 			});
 		} catch (final InvalidCacheLoadException e) {
 			if (e.getMessage()
-				.contains("CacheLoader returned null for key")) {
+					.contains("CacheLoader returned null for key")) {
 				return null;
 			} else {
 				throw new RuntimeException("Unable to fetch data type", e);
