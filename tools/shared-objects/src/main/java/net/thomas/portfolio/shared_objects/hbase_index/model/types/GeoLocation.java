@@ -1,11 +1,16 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(using = GeoLocationSerializer.class)
 public class GeoLocation {
 	public double longitude;
 	public double latitude;
+
+	public GeoLocation() {
+	}
 
 	public GeoLocation(double longitude, double latitude) {
 		this.longitude = longitude;
