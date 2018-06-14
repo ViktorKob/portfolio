@@ -77,7 +77,7 @@ public class EmailGenerator extends DocumentGenerator {
 			}
 			final DataType additionalDisplayedName = randomSample(displayedNames);
 			previousDisplayedNameMatches.get(uid)
-				.add(additionalDisplayedName);
+					.add(additionalDisplayedName);
 			return additionalDisplayedName;
 		} else if (random.nextDouble() < .4) {
 			final DataType displayedName = randomSample(displayedNames);

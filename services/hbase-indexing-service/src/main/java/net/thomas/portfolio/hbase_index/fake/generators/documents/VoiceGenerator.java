@@ -32,10 +32,10 @@ public class VoiceGenerator extends DocumentGenerator {
 		sample.put("caller", createPstnEndpoint("pstn", randomSample(pstnNumbers)));
 		sample.put("called", createPstnEndpoint("pstn", randomSample(pstnNumbers)));
 
-		if (random.nextDouble() < 0.1) {
+		if (random.nextDouble() < 0.5) {
 			sample.put("senderLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
-		if (random.nextDouble() < 0.1) {
+		if (random.nextDouble() < 0.5) {
 			sample.put("receiverLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
 	}
