@@ -44,16 +44,19 @@ public class EmailGenerator extends DocumentGenerator {
 		sample.put("subject", subjectGenerator.generate());
 		sample.put("message", messageGenerator.generate());
 		sample.put("from", createEmailEndpoint(randomSample(emailAddresses)));
-		sample.put("to", createListOfEmailEndpoints(1, 30));
-		sample.put("cc", createListOfEmailEndpoints(0, 10));
-		sample.put("bcc", createListOfEmailEndpoints(0, 2));
+		sample.put("to", createListOfEmailEndpoints(30, 0.3d));
+		sample.put("cc", createListOfEmailEndpoints(10, 0.1d));
+		sample.put("bcc", createListOfEmailEndpoints(2, 0.05d));
 	}
 
-	private Object createListOfEmailEndpoints(int minLength, int maxLength) {
-		final int targetLength = random.nextInt(maxLength - minLength + 1) + minLength;
+	private List<DataType> createListOfEmailEndpoints(int maxNumberOfElements, double ratioAdjustment) {
 		final List<DataType> addresses = new LinkedList<>();
-		for (int i = 0; i < targetLength; i++) {
-			addresses.add(createEmailEndpoint(randomSample(emailAddresses)));
+		for (int i = 1; i < maxNumberOfElements; i++) {
+			final double roof = 1.0d / i * ratioAdjustment;
+			final double value = random.nextDouble();
+			if (roof > value) {
+				addresses.add(createEmailEndpoint(randomSample(emailAddresses)));
+			}
 		}
 		return addresses;
 	}
