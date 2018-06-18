@@ -60,7 +60,7 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}", method = GET)
+	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}/", method = GET)
 	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String selectorString) {
 		final List<DataTypeId> suggestions = schema.getSelectorSuggestions(selectorString);
 		if (suggestions != null && suggestions.size() > 0) {
