@@ -37,10 +37,10 @@ public class SmsGenerator extends DocumentGenerator {
 		sample.put("sender", createPstnEndpoint("pstn", randomSample(pstnNumbers)));
 		sample.put("receiver", createPstnEndpoint("imsi", randomSample(imsiNumbers)));
 
-		if (random.nextDouble() < 0.1) {
+		if (random.nextDouble() < 0.5) {
 			sample.put("senderLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
-		if (random.nextDouble() < 0.1) {
+		if (random.nextDouble() < 0.5) {
 			sample.put("receiverLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
 	}

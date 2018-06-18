@@ -32,7 +32,7 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 	public Selector parse(String type, String simpleRepresenation) {
 		if (parsers.containsKey(type)) {
 			return parsers.get(type)
-				.parse(type, simpleRepresenation);
+					.parse(type, simpleRepresenation);
 		} else {
 			return null;
 		}
