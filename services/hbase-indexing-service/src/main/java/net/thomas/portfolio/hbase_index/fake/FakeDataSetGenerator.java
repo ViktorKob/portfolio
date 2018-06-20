@@ -41,20 +41,6 @@ public class FakeDataSetGenerator {
 
 	private final FakeHbaseIndexSchemaImpl schema;
 	private final FakeHbaseIndex storage;
-	private Map<String, DataType> localnames;
-	private Map<String, DataType> displayedNames;
-	private Map<String, DataType> topLevelDomains;
-	private Map<String, DataType> secondLevelDomains;
-	private Map<String, DataType> thirdLevelDomains;
-	private Map<String, DataType> domains;
-	private Map<String, DataType> emailAddresses;
-	private Map<String, DataType> pstnNumbers;
-	private Map<String, DataType> imsiNumbers;
-	private Map<String, DataType> pstnEndpoints;
-	private Map<String, DataType> emailEndpoints;
-	private Map<String, DataType> emails;
-	private Map<String, DataType> smss;
-	private Map<String, DataType> voiceData;
 
 	public FakeDataSetGenerator() {
 		schema = new FakeHbaseIndexSchemaImpl();
