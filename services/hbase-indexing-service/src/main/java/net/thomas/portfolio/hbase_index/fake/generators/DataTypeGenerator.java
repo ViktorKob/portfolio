@@ -42,8 +42,17 @@ public abstract class DataTypeGenerator implements Iterable<DataType>, Iterator<
 		populateUid(sample);
 	}
 
-	protected DataType randomSample(List<DataType> values) {
+	protected <T> T randomSample(List<T> values) {
 		return values.get(random.nextInt(values.size()));
+	}
+
+	protected <T> T randomProgressiveSample(List<T> values) {
+		for (int i = 0; i < values.size() - 1; i++) {
+			if (random.nextDouble() < 0.5d) {
+				return values.get(i);
+			}
+		}
+		return values.get(values.size() - 1);
 	}
 
 	protected abstract boolean keyShouldBeUnique();
