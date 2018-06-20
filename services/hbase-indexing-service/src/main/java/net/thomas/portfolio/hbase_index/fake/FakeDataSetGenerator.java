@@ -21,7 +21,6 @@ import java.util.TreeMap;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import net.thomas.portfolio.hbase_index.fake.generators.World;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
@@ -72,7 +71,7 @@ public class FakeDataSetGenerator {
 
 	public void buildSampleDataSet(long randomSeed) {
 		this.randomSeed = randomSeed;
-		final World world = new World(schema, randomSeed, 100, 10, 1000);
+		final FakeWorldInitializer world = new FakeWorldInitializer(schema, randomSeed, 100, 10, 1000);
 		for (final DataType entity : world.getEvents()) {
 			addAllSubEntitiesToStorage(entity);
 		}
