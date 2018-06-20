@@ -30,7 +30,7 @@ public class IdGenerator {
 		try {
 			final MessageDigest hasher = MessageDigest.getInstance("MD5");
 			if (keyShouldBeUnique) {
-				hasher.digest(String.valueOf(counter++)
+				hasher.update(String.valueOf(counter++)
 					.getBytes());
 			}
 

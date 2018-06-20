@@ -73,6 +73,13 @@ public class FakeDataSetGenerator {
 			.values()) {
 			if (field instanceof DataType) {
 				addAllSubEntitiesToStorage((DataType) field);
+			} else if (field instanceof List) {
+				final List<?> values = (List<?>) field;
+				for (final Object value : values) {
+					if (value instanceof DataType) {
+						addAllSubEntitiesToStorage((DataType) value);
+					}
+				}
 			}
 		}
 	}

@@ -89,7 +89,6 @@ public class RenderServiceController {
 			if (entity != null) {
 				return ResponseEntity.ok(textRenderer.render(entity, new TextRenderContextBuilder().build()));
 			} else {
-				System.out.println(id.type + ", " + id.uid);
 				return ResponseEntity.notFound()
 					.build();
 			}
