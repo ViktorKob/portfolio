@@ -3,8 +3,6 @@ package net.thomas.portfolio.shared_objects.hbase_index.model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -90,6 +88,6 @@ public class DataType {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return id + ": " + fields.toString();
 	}
 }

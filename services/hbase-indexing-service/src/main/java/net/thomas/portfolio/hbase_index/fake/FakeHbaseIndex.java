@@ -35,7 +35,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		storage = new HashMap<>();
 	}
 
-	public void addDataType(DataType sample) {
+	public void addEntity(DataType sample) {
 		if (!storage.containsKey(sample.getId().type)) {
 			storage.put(sample.getId().type, new HashMap<>());
 		}

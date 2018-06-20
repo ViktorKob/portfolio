@@ -26,6 +26,7 @@ import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.SmsGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.VoiceGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.people.World;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.DomainGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.EmailAddressGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
@@ -79,19 +80,24 @@ public class FakeDataSetGenerator {
 
 	public void buildSampleDataSet(long randomSeed) {
 		this.randomSeed = randomSeed;
-		generateLocalnames();
-		generateDisplayedNames();
-		generateDomains();
-		generateEmailAddresses();
-		generatePstnNumbers();
-		generateImsiNumbers();
-		emailEndpoints = new HashMap<>();
-		generateEmails();
-		pstnEndpoints = new HashMap<>();
-		generateSmss();
-		generateVoice();
-		indexEndpoints(emailEndpoints);
-		indexEndpoints(pstnEndpoints);
+		final World world = new World(schema, randomSeed, 100, 10, 1000);
+		for (final DataType entity : world.getEntities()) {
+			storage.addEntity(entity);
+		}
+
+		// generateLocalnames();
+		// generateDisplayedNames();
+		// generateDomains();
+		// generateEmailAddresses();
+		// generatePstnNumbers();
+		// generateImsiNumbers();
+		// emailEndpoints = new HashMap<>();
+		// generateEmails();
+		// pstnEndpoints = new HashMap<>();
+		// generateSmss();
+		// generateVoice();
+		// indexEndpoints(emailEndpoints);
+		// indexEndpoints(pstnEndpoints);
 		storage.setInvertedIndex(generateInvertedIndex());
 		storage.setSelectorStatistics(generateSelectorStatistics());
 		storage.setReferences(generateSourceReferences());
@@ -180,14 +186,14 @@ public class FakeDataSetGenerator {
 
 	private void indexEndpoints(Map<String, DataType> endpoints) {
 		for (final DataType entity : endpoints.values()) {
-			storage.addDataType(entity);
+			storage.addEntity(entity);
 		}
 	}
 
 	private Map<String, DataType> generateSamples(final int sampleCount, final Iterable<DataType> generator) {
 		final Map<String, DataType> values = new HashMap<>();
 		for (final DataType sample : generator) {
-			storage.addDataType(sample);
+			storage.addEntity(sample);
 			values.put(sample.getId().uid, sample);
 			if (values.size() == sampleCount) {
 				break;
@@ -200,11 +206,11 @@ public class FakeDataSetGenerator {
 		final InvertedIndexBuilder builder = new InvertedIndexBuilder();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId().type)) {
+					.contains(entity.getId().type)) {
 				final Document document = (Document) entity;
 				for (final Indexable indexable : schema.getIndexables(document.getId().type)) {
 					if (schema.getFieldForIndexable(indexable)
-						.isArray()) {
+							.isArray()) {
 						builder.addSelectorListSubtreeIndex((List<?>) document.get(indexable.documentField), indexable, document);
 					} else {
 						builder.addSelectorSubtreeIndex((DataType) document.get(indexable.documentField), indexable, document);
@@ -237,13 +243,13 @@ public class FakeDataSetGenerator {
 					invertedIndex.put(uid, new HashMap<>());
 				}
 				if (!invertedIndex.get(uid)
-					.containsKey(indexable.path)) {
+						.containsKey(indexable.path)) {
 					invertedIndex.get(uid)
-						.put(indexable.path, new TreeMap<>());
+							.put(indexable.path, new TreeMap<>());
 				}
 				invertedIndex.get(uid)
-					.get(indexable.path)
-					.put(MAX_VALUE - document.getTimeOfEvent(), document);
+						.get(indexable.path)
+						.put(MAX_VALUE - document.getTimeOfEvent(), document);
 			}
 			return this;
 		}
@@ -261,7 +267,7 @@ public class FakeDataSetGenerator {
 		final Map<String, Map<StatisticsPeriod, Long>> allSelectorTotalCounts = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId().type)) {
+					.contains(entity.getId().type)) {
 				final Document document = (Document) entity;
 				final Map<String, DataType> selectors = grabSelectorsFromSubtree(entity);
 				for (final DataType selector : selectors.values()) {
@@ -298,7 +304,7 @@ public class FakeDataSetGenerator {
 		if (entity != null) {
 			final Map<String, DataType> selectors = new HashMap<>();
 			if (schema.getSelectorTypes()
-				.contains(entity.getId().type)) {
+					.contains(entity.getId().type)) {
 				selectors.put(entity.getId().uid, entity);
 			}
 			for (final Field field : schema.getFieldsForDataType(entity.getId().type)) {
@@ -314,7 +320,7 @@ public class FakeDataSetGenerator {
 			}
 			return selectors;
 		} else {
-			return Collections.<String, DataType>emptyMap();
+			return Collections.<String, DataType> emptyMap();
 		}
 	}
 
@@ -324,7 +330,7 @@ public class FakeDataSetGenerator {
 		final Map<String, Collection<Reference>> allReferences = new HashMap<>();
 		for (final DataType entity : storage) {
 			if (schema.getDocumentTypes()
-				.contains(entity.getId().type)) {
+					.contains(entity.getId().type)) {
 				final Collection<Reference> references = new LinkedList<>();
 				final int referenceCount = random.nextInt(3) + 1;
 				while (references.size() < referenceCount) {
@@ -340,6 +346,6 @@ public class FakeDataSetGenerator {
 		final FakeDataSetGenerator generator = new FakeDataSetGenerator();
 		generator.buildSampleDataSet(1234l);
 		generator.getSampleDataSet()
-			.printSamples(25);
+				.printSamples(25);
 	}
 }
