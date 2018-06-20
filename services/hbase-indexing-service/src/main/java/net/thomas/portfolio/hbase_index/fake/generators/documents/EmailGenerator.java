@@ -1,12 +1,14 @@
 package net.thomas.portfolio.hbase_index.fake.generators.documents;
 
+import static com.google.common.collect.Lists.newLinkedList;
 import static java.util.Collections.singleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.FakeWorldInitializer.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
@@ -45,13 +47,13 @@ public class EmailGenerator extends DocumentGenerator {
 		sample.put("subject", subjectGenerator.generate());
 		sample.put("message", messageGenerator.generate());
 		sample.put("from", createEmailEndpoint(sender));
-		sample.put("to", createListOfEmailEndpoints(30, 0.3d));
-		sample.put("cc", createListOfEmailEndpoints(10, 0.1d));
+		sample.put("to", createListOfEmailEndpoints(10, 0.3d));
+		sample.put("cc", createListOfEmailEndpoints(5, 0.1d));
 		sample.put("bcc", createListOfEmailEndpoints(2, 0.05d));
 	}
 
 	private List<DataType> createListOfEmailEndpoints(int maxNumberOfElements, double ratioAdjustment) {
-		final List<DataType> addresses = new LinkedList<>();
+		final Set<DataType> addresses = new HashSet<>();
 		for (int i = 1; i < maxNumberOfElements; i++) {
 			final double roof = 1.0d / i * ratioAdjustment;
 			final double value = random.nextDouble();
@@ -59,7 +61,7 @@ public class EmailGenerator extends DocumentGenerator {
 				addresses.add(createEmailEndpoint(randomProgressiveSample(potentialRecipients)));
 			}
 		}
-		return addresses;
+		return newLinkedList(addresses);
 	}
 
 	private DataType createEmailEndpoint(Person person) {
