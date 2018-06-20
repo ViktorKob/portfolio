@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.thomas.portfolio.hbase_index.fake.FakeWorldInitializer.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.World.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;

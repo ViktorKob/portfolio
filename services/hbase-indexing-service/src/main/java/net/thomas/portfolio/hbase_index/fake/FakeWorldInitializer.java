@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.fake.generators;
+package net.thomas.portfolio.hbase_index.fake;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
@@ -15,7 +15,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaImpl;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.SmsGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.VoiceGenerator;
@@ -25,13 +24,13 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NumberGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 
-public class World {
+public class FakeWorldInitializer {
 	private final Collection<DataType> events;
 	private final List<DataType> domains;
 	private final List<Person> people;
 	private final Map<Integer, List<Person>> relations;
 
-	public World(FakeHbaseIndexSchemaImpl schema, long randomSeed, int populationCount, int averageRelationCount, int averageCommunicationCount) {
+	public FakeWorldInitializer(FakeHbaseIndexSchemaImpl schema, long randomSeed, int populationCount, int averageRelationCount, int averageCommunicationCount) {
 		domains = registerDomains(schema, randomSeed);
 		people = populateWorld(populationCount, schema, randomSeed++);
 		relations = buildRelations(people, averageRelationCount, schema, randomSeed++);
@@ -118,7 +117,7 @@ public class World {
 		public final List<DataType> pstnNumbers;
 		public final List<DataType> imsiNumbers;
 
-		public Person(FakeHbaseIndexSchemaImpl schema, long randomSeed, World world) {
+		public Person(FakeHbaseIndexSchemaImpl schema, long randomSeed, FakeWorldInitializer world) {
 			final Random random = new Random(randomSeed++);
 			aliases = generateSamples(1, 3, random, new NameGenerator("DisplayedName", "name", 3, 15, 0.15, schema, randomSeed++));
 			localnames = generateSamples(1, 3, random, new NameGenerator("Localname", "name", 3, 15, 0.0, schema, randomSeed++));
