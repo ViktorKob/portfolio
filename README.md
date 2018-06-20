@@ -20,7 +20,7 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 ### For a local setup
 - To experiment locally, check out the entire repository.
 - I recommend hooking it up to an IDE (Eclipse project files are included, and there are three pom.xml's you can import as well).
-- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up.
+- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data".
 - Build everything (first tools, then infrastructure, then services).
 - Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication). 
 - Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
