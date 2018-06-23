@@ -123,7 +123,6 @@ public class IdGeneratorUnitTest {
 	}
 
 	private static String getField(Selector selector, String field) {
-		return selector.get(field)
-			.toString();
+		return selector.get(field);
 	}
 }

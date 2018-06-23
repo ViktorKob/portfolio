@@ -93,9 +93,9 @@ public class FakeDataSetGenerator {
 				for (final Indexable indexable : schema.getIndexables(document.getId().type)) {
 					if (schema.getFieldForIndexable(indexable)
 						.isArray()) {
-						builder.addSelectorListSubtreeIndex((List<?>) document.get(indexable.documentField), indexable, document);
+						builder.addSelectorListSubtreeIndex(document.get(indexable.documentField), indexable, document);
 					} else {
-						builder.addSelectorSubtreeIndex((DataType) document.get(indexable.documentField), indexable, document);
+						builder.addSelectorSubtreeIndex(document.get(indexable.documentField), indexable, document);
 					}
 				}
 			}
@@ -196,7 +196,7 @@ public class FakeDataSetGenerator {
 							selectors.putAll(grabSelectorsFromSubtree((DataType) dataType));
 						}
 					} else {
-						selectors.putAll(grabSelectorsFromSubtree((DataType) entity.get(field.getName())));
+						selectors.putAll(grabSelectorsFromSubtree(entity.get(field.getName())));
 					}
 				}
 			}
