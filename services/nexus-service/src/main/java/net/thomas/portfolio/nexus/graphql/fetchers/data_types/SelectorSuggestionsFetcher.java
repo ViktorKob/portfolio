@@ -6,8 +6,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.SelectorIdProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 

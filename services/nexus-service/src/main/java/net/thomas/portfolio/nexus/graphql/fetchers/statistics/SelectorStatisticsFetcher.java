@@ -26,7 +26,6 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 		if (environment.getSource() == null) {
 			return null;
 		}
-
 		final DataTypeId selectorId = getId(environment);
 		final LegalInformation legalInfo = extractLegalInformation(environment);
 		if (lookupIsIllegal(selectorId, legalInfo)) {

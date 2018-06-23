@@ -1,8 +1,8 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.DataTypeIdProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 

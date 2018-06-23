@@ -12,10 +12,9 @@ public class SelectorResolver implements TypeResolver {
 	}
 
 	@Override
-	public GraphQLObjectType getType(TypeResolutionEnvironment env) {
-		final DataTypeId selectorId = (DataTypeId) env.getObject();
-		return env.getSchema()
-			.getObjectType(selectorId.type);
+	public GraphQLObjectType getType(TypeResolutionEnvironment environment) {
+		return environment.getSchema()
+			.getObjectType(((DataTypeId) environment.getObject()).type);
 	}
 
 }

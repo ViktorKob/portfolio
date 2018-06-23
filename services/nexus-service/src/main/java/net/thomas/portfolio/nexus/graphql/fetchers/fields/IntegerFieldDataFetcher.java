@@ -1,28 +1,28 @@
-package net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive;
+package net.thomas.portfolio.nexus.graphql.fetchers.fields;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 
-public class DecimalFieldDataFetcher extends ModelDataFetcher<Double> {
+public class IntegerFieldDataFetcher extends ModelDataFetcher<Long> {
 	private final String fieldName;
 
-	public DecimalFieldDataFetcher(String fieldName, Adaptors adaptors) {
+	public IntegerFieldDataFetcher(String fieldName, Adaptors adaptors) {
 		super(adaptors);
 		this.fieldName = fieldName;
 	}
 
 	@Override
-	public Double get(DataFetchingEnvironment environment) {
+	public Long get(DataFetchingEnvironment environment) {
 		final DataType entity = getEntity(environment);
 		final Object value = entity.get(fieldName);
-		if (value instanceof Double) {
-			return (Double) value;
-		} else if (value instanceof Float) {
-			return Double.valueOf((float) value);
+		if (value instanceof Long) {
+			return (Long) value;
+		} else if (value instanceof Integer) {
+			return Long.valueOf((int) value);
 		} else {
-			return Double.valueOf(value.toString());
+			return Long.valueOf(value.toString());
 		}
 	}
 }
