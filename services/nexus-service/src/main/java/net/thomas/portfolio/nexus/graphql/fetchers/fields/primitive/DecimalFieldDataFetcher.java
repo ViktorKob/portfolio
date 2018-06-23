@@ -14,8 +14,8 @@ public class DecimalFieldDataFetcher extends ModelDataFetcher<Double> {
 	}
 
 	@Override
-	public Double _get(DataFetchingEnvironment environment) {
-		final DataType entity = extractOrFetchDataType(environment);
+	public Double get(DataFetchingEnvironment environment) {
+		final DataType entity = getEntity(environment);
 		final Object value = entity.get(fieldName);
 		if (value instanceof Double) {
 			return (Double) value;

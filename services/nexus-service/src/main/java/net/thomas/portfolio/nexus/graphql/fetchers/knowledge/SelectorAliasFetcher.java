@@ -12,7 +12,7 @@ public class SelectorAliasFetcher extends ModelDataFetcher<String> {
 	}
 
 	@Override
-	public String _get(DataFetchingEnvironment environment) {
+	public String get(DataFetchingEnvironment environment) {
 		final PriorKnowledge knowledge = (PriorKnowledge) environment.getSource();
 		return knowledge.alias;
 	}

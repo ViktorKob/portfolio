@@ -2,53 +2,44 @@ package net.thomas.portfolio.nexus.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
-public abstract class ModelDataFetcher<RESULT_TYPE> implements DataFetcher<RESULT_TYPE> {
+public abstract class ModelDataFetcher<CONTENTS> implements DataFetcher<CONTENTS> {
 
 	protected final Adaptors adaptors;
-	// private final long fakeResponseDelay;
 
-	public ModelDataFetcher(Adaptors adaptors/* , long fakeResponseDelay */) {
+	public ModelDataFetcher(Adaptors adaptors) {
 		this.adaptors = adaptors;
-		// this.fakeResponseDelay = fakeResponseDelay;
 	}
 
-	@Override
-	public final RESULT_TYPE get(DataFetchingEnvironment environment) {
-		// if (fakeResponseDelay > 0) {
-		// try {
-		// Thread.sleep(fakeResponseDelay);
-		// } catch (final InterruptedException e) {
-		// // Ignored
-		// }
-		// }
-		if (environment.getSource() != null) {
-			return _get(environment);
-		} else {
-			return null;
-		}
+	protected DataTypeProxy<?, ?> getProxy(DataFetchingEnvironment environment) {
+		return environment.getSource();
 	}
 
-	public abstract RESULT_TYPE _get(DataFetchingEnvironment environment);
+	protected DataTypeId getId(DataFetchingEnvironment environment) {
+		return getProxy(environment).getId();
+	}
 
-	protected DataType extractOrFetchDataType(DataFetchingEnvironment environment) {
-		final Object entity = environment.getSource();
-		if (entity == null) {
-			return null;
+	protected DataType getEntity(DataFetchingEnvironment environment) {
+		return getProxy(environment).getEntity();
+	}
+
+	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final String argument, GlobalArgumentId storedArgument) {
+		T value = environment.getArgument(argument);
+		if (value == null) {
+			value = getProxy(environment).get(storedArgument);
 		}
-		if (entity instanceof DataType) {
-			return (DataType) entity;
-		} else if (entity instanceof DataTypeId) {
-			return adaptors.getDataType((DataTypeId) entity);
-		} else if (entity instanceof DocumentInfo) {
-			final DataTypeId id = ((DocumentInfo) entity).getId();
-			return adaptors.getDataType(id);
+		return value;
+	}
+
+	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final String argument, LocalArgumentId storedArgument) {
+		T value = environment.getArgument(argument);
+		if (value == null) {
+			value = getProxy(environment).get(storedArgument);
 		}
-		throw new RuntimeException("Unable to convert data type of type " + entity.getClass()
-				.getSimpleName());
+		return value;
 	}
 }

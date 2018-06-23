@@ -1,37 +1,56 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
+import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalArgumentId.USER_ID;
+import static net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId.JUSTIFICATION;
+import static net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId.LOWER_BOUND_DATE;
+import static net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId.UPPER_BOUND_DATE;
+
 import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.SelectorIdProxy;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.SelectorProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 
-public class SelectorFetcher extends EntityFetcher<Selector> {
+public class SelectorFetcher extends ModelDataFetcher<SelectorProxy<?>> {
 
 	private final DateConverter dateFormatter;
+	protected final String type;
 
 	public SelectorFetcher(String type, Adaptors adaptors) {
-		super(type, adaptors);
+		super(adaptors);
+		this.type = type;
 		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override
-	public Selector _get(DataFetchingEnvironment environment) {
-		final Object uid = environment.getArgument("uid");
+	public SelectorIdProxy get(DataFetchingEnvironment environment) {
+		DataTypeId id = null;
+		final String uid = environment.getArgument("uid");
 		if (uid != null) {
-			final Selector selector = (Selector) adaptors.getDataType(new DataTypeId(type, uid.toString()));
-			if (selector != null) {
-				if (environment.getArgument("justification") != null) {
-					selector.put("justification", environment.getArgument("justification"));
-				}
-				selector.put("lowerBound", determineAfter(environment.getArguments()));
-				selector.put("upperBound", determineBefore(environment.getArguments()));
-			}
-			return selector;
+			id = new DataTypeId(type, uid);
 		}
-		return null;
+		final String simpleRepresentation = environment.getArgument("simpleRep");
+		if (simpleRepresentation != null) {
+			id = adaptors.getIdFromSimpleRep(type, simpleRepresentation);
+		}
+		if (id != null) {
+			final SelectorIdProxy proxy = new SelectorIdProxy(id, adaptors);
+			decorateWithSelectorParameters(proxy, environment);
+			return proxy;
+		} else {
+			return null;
+		}
+	}
+
+	protected void decorateWithSelectorParameters(SelectorProxy<?> proxy, DataFetchingEnvironment environment) {
+		proxy.put(USER_ID, environment.getArgument("user"));
+		proxy.put(JUSTIFICATION, environment.getArgument("justification"));
+		proxy.put(LOWER_BOUND_DATE, determineAfter(environment.getArguments()));
+		proxy.put(UPPER_BOUND_DATE, determineBefore(environment.getArguments()));
 	}
 
 	private Long determineAfter(Map<String, Object> arguments) {

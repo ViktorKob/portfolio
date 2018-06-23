@@ -14,7 +14,7 @@ public class GeoLocationValueFetcher extends ModelDataFetcher<Double> {
 	}
 
 	@Override
-	public Double _get(DataFetchingEnvironment environment) {
+	public Double get(DataFetchingEnvironment environment) {
 		final GeoLocation location = (GeoLocation) environment.getSource();
 		if ("longitude".equals(fieldName)) {
 			return location.longitude;

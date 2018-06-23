@@ -33,25 +33,24 @@ import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfInt
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.HeadlineDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.HtmlDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.SimpleRepresentationDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DataTypeFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.DocumentListFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_types.EntityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorSuggestionsFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SimpleRepresentationFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeArrayFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.GeoLocationFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.GeoLocationValueFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.RawDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.TypeDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.UidDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.document.RawDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.document.TimeOfEventDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.document.TimeOfInterceptionDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.DecimalFieldDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.FormattedTimestampFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.IntegerFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.StringFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.TimestampFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorAliasFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsKnownFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsRestrictedFetcher;
@@ -98,16 +97,20 @@ public class GraphQlQueryModelBuilder {
 		final LinkedList<GraphQLFieldDefinition> fields = new LinkedList<>();
 		for (final String dataType : adaptors.getDataTypes()) {
 			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
-			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid();
+			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid()
+				.addUser();
 			if (adaptors.isSimpleRepresentable(dataType)) {
 				arguments.addSimpleRep();
 			}
-			final ModelDataFetcher<?> fetcher = createFetcher(dataType, adaptors);
+			if (adaptors.isSelector(dataType)) {
+				arguments.addJustification()
+					.addDateBounds();
+			}
 			fields.add(newFieldDefinition().name(dataType)
 				.description("Fields and functions in the " + dataType + " type")
 				.type(dataTypeObjectType)
 				.argument(arguments.build())
-				.dataFetcher(fetcher)
+				.dataFetcher(createFetcher(dataType, adaptors))
 				.build());
 		}
 		fields.add(buildSelectorSuggestionField(adaptors));
@@ -161,12 +164,10 @@ public class GraphQlQueryModelBuilder {
 	private ModelDataFetcher<?> createFetcher(final String dataType, Adaptors adaptors) {
 		if (adaptors.isDocument(dataType)) {
 			return new DocumentFetcher(dataType, adaptors);
-		} else if (adaptors.isSimpleRepresentable(dataType)) {
-			return new SimpleRepresentationFetcher(dataType, adaptors);
 		} else if (adaptors.isSelector(dataType)) {
 			return new SelectorFetcher(dataType, adaptors);
 		} else {
-			return new EntityFetcher<>(dataType, adaptors);
+			return new DataTypeFetcher(dataType, adaptors);
 		}
 	}
 
@@ -176,6 +177,7 @@ public class GraphQlQueryModelBuilder {
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));
 		builder.field(createHtmlField(adaptors));
+		builder.field(createRawDataField(adaptors));
 
 		if (adaptors.isSimpleRepresentable(dataType)) {
 			builder.description("A selector with a simple, easily recognizable representation like for instance an email address or a name");
@@ -185,7 +187,6 @@ public class GraphQlQueryModelBuilder {
 			builder.withInterface(new GraphQLTypeReference("Document"));
 			builder.field(createReferencesField(adaptors));
 			builder.field(createUsageActivitiesField(adaptors));
-			builder.field(createRawDataField(adaptors));
 			builder.field(createTimeOfEventField(adaptors));
 			builder.field(createTimeOfInterceptionField(adaptors));
 			builder.field(createFormattedTimeOfEventField(adaptors));
@@ -230,7 +231,7 @@ public class GraphQlQueryModelBuilder {
 			description = buildDescription("Integer field", field, parentType);
 			break;
 		case TIMESTAMP:
-			fetcher = new TimestampFieldDataFetcher(field.getName(), adaptors);
+			fetcher = new FormattedTimestampFieldDataFetcher(field.getName(), adaptors);
 			graphQlType = GraphQLString;
 			description = buildDescription("Timestamp", field, parentType);
 			break;
@@ -307,6 +308,7 @@ public class GraphQlQueryModelBuilder {
 		builder.field(createStatisticsField(adaptors));
 		builder.field(createKnowledgeField(adaptors));
 		builder.field(createInvertedIndexLookupField("selector", adaptors));
+		builder.field(createRawDataField(adaptors));
 		return builder.build();
 	}
 
