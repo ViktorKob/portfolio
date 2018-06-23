@@ -10,16 +10,16 @@ public class PriorKnowledge {
 	@JsonIgnore
 	public String alias;
 	@JsonIgnore
-	public ConfidenceLevel recognition;
+	public ConfidenceLevel isKnown;
 	@JsonIgnore
 	public ConfidenceLevel isRestricted;
 
 	public PriorKnowledge() {
 	}
 
-	public PriorKnowledge(String alias, ConfidenceLevel recognition, ConfidenceLevel isRestricted) {
+	public PriorKnowledge(String alias, ConfidenceLevel isKnown, ConfidenceLevel isRestricted) {
 		this.alias = alias;
-		this.recognition = recognition;
+		this.isKnown = isKnown;
 		this.isRestricted = isRestricted;
 	}
 
@@ -31,12 +31,12 @@ public class PriorKnowledge {
 		this.alias = alias;
 	}
 
-	public ConfidenceLevel getPk_recognition() {
-		return recognition;
+	public ConfidenceLevel getPk_isKnown() {
+		return isKnown;
 	}
 
-	public void setPk_recognition(ConfidenceLevel recognition) {
-		this.recognition = recognition;
+	public void setPk_isKnown(ConfidenceLevel isKnown) {
+		this.isKnown = isKnown;
 	}
 
 	public ConfidenceLevel getPk_isRestricted() {
@@ -51,7 +51,7 @@ public class PriorKnowledge {
 	public boolean equals(Object obj) {
 		if (obj instanceof PriorKnowledge) {
 			final PriorKnowledge other = (PriorKnowledge) obj;
-			return alias.equals(other.alias) && recognition == other.recognition && isRestricted == other.isRestricted;
+			return alias.equals(other.alias) && isKnown == other.isKnown && isRestricted == other.isRestricted;
 		} else {
 			return super.equals(obj);
 		}

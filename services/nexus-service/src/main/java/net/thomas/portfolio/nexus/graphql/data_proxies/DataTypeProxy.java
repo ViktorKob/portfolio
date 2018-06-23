@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.graphql.fetchers.data_proxies;
+package net.thomas.portfolio.nexus.graphql.data_proxies;
 
 import java.util.EnumMap;
 import java.util.Map;

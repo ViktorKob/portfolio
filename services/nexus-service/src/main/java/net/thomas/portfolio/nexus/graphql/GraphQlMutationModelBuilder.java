@@ -12,10 +12,10 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLTypeReference;
-import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityDocumentMutationsFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityDocumentsMutationsFetcher;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityMutation;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class GraphQlMutationModelBuilder {
 
@@ -41,7 +41,7 @@ public class GraphQlMutationModelBuilder {
 		fields.add(newFieldDefinition().name("usageActivity")
 			.description("Mutations on usage activities")
 			.type(buildDocumentsMutationTypes(adaptors))
-			.dataFetcher(new UsageActivityDocumentsMutationsFetcher(adaptors))
+			.dataFetcher(environment -> "Dummy value != null, to make GraphQL continue past this node")
 			.build());
 		return fields;
 	}
@@ -57,7 +57,7 @@ public class GraphQlMutationModelBuilder {
 				.description("Mutations on usage activities for " + documentType)
 				.argument(arguments.build())
 				.type(buildDocumentMutationTypes(documentType, adaptors))
-				.dataFetcher(new UsageActivityDocumentMutationsFetcher(documentType, adaptors))
+				.dataFetcher(environment -> new DataTypeIdProxy(new DataTypeId(documentType, environment.getArgument("uid")), adaptors))
 				.build());
 		}
 		return builder.build();

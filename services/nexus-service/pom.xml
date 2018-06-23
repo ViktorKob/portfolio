@@ -77,25 +77,22 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- GraphQL and tools -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-spring-boot-starter</artifactId>
 			<version>4.1.0</version>
 		</dependency>
-
-		<!-- To embed GraphiQL tool -->
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
 			<version>4.1.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.embedler.moon.graphql</groupId>
 			<artifactId>spring-graphql-common</artifactId>
 			<version>RELEASE</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-java</artifactId>
@@ -108,7 +105,7 @@
 			<artifactId>mockito-core</artifactId>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>

@@ -62,8 +62,9 @@ public class DataType {
 	}
 
 	@JsonIgnore
-	public Object get(String field) {
-		return fields.get(field);
+	@SuppressWarnings("unchecked")
+	public <T> T get(String field) {
+		return (T) fields.get(field);
 	}
 
 	@JsonIgnore

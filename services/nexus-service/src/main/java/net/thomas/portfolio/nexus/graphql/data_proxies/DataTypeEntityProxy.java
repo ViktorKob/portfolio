@@ -1,26 +1,26 @@
-package net.thomas.portfolio.nexus.graphql.fetchers.data_proxies;
+package net.thomas.portfolio.nexus.graphql.data_proxies;
 
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-public class DataTypeIdProxy extends DataTypeProxy<DataTypeId, DataType> {
+public class DataTypeEntityProxy extends DataTypeProxy<DataType, DataType> {
 
-	public DataTypeIdProxy(DataTypeId contents, Adaptors adaptors) {
+	public DataTypeEntityProxy(DataType contents, Adaptors adaptors) {
 		super(contents, adaptors);
 	}
 
-	public DataTypeIdProxy(DataTypeProxy<?, ?> parent, DataTypeId contents, Adaptors adaptors) {
+	public DataTypeEntityProxy(DataTypeProxy<?, ?> parent, DataType contents, Adaptors adaptors) {
 		super(parent, contents, adaptors);
 	}
 
 	@Override
 	public DataTypeId getId() {
-		return contents;
+		return contents.getId();
 	}
 
 	@Override
 	public DataType _getEntity() {
-		return adaptors.getDataType(contents);
+		return contents;
 	}
 }

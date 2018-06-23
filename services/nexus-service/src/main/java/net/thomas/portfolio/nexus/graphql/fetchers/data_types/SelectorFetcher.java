@@ -8,9 +8,9 @@ import static net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId.UPPER_
 import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorIdProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.SelectorIdProxy;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.SelectorProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;

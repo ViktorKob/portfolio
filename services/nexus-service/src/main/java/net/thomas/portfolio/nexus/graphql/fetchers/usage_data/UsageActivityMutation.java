@@ -1,7 +1,5 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.usage_data;
 
-import java.util.Map;
-
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
@@ -22,21 +20,20 @@ public class UsageActivityMutation extends ModelDataFetcher<UsageActivity> {
 	@Override
 	public UsageActivity get(DataFetchingEnvironment environment) {
 		final DataTypeId documentId = getId(environment);
-		final Map<String, Object> arguments = environment.getArguments();
-		final UsageActivityType activityType = extractActivityType(arguments);
-		final Long timeOfActivity = extractTimeOfActivity(arguments);
-		final UsageActivity activity = new UsageActivity((String) arguments.get("user"), activityType, timeOfActivity);
+		final UsageActivityType activityType = extractActivityType(environment);
+		final Long timeOfActivity = extractTimeOfActivity(environment);
+		final UsageActivity activity = new UsageActivity(environment.getArgument("user"), activityType, timeOfActivity);
 		return adaptors.storeUsageActivity(documentId, activity);
 	}
 
-	private UsageActivityType extractActivityType(Map<String, Object> arguments) {
-		return UsageActivityType.valueOf((String) arguments.get("activityType"));
+	private UsageActivityType extractActivityType(DataFetchingEnvironment environment) {
+		return UsageActivityType.valueOf(environment.getArgument("activityType"));
 	}
 
-	private Long extractTimeOfActivity(Map<String, Object> arguments) {
-		Long timeOfActivity = (Long) arguments.get("timeOfActivity");
-		if (timeOfActivity == null && arguments.get("parsedTimeOfActivity") != null) {
-			timeOfActivity = dateFormatter.parseTimestamp((String) arguments.get("parsedTimeOfActivity"));
+	private Long extractTimeOfActivity(DataFetchingEnvironment environment) {
+		Long timeOfActivity = environment.getArgument("timeOfActivity");
+		if (timeOfActivity == null && environment.getArgument("parsedTimeOfActivity") != null) {
+			timeOfActivity = dateFormatter.parseTimestamp(environment.getArgument("parsedTimeOfActivity"));
 		}
 		return timeOfActivity;
 	}

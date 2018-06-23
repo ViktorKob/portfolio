@@ -1,7 +1,7 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.conversion;
 
 import graphql.schema.DataFetchingEnvironment;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_proxies.DocumentProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 
 public class FormattedTimeOfEventDataFetcher extends FormattedTimestampDataFetcher {

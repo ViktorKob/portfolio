@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLEnumValueDefinition;
 import graphql.schema.GraphQLFieldDefinition;
@@ -27,6 +28,9 @@ import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLTypeReference;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentInfoProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfEventDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfInterceptionDataFetcher;
@@ -40,39 +44,26 @@ import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SelectorSuggestionsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeArrayFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.GeoLocationFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.GeoLocationValueFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.RawDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.TypeDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.UidDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.document.TimeOfEventDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.document.TimeOfInterceptionDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.DecimalFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.FormattedTimestampFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.IntegerFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive.StringFieldDataFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorAliasFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsKnownFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorIsRestrictedFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.knowledge.SelectorKnowledgeFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.references.DocumentReferencesFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceClassificationsFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceOriginalIdFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.references.ReferenceSourceFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.DecimalFieldDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.FormattedTimestampFieldDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.IntegerFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
-import net.thomas.portfolio.nexus.graphql.resolvers.DocumentResolver;
-import net.thomas.portfolio.nexus.graphql.resolvers.SelectorResolver;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
+import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
+import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
@@ -236,13 +227,13 @@ public class GraphQlQueryModelBuilder {
 			description = buildDescription("Timestamp", field, parentType);
 			break;
 		case GEO_LOCATION:
-			fetcher = new GeoLocationFieldDataFetcher(field.getName(), adaptors);
+			fetcher = environment -> getEntity(environment).get(field.getName());
 			graphQlType = new GraphQLTypeReference("GeoLocation");
 			description = buildDescription("Geolocation", field, parentType);
 			break;
 		case STRING:
 		default:
-			fetcher = new StringFieldDataFetcher(field.getName(), adaptors);
+			fetcher = environment -> getEntity(environment).get(field.getName());
 			graphQlType = GraphQLString;
 			description = buildDescription("Textual field", field, parentType);
 			break;
@@ -281,7 +272,8 @@ public class GraphQlQueryModelBuilder {
 		final GraphQLInterfaceType.Builder builder = newInterface().name("Document")
 			.description(
 					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
-			.typeResolver(new DocumentResolver(adaptors));
+			.typeResolver(environment -> environment.getSchema()
+				.getObjectType(((DocumentInfoProxy) environment.getObject()).getId().type));
 		builder.field(createUidField(adaptors));
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));
@@ -300,7 +292,8 @@ public class GraphQlQueryModelBuilder {
 		final GraphQLInterfaceType.Builder builder = newInterface().name("Selector")
 			.description(
 					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
-			.typeResolver(new SelectorResolver(adaptors));
+			.typeResolver(environment -> environment.getSchema()
+				.getObjectType(((DataTypeId) environment.getObject()).type));
 		builder.field(createUidField(adaptors));
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));
@@ -346,17 +339,17 @@ public class GraphQlQueryModelBuilder {
 		builder.field(newFieldDefinition().name("alias")
 			.description("Alternative name for the selector")
 			.type(GraphQLString)
-			.dataFetcher(new SelectorAliasFetcher(adaptors))
+			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).alias)
 			.build());
 		builder.field(newFieldDefinition().name("isKnown")
 			.description("How well do we know this selector")
 			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
-			.dataFetcher(new SelectorIsKnownFetcher(adaptors))
+			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).isKnown)
 			.build());
 		builder.field(newFieldDefinition().name("isRestricted")
 			.description("Whether queries for this selector have to be justified")
 			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
-			.dataFetcher(new SelectorIsRestrictedFetcher(adaptors))
+			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).isRestricted)
 			.build());
 		return builder.build();
 	}
@@ -367,17 +360,17 @@ public class GraphQlQueryModelBuilder {
 		builder.field(newFieldDefinition().name("originalId")
 			.description("The ID of the original entity in the source")
 			.type(GraphQLString)
-			.dataFetcher(new ReferenceOriginalIdFetcher(adaptors))
-			.build());
-		builder.field(newFieldDefinition().name("classifications")
-			.description("The classifications required for working with this document")
-			.type(list(new GraphQLTypeReference("ClassificationEnum")))
-			.dataFetcher(new ReferenceClassificationsFetcher(adaptors))
+			.dataFetcher(environment -> ((Reference) environment.getSource()).getOriginalId())
 			.build());
 		builder.field(newFieldDefinition().name("source")
 			.description("The original source of the document")
 			.type(new GraphQLTypeReference("SourceEnum"))
-			.dataFetcher(new ReferenceSourceFetcher(adaptors))
+			.dataFetcher(environment -> ((Reference) environment.getSource()).getSource())
+			.build());
+		builder.field(newFieldDefinition().name("classifications")
+			.description("The classifications required for working with this document")
+			.type(list(new GraphQLTypeReference("ClassificationEnum")))
+			.dataFetcher(environment -> ((Reference) environment.getSource()).getClassifications())
 			.build());
 		return builder.build();
 	}
@@ -414,12 +407,12 @@ public class GraphQlQueryModelBuilder {
 		builder.field(newFieldDefinition().name("longitude")
 			.description("The longitude relative to the Greenwich line")
 			.type(GraphQLBigDecimal)
-			.dataFetcher(new GeoLocationValueFetcher("longitude", adaptors))
+			.dataFetcher(environment -> ((GeoLocation) environment.getSource()).longitude)
 			.build());
 		builder.field(newFieldDefinition().name("latitude")
 			.description("The latitude relative to the Equator")
 			.type(GraphQLBigDecimal)
-			.dataFetcher(new GeoLocationValueFetcher("latitude", adaptors))
+			.dataFetcher(environment -> ((GeoLocation) environment.getSource()).latitude)
 			.build());
 		return builder.build();
 	}
@@ -459,7 +452,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("timeOfInterception")
 			.description("The exact time for when the event, defined by the document, was intercepted, in milliseconds since the epoch")
 			.type(GraphQLLong)
-			.dataFetcher(new TimeOfInterceptionDataFetcher(adaptors))
+			.dataFetcher(environment -> getDocumentProxy(environment).getTimeOfInterception())
 			.build();
 	}
 
@@ -467,7 +460,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("timeOfEvent")
 			.description("The best guess for when the event, defined by the document, occurred, in milliseconds since the epoch")
 			.type(GraphQLLong)
-			.dataFetcher(new TimeOfEventDataFetcher(adaptors))
+			.dataFetcher(environment -> getDocumentProxy(environment).getTimeOfEvent())
 			.build();
 	}
 
@@ -486,7 +479,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("rawData")
 			.description("Raw representation of the document as stored in the index")
 			.type(GraphQLString)
-			.dataFetcher(new RawDataFetcher(adaptors))
+			.dataFetcher(environment -> getEntity(environment).getInRawForm())
 			.build();
 	}
 
@@ -494,7 +487,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("references")
 			.description("References describing how the document was obtained and restrictions on its usage")
 			.type(list(new GraphQLTypeReference("DocumentReference")))
-			.dataFetcher(new DocumentReferencesFetcher(adaptors))
+			.dataFetcher(environment -> adaptors.getReferences(getId(environment)))
 			.build();
 	}
 
@@ -518,7 +511,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("type")
 			.description("Data type of the entity")
 			.type(GraphQLString)
-			.dataFetcher(new TypeDataFetcher(adaptors))
+			.dataFetcher(environment -> getId(environment).type)
 			.build();
 	}
 
@@ -526,7 +519,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("uid")
 			.description("Unique id for entity")
 			.type(GraphQLString)
-			.dataFetcher(new UidDataFetcher(adaptors))
+			.dataFetcher(environment -> getId(environment).uid)
 			.build();
 	}
 
@@ -558,7 +551,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("knowledge")
 			.description("Fetch prior knowledge about the selector from the analytics platform")
 			.type(new GraphQLTypeReference("Knowledge"))
-			.dataFetcher(new SelectorKnowledgeFetcher(adaptors))
+			.dataFetcher(environment -> adaptors.getPriorKnowledge(getId(environment)))
 			.build();
 	}
 
@@ -578,5 +571,21 @@ public class GraphQlQueryModelBuilder {
 			.sorted()
 			.collect(joining(", ")) + " ]";
 		return listOfValues;
+	}
+
+	private DataTypeProxy<?, ?> getProxy(DataFetchingEnvironment environment) {
+		return (DataTypeProxy<?, ?>) environment.getSource();
+	}
+
+	private DocumentProxy<?> getDocumentProxy(DataFetchingEnvironment environment) {
+		return (DocumentProxy<?>) getProxy(environment);
+	}
+
+	private DataTypeId getId(DataFetchingEnvironment environment) {
+		return getProxy(environment).getId();
+	}
+
+	private DataType getEntity(DataFetchingEnvironment environment) {
+		return getProxy(environment).getEntity();
 	}
 }

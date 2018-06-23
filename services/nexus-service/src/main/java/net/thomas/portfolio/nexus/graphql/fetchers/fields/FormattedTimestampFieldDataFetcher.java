@@ -1,9 +1,8 @@
-package net.thomas.portfolio.nexus.graphql.fetchers.fields.primitive;
+package net.thomas.portfolio.nexus.graphql.fetchers.fields;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 
 public class FormattedTimestampFieldDataFetcher extends ModelDataFetcher<String> {
@@ -18,8 +17,7 @@ public class FormattedTimestampFieldDataFetcher extends ModelDataFetcher<String>
 
 	@Override
 	public String get(DataFetchingEnvironment environment) {
-		final DataType entity = getEntity(environment);
-		final Long timestamp = (Long) entity.get(fieldName);
+		final Long timestamp = (Long) getEntity(environment).get(fieldName);
 		return dateFormatter.formatTimestamp(timestamp);
 	}
 }
