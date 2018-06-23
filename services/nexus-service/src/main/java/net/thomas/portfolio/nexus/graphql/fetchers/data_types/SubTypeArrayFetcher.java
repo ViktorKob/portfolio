@@ -21,10 +21,9 @@ public class SubTypeArrayFetcher extends ModelDataFetcher<List<DataTypeEntityPro
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<DataTypeEntityProxy> get(DataFetchingEnvironment environment) {
 		final DataTypeProxy<?, ?> parentProxy = (DataTypeProxy<?, ?>) environment.getSource();
-		return convert(parentProxy, (List<? extends DataType>) parentProxy.getEntity()
+		return convert(parentProxy, parentProxy.getEntity()
 			.get(fieldName));
 	}
 

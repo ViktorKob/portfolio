@@ -44,16 +44,17 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 
 		@Override
 		public String render(DataType element, SimpleRepresentationRenderContext context) {
-			return String.valueOf(element.get(field));
+			return element.get(field)
+				.toString();
 		}
 	}
 
 	private class DomainRenderer implements Renderer<String, SimpleRepresentationRenderContext> {
 		@Override
 		public String render(DataType element, SimpleRepresentationRenderContext context) {
-			final String domainPart = String.valueOf(element.get("domainPart"));
+			final String domainPart = element.get("domainPart");
 			if (element.get("domain") != null) {
-				return domainPart + "." + render((DataType) element.get("domain"), context);
+				return domainPart + "." + render(element.get("domain"), context);
 			} else {
 				return domainPart;
 			}
@@ -63,7 +64,7 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 	private class EmailAddressRenderer implements Renderer<String, SimpleRepresentationRenderContext> {
 		@Override
 		public String render(DataType element, SimpleRepresentationRenderContext context) {
-			return library.render((DataType) element.get("localname"), context) + "@" + library.render((DataType) element.get("domain"), context);
+			return library.render(element.get("localname"), context) + "@" + library.render(element.get("domain"), context);
 		}
 	}
 

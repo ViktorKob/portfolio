@@ -55,20 +55,17 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 
 		@Override
 		public String render(DataType element, TextRenderContext context) {
-			final String headline = String.valueOf(element.get(field));
-			// if (adaptor.isSelector(element.type) && requiresJustification((Selector) element)) {
-			// headline += "!";
-			// }
-			return headline;
+			return element.get(field)
+				.toString();
 		}
 	}
 
 	private class DomainRenderer implements Renderer<String, TextRenderContext> {
 		@Override
 		public String render(DataType element, TextRenderContext context) {
-			final String domainPart = String.valueOf(element.get("domainPart"));
+			final String domainPart = element.get("domainPart");
 			if (element.get("domain") != null) {
-				return domainPart + "." + render((DataType) element.get("domain"), context);
+				return domainPart + "." + render(element.get("domain"), context);
 			} else {
 				return domainPart;
 			}
@@ -78,11 +75,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 	private class EmailAddressRenderer implements Renderer<String, TextRenderContext> {
 		@Override
 		public String render(DataType element, TextRenderContext context) {
-			final String headline = library.render((DataType) element.get("localname"), context) + "@"
-					+ library.render((DataType) element.get("domain"), context);
-			// if (requiresJustification((Selector) element)) {
-			// headline += "!";
-			// }
+			final String headline = library.render(element.get("localname"), context) + "@" + library.render(element.get("domain"), context);
 			return headline;
 		}
 	}
@@ -91,10 +84,9 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			if (element.containsKey("displayedName")) {
-				return library.render((DataType) element.get("displayedName"), context) + " <( " + library.render((DataType) element.get("address"), context)
-						+ " )>";
+				return library.render(element.get("displayedName"), context) + " <( " + library.render(element.get("address"), context) + " )>";
 			} else {
-				return library.render((DataType) element.get("address"), context);
+				return library.render(element.get("address"), context);
 			}
 		}
 	}
@@ -104,19 +96,19 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		public String render(DataType element, TextRenderContext context) {
 			String rendering = "";
 			if (element.containsKey("pstn")) {
-				rendering += "Pstn: " + library.render((DataType) element.get("pstn"), context);
+				rendering += "Pstn: " + library.render(element.get("pstn"), context);
 			}
 			if (element.containsKey("imsi")) {
 				if (rendering.length() > 0) {
 					rendering += ", ";
 				}
-				rendering += "Imsi: " + library.render((DataType) element.get("imsi"), context);
+				rendering += "Imsi: " + library.render(element.get("imsi"), context);
 			}
 			if (element.containsKey("imei")) {
 				if (rendering.length() > 0) {
 					rendering += ", ";
 				}
-				rendering += "Imei: " + library.render((DataType) element.get("imei"), context);
+				rendering += "Imei: " + library.render(element.get("imei"), context);
 			}
 			return rendering;
 		}
@@ -126,8 +118,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render((DataType) element.get("from"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
-					+ ": " + element.get("subject");
+			final String headline = library.render(element.get("from"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
+					+ element.get("subject");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {
@@ -140,8 +132,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render((DataType) element.get("sender"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
-					+ ": " + element.get("message");
+			final String headline = library.render(element.get("sender"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
+					+ element.get("message");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {
@@ -154,8 +146,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final int duration = (Integer) element.get("durationIsSeconds");
-			final String headline = library.render((DataType) element.get("caller"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
+			final int duration = element.get("durationIsSeconds");
+			final String headline = library.render(element.get("caller"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
 					+ ": call final duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
@@ -164,12 +156,6 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 			}
 		}
 	}
-
-	// private boolean requiresJustification(Selector selector) {
-	// // final PreviousKnowledge knowledge = adaptor.getPreviousKnowledgeFor(selector);
-	// final PreviousKnowledge knowledge = new PreviousKnowledge(UNKNOWN, UNKNOWN);
-	// return knowledge.isDanish == KNOWN;
-	// }
 
 	@Override
 	public String toString() {
