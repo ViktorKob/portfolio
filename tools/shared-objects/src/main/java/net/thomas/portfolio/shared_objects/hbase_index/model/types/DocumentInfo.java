@@ -1,7 +1,5 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -46,6 +44,6 @@ public class DocumentInfo {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return id + "@" + getTimeOfEvent() + ": " + super.toString();
 	}
 }

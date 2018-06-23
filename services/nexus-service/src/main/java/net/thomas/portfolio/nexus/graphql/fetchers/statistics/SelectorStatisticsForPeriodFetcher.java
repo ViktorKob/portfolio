@@ -17,7 +17,7 @@ public class SelectorStatisticsForPeriodFetcher extends ModelDataFetcher<Long> {
 	}
 
 	@Override
-	public Long _get(DataFetchingEnvironment environment) {
+	public Long get(DataFetchingEnvironment environment) {
 		@SuppressWarnings("unchecked")
 		final Map<StatisticsPeriod, Long> statistics = (Map<StatisticsPeriod, Long>) environment.getSource();
 		final Long count = statistics.get(period);

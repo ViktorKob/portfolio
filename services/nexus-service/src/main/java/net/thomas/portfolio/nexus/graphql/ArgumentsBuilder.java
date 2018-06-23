@@ -63,7 +63,7 @@ public class ArgumentsBuilder {
 	public ArgumentsBuilder addUser() {
 		arguments.add(newArgument().name("user")
 			.description("ID of the user trying to execute the query")
-			.type(nonNull(GraphQLString))
+			.type(GraphQLString)
 			.build());
 		return this;
 	}

@@ -15,13 +15,13 @@ public class UsageActivityMutation extends ModelDataFetcher<UsageActivity> {
 	private final DateConverter dateFormatter;
 
 	public UsageActivityMutation(Adaptors adaptors) {
-		super(adaptors/* , 50 */);
+		super(adaptors);
 		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override
-	public UsageActivity _get(DataFetchingEnvironment environment) {
-		final DataTypeId documentId = environment.getSource();
+	public UsageActivity get(DataFetchingEnvironment environment) {
+		final DataTypeId documentId = getId(environment);
 		final Map<String, Object> arguments = environment.getArguments();
 		final UsageActivityType activityType = extractActivityType(arguments);
 		final Long timeOfActivity = extractTimeOfActivity(arguments);

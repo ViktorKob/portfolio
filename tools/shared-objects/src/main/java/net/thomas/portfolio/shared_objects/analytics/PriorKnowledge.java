@@ -17,10 +17,10 @@ public class PriorKnowledge {
 	public PriorKnowledge() {
 	}
 
-	public PriorKnowledge(String alias, ConfidenceLevel recognition, ConfidenceLevel isDanish) {
+	public PriorKnowledge(String alias, ConfidenceLevel recognition, ConfidenceLevel isRestricted) {
 		this.alias = alias;
 		this.recognition = recognition;
-		this.isRestricted = isDanish;
+		this.isRestricted = isRestricted;
 	}
 
 	public String getPk_alias() {
@@ -39,12 +39,12 @@ public class PriorKnowledge {
 		this.recognition = recognition;
 	}
 
-	public ConfidenceLevel getPk_isDanish() {
+	public ConfidenceLevel getPk_isRestricted() {
 		return isRestricted;
 	}
 
-	public void setPk_isDanish(ConfidenceLevel isDanish) {
-		this.isRestricted = isDanish;
+	public void setPk_isRestricted(ConfidenceLevel isRestricted) {
+		this.isRestricted = isRestricted;
 	}
 
 	@Override

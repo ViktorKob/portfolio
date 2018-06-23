@@ -16,8 +16,8 @@ public class ArrayFieldDataFetcher extends ModelDataFetcher<List<?>> {
 	}
 
 	@Override
-	public List<?> _get(DataFetchingEnvironment environment) {
-		final DataType entity = extractOrFetchDataType(environment);
+	public List<?> get(DataFetchingEnvironment environment) {
+		final DataType entity = getEntity(environment);
 		return (List<?>) entity.get(fieldName);
 	}
 }

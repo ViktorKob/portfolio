@@ -14,8 +14,8 @@ public class IntegerFieldDataFetcher extends ModelDataFetcher<Long> {
 	}
 
 	@Override
-	public Long _get(DataFetchingEnvironment environment) {
-		final DataType entity = extractOrFetchDataType(environment);
+	public Long get(DataFetchingEnvironment environment) {
+		final DataType entity = getEntity(environment);
 		final Object value = entity.get(fieldName);
 		if (value instanceof Long) {
 			return (Long) value;

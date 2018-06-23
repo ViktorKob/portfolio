@@ -15,7 +15,7 @@ public class ReferenceClassificationsFetcher extends ModelDataFetcher<Set<Classi
 	}
 
 	@Override
-	public Set<Classification> _get(DataFetchingEnvironment environment) {
+	public Set<Classification> get(DataFetchingEnvironment environment) {
 		final Reference reference = (Reference) environment.getSource();
 		return reference.getClassifications();
 	}

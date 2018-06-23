@@ -12,7 +12,7 @@ public class FormattedTimeOfActivityFetcher extends FormattedTimestampDataFetche
 	}
 
 	@Override
-	public String _get(DataFetchingEnvironment environment) {
+	public String get(DataFetchingEnvironment environment) {
 		final UsageActivity item = (UsageActivity) environment.getSource();
 		return formatTimestampAsIec8601(environment, item.timeOfActivity);
 	}
