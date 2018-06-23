@@ -38,14 +38,14 @@ public class PriorKnowledgeUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeAsPk_recognition() throws IOException {
+	public void shouldSerializeAsPk_isKnown() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(knowledge);
-		assertTrue(serializedForm.contains("\"pk_recognition\":\"" + KNOWLEDGE.name() + "\""));
+		assertTrue(serializedForm.contains("\"pk_isKnown\":\"" + KNOWLEDGE.name() + "\""));
 	}
 
 	@Test
-	public void shouldSerializeAsPk_isDanish() throws IOException {
+	public void shouldSerializeAsPk_isRestricted() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(knowledge);
-		assertTrue(serializedForm.contains("\"pk_isDanish\":\"" + KNOWLEDGE.name() + "\""));
+		assertTrue(serializedForm.contains("\"pk_isRestricted\":\"" + KNOWLEDGE.name() + "\""));
 	}
 }
