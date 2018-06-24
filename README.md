@@ -92,7 +92,7 @@ _Service responsible for storing and showing user interaction with the model_
 |**Technologies**|MySQL, jOOQ, Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/UsageDataService/fetchUsageActivity</li><li>/UsageDataService/storeUsageActivity</li></ul>|
+|**Endpoints**|<ul><li>/UsageDataService/{version}/usageActivities/{documentType}/{uid}</li></ul>|
 
 To enable storage of data about usage of the data model, this service employ a mysql backend and exposes two endpoint for manipulating the contents of this. jOOQ is used as a middle layer to enable compile-time validation of SQL queries. 
 

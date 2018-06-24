@@ -1,6 +1,5 @@
 package net.thomas.portfolio.globals;
 
 public class UsageDataServiceGlobals {
-	public static final String STORE_USAGE_ACTIVITY_PATH = "/storeUsageActivity";
-	public static final String FETCH_USAGE_ACTIVITY_PATH = "/fetchUsageActivity";
+	public static final String USAGE_ACTIVITIES_PATH = "/v1/usageActivities";
 }

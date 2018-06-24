@@ -1,10 +1,12 @@
 package net.thomas.portfolio.usage_data.service;
 
 import static java.lang.Integer.MAX_VALUE;
-import static net.thomas.portfolio.globals.UsageDataServiceGlobals.FETCH_USAGE_ACTIVITY_PATH;
-import static net.thomas.portfolio.globals.UsageDataServiceGlobals.STORE_USAGE_ACTIVITY_PATH;
+import static net.thomas.portfolio.globals.UsageDataServiceGlobals.USAGE_ACTIVITIES_PATH;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.http.ResponseEntity.status;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -38,6 +40,7 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @Controller
+@RequestMapping(value = USAGE_ACTIVITIES_PATH + "/{dti_type}/{dti_uid}")
 public class UsageDataServiceController {
 	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
 	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
@@ -82,7 +85,7 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = STORE_USAGE_ACTIVITY_PATH, method = POST)
+	@RequestMapping(method = POST)
 	public ResponseEntity<?> storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(activity.user) && USAGE_ACTIVITY_TYPE.isValid(activity.type)
 				&& TIME_OF_ACTIVITY.isValid(activity.timeOfActivity)) {
@@ -91,11 +94,10 @@ public class UsageDataServiceController {
 			}
 			try {
 				proxy.storeUsageActivity(id, activity);
-				return ResponseEntity.ok(activity);
+				return ok(activity);
 			} catch (final Throwable t) {
 				t.printStackTrace();
-				return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-					.body("The server was unable to complete the request.");
+				return status(INTERNAL_SERVER_ERROR).body("The server was unable to complete the request.");
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + USERNAME.getReason(activity.user) + "<BR>"
@@ -104,22 +106,20 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = FETCH_USAGE_ACTIVITY_PATH, method = GET)
+	@RequestMapping(method = GET)
 	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Bounds bounds) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(bounds.offset) && LIMIT.isValid(bounds.limit)) {
 			bounds.replaceMissing(0, 20, AROUND_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW);
 			try {
 				final List<UsageActivity> activities = proxy.fetchUsageActivities(id, bounds);
 				if (activities != null) {
-					return ResponseEntity.ok(activities);
+					return ok(activities);
 				} else {
-					return ResponseEntity.notFound()
-						.build();
+					return notFound().build();
 				}
 			} catch (final Throwable t) {
 				t.printStackTrace();
-				return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-					.body("The server was unable to complete the request.");
+				return status(INTERNAL_SERVER_ERROR).body("The server was unable to complete the request.");
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + OFFSET.getReason(bounds.offset) + "<BR>"
