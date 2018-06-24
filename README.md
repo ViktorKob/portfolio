@@ -75,7 +75,7 @@ _Rendering service that can lookup data in the Hbase index and then renderer it 
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/RenderService/renderAsSimpleRep</li><li>/RenderService/renderAsText</li><li>/RenderService/renderAsHtml</li></ul>|"
+|**Endpoints**|<ul><li>/RenderService/{version}/headline/{type}/{uid}</li><li>/RenderService/{version}/html/{type}/{uid}</li><li>/RenderService/{version}/simpleRep/{type}/{uid}</li></ul>|
 
 One could argue that this service contains functionality that should be a part of the HBASE index service, but I have chosen to separate them, because I expect that the teams maintaining either service will be very different (HBASE specialists vs. front-end specialists). Still, it is heavily model dependent, and will likely need to be updated any time the HBASE index service is updated.
 

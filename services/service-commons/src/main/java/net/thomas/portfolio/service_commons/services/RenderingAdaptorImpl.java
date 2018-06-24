@@ -19,16 +19,22 @@ public class RenderingAdaptorImpl implements RenderingAdaptor {
 
 	@Override
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_SIMPLE_REPRESENTATION, GET, String.class, selectorId);
+		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
+			return RENDER_AS_SIMPLE_REPRESENTATION.getPath() + "/" + selectorId.type + "/" + selectorId.uid;
+		}, GET, String.class);
 	}
 
 	@Override
 	public String renderAsText(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_TEXT, GET, String.class, id);
+		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
+			return RENDER_AS_TEXT.getPath() + "/" + id.type + "/" + id.uid;
+		}, GET, String.class);
 	}
 
 	@Override
 	public String renderAsHtml(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, RENDER_AS_HTML, GET, String.class, id);
+		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
+			return RENDER_AS_HTML.getPath() + "/" + id.type + "/" + id.uid;
+		}, GET, String.class);
 	}
 }
