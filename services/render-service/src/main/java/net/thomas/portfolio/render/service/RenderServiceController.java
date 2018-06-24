@@ -4,6 +4,9 @@ import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_P
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
+import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -67,17 +70,17 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(RENDER_AS_SIMPLE_REPRESENTATION_PATH)
+	@RequestMapping(path = RENDER_AS_SIMPLE_REPRESENTATION_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
+		final HbaseIndexModelAdaptor hbaseAdaptor = getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
-			final DataType entity = getHbaseAdaptor().getDataType(id);
+			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
-				final SimpleRepresentationRenderContext renderContext = new SimpleRepresentationRenderContextBuilder().setHbaseModelAdaptor(getHbaseAdaptor())
+				final SimpleRepresentationRenderContext renderContext = new SimpleRepresentationRenderContextBuilder().setHbaseModelAdaptor(hbaseAdaptor)
 					.build();
-				return ResponseEntity.ok(simpleRepRenderer.render(entity, renderContext));
+				return ok(simpleRepRenderer.render(entity, renderContext));
 			} else {
-				return ResponseEntity.notFound()
-					.build();
+				return notFound().build();
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
@@ -85,16 +88,16 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(RENDER_AS_TEXT_PATH)
+	@RequestMapping(path = RENDER_AS_TEXT_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsText(DataTypeId id) {
+		getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = getHbaseAdaptor().getDataType(id);
 			if (entity != null) {
 				final TextRenderContext renderContext = new TextRenderContextBuilder().build();
-				return ResponseEntity.ok(textRenderer.render(entity, renderContext));
+				return ok(textRenderer.render(entity, renderContext));
 			} else {
-				return ResponseEntity.notFound()
-					.build();
+				return notFound().build();
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
@@ -102,16 +105,16 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(RENDER_AS_HTML_PATH)
+	@RequestMapping(path = RENDER_AS_HTML_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsHtml(DataTypeId id) {
+		getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = getHbaseAdaptor().getDataType(id);
 			if (entity != null) {
 				final HtmlRenderContext renderContext = new HtmlRenderContextBuilder().build();
-				return ResponseEntity.ok(htmlRenderer.render(entity, renderContext));
+				return ok(htmlRenderer.render(entity, renderContext));
 			} else {
-				return ResponseEntity.notFound()
-					.build();
+				return notFound().build();
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid));
