@@ -1,7 +1,6 @@
 package net.thomas.portfolio.service_commons.services;
 
-import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.FETCH_USAGE_ACTIVITY;
-import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.STORE_USAGE_ACTIVITY;
+import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.USAGE_ACTIVITIES;
 import static net.thomas.portfolio.services.Service.USAGE_DATA_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -26,11 +25,15 @@ public class UsageAdaptorImpl implements UsageAdaptor {
 
 	@Override
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
-		return client.loadUrlAsObject(USAGE_DATA_SERVICE, STORE_USAGE_ACTIVITY, POST, UsageActivity.class, documentId, activity);
+		return client.loadUrlAsObject(USAGE_DATA_SERVICE, () -> {
+			return USAGE_ACTIVITIES.getPath() + "/" + documentId.type + "/" + documentId.uid;
+		}, POST, UsageActivity.class, activity);
 	}
 
 	@Override
 	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
-		return client.loadUrlAsObject(USAGE_DATA_SERVICE, FETCH_USAGE_ACTIVITY, GET, USAGE_ACTIVITY_ITEMS_TYPE_REFERENCE, documentId, bounds);
+		return client.loadUrlAsObject(USAGE_DATA_SERVICE, () -> {
+			return USAGE_ACTIVITIES.getPath() + "/" + documentId.type + "/" + documentId.uid;
+		}, GET, USAGE_ACTIVITY_ITEMS_TYPE_REFERENCE, bounds);
 	}
 }
