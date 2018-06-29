@@ -1,4 +1,4 @@
-package net.model.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.util;
 
 import static java.util.Calendar.NOVEMBER;
 import static org.junit.Assert.assertEquals;
@@ -8,15 +8,14 @@ import java.util.GregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.model.util.DateConverter;
-import net.model.util.DateConverter.SimpleDateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 
-public class DateConverterTest {
-	private SimpleDateConverter converter;
+public class DateConverterUnitTest {
+	private DateConverter converter;
 
 	@Before
 	public void setup() {
-		converter = new DateConverter.SimpleDateConverter();
+		converter = new DateConverter.Iec8601DateConverter();
 	}
 
 	@Test

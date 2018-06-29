@@ -22,9 +22,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 
-public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
+public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
 
 	private static final boolean IS_NOT_ARRAY = false;
 	private static final boolean IS_ARRAY = true;
@@ -38,27 +38,26 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		dataTypeFields.put("Domain", fields(string("domainPart"), dataType("domain", "Domain")));
 		dataTypeFields.put("EmailAddress", fields(dataType("localname", "Localname"), dataType("domain", "Domain")));
 		dataTypeFields.put("EmailEndpoint", fields(dataType("displayedName", "DisplayedName"), dataType("address", "EmailAddress")));
-		dataTypeFields.put("Pstn", fields(string("number")));
-		dataTypeFields.put("Imei", fields(string("number")));
-		dataTypeFields.put("Imsi", fields(string("number")));
-		dataTypeFields.put("PstnEndpoint", fields(dataType("pstn", "Pstn"), dataType("imei", "Imei"), dataType("imsi", "Imsi")));
+		dataTypeFields.put("PublicId", fields(string("number")));
+		dataTypeFields.put("PrivateId", fields(string("number")));
+		dataTypeFields.put("CommunicationEndpoint", fields(dataType("publicId", "PublicId"), dataType("privateId", "PrivateId")));
 		dataTypeFields.put("Email", fields(string("subject"), string("message"), dataType("from", "EmailEndpoint"), dataTypeNonKeyArray("to", "EmailEndpoint"),
 				dataTypeNonKeyArray("cc", "EmailEndpoint"), dataTypeNonKeyArray("bcc", "EmailEndpoint")));
-		dataTypeFields.put("Sms", fields(string("message"), dataType("sender", "PstnEndpoint"), dataType("receiver", "PstnEndpoint"),
+		dataTypeFields.put("TextMessage", fields(string("message"), dataType("sender", "CommunicationEndpoint"), dataType("receiver", "CommunicationEndpoint"),
 				geoLocation("senderLocation"), geoLocation("receiverLocation")));
-		dataTypeFields.put("Voice", fields(integer("durationIsSeconds"), dataType("caller", "PstnEndpoint"), nonKeyDataType("called", "PstnEndpoint"),
-				geoLocation("callerLocation"), geoLocation("calledLocation")));
+		dataTypeFields.put("Conversation", fields(integer("durationIsSeconds"), dataType("primary", "CommunicationEndpoint"),
+				nonKeyDataType("secondary", "CommunicationEndpoint"), geoLocation("primaryLocation"), geoLocation("secondaryLocation")));
 
 		dataTypes = dataTypeFields.keySet();
 
-		documentTypes = setOf("Email", "Sms", "Voice");
-		selectorTypes = setOf("Localname", "DisplayedName", "Domain", "EmailAddress", "Pstn", "Imei", "Imsi");
-		simpleRepresentableTypes = setOf("Localname", "DisplayedName", "Domain", "EmailAddress", "Pstn", "Imei", "Imsi");
+		documentTypes = setOf("Email", "TextMessage", "Conversation");
+		selectorTypes = setOf("Localname", "DisplayedName", "Domain", "EmailAddress", "PublicId", "PrivateId");
+		simpleRepresentableTypes = setOf("Localname", "DisplayedName", "Domain", "EmailAddress", "PublicId", "PrivateId");
 
 		final IndexableBuilder builder = new IndexableBuilder();
 		createEmailIndexables(builder, "Localname", "DisplayedName", "Domain", "EmailAddress");
-		createSmsIndexables(builder, "Pstn", "Imsi", "Imei");
-		createVoiceIndexables(builder, "Pstn", "Imsi", "Imei");
+		createTextMessageIndexables(builder, "PublicId", "PrivateId");
+		createConversationIndexables(builder, "PublicId", "PrivateId");
 		indexables = builder.build();
 		indexableDocumentTypes = buildIndexableMap(indexables, Indexable::getDocumentType);
 		indexableRelations = buildIndexableMap(indexables, Indexable::getPath);
@@ -67,7 +66,6 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 	}
 
 	private Map<String, Set<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables, Function<? super Indexable, ? extends String> mapper) {
-
 		final HashMap<String, Set<String>> relationMap = new HashMap<>();
 		for (final String selectorType : selectorTypes) {
 			final Collection<Indexable> selectorIndexables = indexables.get(selectorType);
@@ -119,17 +117,17 @@ public class FakeHbaseIndexSchemaImpl extends HBaseIndexSchemaSerialization {
 		}
 	}
 
-	private void createSmsIndexables(IndexableBuilder builder, String... selectorTypes) {
+	private void createTextMessageIndexables(IndexableBuilder builder, String... selectorTypes) {
 		for (final String selectorType : selectorTypes) {
-			builder.add(selectorType, "send", "Sms", "sender");
-			builder.add(selectorType, "received", "Sms", "receiver");
+			builder.add(selectorType, "send", "TextMessage", "sender");
+			builder.add(selectorType, "received", "TextMessage", "receiver");
 		}
 	}
 
-	private void createVoiceIndexables(IndexableBuilder builder, String... selectorTypes) {
+	private void createConversationIndexables(IndexableBuilder builder, String... selectorTypes) {
 		for (final String selectorType : selectorTypes) {
-			builder.add(selectorType, "caller", "Voice", "caller");
-			builder.add(selectorType, "called", "Voice", "called");
+			builder.add(selectorType, "primary", "Conversation", "primary");
+			builder.add(selectorType, "secondary", "Conversation", "secondary");
 		}
 	}
 

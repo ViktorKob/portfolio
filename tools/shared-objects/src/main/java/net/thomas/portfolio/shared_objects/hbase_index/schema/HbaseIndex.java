@@ -11,7 +11,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
-public interface HbaseIndex {
+public interface HbaseIndex extends Iterable<DataType> {
+
+	Collection<DataType> getSamples(String type, int amount);
 
 	DataType getDataType(DataTypeId id);
 

@@ -18,9 +18,8 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 		renderers = new HashMap<>();
 		renderers.put("Localname", new SimpleFieldRenderer("name"));
 		renderers.put("DisplayedName", new SimpleFieldRenderer("name"));
-		renderers.put("Pstn", new SimpleFieldRenderer("number"));
-		renderers.put("Imsi", new SimpleFieldRenderer("number"));
-		renderers.put("Imei", new SimpleFieldRenderer("number"));
+		renderers.put("PublicId", new SimpleFieldRenderer("number"));
+		renderers.put("PrivateId", new SimpleFieldRenderer("number"));
 		renderers.put("Domain", new DomainRenderer());
 		renderers.put("EmailAddress", new EmailAddressRenderer());
 	}

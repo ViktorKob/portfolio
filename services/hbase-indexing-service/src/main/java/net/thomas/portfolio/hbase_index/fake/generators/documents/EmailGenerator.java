@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.fake.FakeWorldInitializer.Person;
+import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
@@ -32,7 +32,7 @@ public class EmailGenerator extends DocumentGenerator {
 		this.sender = sender;
 		this.potentialRecipients = potentialRecipients;
 		subjectGenerator = new StringGenerator(0, 125, .2, random.nextLong());
-		messageGenerator = new StringGenerator(30, 1000, .10, random.nextLong());
+		messageGenerator = new StringGenerator(30, 400, .10, random.nextLong());
 		uidTool = new IdGenerator(schema.getFieldsForDataType("EmailEndpoint"), true);
 		previousDisplayedNameMatches = new HashMap<>();
 	}

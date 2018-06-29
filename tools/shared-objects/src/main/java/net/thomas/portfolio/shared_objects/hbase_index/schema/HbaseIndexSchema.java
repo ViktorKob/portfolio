@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -31,4 +32,8 @@ public interface HbaseIndexSchema {
 	Set<String> getIndexableRelations(String selectorType);
 
 	Set<String> getAllIndexableRelations();
+
+	Collection<Indexable> getIndexables(String selectorType);
+
+	Field getFieldForIndexable(Indexable indexable);
 }

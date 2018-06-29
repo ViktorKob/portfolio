@@ -34,7 +34,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HBaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
@@ -46,8 +46,8 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	public HbaseIndexModelAdaptorImpl(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HBaseIndexSchemaSerialization.class);
-		((HBaseIndexSchemaSerialization) schema).initialize();
+		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaSerialization.class);
+		((HbaseIndexSchemaSerialization) schema).initialize();
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 				.maximumSize(10000)
 				.build(new CacheLoader<DataTypeId, DataType>() {

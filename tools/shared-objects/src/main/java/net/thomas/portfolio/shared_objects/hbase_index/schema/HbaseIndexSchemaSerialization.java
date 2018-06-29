@@ -18,7 +18,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
+public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	// TODO[Thomas]: These must also be serialized to be truly model agnostic
 	@JsonIgnore
@@ -35,7 +35,7 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@JsonIgnore
 	protected Set<String> allIndexableRelations;
 
-	public HBaseIndexSchemaSerialization() {
+	public HbaseIndexSchemaSerialization() {
 	}
 
 	public void initialize() {
@@ -92,6 +92,14 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		this.simpleRepresentableTypes = simpleRepresentableTypes;
 	}
 
+	public Map<String, Collection<Indexable>> getIndexables() {
+		return indexables;
+	}
+
+	public void setIndexables(Map<String, Collection<Indexable>> indexables) {
+		this.indexables = indexables;
+	}
+
 	public Map<String, Set<String>> getIndexableDocumentTypes() {
 		return indexableDocumentTypes;
 	}
@@ -129,10 +137,12 @@ public class HBaseIndexSchemaSerialization implements HbaseIndexSchema {
 		return allIndexableRelations;
 	}
 
+	@Override
 	public Collection<Indexable> getIndexables(String selectorType) {
 		return indexables.get(selectorType);
 	}
 
+	@Override
 	@JsonIgnore
 	public Field getFieldForIndexable(Indexable indexable) {
 		return dataTypeFields.get(indexable.documentType)
