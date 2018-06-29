@@ -73,7 +73,7 @@ public class HbaseIndexingServiceController {
 
 	private void buildAndExportWorld(final WorldControl worldControl, long randomSeed) {
 		final HbaseIndexSchema schema = new FakeHbaseIndexSchemaImpl();
-		final World world = new FakeWorld(schema, randomSeed, 100, 10, 1000);
+		final World world = new FakeWorld(schema, randomSeed, 80, 10, 800);
 		worldControl.exportWorld(schema, world);
 	}
 
