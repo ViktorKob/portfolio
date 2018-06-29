@@ -2,7 +2,7 @@ package net.thomas.portfolio.hbase_index.fake.generators.documents;
 
 import java.util.List;
 
-import net.thomas.portfolio.hbase_index.fake.FakeWorldInitializer.Person;
+import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
@@ -10,16 +10,16 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
-public class VoiceGenerator extends DocumentGenerator {
+public class ConversationGenerator extends DocumentGenerator {
 	private final IdGenerator uidTool;
 	private final Person initiator;
 	private final List<Person> personalRelations;
 
-	public VoiceGenerator(Person initiator, List<Person> personalRelations, HbaseIndexSchema schema, long randomSeed) {
-		super("Voice", schema, randomSeed);
+	public ConversationGenerator(Person initiator, List<Person> personalRelations, HbaseIndexSchema schema, long randomSeed) {
+		super("Conversation", schema, randomSeed);
 		this.initiator = initiator;
 		this.personalRelations = personalRelations;
-		uidTool = new IdGenerator(schema.getFieldsForDataType("PstnEndpoint"), true);
+		uidTool = new IdGenerator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
 	}
 
 	@Override
@@ -30,21 +30,21 @@ public class VoiceGenerator extends DocumentGenerator {
 	@Override
 	protected void populateValues(final DataType sample) {
 		sample.put("durationIsSeconds", random.nextInt(60 * 60));
-		sample.put("caller", createPstnEndpoint("pstn", randomProgressiveSample(initiator.pstnNumbers)));
-		sample.put("called", createPstnEndpoint("pstn", randomProgressiveSample(randomProgressiveSample(personalRelations).pstnNumbers)));
+		sample.put("primary", createCommunicationEndpoint("publicId", randomProgressiveSample(initiator.publicIdNumbers)));
+		sample.put("secondary", createCommunicationEndpoint("publicId", randomProgressiveSample(randomProgressiveSample(personalRelations).publicIdNumbers)));
 
 		if (random.nextDouble() < 0.5) {
-			sample.put("senderLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
+			sample.put("primaryLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
 		if (random.nextDouble() < 0.5) {
-			sample.put("receiverLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
+			sample.put("secondaryLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
 		}
 	}
 
-	private DataType createPstnEndpoint(String numberField, DataType number) {
+	private DataType createCommunicationEndpoint(String numberField, DataType number) {
 		final DataType endpoint = new RawDataType();
 		endpoint.put(numberField, number);
-		endpoint.setId(uidTool.calculateId("PstnEndpoint", endpoint));
+		endpoint.setId(uidTool.calculateId("CommunicationEndpoint", endpoint));
 		return endpoint;
 	}
 }

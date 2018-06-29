@@ -31,9 +31,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
-import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaImpl;
+import net.thomas.portfolio.hbase_index.fake.FakeIndexControl;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
@@ -44,39 +42,36 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RestController
 @RequestMapping(value = SELECTORS_PATH + "/{dti_type}")
 public class SelectorController {
-	private FakeHbaseIndex index;
-	private ExecutorService lookupExecutor;
+	private final ExecutorService lookupExecutor;
+	private final HbaseIndexingServiceConfiguration config;
 	private LegalAdaptorImpl legalAdaptor;
 
 	@Autowired
 	private EurekaClient discoveryClient;
-	private final HbaseIndexingServiceConfiguration config;
-	private FakeHbaseIndexSchemaImpl schema;
 
 	@Autowired
 	public SelectorController(HbaseIndexingServiceConfiguration config) {
 		this.config = config;
+		lookupExecutor = newSingleThreadExecutor();
 	}
 
 	@Lookup
-	public FakeDataSetGenerator getGenerator() {
+	public FakeIndexControl getIndexControl() {
 		return null;
 	}
 
 	@PostConstruct
-	public void setupGenerator() {
-		final FakeDataSetGenerator generator = getGenerator();
-		index = generator.getSampleDataSet();
-		schema = generator.getSchema();
-		lookupExecutor = newSingleThreadExecutor();
-		new Thread(() -> {
+	public void setupController() {
+		lookupExecutor.execute(() -> {
 			legalAdaptor = new LegalAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getLegal()));
-		}).run();
+		});
 	}
 
 	public RestTemplate getRestTemplate() {
@@ -89,6 +84,7 @@ public class SelectorController {
 		if (amount == null) {
 			amount = 10;
 		}
+		final HbaseIndex index = getIndexControl().getIndex();
 		final Collection<DataType> samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.size() > 0) {
 			return ok(samples);
@@ -101,6 +97,7 @@ public class SelectorController {
 	@RequestMapping(path = "/{dti_uid}" + STATISTICS_PATH, method = GET)
 	public ResponseEntity<?> getStatistics(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
+		final HbaseIndex index = getIndexControl().getIndex();
 		final Map<StatisticsPeriod, Long> statistics = index.getStatistics(id);
 		if (statistics != null && statistics.size() > 0) {
 			return ok(statistics);
@@ -113,6 +110,7 @@ public class SelectorController {
 	@RequestMapping(path = "/{dti_uid}", method = GET)
 	public ResponseEntity<?> getSelector(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
+		final HbaseIndex index = getIndexControl().getIndex();
 		final DataType entity = index.getDataType(id);
 		if (entity != null) {
 			return ok(entity);
@@ -140,6 +138,8 @@ public class SelectorController {
 	}
 
 	private InvertedIndexLookup buildLookup(DataTypeId selectorId, Bounds bounds, HashSet<String> documentTypes, HashSet<String> relations) {
+		final HbaseIndexSchema schema = getIndexControl().getSchema();
+		final HbaseIndex index = getIndexControl().getIndex();
 		final InvertedIndexLookupBuilder builder = new InvertedIndexLookupBuilder(index, lookupExecutor);
 		builder.setSelectorId(selectorId);
 		builder.updateBounds(bounds);

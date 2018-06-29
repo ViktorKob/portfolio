@@ -1,6 +1,5 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.util;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.Iec8601DateConverter;
 
 public class ModelUtilities {

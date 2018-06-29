@@ -1,5 +1,6 @@
 package net.thomas.portfolio.hbase_index.service;
 
+import static java.util.Arrays.asList;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.ENTITIES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SCHEMA_PATH;
@@ -22,18 +23,22 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import net.thomas.portfolio.hbase_index.fake.FakeDataSetGenerator;
-import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaImpl;
+import net.thomas.portfolio.hbase_index.fake.FakeIndexControl;
+import net.thomas.portfolio.hbase_index.fake.FakeWorld;
+import net.thomas.portfolio.hbase_index.fake.index_steps.FakeInvertedIndexStep;
+import net.thomas.portfolio.hbase_index.fake.index_steps.FakeSelectorStatisticsStep;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
+import net.thomas.portfolio.shared_objects.hbase_index.transformation.World;
+import net.thomas.portfolio.shared_objects.hbase_index.transformation.WorldControl;
 
 @Controller
 public class HbaseIndexingServiceController {
 
 	private final HbaseIndexingServiceConfiguration config;
-	private FakeHbaseIndexSchemaImpl schema;
-	private FakeHbaseIndex index;
 
 	@Autowired
 	public HbaseIndexingServiceController(HbaseIndexingServiceConfiguration config) {
@@ -41,28 +46,47 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Lookup
-	public FakeDataSetGenerator getGenerator() {
+	public FakeIndexControl getIndexControl() {
 		return null;
+	}
+
+	private HbaseIndexSchema getSchema() {
+		return getIndexControl().getSchema();
+	}
+
+	private HbaseIndex getIndex() {
+		return getIndexControl().getIndex();
 	}
 
 	@PostConstruct
 	private void setupIndexAccess() {
-		final FakeDataSetGenerator generator = getGenerator();
-		schema = generator.getSchema();
-		generator.buildSampleDataSet(config.getRandomSeed());
-		index = generator.getSampleDataSet();
+		final WorldControl worldControl = new WorldControl();
+		if (!worldControl.canImportWorld()) {
+			buildAndExportWorld(worldControl, config.getRandomSeed());
+		}
+		final FakeIndexControl control = getIndexControl();
+		control.setSchema(worldControl.importSchema());
+		control.setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
+		final World world = worldControl.importWorld();
+		control.index(world);
+	}
+
+	private void buildAndExportWorld(final WorldControl worldControl, long randomSeed) {
+		final HbaseIndexSchema schema = new FakeHbaseIndexSchemaImpl();
+		final World world = new FakeWorld(schema, randomSeed, 100, 10, 1000);
+		worldControl.exportWorld(schema, world);
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(SCHEMA_PATH)
-	public ResponseEntity<?> getSchema() {
-		return ok(schema);
+	public ResponseEntity<?> getSchemaEndpoint() {
+		return ok(getSchema());
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}/", method = GET)
 	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String selectorString) {
-		final List<DataTypeId> suggestions = schema.getSelectorSuggestions(selectorString);
+		final List<DataTypeId> suggestions = getSchema().getSelectorSuggestions(selectorString);
 		if (suggestions != null && suggestions.size() > 0) {
 			return ok(suggestions);
 		} else {
@@ -76,7 +100,7 @@ public class HbaseIndexingServiceController {
 		if (amount == null) {
 			amount = 10;
 		}
-		final Collection<DataType> samples = index.getSamples(dti_type, amount);
+		final Collection<DataType> samples = getIndex().getSamples(dti_type, amount);
 		if (samples != null && samples.size() > 0) {
 			return ok(samples);
 		} else {
@@ -88,7 +112,7 @@ public class HbaseIndexingServiceController {
 	@RequestMapping(path = ENTITIES_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<?> getDataType(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
-		final DataType entity = index.getDataType(id);
+		final DataType entity = getIndex().getDataType(id);
 		if (entity != null) {
 			return ok(entity);
 		} else {

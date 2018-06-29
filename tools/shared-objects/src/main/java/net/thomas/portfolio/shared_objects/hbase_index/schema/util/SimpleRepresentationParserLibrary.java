@@ -21,9 +21,8 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 		parsers = new HashMap<>();
 		parsers.put("Localname", new SimpleFieldParser("Localname", "name"));
 		parsers.put("DisplayedName", new SimpleFieldParser("DisplayedName", "name"));
-		parsers.put("Pstn", new SimpleFieldParser("Pstn", "number"));
-		parsers.put("Imsi", new SimpleFieldParser("Imsi", "number"));
-		parsers.put("Imei", new SimpleFieldParser("Imei", "number"));
+		parsers.put("PublicId", new SimpleFieldParser("PublicId", "number"));
+		parsers.put("PrivateId", new SimpleFieldParser("PrivateId", "number"));
 		parsers.put("Domain", new DomainParser());
 		parsers.put("EmailAddress", new EmailAddressParser());
 	}
@@ -32,7 +31,7 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 	public Selector parse(String type, String simpleRepresenation) {
 		if (parsers.containsKey(type)) {
 			return parsers.get(type)
-					.parse(type, simpleRepresenation);
+				.parse(type, simpleRepresenation);
 		} else {
 			return null;
 		}

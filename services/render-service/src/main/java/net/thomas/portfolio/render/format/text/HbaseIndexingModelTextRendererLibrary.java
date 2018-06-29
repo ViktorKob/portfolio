@@ -23,16 +23,15 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		renderers = new HashMap<>();
 		renderers.put("Localname", new SimpleFieldRenderer("name"));
 		renderers.put("DisplayedName", new SimpleFieldRenderer("name"));
-		renderers.put("Pstn", new SimpleFieldRenderer("number"));
-		renderers.put("Imsi", new SimpleFieldRenderer("number"));
-		renderers.put("Imei", new SimpleFieldRenderer("number"));
+		renderers.put("PublicId", new SimpleFieldRenderer("number"));
+		renderers.put("PrivateId", new SimpleFieldRenderer("number"));
 		renderers.put("Domain", new DomainRenderer());
 		renderers.put("EmailAddress", new EmailAddressRenderer());
 		renderers.put("EmailEndpoint", new EmailEndpointRenderer());
-		renderers.put("PstnEndpoint", new PstnEndpointRenderer());
+		renderers.put("CommunicationEndpoint", new CommunicationEndpointRenderer());
 		renderers.put("Email", new EmailRenderer());
-		renderers.put("Sms", new SmsRenderer());
-		renderers.put("Voice", new VoiceRenderer());
+		renderers.put("TextMessage", new TextMessageRenderer());
+		renderers.put("Conversation", new ConversationRenderer());
 	}
 
 	@Override
@@ -91,24 +90,18 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		}
 	}
 
-	private class PstnEndpointRenderer implements Renderer<String, TextRenderContext> {
+	private class CommunicationEndpointRenderer implements Renderer<String, TextRenderContext> {
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			String rendering = "";
-			if (element.containsKey("pstn")) {
-				rendering += "Pstn: " + library.render(element.get("pstn"), context);
+			if (element.containsKey("publicId")) {
+				rendering += "PublicId: " + library.render(element.get("publicId"), context);
 			}
-			if (element.containsKey("imsi")) {
+			if (element.containsKey("privateId")) {
 				if (rendering.length() > 0) {
 					rendering += ", ";
 				}
-				rendering += "Imsi: " + library.render(element.get("imsi"), context);
-			}
-			if (element.containsKey("imei")) {
-				if (rendering.length() > 0) {
-					rendering += ", ";
-				}
-				rendering += "Imei: " + library.render(element.get("imei"), context);
+				rendering += "PrivateId: " + library.render(element.get("privateId"), context);
 			}
 			return rendering;
 		}
@@ -128,7 +121,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		}
 	}
 
-	private class SmsRenderer implements Renderer<String, TextRenderContext> {
+	private class TextMessageRenderer implements Renderer<String, TextRenderContext> {
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
@@ -142,13 +135,13 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		}
 	}
 
-	private class VoiceRenderer implements Renderer<String, TextRenderContext> {
+	private class ConversationRenderer implements Renderer<String, TextRenderContext> {
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
 			final int duration = element.get("durationIsSeconds");
-			final String headline = library.render(element.get("caller"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
-					+ ": call final duration was " + duration / 60 + "m " + duration % 60 + "s";
+			final String headline = library.render(element.get("primary"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
+					+ ": conversation duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {

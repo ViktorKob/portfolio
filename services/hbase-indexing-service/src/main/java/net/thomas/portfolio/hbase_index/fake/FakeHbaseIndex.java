@@ -35,12 +35,52 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		storage = new HashMap<>();
 	}
 
+	public FakeHbaseIndex(FakeHbaseIndexSerializable serializable) {
+		storage = serializable.storage;
+		selectorStatistics = serializable.selectorStatistics;
+		invertedIndex = serializable.invertedIndex;
+		sourceReferences = serializable.sourceReferences;
+	}
+
+	public FakeHbaseIndexSerializable getSerializable() {
+		return new FakeHbaseIndexSerializable(this);
+	}
+
+	public void addEntities(Collection<DataType> entities) {
+		for (final DataType sample : entities) {
+			addEntity(sample);
+		}
+	}
+
 	public void addEntity(DataType sample) {
 		if (!storage.containsKey(sample.getId().type)) {
 			storage.put(sample.getId().type, new HashMap<>());
 		}
 		storage.get(sample.getId().type)
 			.put(sample.getId().uid, sample);
+	}
+
+	public void addEntitiesAndChildren(Collection<DataType> entities) {
+		for (final DataType sample : entities) {
+			addEntityAndChildren(sample);
+		}
+	}
+
+	public void addEntityAndChildren(DataType entity) {
+		addEntity(entity);
+		for (final Object field : entity.getFields()
+			.values()) {
+			if (field instanceof DataType) {
+				addEntityAndChildren((DataType) field);
+			} else if (field instanceof List) {
+				final List<?> values = (List<?>) field;
+				for (final Object value : values) {
+					if (value instanceof DataType) {
+						addEntityAndChildren((DataType) value);
+					}
+				}
+			}
+		}
 	}
 
 	public void setSelectorStatistics(Map<String, Map<StatisticsPeriod, Long>> selectorStatistics) {
@@ -133,6 +173,7 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 		return emptyList();
 	}
 
+	@Override
 	public Collection<DataType> getSamples(String type, int amount) {
 		if (storage.containsKey(type)) {
 			if (amount >= storage.get(type)
@@ -168,5 +209,54 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	public Collection<DataType> getAll(String dataType) {
 		return new HashSet<>(storage.get(dataType)
 			.values());
+	}
+
+	public class FakeHbaseIndexSerializable {
+		private Map<String, Map<String, DataType>> storage;
+		private Map<String, Map<StatisticsPeriod, Long>> selectorStatistics;
+		private Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex;
+		private Map<String, Collection<Reference>> sourceReferences;
+
+		public FakeHbaseIndexSerializable() {
+		}
+
+		public FakeHbaseIndexSerializable(FakeHbaseIndex index) {
+			storage = index.storage;
+			selectorStatistics = index.selectorStatistics;
+			invertedIndex = index.invertedIndex;
+			sourceReferences = index.sourceReferences;
+		}
+
+		public Map<String, Map<String, DataType>> getStorage() {
+			return storage;
+		}
+
+		public void setStorage(Map<String, Map<String, DataType>> storage) {
+			this.storage = storage;
+		}
+
+		public Map<String, Map<StatisticsPeriod, Long>> getSelectorStatistics() {
+			return selectorStatistics;
+		}
+
+		public void setSelectorStatistics(Map<String, Map<StatisticsPeriod, Long>> selectorStatistics) {
+			this.selectorStatistics = selectorStatistics;
+		}
+
+		public Map<String, Map<String, SortedMap<Long, Document>>> getInvertedIndex() {
+			return invertedIndex;
+		}
+
+		public void setInvertedIndex(Map<String, Map<String, SortedMap<Long, Document>>> invertedIndex) {
+			this.invertedIndex = invertedIndex;
+		}
+
+		public Map<String, Collection<Reference>> getSourceReferences() {
+			return sourceReferences;
+		}
+
+		public void setSourceReferences(Map<String, Collection<Reference>> sourceReferences) {
+			this.sourceReferences = sourceReferences;
+		}
 	}
 }
