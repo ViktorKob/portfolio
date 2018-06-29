@@ -3,7 +3,7 @@ This repository contains examples of how I prioritize tasks and solve problems. 
 
 For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation.
 
-### Quick-and-dirty structure diagram
+### Quick-and-dirty structural diagram
 ![Rough diagram of the services in the architecture and the flow of data](/images/rough_diagram.png)
 
 The **boxes** are the individual parts of the system, with a *hard* box for the NGINX proxy and *soft* boxes for the Spring services. 
