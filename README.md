@@ -4,7 +4,7 @@ This repository contains examples of how I prioritize tasks and solve problems. 
 For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation.
 
 ### Quick-and-dirty structure diagram
-![Rough diagram of the services in the architecture and the flow of data](https://github.com/ViktorKob/portfolio/tree/master/images/rough_diagram.png)
+[[https://github.com/ViktorKob/portfolio/tree/master/images/rough_diagram.png|alt=Rough diagram of the services in the architecture and the flow of data]]
 
 # Quickstart
 ### To just see the infrastructure
