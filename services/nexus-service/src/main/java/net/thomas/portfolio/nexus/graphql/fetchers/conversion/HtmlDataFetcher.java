@@ -1,6 +1,6 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.conversion;
 
-import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalArgumentId.USER_ID;
+import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId.USER_ID;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 
 import graphql.schema.DataFetchingEnvironment;

@@ -12,6 +12,7 @@ import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLTypeReference;
+import net.thomas.portfolio.nexus.graphql.arguments.ArgumentsBuilder;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivityMutation;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
@@ -19,7 +20,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class GraphQlMutationModelBuilder {
 
-	private static final boolean NOT_NULL = true;
+	private static final boolean REQUIRED = false;
 	private Adaptors adaptors;
 
 	public GraphQlMutationModelBuilder() {
@@ -47,7 +48,7 @@ public class GraphQlMutationModelBuilder {
 	}
 
 	private GraphQLOutputType buildDocumentsMutationTypes(Adaptors adaptors) {
-		final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid(NOT_NULL);
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addnewUid(REQUIRED);
 		final GraphQLObjectType.Builder builder = GraphQLObjectType.newObject()
 			.name("UsageActivityMutations")
 			.description("Collection of executable usage activity mutations on document types (from the set "

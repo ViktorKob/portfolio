@@ -1,5 +1,7 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.UID;
+
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
@@ -17,10 +19,8 @@ public class DataTypeFetcher extends ModelDataFetcher<DataTypeIdProxy> {
 
 	@Override
 	public DataTypeIdProxy get(DataFetchingEnvironment environment) {
-		final Object uid = environment.getArgument("uid");
-		if (uid != null) {
-			final DataTypeId id = new DataTypeId(type, uid.toString());
-			return new DataTypeIdProxy(id, adaptors);
+		if (UID.canBeExtractedFrom(environment)) {
+			return new DataTypeIdProxy(new DataTypeId(type, UID.extractFrom(environment)), adaptors);
 		} else {
 			return null;
 		}

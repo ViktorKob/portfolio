@@ -3,8 +3,8 @@ package net.thomas.portfolio.nexus.graphql.data_proxies;
 import java.util.EnumMap;
 import java.util.Map;
 
-import net.thomas.portfolio.nexus.graphql.fetchers.GlobalArgumentId;
-import net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId;
+import net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId;
+import net.thomas.portfolio.nexus.graphql.fetchers.LocalServiceArgumentId;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -13,43 +13,43 @@ public abstract class DataTypeProxy<CONTENTS, DATA_TYPE_TYPE extends DataType> {
 
 	protected final CONTENTS contents;
 	protected final Adaptors adaptors;
-	private final Map<GlobalArgumentId, Object> globalArguments;
-	private final Map<LocalArgumentId, Object> localArguments;
+	private final Map<GlobalServiceArgumentId, Object> globalArguments;
+	private final Map<LocalServiceArgumentId, Object> localArguments;
 	private DATA_TYPE_TYPE entity;
 
 	public DataTypeProxy(CONTENTS contents, Adaptors adaptors) {
 		this.contents = contents;
 		this.adaptors = adaptors;
-		globalArguments = new EnumMap<>(GlobalArgumentId.class);
-		localArguments = new EnumMap<>(LocalArgumentId.class);
+		globalArguments = new EnumMap<>(GlobalServiceArgumentId.class);
+		localArguments = new EnumMap<>(LocalServiceArgumentId.class);
 	}
 
 	public DataTypeProxy(DataTypeProxy<?, ?> parent, CONTENTS contents, Adaptors adaptors) {
 		this.contents = contents;
 		this.adaptors = adaptors;
 		globalArguments = new EnumMap<>(parent.globalArguments);
-		localArguments = new EnumMap<>(LocalArgumentId.class);
+		localArguments = new EnumMap<>(LocalServiceArgumentId.class);
 	}
 
-	public void put(GlobalArgumentId id, Object value) {
+	public void put(GlobalServiceArgumentId id, Object value) {
 		if (value != null) {
 			globalArguments.put(id, value);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(GlobalArgumentId id) {
+	public <T> T get(GlobalServiceArgumentId id) {
 		return (T) globalArguments.get(id);
 	}
 
-	public void put(LocalArgumentId id, Object value) {
+	public void put(LocalServiceArgumentId id, Object value) {
 		if (value != null) {
 			localArguments.put(id, value);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(LocalArgumentId id) {
+	public <T> T get(LocalServiceArgumentId id) {
 		return (T) localArguments.get(id);
 	}
 

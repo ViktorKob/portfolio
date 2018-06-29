@@ -1,6 +1,8 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
-import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalArgumentId.USER_ID;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.UID;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.USER;
+import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId.USER_ID;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentIdProxy;
@@ -20,8 +22,8 @@ public class DocumentFetcher extends ModelDataFetcher<DocumentProxy<?>> {
 
 	@Override
 	public DocumentProxy<?> get(DataFetchingEnvironment environment) {
-		final DocumentIdProxy proxy = new DocumentIdProxy(new DataTypeId(type, environment.getArgument("uid")), adaptors);
-		proxy.put(USER_ID, environment.getArgument("user"));
+		final DocumentIdProxy proxy = new DocumentIdProxy(new DataTypeId(type, UID.extractFrom(environment)), adaptors);
+		proxy.put(USER_ID, USER.extractFrom(environment));
 		return proxy;
 	}
 }

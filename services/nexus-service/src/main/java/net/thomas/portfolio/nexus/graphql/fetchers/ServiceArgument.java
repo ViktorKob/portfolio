@@ -1,5 +1,5 @@
 package net.thomas.portfolio.nexus.graphql.fetchers;
 
-public enum GlobalArgumentId {
-	USER_ID
+public interface ServiceArgument<T extends Enum<T>> {
+
 }

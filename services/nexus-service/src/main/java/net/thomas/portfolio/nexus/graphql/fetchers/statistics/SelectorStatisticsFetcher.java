@@ -1,14 +1,15 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.statistics;
 
 import static java.util.Collections.emptyMap;
-import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalArgumentId.USER_ID;
-import static net.thomas.portfolio.nexus.graphql.fetchers.LocalArgumentId.JUSTIFICATION;
+import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId.USER_ID;
+import static net.thomas.portfolio.nexus.graphql.fetchers.LocalServiceArgumentId.JUSTIFICATION;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 
 import java.util.Map;
 
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
@@ -42,8 +43,8 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 	}
 
 	private LegalInformation extractLegalInformation(DataFetchingEnvironment environment) {
-		final String user = getFromEnvironmentOrProxy(environment, "user", USER_ID);
-		final String justification = getFromEnvironmentOrProxy(environment, "justification", JUSTIFICATION);
+		final String user = getFromEnvironmentOrProxy(environment, GraphQlArgument.USER, USER_ID);
+		final String justification = getFromEnvironmentOrProxy(environment, GraphQlArgument.JUSTIFICATION, JUSTIFICATION);
 		return new LegalInformation(user, justification, null, null);
 	}
 

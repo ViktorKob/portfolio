@@ -28,9 +28,12 @@ import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLTypeReference;
+import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
+import net.thomas.portfolio.nexus.graphql.arguments.ArgumentsBuilder;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentInfoProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorIdProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfEventDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfInterceptionDataFetcher;
@@ -68,6 +71,7 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class GraphQlQueryModelBuilder {
+	private static final boolean REQUIRED = false;
 	private Adaptors adaptors;
 
 	public GraphQlQueryModelBuilder() {
@@ -79,6 +83,7 @@ public class GraphQlQueryModelBuilder {
 	}
 
 	public GraphQLObjectType build() {
+		GraphQlArgument.initialize(adaptors);
 		final List<GraphQLFieldDefinition> queryFieldDefinitions = buildFieldDefinitions(adaptors);
 		return new GraphQLObjectType("NexusQueryModel", "Model enabling querying of all relevant sub-services as one data structure", queryFieldDefinitions,
 				emptyList());
@@ -86,32 +91,14 @@ public class GraphQlQueryModelBuilder {
 
 	private List<GraphQLFieldDefinition> buildFieldDefinitions(Adaptors adaptors) {
 		final LinkedList<GraphQLFieldDefinition> fields = new LinkedList<>();
-		for (final String dataType : adaptors.getDataTypes()) {
-			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
-			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid()
-				.addUser();
-			if (adaptors.isSimpleRepresentable(dataType)) {
-				arguments.addSimpleRep();
-			}
-			if (adaptors.isSelector(dataType)) {
-				arguments.addJustification()
-					.addDateBounds();
-			}
-			fields.add(newFieldDefinition().name(dataType)
-				.description("Fields and functions in the " + dataType + " type")
-				.type(dataTypeObjectType)
-				.argument(arguments.build())
-				.dataFetcher(createFetcher(dataType, adaptors))
-				.build());
-		}
 		fields.add(buildSelectorSuggestionField(adaptors));
-		fields.add(newFieldDefinition().name("Document")
-			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
-			.type(buildDocumentInterfaceType(adaptors))
-			.build());
 		fields.add(newFieldDefinition().name("Selector")
 			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getSelectorTypes()) + ")")
 			.type(buildSelectorInterfaceType(adaptors))
+			.build());
+		fields.add(newFieldDefinition().name("Document")
+			.description("Interface for the various document types (" + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
+			.type(buildDocumentInterfaceType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("SelectorStatistics")
 			.description("Various statistics for specific selectors")
@@ -149,6 +136,24 @@ public class GraphQlQueryModelBuilder {
 			.description("Confidence level for various properties for selectors")
 			.type(enumType(UsageActivityType.values()))
 			.build());
+		for (final String dataType : adaptors.getDataTypes()) {
+			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
+			final ArgumentsBuilder arguments = new ArgumentsBuilder().addnewUid(REQUIRED)
+				.addUser();
+			if (adaptors.isSimpleRepresentable(dataType)) {
+				arguments.addSimpleRep();
+			}
+			if (adaptors.isSelector(dataType)) {
+				arguments.addJustification()
+					.addDateBounds();
+			}
+			fields.add(newFieldDefinition().name(dataType)
+				.description("Fields and functions in the " + dataType + " type")
+				.type(dataTypeObjectType)
+				.argument(arguments.build())
+				.dataFetcher(createFetcher(dataType, adaptors))
+				.build());
+		}
 		return fields;
 	}
 
@@ -293,7 +298,7 @@ public class GraphQlQueryModelBuilder {
 			.description(
 					"Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes()) + ")")
 			.typeResolver(environment -> environment.getSchema()
-				.getObjectType(((DataTypeId) environment.getObject()).type));
+				.getObjectType(((SelectorIdProxy) environment.getObject()).getId().type));
 		builder.field(createUidField(adaptors));
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));
@@ -306,9 +311,12 @@ public class GraphQlQueryModelBuilder {
 	}
 
 	private GraphQLFieldDefinition buildSelectorSuggestionField(Adaptors adaptors) {
-		return newFieldDefinition().name("selectors")
+		return newFieldDefinition().name("suggest")
 			.description("Lookup of selectors suggestions based on simple representation")
 			.argument(new ArgumentsBuilder().addSimpleRep()
+				.addUser()
+				.addJustification()
+				.addDateBounds()
 				.build())
 			.type(list(new GraphQLTypeReference("Selector")))
 			.dataFetcher(new SelectorSuggestionsFetcher(adaptors))
