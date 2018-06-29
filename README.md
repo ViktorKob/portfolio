@@ -6,9 +6,9 @@ For anyone not wishing to employ me, this is an example of how I would build a m
 ### Quick-and-dirty structure diagram
 ![Rough diagram of the services in the architecture and the flow of data](/images/rough_diagram.png)
 
-The boxes are the individual parts of the system, with a hard box for the NGINX proxy and soft boxes for the Spring services. 
-The ellipses represent other systems that are integrated with this one (everything, but the services is fake).
-The arrows represent the flow of data in the system. 
+The **boxes** are the individual parts of the system, with a *hard* box for the NGINX proxy and *soft* boxes for the Spring services. 
+The **ellipses** represent other systems that are integrated with this one (everything, but the services is fake).
+The **arrows** represent the flow of data in the system. 
 
 # Quickstart
 ### To just see the infrastructure
