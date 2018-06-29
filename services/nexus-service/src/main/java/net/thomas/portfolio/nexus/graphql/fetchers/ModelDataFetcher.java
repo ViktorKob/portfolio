@@ -2,6 +2,7 @@ package net.thomas.portfolio.nexus.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
@@ -27,19 +28,19 @@ public abstract class ModelDataFetcher<CONTENTS> implements DataFetcher<CONTENTS
 		return getProxy(environment).getEntity();
 	}
 
-	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final String argument, GlobalArgumentId storedArgument) {
-		T value = environment.getArgument(argument);
-		if (value == null) {
-			value = getProxy(environment).get(storedArgument);
+	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final GraphQlArgument argument, GlobalServiceArgumentId storedArgument) {
+		if (argument.canBeExtractedFrom(environment)) {
+			return argument.extractFrom(environment);
+		} else {
+			return getProxy(environment).get(storedArgument);
 		}
-		return value;
 	}
 
-	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final String argument, LocalArgumentId storedArgument) {
-		T value = environment.getArgument(argument);
-		if (value == null) {
-			value = getProxy(environment).get(storedArgument);
+	protected <T> T getFromEnvironmentOrProxy(DataFetchingEnvironment environment, final GraphQlArgument argument, LocalServiceArgumentId storedArgument) {
+		if (argument.canBeExtractedFrom(environment)) {
+			return argument.extractFrom(environment);
+		} else {
+			return getProxy(environment).get(storedArgument);
 		}
-		return value;
 	}
 }

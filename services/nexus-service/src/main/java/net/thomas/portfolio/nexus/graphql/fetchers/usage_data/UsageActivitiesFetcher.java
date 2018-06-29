@@ -1,51 +1,40 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.usage_data;
 
+import static java.lang.Long.MAX_VALUE;
+import static java.lang.Long.MIN_VALUE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER_DATE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE_DATE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.LIMIT;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.OFFSET;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.extractFirstThatIsPresent;
+
 import java.util.List;
-import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public class UsageActivitiesFetcher extends ModelDataFetcher<List<UsageActivity>> {
 
-	private final DateConverter dateFormatter;
-
 	public UsageActivitiesFetcher(Adaptors adaptors) {
 		super(adaptors);
-		dateFormatter = adaptors.getIec8601DateConverter();
 	}
 
 	@Override
 	public List<UsageActivity> get(DataFetchingEnvironment environment) {
-		final Bounds bounds = extractBounds(environment.getArguments());
+		final Bounds bounds = extractBounds(environment);
 		return adaptors.fetchUsageActivity(getId(environment), bounds);
 	}
 
-	private Bounds extractBounds(Map<String, Object> arguments) {
-		final Integer offset = (Integer) arguments.get("offset");
-		final Integer limit = (Integer) arguments.get("limit");
-		final Long after = determineAfter(arguments);
-		final Long before = determineBefore(arguments);
+	private Bounds extractBounds(DataFetchingEnvironment environment) {
+		final Integer offset = OFFSET.extractFrom(environment);
+		final Integer limit = LIMIT.extractFrom(environment);
+		final Long after = extractFirstThatIsPresent(environment, MIN_VALUE, AFTER, AFTER_DATE);
+		final Long before = extractFirstThatIsPresent(environment, MAX_VALUE, BEFORE, BEFORE_DATE);
 		return new Bounds(offset, limit, after, before);
-	}
-
-	private Long determineAfter(Map<String, Object> arguments) {
-		Long after = (Long) arguments.get("after");
-		if (after == null && arguments.get("afterDate") != null) {
-			after = dateFormatter.parseTimestamp((String) arguments.get("afterDate"));
-		}
-		return after;
-	}
-
-	private Long determineBefore(Map<String, Object> arguments) {
-		Long before = (Long) arguments.get("before");
-		if (before == null && arguments.get("beforeDate") != null) {
-			before = dateFormatter.parseTimestamp((String) arguments.get("beforeDate"));
-		}
-		return before;
 	}
 }

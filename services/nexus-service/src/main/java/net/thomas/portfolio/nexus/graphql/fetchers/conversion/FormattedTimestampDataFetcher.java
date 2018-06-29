@@ -1,5 +1,7 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.conversion;
 
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.DATE_FORMAT_DETAIL_LEVEL;
+
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
@@ -15,9 +17,8 @@ public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<Str
 	}
 
 	protected String formatTimestampAsIec8601(DataFetchingEnvironment environment, long timestamp) {
-		if (environment.getArgument("detailLevel") != null) {
-			return formatTimestamp(environment.getArgument("detailLevel")
-				.toString(), timestamp);
+		if (DATE_FORMAT_DETAIL_LEVEL.canBeExtractedFrom(environment)) {
+			return formatTimestamp(DATE_FORMAT_DETAIL_LEVEL.extractFrom(environment), timestamp);
 		} else {
 			return formatTimestamp((String) null, timestamp);
 		}
