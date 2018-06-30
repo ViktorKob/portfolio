@@ -48,7 +48,7 @@ public class GraphQlMutationModelBuilder {
 	}
 
 	private GraphQLOutputType buildDocumentsMutationTypes(Adaptors adaptors) {
-		final ArgumentsBuilder arguments = new ArgumentsBuilder().addnewUid(REQUIRED);
+		final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid(REQUIRED);
 		final GraphQLObjectType.Builder builder = GraphQLObjectType.newObject()
 			.name("UsageActivityMutations")
 			.description("Collection of executable usage activity mutations on document types (from the set "

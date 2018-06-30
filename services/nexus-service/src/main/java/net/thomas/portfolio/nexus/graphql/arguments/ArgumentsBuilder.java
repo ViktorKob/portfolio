@@ -48,7 +48,7 @@ public class ArgumentsBuilder {
 		return this;
 	}
 
-	public ArgumentsBuilder addnewUid(boolean optional) {
+	public ArgumentsBuilder addUid(boolean optional) {
 		final String description = "Unique id for entity";
 		arguments.add(buildArgument(optional ? OPTIONAL_UID : UID, description));
 		return this;
