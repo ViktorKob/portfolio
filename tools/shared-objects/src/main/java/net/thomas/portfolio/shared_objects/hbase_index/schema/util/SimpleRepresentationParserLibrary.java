@@ -1,7 +1,10 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
+import static java.util.regex.Pattern.compile;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -21,20 +24,26 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 		parsers = new HashMap<>();
 		parsers.put("Localname", new SimpleFieldParser("Localname", "name"));
 		parsers.put("DisplayedName", new SimpleFieldParser("DisplayedName", "name"));
-		parsers.put("PublicId", new SimpleFieldParser("PublicId", "number"));
-		parsers.put("PrivateId", new SimpleFieldParser("PrivateId", "number"));
+		parsers.put("PublicId", new NumberFieldParser("PublicId", "number"));
+		parsers.put("PrivateId", new NumberFieldParser("PrivateId", "number"));
 		parsers.put("Domain", new DomainParser());
 		parsers.put("EmailAddress", new EmailAddressParser());
 	}
 
 	@Override
+	public boolean hasValidFormat(String source) {
+		return true;
+	}
+
+	@Override
 	public Selector parse(String type, String simpleRepresenation) {
 		if (parsers.containsKey(type)) {
-			return parsers.get(type)
-				.parse(type, simpleRepresenation);
-		} else {
-			return null;
+			final SimpleRepresentationParser<String> parser = parsers.get(type);
+			if (parser.hasValidFormat(simpleRepresenation)) {
+				return parser.parse(type, simpleRepresenation);
+			}
 		}
+		return null;
 	}
 
 	private class SimpleFieldParser extends SimpleRepresentationParser<String> {
@@ -46,14 +55,50 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 		}
 
 		@Override
+		public boolean hasValidFormat(String source) {
+			return true;
+		}
+
+		@Override
+		protected void populateValues(DataType entity, String source) {
+			entity.put(field, source);
+		}
+	}
+
+	private class NumberFieldParser extends SimpleRepresentationParser<String> {
+		private final String field;
+		private final Pattern pattern;
+
+		public NumberFieldParser(String type, String field) {
+			super(model.getFieldsForDataType(type));
+			this.field = field;
+			pattern = compile("[\\d\\s]+$");
+		}
+
+		@Override
+		public boolean hasValidFormat(String source) {
+			return pattern.matcher(source)
+				.matches();
+		}
+
+		@Override
 		protected void populateValues(DataType entity, String source) {
 			entity.put(field, source);
 		}
 	}
 
 	private class DomainParser extends SimpleRepresentationParser<String> {
+		private final Pattern pattern;
+
 		public DomainParser() {
 			super(model.getFieldsForDataType("Domain"));
+			pattern = compile("\\w+(\\.\\w+)+$");
+		}
+
+		@Override
+		public boolean hasValidFormat(String source) {
+			return pattern.matcher(source)
+				.matches();
 		}
 
 		@Override
@@ -70,8 +115,17 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 
 	private class EmailAddressParser extends SimpleRepresentationParser<String> {
 
+		private final Pattern pattern;
+
 		public EmailAddressParser() {
 			super(model.getFieldsForDataType("EmailAddress"));
+			pattern = compile("[\\w\\.]+@\\w+(\\.\\w+)+$");
+		}
+
+		@Override
+		public boolean hasValidFormat(String source) {
+			return pattern.matcher(source)
+				.matches();
 		}
 
 		@Override
