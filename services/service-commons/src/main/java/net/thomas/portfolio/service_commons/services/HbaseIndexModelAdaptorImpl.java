@@ -34,8 +34,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
@@ -49,36 +49,41 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaSerialization.class);
 		((HbaseIndexSchemaSerialization) schema).initialize();
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
-				.maximumSize(10000)
-				.build(new CacheLoader<DataTypeId, DataType>() {
-					@Override
-					public DataType load(DataTypeId id) throws Exception {
-						return fetchDataType(id);
-					}
-				});
+			.maximumSize(10000)
+			.build(new CacheLoader<DataTypeId, DataType>() {
+				@Override
+				public DataType load(DataTypeId id) throws Exception {
+					return fetchDataType(id);
+				}
+			});
 	}
 
 	@Override
 	public boolean isSimpleRepresentable(String dataType) {
 		return schema.getSimpleRepresentableTypes()
-				.contains(dataType);
+			.contains(dataType);
 	}
 
 	@Override
 	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
-		return new DataTypeId(type, schema.calculateUid(type, simpleRep));
+		final String uid = schema.calculateUid(type, simpleRep);
+		if (uid != null) {
+			return new DataTypeId(type, uid);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public boolean isSelector(String dataType) {
 		return schema.getSelectorTypes()
-				.contains(dataType);
+			.contains(dataType);
 	}
 
 	@Override
 	public boolean isDocument(String dataType) {
 		return schema.getDocumentTypes()
-				.contains(dataType);
+			.contains(dataType);
 	}
 
 	@Override
@@ -133,7 +138,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 			});
 		} catch (final InvalidCacheLoadException e) {
 			if (e.getMessage()
-					.contains("CacheLoader returned null for key")) {
+				.contains("CacheLoader returned null for key")) {
 				return null;
 			} else {
 				throw new RuntimeException("Unable to fetch data type", e);
