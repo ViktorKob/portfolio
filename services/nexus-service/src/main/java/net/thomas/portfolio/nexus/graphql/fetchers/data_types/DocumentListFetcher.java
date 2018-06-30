@@ -50,7 +50,7 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>
 			throw new GraphQLException("Search for selector " + selectorId.type + "-" + selectorId.uid + " must be justified by a specific user");
 		} else {
 			if (adaptors.auditLogInvertedIndexLookup(selectorId, request.legalInfo)) {
-				return lookupDocumentType(request);
+				return lookupDocumentType(proxy, request);
 			} else {
 				return emptyList();
 			}
@@ -102,13 +102,13 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>
 		return ILLEGAL == adaptors.checkLegalityOfSelectorQuery(id, request.legalInfo);
 	}
 
-	private List<DocumentProxy<?>> lookupDocumentType(final InvertedIndexLookupRequest request) {
-		return convert(adaptors.lookupSelectorInInvertedIndex(request));
+	private List<DocumentProxy<?>> lookupDocumentType(DataTypeProxy<?, ?> parent, final InvertedIndexLookupRequest request) {
+		return convert(parent, adaptors.lookupSelectorInInvertedIndex(request));
 	}
 
-	private List<DocumentProxy<?>> convert(List<DocumentInfo> lookupResult) {
+	private List<DocumentProxy<?>> convert(DataTypeProxy<?, ?> parent, List<DocumentInfo> lookupResult) {
 		return lookupResult.stream()
-			.map(documentInfo -> new DocumentInfoProxy(documentInfo, adaptors))
+			.map(documentInfo -> new DocumentInfoProxy(parent, documentInfo, adaptors))
 			.collect(toList());
 	}
 }
