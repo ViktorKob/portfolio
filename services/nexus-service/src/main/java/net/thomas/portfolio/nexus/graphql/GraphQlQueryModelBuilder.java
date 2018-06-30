@@ -28,8 +28,8 @@ import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLTypeReference;
-import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.arguments.ArgumentsBuilder;
+import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentInfoProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
@@ -71,7 +71,7 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class GraphQlQueryModelBuilder {
-	private static final boolean REQUIRED = false;
+	private static final boolean OPTIONAL = true;
 	private Adaptors adaptors;
 
 	public GraphQlQueryModelBuilder() {
@@ -138,7 +138,7 @@ public class GraphQlQueryModelBuilder {
 			.build());
 		for (final String dataType : adaptors.getDataTypes()) {
 			final GraphQLObjectType dataTypeObjectType = buildObjectType(dataType, adaptors);
-			final ArgumentsBuilder arguments = new ArgumentsBuilder().addnewUid(REQUIRED)
+			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid(OPTIONAL)
 				.addUser();
 			if (adaptors.isSimpleRepresentable(dataType)) {
 				arguments.addSimpleRep();
