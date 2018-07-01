@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.adaptors;
 
-import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 /***
@@ -15,5 +15,5 @@ public interface AnalyticsAdaptor {
 	 *            The ID of the selector to query about
 	 * @return A summary of the knowledge about this exact selector present in the system
 	 */
-	PriorKnowledge getPriorKnowledge(DataTypeId selectorId);
+	AnalyticalKnowledge getKnowledge(DataTypeId selectorId);
 }

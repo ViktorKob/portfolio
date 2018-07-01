@@ -55,8 +55,8 @@ import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatistics
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
-import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
@@ -72,6 +72,7 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class GraphQlQueryModelBuilder {
 	private static final boolean OPTIONAL = true;
+	private static final boolean REQUIRED = false;
 	private Adaptors adaptors;
 
 	public GraphQlQueryModelBuilder() {
@@ -141,7 +142,7 @@ public class GraphQlQueryModelBuilder {
 			final ArgumentsBuilder arguments = new ArgumentsBuilder().addUid(OPTIONAL)
 				.addUser();
 			if (adaptors.isSimpleRepresentable(dataType)) {
-				arguments.addSimpleRep();
+				arguments.addSimpleRep(OPTIONAL);
 			}
 			if (adaptors.isSelector(dataType)) {
 				arguments.addJustification()
@@ -313,7 +314,7 @@ public class GraphQlQueryModelBuilder {
 	private GraphQLFieldDefinition buildSelectorSuggestionField(Adaptors adaptors) {
 		return newFieldDefinition().name("suggest")
 			.description("Lookup of selectors suggestions based on simple representation")
-			.argument(new ArgumentsBuilder().addSimpleRep()
+			.argument(new ArgumentsBuilder().addSimpleRep(REQUIRED)
 				.addUser()
 				.addJustification()
 				.addDateBounds()
@@ -347,17 +348,17 @@ public class GraphQlQueryModelBuilder {
 		builder.field(newFieldDefinition().name("alias")
 			.description("Alternative name for the selector")
 			.type(GraphQLString)
-			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).alias)
+			.dataFetcher(environment -> ((AnalyticalKnowledge) environment.getSource()).alias)
 			.build());
 		builder.field(newFieldDefinition().name("isKnown")
 			.description("How well do we know this selector")
 			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
-			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).isKnown)
+			.dataFetcher(environment -> ((AnalyticalKnowledge) environment.getSource()).isKnown)
 			.build());
 		builder.field(newFieldDefinition().name("isRestricted")
 			.description("Whether queries for this selector have to be justified")
 			.type(new GraphQLTypeReference("ConfidenceLevelEnum"))
-			.dataFetcher(environment -> ((PriorKnowledge) environment.getSource()).isRestricted)
+			.dataFetcher(environment -> ((AnalyticalKnowledge) environment.getSource()).isRestricted)
 			.build());
 		return builder.build();
 	}
