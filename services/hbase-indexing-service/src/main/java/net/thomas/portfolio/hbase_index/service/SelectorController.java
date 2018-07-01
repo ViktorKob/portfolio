@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
+import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
@@ -51,15 +53,28 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 public class SelectorController {
 	private final ExecutorService lookupExecutor;
 	private final HbaseIndexingServiceConfiguration config;
-	private LegalAdaptorImpl legalAdaptor;
 
 	@Autowired
 	private EurekaClient discoveryClient;
+	@Autowired
+	private LegalAdaptor legalAdaptor;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	public SelectorController(HbaseIndexingServiceConfiguration config) {
 		this.config = config;
 		lookupExecutor = newSingleThreadExecutor();
+	}
+
+	@Bean
+	public LegalAdaptor getLegalAdaptor() {
+		return new LegalAdaptorImpl();
+	}
+
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
 	}
 
 	@Lookup
@@ -69,13 +84,7 @@ public class SelectorController {
 
 	@PostConstruct
 	public void setupController() {
-		lookupExecutor.execute(() -> {
-			legalAdaptor = new LegalAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getLegal()));
-		});
-	}
-
-	public RestTemplate getRestTemplate() {
-		return new RestTemplate();
+		((LegalAdaptorImpl) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
 	}
 
 	@Secured("ROLE_USER")

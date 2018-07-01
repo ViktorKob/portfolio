@@ -24,6 +24,11 @@ import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
 import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -32,33 +37,66 @@ public class NexusServiceController {
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private Adaptors adaptors;
+	@Autowired
+	private AnalyticsAdaptor analyticsAdaptor;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
+	@Autowired
+	private LegalAdaptor legalAdaptor;
+	@Autowired
+	private RenderingAdaptor renderingAdaptor;
+	@Autowired
+	private UsageAdaptor usageAdaptor;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public NexusServiceController(NexusServiceConfiguration config) {
 		this.config = config;
 	}
 
-	@PostConstruct
-	public void buildHttpClient() {
-		final AnalyticsAdaptorImpl analyticsAdaptor = new AnalyticsAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getAnalytics()));
-		final HbaseIndexModelAdaptorImpl hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
-				new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getLegal()));
-		final RenderingAdaptorImpl renderingAdaptor = new RenderingAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getRendering()));
-		final UsageAdaptorImpl usageAdaptor = new UsageAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getUsage()));
-		adaptors = new Adaptors(analyticsAdaptor, hbaseIndexAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
+	@Bean
+	public AnalyticsAdaptor getAnalyticsAdaptor() {
+		return new AnalyticsAdaptorImpl();
+	}
+
+	@Bean
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@Bean
+	public LegalAdaptor getLegalAdaptor() {
+		return new LegalAdaptorImpl();
+	}
+
+	@Bean
+	public RenderingAdaptor getRenderingAdaptor() {
+		return new RenderingAdaptorImpl();
+	}
+
+	@Bean
+	public UsageAdaptor getUsageAdaptor() {
+		return new UsageAdaptorImpl();
 	}
 
 	@Bean
 	public RestTemplate getRestTemplate() {
-		final RestTemplate restTemplate = new RestTemplate();
-		return restTemplate;
+		return new RestTemplate();
+	}
+
+	@PostConstruct
+	public void buildHttpClient() {
+		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		((LegalAdaptorImpl) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
+		((RenderingAdaptorImpl) renderingAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
+		((UsageAdaptorImpl) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
 	}
 
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
 		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder();
-		schemaBuilder.setAdaptor(adaptors);
+		schemaBuilder.setAdaptor(new Adaptors(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor));
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
 		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
 	}

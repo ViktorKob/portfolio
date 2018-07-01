@@ -17,9 +17,9 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 public class UsageAdaptorImpl implements UsageAdaptor {
 	private static final ParameterizedTypeReference<List<UsageActivity>> USAGE_ACTIVITY_ITEMS_TYPE_REFERENCE = new ParameterizedTypeReference<List<UsageActivity>>() {
 	};
-	private final HttpRestClient client;
+	private HttpRestClient client;
 
-	public UsageAdaptorImpl(HttpRestClient client) {
+	public void initialize(HttpRestClient client) {
 		this.client = client;
 	}
 

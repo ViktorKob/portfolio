@@ -10,9 +10,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class AnalyticsAdaptorImpl implements AnalyticsAdaptor {
 
-	private final HttpRestClient client;
+	private HttpRestClient client;
 
-	public AnalyticsAdaptorImpl(HttpRestClient client) {
+	public void initialize(HttpRestClient client) {
 		this.client = client;
 	}
 

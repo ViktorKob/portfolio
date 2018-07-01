@@ -11,9 +11,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class RenderingAdaptorImpl implements RenderingAdaptor {
 
-	private final HttpRestClient client;
+	private HttpRestClient client;
 
-	public RenderingAdaptorImpl(HttpRestClient client) {
+	public void initialize(HttpRestClient client) {
 		this.client = client;
 	}
 

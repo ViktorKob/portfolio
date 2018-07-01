@@ -113,35 +113,6 @@ public class HttpRestClient {
 		return new HttpEntity<>(headers);
 	}
 
-	private InstanceInfo getServiceInfo(String serviceName) {
-		InstanceInfo instanceInfo = null;
-		int tries = 0;
-		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
-			try {
-				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
-			} catch (final RuntimeException e) {
-				if (e.getMessage()
-					.contains("No matches for the virtual host")) {
-					tries++;
-					System.out
-						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries) + " more times.");
-					try {
-						Thread.sleep(5000);
-					} catch (final InterruptedException e1) {
-					}
-				} else {
-					throw new RuntimeException("Unable to complete service discovery", e);
-				}
-			}
-		}
-		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
-			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
-		} else if (tries > 0) {
-			System.out.println("Discovery of " + serviceInfo.getName() + " successful.");
-		}
-		return instanceInfo;
-	}
-
 	private URI buildUri(Service serviceId, ServiceEndpoint endpoint) {
 		return buildUri(serviceId, endpoint, emptySet());
 	}
@@ -165,6 +136,36 @@ public class HttpRestClient {
 		return builder.build()
 			.encode()
 			.toUri();
+	}
+
+	private InstanceInfo getServiceInfo(String serviceName) {
+		InstanceInfo instanceInfo = null;
+		int tries = 0;
+		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
+			try {
+				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
+			} catch (final RuntimeException e) {
+				if (e.getMessage()
+					.contains("No matches for the virtual host")) {
+					System.out
+						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
+					try {
+						Thread.sleep(5000);
+					} catch (final InterruptedException e1) {
+					}
+
+				} else {
+					throw new RuntimeException("Unable to complete service discovery", e);
+				}
+			}
+			tries++;
+		}
+		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
+			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
+		} else if (tries > 1) {
+			System.out.println("Discovery of " + serviceInfo.getName() + " successful.");
+		}
+		return instanceInfo;
 	}
 
 	private void addParametersToBuilder(UriComponentsBuilder builder, Collection<Parameter> parameters) {

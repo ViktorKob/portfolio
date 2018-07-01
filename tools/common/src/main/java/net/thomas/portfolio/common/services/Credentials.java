@@ -11,6 +11,12 @@ public class Credentials {
 		encodedCredentials = null;
 	}
 
+	public Credentials(String user, String password) {
+		this.user = user;
+		this.password = password;
+		encodedCredentials = null;
+	}
+
 	public void setUser(String user) {
 		this.user = user;
 	}

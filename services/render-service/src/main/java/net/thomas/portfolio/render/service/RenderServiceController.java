@@ -8,6 +8,8 @@ import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +48,10 @@ public class RenderServiceController {
 	private final HtmlRenderControl htmlRenderer;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private HbaseIndexModelAdaptorImpl hbaseAdaptor;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public RenderServiceController(RenderServiceConfiguration config) {
 		this.config = config;
@@ -55,24 +60,27 @@ public class RenderServiceController {
 		htmlRenderer = new HtmlRenderControl();
 	}
 
-	public synchronized HbaseIndexModelAdaptor getHbaseAdaptor() {
-		if (hbaseAdaptor == null) {
-			hbaseAdaptor = new HbaseIndexModelAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
-		}
-		return hbaseAdaptor;
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
 	}
 
 	@Bean
-	public RestTemplate getRestTemplate() {
-		final RestTemplate restTemplate = new RestTemplate();
-		return restTemplate;
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@PostConstruct
+	public void initializeService() {
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		new Thread(() -> {
+			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
+		}).run();
 	}
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = RENDER_AS_SIMPLE_REPRESENTATION_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
-		final HbaseIndexModelAdaptor hbaseAdaptor = getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
@@ -90,9 +98,8 @@ public class RenderServiceController {
 	@Secured("ROLE_USER")
 	@RequestMapping(path = RENDER_AS_TEXT_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsText(DataTypeId id) {
-		getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
-			final DataType entity = getHbaseAdaptor().getDataType(id);
+			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
 				final TextRenderContext renderContext = new TextRenderContextBuilder().build();
 				return ok(textRenderer.render(entity, renderContext));
@@ -107,9 +114,8 @@ public class RenderServiceController {
 	@Secured("ROLE_USER")
 	@RequestMapping(path = RENDER_AS_HTML_PATH + "/{dti_type}/{dti_uid}", method = GET)
 	public ResponseEntity<String> renderAsHtml(DataTypeId id) {
-		getHbaseAdaptor();
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
-			final DataType entity = getHbaseAdaptor().getDataType(id);
+			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
 				final HtmlRenderContext renderContext = new HtmlRenderContextBuilder().build();
 				return ok(htmlRenderer.render(entity, renderContext));
