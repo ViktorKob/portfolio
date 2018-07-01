@@ -4,6 +4,14 @@ public class ServiceDependency {
 	private String name;
 	private Credentials credentials;
 
+	public ServiceDependency() {
+	}
+
+	public ServiceDependency(String name, Credentials credentials) {
+		this.name = name;
+		this.credentials = credentials;
+	}
+
 	public String getName() {
 		return name;
 	}

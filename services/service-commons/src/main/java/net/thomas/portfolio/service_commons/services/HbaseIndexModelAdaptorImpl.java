@@ -40,11 +40,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSe
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
-	private final HttpRestClient client;
-	private final HbaseIndexSchema schema;
-	private final Cache<DataTypeId, DataType> dataTypeCache;
+	private HttpRestClient client;
+	private HbaseIndexSchema schema;
+	private Cache<DataTypeId, DataType> dataTypeCache;
 
-	public HbaseIndexModelAdaptorImpl(HttpRestClient client) {
+	public void initialize(HttpRestClient client) {
 		this.client = client;
 		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaSerialization.class);
 		((HbaseIndexSchemaSerialization) schema).initialize();

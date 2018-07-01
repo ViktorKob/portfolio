@@ -31,28 +31,35 @@ public class AnalyticsServiceController {
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
 	private final AnalyticsServiceConfiguration config;
+	private final FakeAnalyticsSystem analyticsSystem;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private final FakeAnalyticsSystem analyticsSystem;
+	@Autowired
+	private RestTemplate restTemplate;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
 
 	public AnalyticsServiceController(AnalyticsServiceConfiguration config) {
 		this.config = config;
 		analyticsSystem = new FakeAnalyticsSystem();
 	}
 
-	@PostConstruct
-	public void prepareForRendering() {
-		new Thread(() -> {
-			final HbaseIndexModelAdaptor hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
-					new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-			TYPE.setValidStrings(hbaseIndexAdaptor.getDataTypes());
-		}).run();
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
 	}
 
 	@Bean
-	public RestTemplate getRestTemplate() {
-		final RestTemplate restTemplate = new RestTemplate();
-		return restTemplate;
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@PostConstruct
+	public void initialize() {
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		new Thread(() -> {
+			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
+		}).run();
 	}
 
 	@Secured("ROLE_USER")

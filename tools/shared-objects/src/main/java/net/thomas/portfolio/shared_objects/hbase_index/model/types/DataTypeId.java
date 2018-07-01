@@ -19,7 +19,7 @@ public class DataTypeId implements ParameterGroup {
 	}
 
 	public DataTypeId(String type, String uid) {
-		this.type = type;
+		setDti_type(type);
 		setDti_uid(uid);
 	}
 

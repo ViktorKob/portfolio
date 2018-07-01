@@ -28,6 +28,7 @@ import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -41,26 +42,39 @@ public class LegalServiceController {
 	private final LegalServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
-	private AnalyticsAdaptorImpl analyticsAdaptor;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
+	@Autowired
+	private AnalyticsAdaptor analyticsAdaptor;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
 	}
 
-	@PostConstruct
-	public void prepareForRendering() {
-		new Thread(() -> {
-			analyticsAdaptor = new AnalyticsAdaptorImpl(new HttpRestClient(discoveryClient, getRestTemplate(), config.getAnalytics()));
-			final HbaseIndexModelAdaptor hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
-					new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-			TYPE.setValidStrings(hbaseIndexAdaptor.getDataTypes());
-		}).run();
+	@Bean
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@Bean
+	public AnalyticsAdaptor getAnalyticsAdaptor() {
+		return new AnalyticsAdaptorImpl();
 	}
 
 	@Bean
 	public RestTemplate getRestTemplate() {
-		final RestTemplate restTemplate = new RestTemplate();
-		return restTemplate;
+		return new RestTemplate();
+	}
+
+	@PostConstruct
+	public void initializeService() {
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+		new Thread(() -> {
+			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
+		}).run();
 	}
 
 	@Secured("ROLE_USER")

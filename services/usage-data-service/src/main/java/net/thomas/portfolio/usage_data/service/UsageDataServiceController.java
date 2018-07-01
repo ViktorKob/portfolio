@@ -52,11 +52,14 @@ public class UsageDataServiceController {
 	private static final IntegerRangeValidator LIMIT = new IntegerRangeValidator("limit", 1, MAX_VALUE, false);
 	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 
-	@Autowired
-	private EurekaClient discoveryClient;
-
 	private final UsageDataServiceConfiguration config;
 	private final SqlProxy proxy;
+	@Autowired
+	private EurekaClient discoveryClient;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	public UsageDataServiceController(UsageDataServiceConfiguration config) {
@@ -64,24 +67,23 @@ public class UsageDataServiceController {
 		proxy = new SqlProxy(config.getDatabase());
 	}
 
-	@PostConstruct
-	public void ensureDatabaseIsReady() {
-		proxy.ensurePresenceOfSchema();
-	}
-
-	@PostConstruct
-	public void loadHbaseIndexingSchema() {
-		new Thread(() -> {
-			final HbaseIndexModelAdaptor hbaseIndexAdaptor = new HbaseIndexModelAdaptorImpl(
-					new HttpRestClient(discoveryClient, getRestTemplate(), config.getHbaseIndexing()));
-			TYPE.setValidStrings(hbaseIndexAdaptor.getDataTypes());
-		}).run();
+	@Bean
+	public RestTemplate getRestTemplate() {
+		return new RestTemplate();
 	}
 
 	@Bean
-	public RestTemplate getRestTemplate() {
-		final RestTemplate restTemplate = new RestTemplate();
-		return restTemplate;
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@PostConstruct
+	public void initializeService() {
+		proxy.ensurePresenceOfSchema();
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		new Thread(() -> {
+			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
+		}).run();
 	}
 
 	@Secured("ROLE_USER")

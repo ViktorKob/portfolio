@@ -14,9 +14,9 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 
 public class LegalAdaptorImpl implements LegalAdaptor {
 
-	private final HttpRestClient client;
+	private HttpRestClient client;
 
-	public LegalAdaptorImpl(HttpRestClient client) {
+	public void initialize(HttpRestClient client) {
 		this.client = client;
 	}
 
