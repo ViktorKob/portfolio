@@ -29,7 +29,7 @@ import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
-import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
@@ -89,7 +89,7 @@ public class LegalServiceController {
 	@RequestMapping(path = CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfQueryOnSelector(DataTypeId id, LegalInformation legalInfo) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
-			final PriorKnowledge knowledge = analyticsAdaptor.getPriorKnowledge(id);
+			final AnalyticalKnowledge knowledge = analyticsAdaptor.getKnowledge(id);
 			if (legalInfo.user == null || legalInfo.user.isEmpty()
 					|| knowledge.isRestricted == CERTAIN && (legalInfo.justification == null || legalInfo.justification.isEmpty())) {
 				return ok(ILLEGAL);

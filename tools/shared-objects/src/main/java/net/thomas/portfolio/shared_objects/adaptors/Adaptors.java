@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.thomas.portfolio.shared_objects.analytics.PriorKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -49,8 +49,8 @@ public class Adaptors {
 	 *            The ID of the selector to query about
 	 * @return A summary of the knowledge about this exact selector present in the system
 	 */
-	public PriorKnowledge getPriorKnowledge(DataTypeId selectorId) {
-		return analyticsAdaptor.getPriorKnowledge(selectorId);
+	public AnalyticalKnowledge getPriorKnowledge(DataTypeId selectorId) {
+		return analyticsAdaptor.getKnowledge(selectorId);
 	}
 
 	/***

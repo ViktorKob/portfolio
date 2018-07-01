@@ -120,7 +120,7 @@ _Fake service representing interaction with the analytical information in the co
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/AnalyticsService/lookupPriorKnowledge</li></ul>|
+|**Endpoints**|<ul><li>/AnalyticsService/{version}/knowledge/{selectorType}/{uid}</li></ul>|
 
 Another fake service, this time representing the existing analytical knowledge in the company, outside this infrastructure.
 

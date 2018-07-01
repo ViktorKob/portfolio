@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PriorKnowledge {
+public class AnalyticalKnowledge {
 	@JsonIgnore
 	public String alias;
 	@JsonIgnore
@@ -14,10 +14,10 @@ public class PriorKnowledge {
 	@JsonIgnore
 	public ConfidenceLevel isRestricted;
 
-	public PriorKnowledge() {
+	public AnalyticalKnowledge() {
 	}
 
-	public PriorKnowledge(String alias, ConfidenceLevel isKnown, ConfidenceLevel isRestricted) {
+	public AnalyticalKnowledge(String alias, ConfidenceLevel isKnown, ConfidenceLevel isRestricted) {
 		this.alias = alias;
 		this.isKnown = isKnown;
 		this.isRestricted = isRestricted;
@@ -49,8 +49,8 @@ public class PriorKnowledge {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PriorKnowledge) {
-			final PriorKnowledge other = (PriorKnowledge) obj;
+		if (obj instanceof AnalyticalKnowledge) {
+			final AnalyticalKnowledge other = (AnalyticalKnowledge) obj;
 			return alias.equals(other.alias) && isKnown == other.isKnown && isRestricted == other.isRestricted;
 		} else {
 			return super.equals(obj);

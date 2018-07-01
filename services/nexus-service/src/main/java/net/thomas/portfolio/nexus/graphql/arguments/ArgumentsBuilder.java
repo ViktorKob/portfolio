@@ -13,6 +13,7 @@ import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.FORMA
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.JUSTIFICATION;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.LIMIT;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.OFFSET;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.OPTIONAL_SIMPLE_REP;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.OPTIONAL_UID;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.RELATIONS;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.SIMPLE_REP;
@@ -42,20 +43,14 @@ public class ArgumentsBuilder {
 		return this;
 	}
 
-	public ArgumentsBuilder addRequiredUid() {
-		final String description = "Unique id for entity";
-		arguments.add(buildArgument(UID, description));
-		return this;
-	}
-
 	public ArgumentsBuilder addUid(boolean optional) {
 		final String description = "Unique id for entity";
 		arguments.add(buildArgument(optional ? OPTIONAL_UID : UID, description));
 		return this;
 	}
 
-	public ArgumentsBuilder addSimpleRep() {
-		arguments.add(buildArgument(SIMPLE_REP, "Simple representation for the selector"));
+	public ArgumentsBuilder addSimpleRep(boolean optional) {
+		arguments.add(buildArgument(optional ? OPTIONAL_SIMPLE_REP : SIMPLE_REP, "Simple representation for the selector"));
 		return this;
 	}
 

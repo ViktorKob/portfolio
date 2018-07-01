@@ -11,23 +11,23 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PriorKnowledgeUnitTest {
+public class AnalyticalKnowledgeUnitTest {
 	private static final String ALIAS = "ALIAS";
 	private static final ConfidenceLevel KNOWLEDGE = CERTAIN;
 
-	private PriorKnowledge knowledge;
+	private AnalyticalKnowledge knowledge;
 	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
-		knowledge = new PriorKnowledge(ALIAS, KNOWLEDGE, KNOWLEDGE);
+		knowledge = new AnalyticalKnowledge(ALIAS, KNOWLEDGE, KNOWLEDGE);
 		mapper = new ObjectMapper();
 	}
 
 	@Test
 	public void shouldSerializeAndDeserialize() throws IOException {
 		final String serializedForm = mapper.writeValueAsString(knowledge);
-		final PriorKnowledge deserializedObject = mapper.readValue(serializedForm, PriorKnowledge.class);
+		final AnalyticalKnowledge deserializedObject = mapper.readValue(serializedForm, AnalyticalKnowledge.class);
 		assertEquals(knowledge, deserializedObject);
 	}
 
