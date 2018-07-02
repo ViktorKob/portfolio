@@ -1,7 +1,7 @@
 # Portfolio
 This repository contains examples of how I prioritize tasks and solve problems. It is meant to give potential employers an idea of, what they can expect from me as a developer.
 
-For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation.
+For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation and GraphQL to expose the API.
 
 ### Quick-and-dirty structural diagram
 ![Rough diagram of the services in the architecture and the flow of data](/images/rough_diagram.png)
