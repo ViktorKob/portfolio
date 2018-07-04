@@ -92,7 +92,7 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 
 		public DomainParser() {
 			super(model.getFieldsForDataType("Domain"));
-			pattern = compile("\\w+(\\.\\w+)+$");
+			pattern = compile("\\w*(\\.\\w+)+$");
 		}
 
 		@Override
@@ -103,10 +103,13 @@ public class SimpleRepresentationParserLibrary implements Parser<String, Selecto
 
 		@Override
 		protected void populateValues(DataType entity, String source) {
+			if (source.charAt(0) == '.') {
+				source = source.substring(1);
+			}
 			if (source.contains(".")) {
 				final int firstDot = source.indexOf('.');
 				entity.put("domainPart", source.substring(0, firstDot));
-				entity.put("domain", library.parse("Domain", source.substring(firstDot + 1)));
+				entity.put("domain", library.parse("Domain", source.substring(firstDot)));
 			} else {
 				entity.put("domainPart", source);
 			}

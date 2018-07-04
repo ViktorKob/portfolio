@@ -43,9 +43,9 @@ public class LegalServiceController {
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
-	private HbaseIndexModelAdaptor hbaseAdaptor;
-	@Autowired
 	private AnalyticsAdaptor analyticsAdaptor;
+	@Autowired
+	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
 
@@ -54,13 +54,13 @@ public class LegalServiceController {
 	}
 
 	@Bean
-	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
-		return new HbaseIndexModelAdaptorImpl();
+	public AnalyticsAdaptor getAnalyticsAdaptor() {
+		return new AnalyticsAdaptorImpl();
 	}
 
 	@Bean
-	public AnalyticsAdaptor getAnalyticsAdaptor() {
-		return new AnalyticsAdaptorImpl();
+	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+		return new HbaseIndexModelAdaptorImpl();
 	}
 
 	@Bean
@@ -70,8 +70,8 @@ public class LegalServiceController {
 
 	@PostConstruct
 	public void initializeService() {
-		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 		}).run();
