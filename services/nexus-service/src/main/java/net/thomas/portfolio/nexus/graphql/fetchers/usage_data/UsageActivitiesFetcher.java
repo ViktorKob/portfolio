@@ -1,7 +1,5 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.usage_data;
 
-import static java.lang.Long.MAX_VALUE;
-import static java.lang.Long.MIN_VALUE;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER_DATE;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE;
@@ -33,8 +31,8 @@ public class UsageActivitiesFetcher extends ModelDataFetcher<List<UsageActivity>
 	private Bounds extractBounds(DataFetchingEnvironment environment) {
 		final Integer offset = OFFSET.extractFrom(environment);
 		final Integer limit = LIMIT.extractFrom(environment);
-		final Long after = extractFirstThatIsPresent(environment, MIN_VALUE, AFTER, AFTER_DATE);
-		final Long before = extractFirstThatIsPresent(environment, MAX_VALUE, BEFORE, BEFORE_DATE);
+		final Long after = extractFirstThatIsPresent(environment, AFTER, AFTER_DATE);
+		final Long before = extractFirstThatIsPresent(environment, BEFORE, BEFORE_DATE);
 		return new Bounds(offset, limit, after, before);
 	}
 }

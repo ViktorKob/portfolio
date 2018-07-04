@@ -59,13 +59,12 @@ public class Bounds implements ParameterGroup {
 		if (this.limit == null) {
 			this.limit = limit;
 		}
-		if (this.after == null) {
+		if (this.after == null || this.after < after) {
 			this.after = after;
 		}
-		if (this.before == null) {
+		if (this.before == null || this.before > before) {
 			this.before = before;
 		}
-
 	}
 
 	public Integer getB_offset() {
