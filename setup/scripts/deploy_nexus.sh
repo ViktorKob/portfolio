@@ -4,6 +4,6 @@ mkdir -p ~/services/nexus
 cp ~/services/nexus-service.jar ~/services/nexus/
 cd ~/services/nexus/
 rm screenlog.0
-screen -S Nexus -L -d -m java -Xmx190M -jar nexus-service.jar
+screen -S Nexus -L -d -m java -Xmx400M -jar nexus-service.jar
 cd
 echo "Done (probably)"
