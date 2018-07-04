@@ -23,19 +23,13 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class SimpleRepresentationParserLibraryUnitTest {
-	private static final boolean IS_NOT_ARRAY = false;
-	private static final boolean IS_PART_OF_KEY = true;
-
-	private static final List<Field> LOCALNAME_FIELDS;
-	private static final List<Field> DOMAIN_FIELDS;
-	private static final List<Field> EMAIL_ADDRESS_FIELDS;
-
 	private static final String SIMPLE_TYPE = "Localname";
 	private static final String SIMPLE_TYPE_SIMPLE_REP = "ABCD";
 	private static final String DOMAIN_TYPE = "Domain";
 	private static final String DOMAIN_SIMPLE_REP = "ABCD.ABCD.AB";
 	private static final String EMAIL_ADDRESS_TYPE = "EmailAddress";
 	private static final String EMAIL_ADDRESS_SIMPLE_REP = "ABCD@ABCD.ABCD.AB";
+
 	private SimpleRepresentationParserLibrary library;
 
 	@Before
@@ -101,6 +95,13 @@ public class SimpleRepresentationParserLibraryUnitTest {
 		hasher.update(domainUid.getBytes());
 		return printHexBinary(hasher.digest());
 	}
+
+	private static final boolean IS_NOT_ARRAY = false;
+	private static final boolean IS_PART_OF_KEY = true;
+
+	private static final List<Field> LOCALNAME_FIELDS;
+	private static final List<Field> DOMAIN_FIELDS;
+	private static final List<Field> EMAIL_ADDRESS_FIELDS;
 
 	static {
 		LOCALNAME_FIELDS = fields(string("name"));
