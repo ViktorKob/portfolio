@@ -64,8 +64,7 @@ public class SimpleRepresentationParserLibraryUnitTest {
 		final MessageDigest hasher = MessageDigest.getInstance("MD5");
 		hasher.update(type.getBytes());
 		hasher.update(simpleRep.getBytes());
-		final byte[] digest = hasher.digest();
-		return printHexBinary(digest);
+		return printHexBinary(hasher.digest());
 	}
 
 	private String calculateDomainUid(String domainSimpleRep) throws NoSuchAlgorithmException {
