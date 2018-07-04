@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.same;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
@@ -59,7 +59,7 @@ public class AnalyticsServiceControllerServiceAdaptorTest {
 		final InstanceInfo analyticsServiceInfoMock = mock(InstanceInfo.class);
 		when(analyticsServiceInfoMock.getHomePageUrl()).thenReturn("http://localhost:18300");
 		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
-		when(discoveryClientMock.getNextServerFromEureka(same(ANALYTICS_SERVICE), anyBoolean())).thenReturn(analyticsServiceInfoMock);
+		when(discoveryClientMock.getNextServerFromEureka(eq(ANALYTICS_SERVICE), anyBoolean())).thenReturn(analyticsServiceInfoMock);
 		analyticsAdaptor = new AnalyticsAdaptorImpl();
 		analyticsAdaptor.initialize(new HttpRestClient(discoveryClientMock, getRestTemplate(), analyticsServiceConfig));
 	}
