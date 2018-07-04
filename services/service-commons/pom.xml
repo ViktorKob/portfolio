@@ -29,5 +29,4 @@
 			<artifactId>spring-cloud-services-starter-service-registry</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>
