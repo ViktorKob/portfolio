@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.analytics.system.FakeAnalyticsSystem;
+import net.thomas.portfolio.analytics.system.AnalyticsControl;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
@@ -31,17 +31,16 @@ public class AnalyticsServiceController {
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
 	private final AnalyticsServiceConfiguration config;
-	private final FakeAnalyticsSystem analyticsSystem;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
 	private HbaseIndexModelAdaptor hbaseAdaptor;
+	private AnalyticsControl analyticsSystem;
 
 	public AnalyticsServiceController(AnalyticsServiceConfiguration config) {
 		this.config = config;
-		analyticsSystem = new FakeAnalyticsSystem();
 	}
 
 	@Bean
@@ -60,6 +59,7 @@ public class AnalyticsServiceController {
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
 		}).run();
+		analyticsSystem = new AnalyticsControl();
 	}
 
 	@Secured("ROLE_USER")
