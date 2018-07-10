@@ -1,12 +1,12 @@
-package net.thomas.portfolio.legal;
+package net.thomas.portfolio.legal.service;
 
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.POSSIBLY;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
-import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -28,6 +28,7 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.Credentials;
 import net.thomas.portfolio.common.services.ServiceDependency;
+import net.thomas.portfolio.legal.system.LegalInfoBuilder;
 import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HttpRestClient;
@@ -36,7 +37,6 @@ import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
 @RunWith(SpringRunner.class)
@@ -46,11 +46,6 @@ public class LegalServiceControllerServiceAdaptorTest {
 	private static final String LEGAL_SERVICE = "legal-service";
 	private static final String SELECTOR_TYPE = "TYPE";
 	private static final String UID = "FF";
-	private static final String NULL_JUSTIFICATION = null;
-	private static final String EMPTY_JUSTIFICATION = "";
-	private static final String JUSTIFICATION = "JUSTIFICATION";
-	private static final Long NULL_DATE = null;
-	private static final String USER = "USER";
 
 	@TestConfiguration
 	static class ServiceMocksSetup {
@@ -73,11 +68,8 @@ public class LegalServiceControllerServiceAdaptorTest {
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
-
-	@Bean
-	public RestTemplate getRestTemplate() {
-		return new RestTemplate();
-	}
+	private LegalInfoBuilder legalInfoBuilder;
+	private DataTypeId selectorId;
 
 	@Before
 	public void setupController() {
@@ -86,52 +78,58 @@ public class LegalServiceControllerServiceAdaptorTest {
 		when(legalServiceInfoMock.getHomePageUrl()).thenReturn("http://localhost:18350");
 		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
 		when(discoveryClientMock.getNextServerFromEureka(eq(LEGAL_SERVICE), anyBoolean())).thenReturn(legalServiceInfoMock);
+		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
+		legalInfoBuilder = new LegalInfoBuilder();
 		legalAdaptor = new LegalAdaptorImpl();
 		legalAdaptor.initialize(new HttpRestClient(discoveryClientMock, restTemplate, legalServiceConfig));
 	}
 
 	@Test
-	public void searchingForUnrestrictedSelectorIsLegal() {
-		final DataTypeId selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		final LegalInformation legalInfo = new LegalInformation(USER, EMPTY_JUSTIFICATION, NULL_DATE, NULL_DATE);
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
+	public void searchingForUnrestrictedSelectorWithValidUserIsLegal() {
+		legalInfoBuilder.setValidUser();
+		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
 	@Test
-	public void searchingForSemiRestrictedSelectorIsLegal() {
-		final DataTypeId selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		final LegalInformation legalInfo = new LegalInformation(USER, EMPTY_JUSTIFICATION, NULL_DATE, NULL_DATE);
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
+	public void searchingForSemiRestrictedSelectorWithValidUserIsLegal() {
+		legalInfoBuilder.setValidUser();
+		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
-	}
-
-	@Test
-	public void searchingForRestrictedSelectorWithNullJustificationIsIllegal() {
-		final DataTypeId selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		final LegalInformation legalInfo = new LegalInformation(USER, NULL_JUSTIFICATION, NULL_DATE, NULL_DATE);
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
-		assertEquals(ILLEGAL, legality);
-	}
-
-	@Test
-	public void searchingForRestrictedSelectorWithoutJustificationIsIllegal() {
-		final DataTypeId selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		final LegalInformation legalInfo = new LegalInformation(USER, EMPTY_JUSTIFICATION, NULL_DATE, NULL_DATE);
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
-		assertEquals(ILLEGAL, legality);
 	}
 
 	@Test
 	public void searchingForRestrictedSelectorWithJustificationIsLegal() {
-		final DataTypeId selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		final LegalInformation legalInfo = new LegalInformation(USER, JUSTIFICATION, NULL_DATE, NULL_DATE);
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
+		legalInfoBuilder.setValidJustification();
+		setupAnalyticsServiceToRespondSelectorIsRestricted();
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
+
+	@Test
+	public void shouldReturnOkAfterAuditLoggingInvertedIndexLookup() {
+		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogInvertedIndexLookup(selectorId, legalInfoBuilder.build());
+		assertTrue(loggingWasSuccessfull);
+	}
+
+	@Test
+	public void shouldReturnOkAfterAuditLoggingStatisticsLookup() {
+		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertTrue(loggingWasSuccessfull);
+	}
+
+	private void setupAnalyticsServiceToRespondSelectorIsUnrestricted() {
+		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
+	}
+
+	private void setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted() {
+		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
+	}
+
+	private void setupAnalyticsServiceToRespondSelectorIsRestricted() {
+		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
+	}
+
 }

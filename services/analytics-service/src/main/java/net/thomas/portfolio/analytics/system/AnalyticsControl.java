@@ -8,8 +8,8 @@ import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-public class FakeAnalyticsSystem {
-	public FakeAnalyticsSystem() {
+public class AnalyticsControl {
+	public AnalyticsControl() {
 	}
 
 	public AnalyticalKnowledge getPriorKnowledge(DataTypeId id) {
