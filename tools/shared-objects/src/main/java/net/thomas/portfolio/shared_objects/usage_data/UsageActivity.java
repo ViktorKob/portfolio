@@ -62,7 +62,8 @@ public class UsageActivity implements ParameterGroup {
 	public boolean equals(Object obj) {
 		if (obj instanceof UsageActivity) {
 			final UsageActivity other = (UsageActivity) obj;
-			return user.equals(other.user) && type == other.type && timeOfActivity == other.timeOfActivity;
+			return user.equals(other.user) && type == other.type
+					&& (timeOfActivity == other.timeOfActivity || timeOfActivity != null && timeOfActivity.equals(other.timeOfActivity));
 		} else {
 			return super.equals(obj);
 		}
