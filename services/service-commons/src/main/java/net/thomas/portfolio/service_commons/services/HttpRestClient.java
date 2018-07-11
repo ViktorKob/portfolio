@@ -1,5 +1,6 @@
 package net.thomas.portfolio.service_commons.services;
 
+import static java.lang.System.nanoTime;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
@@ -59,7 +60,7 @@ public class HttpRestClient {
 
 	private <T> T execute(final URI request, HttpMethod method, Class<T> responseType) {
 		try {
-			final long stamp = System.nanoTime();
+			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms calling " + request);
 			if (OK == response.getStatusCode()) {

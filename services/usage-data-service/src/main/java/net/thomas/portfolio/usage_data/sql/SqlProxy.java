@@ -37,9 +37,9 @@ import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Dat
 public class SqlProxy {
 	private static final boolean WITHOUT_SCHEMA = false;
 	private static final boolean WITH_SCHEMA = true;
-	private final Database databaseConfig;
+	private Database databaseConfig;
 
-	public SqlProxy(Database databaseConfig) {
+	public void setDatabase(Database databaseConfig) {
 		this.databaseConfig = databaseConfig;
 	}
 
@@ -86,6 +86,9 @@ public class SqlProxy {
 	}
 
 	public void storeUsageActivity(DataTypeId id, UsageActivity activity) {
+		if (activity.timeOfActivity == null) {
+			activity.timeOfActivity = System.currentTimeMillis();
+		}
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			create.transaction(configuration -> {

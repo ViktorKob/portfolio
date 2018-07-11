@@ -23,5 +23,5 @@ public interface UsageAdaptor {
 	 *            The parameters for the fetch
 	 * @return An ordered (newest first) list of events for the document
 	 */
-	List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds);
+	List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds);
 }
