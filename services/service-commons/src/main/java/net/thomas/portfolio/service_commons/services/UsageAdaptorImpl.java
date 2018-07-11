@@ -31,7 +31,7 @@ public class UsageAdaptorImpl implements UsageAdaptor {
 	}
 
 	@Override
-	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
+	public List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
 		return client.loadUrlAsObject(USAGE_DATA_SERVICE, () -> {
 			return USAGE_ACTIVITIES.getPath() + "/" + documentId.type + "/" + documentId.uid;
 		}, GET, USAGE_ACTIVITY_ITEMS_TYPE_REFERENCE, bounds);

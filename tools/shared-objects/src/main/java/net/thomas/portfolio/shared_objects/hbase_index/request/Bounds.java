@@ -110,9 +110,13 @@ public class Bounds implements ParameterGroup {
 	public boolean equals(Object obj) {
 		if (obj instanceof Bounds) {
 			final Bounds other = (Bounds) obj;
-			return offset == other.offset && limit == other.limit && after == other.after && before == other.before;
+			return equals(offset, other.offset) && equals(limit, other.limit) && equals(after, other.after) && equals(before, other.before);
 		}
 		return false;
+	}
+
+	private boolean equals(Object left, Object right) {
+		return left == right || left != null && left.equals(right);
 	}
 
 	@Override

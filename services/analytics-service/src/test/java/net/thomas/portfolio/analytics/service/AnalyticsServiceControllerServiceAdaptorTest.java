@@ -12,6 +12,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=analytics-service", "server.port:18300", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class AnalyticsServiceControllerServiceAdaptorTest {
-	private static final String UID = "FFABCD";
+	private static final String SELECTOR_TYPE = "TYPE";
+	private static final String KNOWN_RESTRICTED_UID_WITH_ALIAS = "FFABCD";
+	private static final DataTypeId SELECTOR_ID = new DataTypeId(SELECTOR_TYPE, KNOWN_RESTRICTED_UID_WITH_ALIAS);
 	private static final String ANALYTICS_SERVICE = "analytics-service";
 
 	@TestConfiguration
@@ -41,34 +44,31 @@ public class AnalyticsServiceControllerServiceAdaptorTest {
 		@Bean
 		public HbaseIndexModelAdaptorImpl getHbaseModelAdaptor() {
 			final HbaseIndexModelAdaptorImpl adaptor = mock(HbaseIndexModelAdaptorImpl.class);
-			when(adaptor.getDataTypes()).thenReturn(asList("TYPE"));
+			when(adaptor.getDataTypes()).thenReturn(asList(SELECTOR_TYPE));
 			return adaptor;
 		}
 	}
 
+	@Autowired
+	private RestTemplate restTemplate;
 	private AnalyticsAdaptorImpl analyticsAdaptor;
 
-	@Bean
-	public RestTemplate getRestTemplate() {
-		return new RestTemplate();
-	}
-
 	@Before
-	public void setupController() {
+	public void setUpController() {
 		final ServiceDependency analyticsServiceConfig = new ServiceDependency(ANALYTICS_SERVICE, new Credentials("service-user", "password"));
 		final InstanceInfo analyticsServiceInfoMock = mock(InstanceInfo.class);
 		when(analyticsServiceInfoMock.getHomePageUrl()).thenReturn("http://localhost:18300");
 		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
 		when(discoveryClientMock.getNextServerFromEureka(eq(ANALYTICS_SERVICE), anyBoolean())).thenReturn(analyticsServiceInfoMock);
 		analyticsAdaptor = new AnalyticsAdaptorImpl();
-		analyticsAdaptor.initialize(new HttpRestClient(discoveryClientMock, getRestTemplate(), analyticsServiceConfig));
+		analyticsAdaptor.initialize(new HttpRestClient(discoveryClientMock, restTemplate, analyticsServiceConfig));
 	}
 
 	@Test
-	public void shouldReturnKnowledgeUsingEndpoint() {
-		final AnalyticalKnowledge knowledge = analyticsAdaptor.getKnowledge(new DataTypeId("TYPE", UID));
+	public void shouldReturnFakeKnowledgeUsingEndpoint() {
+		final AnalyticalKnowledge knowledge = analyticsAdaptor.getKnowledge(SELECTOR_ID);
 		assertEquals(CERTAIN, knowledge.isKnown);
 		assertEquals(CERTAIN, knowledge.isRestricted);
-		assertEquals("Target " + UID, knowledge.alias);
+		assertEquals("Target " + KNOWN_RESTRICTED_UID_WITH_ALIAS, knowledge.alias);
 	}
 }

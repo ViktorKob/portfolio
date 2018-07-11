@@ -53,18 +53,23 @@ public class UsageDataServiceController {
 	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 
 	private final UsageDataServiceConfiguration config;
-	private final SqlProxy proxy;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
 	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private SqlProxy proxy;
 
 	@Autowired
 	public UsageDataServiceController(UsageDataServiceConfiguration config) {
 		this.config = config;
-		proxy = new SqlProxy(config.getDatabase());
+	}
+
+	@Bean
+	public SqlProxy getSqlProxy() {
+		return new SqlProxy();
 	}
 
 	@Bean
@@ -79,6 +84,7 @@ public class UsageDataServiceController {
 
 	@PostConstruct
 	public void initializeService() {
+		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
@@ -91,15 +97,12 @@ public class UsageDataServiceController {
 	public ResponseEntity<?> storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(activity.user) && USAGE_ACTIVITY_TYPE.isValid(activity.type)
 				&& TIME_OF_ACTIVITY.isValid(activity.timeOfActivity)) {
-			if (activity.timeOfActivity == null) {
-				activity.timeOfActivity = System.currentTimeMillis();
-			}
 			try {
 				proxy.storeUsageActivity(id, activity);
 				return ok(activity);
 			} catch (final Throwable t) {
 				t.printStackTrace();
-				return status(INTERNAL_SERVER_ERROR).body("The server was unable to complete the request.");
+				return status(INTERNAL_SERVER_ERROR).body("The server was unable to store the activity.");
 			}
 		} else {
 			return badRequest().body(TYPE.getReason(id.type) + "<BR>" + UID.getReason(id.uid) + "<BR>" + USERNAME.getReason(activity.user) + "<BR>"

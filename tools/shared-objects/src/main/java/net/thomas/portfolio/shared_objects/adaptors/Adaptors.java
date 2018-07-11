@@ -325,7 +325,7 @@ public class Adaptors {
 	 * @return An ordered (newest first) list of events for the document
 	 */
 	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
-		return usageAdaptor.fetchUsageActivity(documentId, bounds);
+		return usageAdaptor.fetchUsageActivities(documentId, bounds);
 	}
 
 	/***
