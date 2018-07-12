@@ -7,6 +7,7 @@ import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;

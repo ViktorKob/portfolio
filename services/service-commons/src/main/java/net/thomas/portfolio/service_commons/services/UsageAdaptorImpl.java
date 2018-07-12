@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
 
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;

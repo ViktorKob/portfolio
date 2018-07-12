@@ -7,19 +7,19 @@ import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-public class AuditingLoggingControlUnitTest {
+public class AuditLoggingControlUnitTest {
 	private static final String SELECTOR_TYPE = "TYPE";
 	private static final String UID = "FF";
 
 	private DataTypeId selectorId;
 	private LegalInfoBuilder legalInfoBuilder;
-	private AuditingLoggingControl auditLoggingSystem;
+	private AuditLoggingControl auditLoggingSystem;
 
 	@Before
 	public void setupForTests() {
 		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
 		legalInfoBuilder = new LegalInfoBuilder();
-		auditLoggingSystem = new AuditingLoggingControl();
+		auditLoggingSystem = new AuditLoggingControl();
 	}
 
 	@Test

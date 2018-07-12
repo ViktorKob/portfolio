@@ -26,6 +26,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 
 import net.thomas.portfolio.common.services.ParameterGroup;
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;

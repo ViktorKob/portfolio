@@ -3,9 +3,9 @@ package net.thomas.portfolio.legal.system;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
-public class AuditingLoggingControl {
+public class AuditLoggingControl {
 
-	public AuditingLoggingControl() {
+	public AuditLoggingControl() {
 	}
 
 	public boolean logInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {

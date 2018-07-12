@@ -21,11 +21,11 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
-import net.thomas.portfolio.legal.system.AuditingLoggingControl;
+import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.legal.system.AuditingRulesControl;
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
@@ -48,7 +48,7 @@ public class LegalServiceController {
 	@Autowired
 	private RestTemplate restTemplate;
 	private AuditingRulesControl auditingRulesSystem;
-	private AuditingLoggingControl auditLoggingSystem;
+	private AuditLoggingControl auditLoggingSystem;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
@@ -78,7 +78,7 @@ public class LegalServiceController {
 		}).run();
 		auditingRulesSystem = new AuditingRulesControl();
 		auditingRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
-		auditLoggingSystem = new AuditingLoggingControl();
+		auditLoggingSystem = new AuditLoggingControl();
 	}
 
 	@Secured("ROLE_USER")

@@ -17,6 +17,7 @@
 
 	<modules>
 		<module>service-commons</module>
+		<module>service-testing</module>
 		<module>hbase-indexing-service</module>
 		<module>usage-data-service</module>
 		<module>render-service</module>
