@@ -98,7 +98,7 @@ public interface HbaseIndexModelAdaptor {
 	 *            The data type in question
 	 * @return All fields belonging to this type in the current schema
 	 */
-	Collection<Field> getDataTypeFields(String dataType);
+	Collection<Field> getFieldsForDataType(String dataType);
 
 	/*** Data ***/
 	/***

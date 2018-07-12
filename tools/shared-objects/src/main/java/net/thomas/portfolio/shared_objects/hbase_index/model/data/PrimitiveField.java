@@ -1,6 +1,11 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.data;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.FieldType.PRIMITIVE;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.DECIMAL;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.TIMESTAMP;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -22,7 +27,39 @@ public class PrimitiveField implements Field {
 	public PrimitiveField() {
 	}
 
-	public PrimitiveField(String name, PrimitiveType type, boolean isArray, boolean isKeyComponent) {
+	public static PrimitiveField string(String name) {
+		return new PrimitiveField(name, STRING, false, true);
+	}
+
+	public static PrimitiveField integer(String name) {
+		return new PrimitiveField(name, INTEGER, false, true);
+	}
+
+	public static PrimitiveField decimal(String name) {
+		return new PrimitiveField(name, DECIMAL, false, true);
+	}
+
+	public static PrimitiveField timestamp(String name) {
+		return new PrimitiveField(name, TIMESTAMP, false, true);
+	}
+
+	public static PrimitiveField geoLocation(String name) {
+		return new PrimitiveField(name, GEO_LOCATION, false, true);
+	}
+
+	public static PrimitiveField createNonKeyField(String name, PrimitiveType type) {
+		return new PrimitiveField(name, type, false, false);
+	}
+
+	public static PrimitiveField createNonKeyArrayField(String name, PrimitiveType type) {
+		return new PrimitiveField(name, type, true, false);
+	}
+
+	public static PrimitiveField createArrayField(String name, PrimitiveType type) {
+		return new PrimitiveField(name, type, true, true);
+	}
+
+	private PrimitiveField(String name, PrimitiveType type, boolean isArray, boolean isKeyComponent) {
 		this.name = name;
 		this.type = type;
 		this.isArray = isArray;

@@ -1,7 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.util;
 
 import static java.util.Arrays.asList;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 
 import java.security.MessageDigest;
@@ -12,14 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class IdGeneratorUnitTest {
-	private static final boolean IS_NOT_ARRAY = false;
-	private static final boolean IS_PART_OF_KEY = true;
 	private static final boolean KEYS_SHOULD_BE_CONSISTENT = false;
 
 	private static final List<Field> LOCALNAME_FIELDS;
@@ -86,14 +83,6 @@ public class IdGeneratorUnitTest {
 
 	private static List<Field> fields(Field... fields) {
 		return asList(fields);
-	}
-
-	private static PrimitiveField string(String name) {
-		return new PrimitiveField(name, STRING, IS_NOT_ARRAY, IS_PART_OF_KEY);
-	}
-
-	private static ReferenceField dataType(String name, String type) {
-		return new ReferenceField(name, type, IS_NOT_ARRAY, IS_PART_OF_KEY);
 	}
 
 	private static String hashLocalname() throws NoSuchAlgorithmException {

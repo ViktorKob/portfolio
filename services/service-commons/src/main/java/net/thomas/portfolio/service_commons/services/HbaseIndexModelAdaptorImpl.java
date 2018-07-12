@@ -117,7 +117,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
-	public Collection<Field> getDataTypeFields(String dataType) {
+	public Collection<Field> getFieldsForDataType(String dataType) {
 		return schema.getFieldsForDataType(dataType);
 	}
 

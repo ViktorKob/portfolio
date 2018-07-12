@@ -176,7 +176,7 @@ public class Adaptors {
 	 * @return All fields belonging to this type in the current schema
 	 */
 	public Collection<Field> getDataTypeFields(String dataType) {
-		return hbaseModelAdaptor.getDataTypeFields(dataType);
+		return hbaseModelAdaptor.getFieldsForDataType(dataType);
 	}
 
 	/***

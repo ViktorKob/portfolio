@@ -5,9 +5,12 @@ import static java.util.Arrays.stream;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.geoLocation;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.integer;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.nonKeyDataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.nonKeyDataTypeArray;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -19,16 +22,10 @@ import java.util.Set;
 import java.util.function.Function;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 
 public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
-	private static final boolean IS_NOT_ARRAY = false;
-	private static final boolean IS_ARRAY = true;
-	private static final boolean IS_NOT_PART_OF_KEY = false;
-	private static final boolean IS_PART_OF_KEY = true;
 
 	public FakeHbaseIndexSchemaImpl() {
 		dataTypeFields = new HashMap<>();
@@ -40,8 +37,8 @@ public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
 		dataTypeFields.put("PublicId", fields(string("number")));
 		dataTypeFields.put("PrivateId", fields(string("number")));
 		dataTypeFields.put("CommunicationEndpoint", fields(dataType("publicId", "PublicId"), dataType("privateId", "PrivateId")));
-		dataTypeFields.put("Email", fields(string("subject"), string("message"), dataType("from", "EmailEndpoint"), dataTypeNonKeyArray("to", "EmailEndpoint"),
-				dataTypeNonKeyArray("cc", "EmailEndpoint"), dataTypeNonKeyArray("bcc", "EmailEndpoint")));
+		dataTypeFields.put("Email", fields(string("subject"), string("message"), dataType("from", "EmailEndpoint"), nonKeyDataTypeArray("to", "EmailEndpoint"),
+				nonKeyDataTypeArray("cc", "EmailEndpoint"), nonKeyDataTypeArray("bcc", "EmailEndpoint")));
 		dataTypeFields.put("TextMessage", fields(string("message"), dataType("sender", "CommunicationEndpoint"), dataType("receiver", "CommunicationEndpoint"),
 				geoLocation("senderLocation"), geoLocation("receiverLocation")));
 		dataTypeFields.put("Conversation", fields(integer("durationIsSeconds"), dataType("primary", "CommunicationEndpoint"),
@@ -79,30 +76,6 @@ public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
 
 	private LinkedHashMap<String, Field> fields(Field... fields) {
 		return stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new));
-	}
-
-	private PrimitiveField string(String name) {
-		return new PrimitiveField(name, STRING, IS_NOT_ARRAY, IS_PART_OF_KEY);
-	}
-
-	private Field integer(String name) {
-		return new PrimitiveField(name, INTEGER, IS_NOT_ARRAY, IS_PART_OF_KEY);
-	}
-
-	private Field geoLocation(String name) {
-		return new PrimitiveField(name, GEO_LOCATION, IS_NOT_ARRAY, IS_NOT_PART_OF_KEY);
-	}
-
-	private ReferenceField dataType(String name, String type) {
-		return new ReferenceField(name, type, IS_NOT_ARRAY, IS_PART_OF_KEY);
-	}
-
-	private ReferenceField nonKeyDataType(String name, String type) {
-		return new ReferenceField(name, type, IS_NOT_ARRAY, IS_NOT_PART_OF_KEY);
-	}
-
-	private ReferenceField dataTypeNonKeyArray(String name, String type) {
-		return new ReferenceField(name, type, IS_ARRAY, IS_NOT_PART_OF_KEY);
 	}
 
 	private void createEmailIndexables(IndexableBuilder builder, String... selectorTypes) {
