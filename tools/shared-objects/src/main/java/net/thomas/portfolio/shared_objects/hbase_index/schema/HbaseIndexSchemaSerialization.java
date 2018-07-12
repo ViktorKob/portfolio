@@ -38,10 +38,6 @@ public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 	public HbaseIndexSchemaSerialization() {
 	}
 
-	public void initialize() {
-		simpleRepParsers = new SimpleRepresentationParserLibrary(this);
-	}
-
 	public Map<String, LinkedHashMap<String, Field>> getDataTypeFields() {
 		return dataTypeFields;
 	}
@@ -169,6 +165,10 @@ public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@Override
 	@JsonIgnore
 	public String calculateUid(String type, String simpleRep) {
+		if (simpleRepParsers == null) {
+			// TODO[Thomas]: Pending serialization of parsers
+			simpleRepParsers = new SimpleRepresentationParserLibrary(this);
+		}
 		return simpleRepParsers.parse(type, simpleRep)
 			.getId().uid;
 	}
