@@ -21,7 +21,6 @@ public class WorldControl {
 
 	public HbaseIndexSchema importSchema() {
 		final HbaseIndexSchemaSerialization schema = readFromFile("schema.json", HbaseIndexSchemaSerialization.class);
-		schema.initialize();
 		return schema;
 	}
 

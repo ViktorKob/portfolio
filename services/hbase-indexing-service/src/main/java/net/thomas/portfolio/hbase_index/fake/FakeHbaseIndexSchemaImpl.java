@@ -25,7 +25,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
 
 public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
-
 	private static final boolean IS_NOT_ARRAY = false;
 	private static final boolean IS_ARRAY = true;
 	private static final boolean IS_NOT_PART_OF_KEY = false;
@@ -61,8 +60,6 @@ public class FakeHbaseIndexSchemaImpl extends HbaseIndexSchemaSerialization {
 		indexables = builder.build();
 		indexableDocumentTypes = buildIndexableMap(indexables, Indexable::getDocumentType);
 		indexableRelations = buildIndexableMap(indexables, Indexable::getPath);
-
-		initialize();
 	}
 
 	private Map<String, Set<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables, Function<? super Indexable, ? extends String> mapper) {
