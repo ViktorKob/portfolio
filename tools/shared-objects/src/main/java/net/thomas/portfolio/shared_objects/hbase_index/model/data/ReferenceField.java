@@ -18,7 +18,23 @@ public class ReferenceField implements Field {
 	public ReferenceField() {
 	}
 
-	public ReferenceField(String name, String type, boolean isArray, boolean isKeyComponent) {
+	public static ReferenceField dataType(String name, String type) {
+		return new ReferenceField(name, type, false, true);
+	}
+
+	public static ReferenceField nonKeyDataType(String name, String type) {
+		return new ReferenceField(name, type, false, false);
+	}
+
+	public static ReferenceField dataTypeArray(String name, String type) {
+		return new ReferenceField(name, type, true, true);
+	}
+
+	public static ReferenceField nonKeyDataTypeArray(String name, String type) {
+		return new ReferenceField(name, type, true, false);
+	}
+
+	private ReferenceField(String name, String type, boolean isArray, boolean isKeyComponent) {
 		this.name = name;
 		this.type = type;
 		this.isArray = isArray;
