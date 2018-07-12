@@ -29,14 +29,14 @@ import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
@@ -47,7 +47,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	public void initialize(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaSerialization.class);
+		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaImpl.class);
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 			.maximumSize(10000)
 			.build(new CacheLoader<DataTypeId, DataType>() {
@@ -117,7 +117,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
-	public Collection<Field> getFieldsForDataType(String dataType) {
+	public Fields getFieldsForDataType(String dataType) {
 		return schema.getFieldsForDataType(dataType);
 	}
 

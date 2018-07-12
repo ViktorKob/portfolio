@@ -1,7 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
-import static java.util.Arrays.asList;
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
@@ -11,13 +11,12 @@ import static org.mockito.Mockito.when;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Stack;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -94,17 +93,13 @@ public class SimpleRepresentationParserLibraryUnitTest {
 		return printHexBinary(hasher.digest());
 	}
 
-	private static final List<Field> LOCALNAME_FIELDS;
-	private static final List<Field> DOMAIN_FIELDS;
-	private static final List<Field> EMAIL_ADDRESS_FIELDS;
+	private static final Fields LOCALNAME_FIELDS;
+	private static final Fields DOMAIN_FIELDS;
+	private static final Fields EMAIL_ADDRESS_FIELDS;
 
 	static {
 		LOCALNAME_FIELDS = fields(string("name"));
 		DOMAIN_FIELDS = fields(string("domainPart"), dataType("domain", "Domain"));
 		EMAIL_ADDRESS_FIELDS = fields(dataType("localname", "Localname"), dataType("domain", "Domain"));
-	}
-
-	private static List<Field> fields(Field... fields) {
-		return asList(fields);
 	}
 }

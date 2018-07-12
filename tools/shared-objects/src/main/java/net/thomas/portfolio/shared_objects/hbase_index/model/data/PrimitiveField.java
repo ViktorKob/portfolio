@@ -8,6 +8,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Primiti
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.TIMESTAMP;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -107,7 +108,21 @@ public class PrimitiveField implements Field {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof PrimitiveField) {
+			final PrimitiveField other = (PrimitiveField) obj;
+			return name.equals(other.name) && type == other.type && isArray == other.isArray && isKeyComponent == other.isKeyComponent;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		final StandardToStringStyle style = new StandardToStringStyle();
+		style.setFieldSeparator(", ");
+		style.setUseClassName(false);
+		style.setUseIdentityHashCode(false);
+		return ReflectionToStringBuilder.toString(this, style);
 	}
 }

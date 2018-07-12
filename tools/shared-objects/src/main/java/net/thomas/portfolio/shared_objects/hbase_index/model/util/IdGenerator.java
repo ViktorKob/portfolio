@@ -10,17 +10,18 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
 public class IdGenerator {
-	private final List<Field> fields;
+	private final Fields fields;
 	private final boolean keyShouldBeUnique;
 	private int counter;
 
-	public IdGenerator(List<Field> fields, boolean keyShouldBeUnique) {
+	public IdGenerator(Fields fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
 		this.keyShouldBeUnique = keyShouldBeUnique;
 		counter = 0;
