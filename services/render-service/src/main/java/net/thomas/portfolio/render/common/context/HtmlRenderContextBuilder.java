@@ -1,14 +1,14 @@
 package net.thomas.portfolio.render.common.context;
 
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 public class HtmlRenderContextBuilder {
-	private HbaseIndexSchemaSerialization schema;
+	private HbaseIndexSchemaImpl schema;
 
 	public HtmlRenderContextBuilder() {
 	}
 
-	public HtmlRenderContextBuilder setSchema(HbaseIndexSchemaSerialization schema) {
+	public HtmlRenderContextBuilder setSchema(HbaseIndexSchemaImpl schema) {
 		this.schema = schema;
 		return this;
 	}

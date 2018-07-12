@@ -1,27 +1,26 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.util;
 
-import static java.util.Arrays.asList;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class IdGeneratorUnitTest {
 	private static final boolean KEYS_SHOULD_BE_CONSISTENT = false;
 
-	private static final List<Field> LOCALNAME_FIELDS;
-	private static final List<Field> DOMAIN_FIELDS;
-	private static final List<Field> EMAIL_ADDRESS_FIELDS;
+	private static final Fields LOCALNAME_FIELDS;
+	private static final Fields DOMAIN_FIELDS;
+	private static final Fields EMAIL_ADDRESS_FIELDS;
 	private static final Selector LOCALNAME;
 	private static final Selector DOMAIN;
 	private static final Selector EMAIL_ADDRESS;
@@ -79,10 +78,6 @@ public class IdGeneratorUnitTest {
 		} catch (final NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static List<Field> fields(Field... fields) {
-		return asList(fields);
 	}
 
 	private static String hashLocalname() throws NoSuchAlgorithmException {

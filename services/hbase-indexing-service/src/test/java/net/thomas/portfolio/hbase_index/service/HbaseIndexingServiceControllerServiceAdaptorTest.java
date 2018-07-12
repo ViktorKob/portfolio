@@ -1,9 +1,9 @@
 package net.thomas.portfolio.hbase_index.service;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
-import static java.util.Collections.singleton;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,11 +16,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,12 +30,12 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=hbase-indexing-service", "server.port:18120",
@@ -60,7 +55,18 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	static class ServiceBeansSetup {
 		@Bean
 		public HbaseIndexSchema getSchema() {
-			return new FakeSchemaForTesting();
+			return buildSchemaForTesting();
+		}
+
+		private HbaseIndexSchema buildSchemaForTesting() {
+			final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
+			builder.addField(DOCUMENT_TYPE, fields(string("name"), dataType("reference", RAW_DATA_TYPE)));
+			builder.addField(RAW_DATA_TYPE, fields(string("name"), dataType("reference", SELECTOR_TYPE)));
+			builder.addField(SELECTOR_TYPE, fields(string("name")));
+			builder.addDocumentTypes(DOCUMENT_TYPE);
+			builder.addSelectorTypes(SELECTOR_TYPE, SIMPLE_REPRESENTABLE_TYPE);
+			builder.addSimpleRepresentableTypes(SIMPLE_REPRESENTABLE_TYPE);
+			return builder.build();
 		}
 
 		@Bean
@@ -143,74 +149,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldGetDataTypeFieldsFromSchema() {
-		final Collection<Field> dataTypes = hbaseAdaptor.getFieldsForDataType(DOCUMENT_TYPE);
+		final Fields dataTypes = hbaseAdaptor.getFieldsForDataType(DOCUMENT_TYPE);
 		assertEquals(schema.getFieldsForDataType(DOCUMENT_TYPE), dataTypes);
-	}
-
-	static class FakeSchemaForTesting implements HbaseIndexSchema {
-		public FakeSchemaForTesting() {
-			final Map<String, Collection<Field>> fields = new HashMap<>();
-			fields.put(DOCUMENT_TYPE, asList(string("name")));
-		}
-
-		@Override
-		public Collection<String> getDataTypes() {
-			return new HashSet<>(asList(DOCUMENT_TYPE, SELECTOR_TYPE, RAW_DATA_TYPE, SIMPLE_REPRESENTABLE_TYPE));
-		}
-
-		@Override
-		public Collection<String> getDocumentTypes() {
-			return singleton(DOCUMENT_TYPE);
-		}
-
-		@Override
-		public Collection<String> getSelectorTypes() {
-			return new HashSet<>(asList(SELECTOR_TYPE, SIMPLE_REPRESENTABLE_TYPE));
-		}
-
-		@Override
-		public Collection<String> getSimpleRepresentableTypes() {
-			return singleton(SIMPLE_REPRESENTABLE_TYPE);
-		}
-
-		@Override
-		public List<Field> getFieldsForDataType(String dataType) {
-			return null;
-		}
-
-		@Override
-		public List<DataTypeId> getSelectorSuggestions(String selectorString) {
-			return null;
-		}
-
-		@Override
-		public Set<String> getIndexableDocumentTypes(String selectorType) {
-			return null;
-		}
-
-		@Override
-		public Set<String> getIndexableRelations(String selectorType) {
-			return null;
-		}
-
-		@Override
-		public Set<String> getAllIndexableRelations() {
-			return null;
-		}
-
-		@Override
-		public Collection<Indexable> getIndexables(String selectorType) {
-			return null;
-		}
-
-		@Override
-		public Field getFieldForIndexable(Indexable indexable) {
-			return null;
-		}
-
-		@Override
-		public String calculateUid(String type, String simpleRep) {
-			return null;
-		}
 	}
 }

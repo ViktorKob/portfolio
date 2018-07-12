@@ -3,6 +3,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.data;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.data.FieldType.REFERENCE;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -82,7 +83,21 @@ public class ReferenceField implements Field {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ReferenceField) {
+			final ReferenceField other = (ReferenceField) obj;
+			return name.equals(other.name) && type.equals(other.type) && isArray == other.isArray && isKeyComponent == other.isKeyComponent;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		final StandardToStringStyle style = new StandardToStringStyle();
+		style.setFieldSeparator(", ");
+		style.setUseClassName(false);
+		style.setUseIdentityHashCode(false);
+		return ReflectionToStringBuilder.toString(this, style);
 	}
 }

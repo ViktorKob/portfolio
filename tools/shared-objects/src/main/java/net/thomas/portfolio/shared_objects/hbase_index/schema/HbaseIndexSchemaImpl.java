@@ -3,28 +3,30 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema;
 import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
+public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 
 	// TODO[Thomas]: These must also be serialized to be truly model agnostic
 	@JsonIgnore
 	private SimpleRepresentationParserLibrary simpleRepParsers;
 
-	protected Map<String, LinkedHashMap<String, Field>> dataTypeFields;
+	protected Map<String, Fields> dataTypeFields;
 	protected Set<String> dataTypes;
 	protected Set<String> documentTypes;
 	protected Set<String> selectorTypes;
@@ -35,48 +37,60 @@ public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 	@JsonIgnore
 	protected Set<String> allIndexableRelations;
 
-	public HbaseIndexSchemaSerialization() {
+	public HbaseIndexSchemaImpl() {
 	}
 
-	public Map<String, LinkedHashMap<String, Field>> getDataTypeFields() {
-		return dataTypeFields;
-	}
-
-	public void setDataTypeFields(Map<String, LinkedHashMap<String, Field>> dataTypeFields) {
+	public void setDataTypeFields(Map<String, Fields> dataTypeFields) {
 		this.dataTypeFields = dataTypeFields;
-	}
-
-	@Override
-	public Set<String> getDataTypes() {
-		return dataTypes;
-	}
-
-	public void setDataTypes(Set<String> dataTypes) {
-		this.dataTypes = dataTypes;
-	}
-
-	@Override
-	public Set<String> getDocumentTypes() {
-		return documentTypes;
+		dataTypes = dataTypeFields.keySet();
 	}
 
 	public void setDocumentTypes(Set<String> documentTypes) {
 		this.documentTypes = documentTypes;
 	}
 
-	@Override
-	public Set<String> getSelectorTypes() {
-		return selectorTypes;
-	}
-
 	public void setSelectorTypes(Set<String> selectorTypes) {
 		this.selectorTypes = selectorTypes;
 	}
 
+	public void setSimpleRepresentableTypes(Set<String> simpleRepresentableTypes) {
+		this.simpleRepresentableTypes = simpleRepresentableTypes;
+	}
+
+	public void setIndexables(Map<String, Collection<Indexable>> indexables) {
+		this.indexables = indexables;
+		indexableDocumentTypes = buildIndexableMap(indexables, Indexable::getDocumentType);
+		indexableRelations = buildIndexableMap(indexables, Indexable::getPath);
+		allIndexableRelations = indexableRelations.values()
+			.stream()
+			.flatMap(Collection::stream)
+			.collect(toSet());
+	}
+
+	private Map<String, Set<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables, Function<? super Indexable, ? extends String> mapper) {
+		final Map<String, Set<String>> relationMap = new HashMap<>();
+		for (final String selectorType : selectorTypes) {
+			if (indexables.containsKey(selectorType)) {
+				final Collection<Indexable> selectorIndexables = indexables.get(selectorType);
+				relationMap.put(selectorType, selectorIndexables.stream()
+					.map(mapper)
+					.collect(toSet()));
+			}
+		}
+		return relationMap;
+	}
+
+	public Map<String, Set<String>> getIndexableDocumentTypes() {
+		return indexableDocumentTypes;
+	}
+
+	public Map<String, Fields> getDataTypeFields() {
+		return dataTypeFields;
+	}
+
 	@Override
-	public List<Field> getFieldsForDataType(String dataType) {
-		return new LinkedList<>(dataTypeFields.get(dataType)
-			.values());
+	public Fields getFieldsForDataType(String dataType) {
+		return dataTypeFields.get(dataType);
 	}
 
 	@Override
@@ -84,24 +98,24 @@ public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 		return simpleRepresentableTypes;
 	}
 
-	public void setSimpleRepresentableTypes(Set<String> simpleRepresentableTypes) {
-		this.simpleRepresentableTypes = simpleRepresentableTypes;
-	}
-
 	public Map<String, Collection<Indexable>> getIndexables() {
 		return indexables;
 	}
 
-	public void setIndexables(Map<String, Collection<Indexable>> indexables) {
-		this.indexables = indexables;
+	@Override
+	public Set<String> getDocumentTypes() {
+		return documentTypes;
 	}
 
-	public Map<String, Set<String>> getIndexableDocumentTypes() {
-		return indexableDocumentTypes;
+	@Override
+	public Set<String> getSelectorTypes() {
+		return selectorTypes;
 	}
 
-	public void setIndexableDocumentTypes(Map<String, Set<String>> indexableDocumentTypes) {
-		this.indexableDocumentTypes = indexableDocumentTypes;
+	@Override
+	@JsonIgnore
+	public Set<String> getDataTypes() {
+		return dataTypes;
 	}
 
 	@Override
@@ -112,14 +126,6 @@ public class HbaseIndexSchemaSerialization implements HbaseIndexSchema {
 
 	public Map<String, Set<String>> getIndexableRelations() {
 		return indexableRelations;
-	}
-
-	public void setIndexableRelations(Map<String, Set<String>> indexableRelations) {
-		this.indexableRelations = indexableRelations;
-		allIndexableRelations = indexableRelations.values()
-			.stream()
-			.flatMap(Collection::stream)
-			.collect(toSet());
 	}
 
 	@Override

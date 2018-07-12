@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.fake;
 
 import static java.util.Arrays.asList;
+import static net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaFactory.buildSchema;
 
 import java.util.List;
 
@@ -65,7 +66,7 @@ public class FakeIndexControl implements IndexControl {
 	}
 
 	private void buildAndExportWorld(final WorldControl worldControl, long randomSeed) {
-		final HbaseIndexSchema schema = new FakeHbaseIndexSchemaImpl();
+		final HbaseIndexSchema schema = buildSchema();
 		final World world = new FakeWorld(schema, randomSeed, 80, 10, 800);
 		worldControl.exportWorld(schema, world);
 	}

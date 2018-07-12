@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
@@ -21,7 +22,7 @@ public interface HbaseIndexSchema {
 
 	Collection<String> getSimpleRepresentableTypes();
 
-	List<Field> getFieldsForDataType(String dataType);
+	Fields getFieldsForDataType(String dataType);
 
 	String calculateUid(String type, String simpleRep);
 

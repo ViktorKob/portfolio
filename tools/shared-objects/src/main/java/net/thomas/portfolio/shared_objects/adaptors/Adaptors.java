@@ -7,7 +7,7 @@ import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -175,7 +175,7 @@ public class Adaptors {
 	 *            The data type in question
 	 * @return All fields belonging to this type in the current schema
 	 */
-	public Collection<Field> getDataTypeFields(String dataType) {
+	public Fields getDataTypeFields(String dataType) {
 		return hbaseModelAdaptor.getFieldsForDataType(dataType);
 	}
 

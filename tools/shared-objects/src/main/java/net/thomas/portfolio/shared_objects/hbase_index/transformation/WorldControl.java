@@ -15,12 +15,12 @@ import java.util.zip.GZIPOutputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaSerialization;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 public class WorldControl {
 
 	public HbaseIndexSchema importSchema() {
-		final HbaseIndexSchemaSerialization schema = readFromFile("schema.json", HbaseIndexSchemaSerialization.class);
+		final HbaseIndexSchemaImpl schema = readFromFile("schema.json", HbaseIndexSchemaImpl.class);
 		return schema;
 	}
 
