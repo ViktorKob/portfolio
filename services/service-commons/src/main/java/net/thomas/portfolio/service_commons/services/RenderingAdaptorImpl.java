@@ -6,6 +6,7 @@ import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_TEXT;
 import static net.thomas.portfolio.services.Service.RENDER_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 

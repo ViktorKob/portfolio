@@ -7,7 +7,6 @@ import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLI
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,16 +22,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
-
-import net.thomas.portfolio.common.services.Credentials;
-import net.thomas.portfolio.common.services.ServiceDependency;
 import net.thomas.portfolio.legal.system.LegalInfoBuilder;
 import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
+import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
@@ -43,52 +37,45 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=legal-service", "server.port:18350", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class LegalServiceControllerServiceAdaptorTest {
-	private static final String LEGAL_SERVICE = "legal-service";
-	private static final String SELECTOR_TYPE = "TYPE";
-	private static final String UID = "FF";
+	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("legal-service", 18350);
+
+	private static final DataTypeId SELECTOR_ID = new DataTypeId("TYPE", "FF");
 
 	@TestConfiguration
 	static class ServiceMocksSetup {
 		@Bean
 		public HbaseIndexModelAdaptor getHbaseModelAdaptor() {
 			final HbaseIndexModelAdaptorImpl adaptor = mock(HbaseIndexModelAdaptorImpl.class);
-			when(adaptor.getSelectorTypes()).thenReturn(asList(SELECTOR_TYPE));
+			when(adaptor.getSelectorTypes()).thenReturn(asList(SELECTOR_ID.type));
 			return adaptor;
 		}
 
 		@Bean
 		public AnalyticsAdaptorImpl getAnalyticsAdaptor() {
-			final AnalyticsAdaptorImpl adaptor = mock(AnalyticsAdaptorImpl.class);
-			return adaptor;
+			return mock(AnalyticsAdaptorImpl.class);
 		}
 	}
 
-	private LegalAdaptorImpl legalAdaptor;
 	@Autowired
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
 	private LegalInfoBuilder legalInfoBuilder;
-	private DataTypeId selectorId;
+	private LegalAdaptorImpl legalAdaptor;
 
 	@Before
 	public void setupController() {
-		final ServiceDependency legalServiceConfig = new ServiceDependency(LEGAL_SERVICE, new Credentials("service-user", "password"));
-		final InstanceInfo legalServiceInfoMock = mock(InstanceInfo.class);
-		when(legalServiceInfoMock.getHomePageUrl()).thenReturn("http://localhost:18350");
-		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
-		when(discoveryClientMock.getNextServerFromEureka(eq(LEGAL_SERVICE), anyBoolean())).thenReturn(legalServiceInfoMock);
-		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
 		legalInfoBuilder = new LegalInfoBuilder();
+		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		legalAdaptor = new LegalAdaptorImpl();
-		legalAdaptor.initialize(new HttpRestClient(discoveryClientMock, restTemplate, legalServiceConfig));
+		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
 	}
 
 	@Test
 	public void searchingForUnrestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -96,7 +83,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForSemiRestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -104,32 +91,32 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForRestrictedSelectorWithJustificationIsLegal() {
 		legalInfoBuilder.setValidJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingInvertedIndexLookup() {
-		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogInvertedIndexLookup(selectorId, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogInvertedIndexLookup(SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingStatisticsLookup() {
-		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogStatisticsLookup(selectorId, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogStatisticsLookup(SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsUnrestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
+		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
+		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsRestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(selectorId))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
+		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
 	}
 
 }

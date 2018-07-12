@@ -27,11 +27,8 @@ import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderCont
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.TextRenderContext;
 import net.thomas.portfolio.render.common.context.TextRenderContextBuilder;
-import net.thomas.portfolio.render.format.html.HtmlRenderControl;
-import net.thomas.portfolio.render.format.simple_rep.HbaseIndexingModelSimpleRepresentationRendererLibrary;
-import net.thomas.portfolio.render.format.text.HbaseIndexingModelTextRendererLibrary;
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
@@ -43,21 +40,17 @@ public class RenderServiceController {
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
 	private final RenderServiceConfiguration config;
-	private final HbaseIndexingModelSimpleRepresentationRendererLibrary simpleRepRenderer;
-	private final HbaseIndexingModelTextRendererLibrary textRenderer;
-	private final HtmlRenderControl htmlRenderer;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
 	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private RendererProvider rendererProvider;
 
 	public RenderServiceController(RenderServiceConfiguration config) {
 		this.config = config;
-		simpleRepRenderer = new HbaseIndexingModelSimpleRepresentationRendererLibrary();
-		textRenderer = new HbaseIndexingModelTextRendererLibrary();
-		htmlRenderer = new HtmlRenderControl();
 	}
 
 	@Bean
@@ -66,8 +59,13 @@ public class RenderServiceController {
 	}
 
 	@Bean
-	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
+	public HbaseIndexModelAdaptor getHbaseAdaptor() {
 		return new HbaseIndexModelAdaptorImpl();
+	}
+
+	@Bean
+	public RendererProvider getRendererProvider() {
+		return new RendererProvider();
 	}
 
 	@PostConstruct
@@ -86,7 +84,7 @@ public class RenderServiceController {
 			if (entity != null) {
 				final SimpleRepresentationRenderContext renderContext = new SimpleRepresentationRenderContextBuilder().setHbaseModelAdaptor(hbaseAdaptor)
 					.build();
-				return ok(simpleRepRenderer.render(entity, renderContext));
+				return ok(rendererProvider.renderAsSimpleRep(entity, renderContext));
 			} else {
 				return notFound().build();
 			}
@@ -102,7 +100,7 @@ public class RenderServiceController {
 			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
 				final TextRenderContext renderContext = new TextRenderContextBuilder().build();
-				return ok(textRenderer.render(entity, renderContext));
+				return ok(rendererProvider.renderAsText(entity, renderContext));
 			} else {
 				return notFound().build();
 			}
@@ -118,7 +116,7 @@ public class RenderServiceController {
 			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
 				final HtmlRenderContext renderContext = new HtmlRenderContextBuilder().build();
-				return ok(htmlRenderer.render(entity, renderContext));
+				return ok(rendererProvider.renderAsHtml(entity, renderContext));
 			} else {
 				return notFound().build();
 			}

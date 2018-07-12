@@ -4,6 +4,7 @@ import static net.thomas.portfolio.enums.AnalyticsServiceEndpoint.LOOKUP_KNOWLED
 import static net.thomas.portfolio.services.Service.ANALYTICS_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;

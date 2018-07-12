@@ -63,6 +63,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.thomas.portfolio.services</groupId>
+			<artifactId>service-testing</artifactId>
+			<version>${portfolio.version}</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	
 	<build>

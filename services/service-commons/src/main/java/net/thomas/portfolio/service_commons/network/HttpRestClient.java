@@ -1,4 +1,4 @@
-package net.thomas.portfolio.service_commons.services;
+package net.thomas.portfolio.service_commons.network;
 
 import static java.lang.System.nanoTime;
 import static java.util.Arrays.asList;

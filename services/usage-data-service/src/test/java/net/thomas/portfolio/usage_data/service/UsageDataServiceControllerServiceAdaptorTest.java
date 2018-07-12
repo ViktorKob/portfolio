@@ -6,9 +6,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,14 +26,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
-
-import net.thomas.portfolio.common.services.Credentials;
-import net.thomas.portfolio.common.services.ServiceDependency;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
+import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
@@ -43,9 +38,11 @@ import net.thomas.portfolio.usage_data.sql.SqlProxy;
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=usage-data-service", "server.port:18200", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class UsageDataServiceControllerServiceAdaptorTest {
-	private static final String USAGE_DATA_SERVICE = "usage-data-service";
+	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("usage-data-service", 18200);
+
 	private static final String DOCUMENT_TYPE = "TYPE";
 	private static final String DOCUMENT_UID = "FFABCD";
+	private static final DataTypeId DOCUMENT_ID = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID);
 	private static final String USER = "TEST_USER";
 	private static final Long TIME_OF_ACTIVITY = nowInMillisecondsWithSecondsPrecision();
 	private static final UsageActivity DEFAULT_ACTIVITY = new UsageActivity(USER, READ_DOCUMENT, TIME_OF_ACTIVITY);
@@ -69,8 +66,7 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 
 		@Bean
 		public SqlProxy getSqlProxy() {
-			final SqlProxy proxy = mock(SqlProxy.class);
-			return proxy;
+			return mock(SqlProxy.class);
 		}
 	}
 
@@ -82,49 +78,41 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 
 	@Before
 	public void setUpController() throws Exception {
-		final ServiceDependency analyticsServiceConfig = new ServiceDependency(USAGE_DATA_SERVICE, new Credentials("service-user", "password"));
-		final InstanceInfo analyticsServiceInfoMock = mock(InstanceInfo.class);
-		when(analyticsServiceInfoMock.getHomePageUrl()).thenReturn("http://localhost:18200");
-		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
-		when(discoveryClientMock.getNextServerFromEureka(eq(USAGE_DATA_SERVICE), anyBoolean())).thenReturn(analyticsServiceInfoMock);
+		reset(sqlProxy);
+		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		usageAdaptor = new UsageAdaptorImpl();
-		usageAdaptor.initialize(new HttpRestClient(discoveryClientMock, restTemplate, analyticsServiceConfig));
+		usageAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
 	}
 
 	@Test
 	public void shouldStoreUsageActivityUsingSqlProxy() {
-		final DataTypeId uniqueDocument = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID + "AA");
-		usageAdaptor.storeUsageActivity(uniqueDocument, DEFAULT_ACTIVITY);
-		verify(sqlProxy, times(1)).storeUsageActivity(eq(uniqueDocument), eq(DEFAULT_ACTIVITY));
+		usageAdaptor.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
+		verify(sqlProxy, times(1)).storeUsageActivity(eq(DOCUMENT_ID), eq(DEFAULT_ACTIVITY));
 	}
 
 	@Test
 	public void shouldRespondWithStoredUsageActivity() {
-		final DataTypeId uniqueDocument = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID + "AB");
-		final UsageActivity responseActivity = usageAdaptor.storeUsageActivity(uniqueDocument, DEFAULT_ACTIVITY);
+		final UsageActivity responseActivity = usageAdaptor.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
 		assertEquals(DEFAULT_ACTIVITY, responseActivity);
 	}
 
 	@Test
 	public void shouldFetchActivitiesUsingSqlProxy() {
-		final DataTypeId uniqueDocument = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID + "AC");
-		when(sqlProxy.fetchUsageActivities(eq(uniqueDocument), eq(EVERYTHING))).thenReturn(singletonList(DEFAULT_ACTIVITY));
-		final List<UsageActivity> activities = usageAdaptor.fetchUsageActivities(uniqueDocument, EVERYTHING);
+		when(sqlProxy.fetchUsageActivities(eq(DOCUMENT_ID), eq(EVERYTHING))).thenReturn(singletonList(DEFAULT_ACTIVITY));
+		final List<UsageActivity> activities = usageAdaptor.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
 		assertEquals(1, activities.size());
 		assertEquals(DEFAULT_ACTIVITY, activities.get(0));
 	}
 
 	@Test
 	public void shouldFixMissingValues() {
-		final DataTypeId uniqueDocument = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID + "AD");
-		usageAdaptor.fetchUsageActivities(uniqueDocument, new Bounds(null, null, null, null));
-		verify(sqlProxy, times(1)).fetchUsageActivities(eq(uniqueDocument), eq(DEFAULT_BOUNDS));
+		usageAdaptor.fetchUsageActivities(DOCUMENT_ID, new Bounds(null, null, null, null));
+		verify(sqlProxy, times(1)).fetchUsageActivities(eq(DOCUMENT_ID), eq(DEFAULT_BOUNDS));
 	}
 
 	@Test
 	public void shouldFixInvalidDates() {
-		final DataTypeId uniqueDocument = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID + "AE");
-		usageAdaptor.fetchUsageActivities(uniqueDocument, new Bounds(DEFAULT_BOUNDS.offset, DEFAULT_BOUNDS.limit, Long.MIN_VALUE, Long.MAX_VALUE));
-		verify(sqlProxy, times(1)).fetchUsageActivities(eq(uniqueDocument), eq(DEFAULT_BOUNDS));
+		usageAdaptor.fetchUsageActivities(DOCUMENT_ID, new Bounds(DEFAULT_BOUNDS.offset, DEFAULT_BOUNDS.limit, Long.MIN_VALUE, Long.MAX_VALUE));
+		verify(sqlProxy, times(1)).fetchUsageActivities(eq(DOCUMENT_ID), eq(DEFAULT_BOUNDS));
 	}
 }

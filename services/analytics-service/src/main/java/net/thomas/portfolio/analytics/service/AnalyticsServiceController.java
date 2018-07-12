@@ -19,8 +19,8 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.analytics.system.AnalyticsControl;
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HttpRestClient;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
