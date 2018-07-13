@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -22,20 +23,19 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 
-	// TODO[Thomas]: These must also be serialized to be truly model agnostic
-	@JsonIgnore
-	private SimpleRepresentationParserLibrary simpleRepParsers;
-
 	protected Map<String, Fields> dataTypeFields;
 	protected Set<String> dataTypes;
 	protected Set<String> documentTypes;
 	protected Set<String> selectorTypes;
 	protected Set<String> simpleRepresentableTypes;
 	protected Map<String, Collection<Indexable>> indexables;
+	@JsonIgnore
 	protected Map<String, Set<String>> indexableDocumentTypes;
+	@JsonIgnore
 	protected Map<String, Set<String>> indexableRelations;
 	@JsonIgnore
 	protected Set<String> allIndexableRelations;
+	protected SimpleRepresentationParserLibrary simpleRepParsers;
 
 	public HbaseIndexSchemaImpl() {
 	}
@@ -78,6 +78,10 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 			}
 		}
 		return relationMap;
+	}
+
+	public void setSimpleRepParsers(SimpleRepresentationParserLibrary simpleRepParsers) {
+		this.simpleRepParsers = simpleRepParsers;
 	}
 
 	public Map<String, Set<String>> getIndexableDocumentTypes() {
@@ -144,6 +148,10 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		return indexables.get(selectorType);
 	}
 
+	public SimpleRepresentationParserLibrary getSimpleRepParsers() {
+		return simpleRepParsers;
+	}
+
 	@Override
 	@JsonIgnore
 	public Field getFieldForIndexable(Indexable indexable) {
@@ -173,7 +181,18 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 	public String calculateUid(String type, String simpleRep) {
 		if (simpleRepParsers == null) {
 			// TODO[Thomas]: Pending serialization of parsers
-			simpleRepParsers = new SimpleRepresentationParserLibrary(this);
+			final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
+			for (final Entry<String, Fields> fieldsEntry : dataTypeFields.entrySet()) {
+				builder.addFields(fieldsEntry.getKey(), fieldsEntry.getValue());
+			}
+			final HbaseIndexSchemaImpl schemaWithParsers = (HbaseIndexSchemaImpl) builder.addStringFieldParser("Localname", "name")
+				.addStringFieldParser("DisplayedName", "name")
+				.addIntegerFieldParser("PublicId", "number")
+				.addIntegerFieldParser("PrivateId", "number")
+				.addDomainParser()
+				.addEmailAddressParser()
+				.build();
+			simpleRepParsers = schemaWithParsers.getSimpleRepParsers();
 		}
 		return simpleRepParsers.parse(type, simpleRep)
 			.getId().uid;

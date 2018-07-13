@@ -14,58 +14,74 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBu
 public class FakeHbaseIndexSchemaFactory {
 
 	public static HbaseIndexSchema buildSchema() {
-		final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
-		addFields(builder);
-		addTypePredicates(builder);
-		addEmailIndexables(builder, "Localname", "DisplayedName", "Domain", "EmailAddress");
-		addTextMessageIndexables(builder, "PublicId", "PrivateId");
-		addConversationIndexables(builder, "PublicId", "PrivateId");
+		HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
+		builder = addFields(builder);
+		builder = addTypePredicates(builder);
+		builder = addEmailIndexables(builder, "Localname", "DisplayedName", "Domain", "EmailAddress");
+		builder = addTextMessageIndexables(builder, "PublicId", "PrivateId");
+		builder = addConversationIndexables(builder, "PublicId", "PrivateId");
+		builder = addSimpleRepresentableParsers(builder);
 		return builder.build();
 	}
 
-	private static void addFields(final HbaseIndexSchemaBuilder builder) {
-		builder.addField("Localname", fields(string("name")));
-		builder.addField("DisplayedName", fields(string("name")));
-		builder.addField("Domain", fields(string("domainPart"), dataType("domain", "Domain")));
-		builder.addField("EmailAddress", fields(dataType("localname", "Localname"), dataType("domain", "Domain")));
-		builder.addField("EmailEndpoint", fields(dataType("displayedName", "DisplayedName"), dataType("address", "EmailAddress")));
-		builder.addField("PublicId", fields(string("number")));
-		builder.addField("PrivateId", fields(string("number")));
-		builder.addField("CommunicationEndpoint", fields(dataType("publicId", "PublicId"), dataType("privateId", "PrivateId")));
-		builder.addField("Email", fields(string("subject"), string("message"), dataType("from", "EmailEndpoint"), nonKeyDataTypeArray("to", "EmailEndpoint"),
+	private static HbaseIndexSchemaBuilder addFields(final HbaseIndexSchemaBuilder builder) {
+		builder.addFields("Localname", fields(string("name")));
+		builder.addFields("DisplayedName", fields(string("name")));
+		builder.addFields("Domain", fields(string("domainPart"), dataType("domain", "Domain")));
+		builder.addFields("EmailAddress", fields(dataType("localname", "Localname"), dataType("domain", "Domain")));
+		builder.addFields("EmailEndpoint", fields(dataType("displayedName", "DisplayedName"), dataType("address", "EmailAddress")));
+		builder.addFields("PublicId", fields(string("number")));
+		builder.addFields("PrivateId", fields(string("number")));
+		builder.addFields("CommunicationEndpoint", fields(dataType("publicId", "PublicId"), dataType("privateId", "PrivateId")));
+		builder.addFields("Email", fields(string("subject"), string("message"), dataType("from", "EmailEndpoint"), nonKeyDataTypeArray("to", "EmailEndpoint"),
 				nonKeyDataTypeArray("cc", "EmailEndpoint"), nonKeyDataTypeArray("bcc", "EmailEndpoint")));
-		builder.addField("TextMessage", fields(string("message"), dataType("sender", "CommunicationEndpoint"), dataType("receiver", "CommunicationEndpoint"),
+		builder.addFields("TextMessage", fields(string("message"), dataType("sender", "CommunicationEndpoint"), dataType("receiver", "CommunicationEndpoint"),
 				geoLocation("senderLocation"), geoLocation("receiverLocation")));
-		builder.addField("Conversation", fields(integer("durationIsSeconds"), dataType("primary", "CommunicationEndpoint"),
+		builder.addFields("Conversation", fields(integer("durationIsSeconds"), dataType("primary", "CommunicationEndpoint"),
 				nonKeyDataType("secondary", "CommunicationEndpoint"), geoLocation("primaryLocation"), geoLocation("secondaryLocation")));
+		return builder;
 	}
 
-	private static void addTypePredicates(final HbaseIndexSchemaBuilder builder) {
+	private static HbaseIndexSchemaBuilder addTypePredicates(final HbaseIndexSchemaBuilder builder) {
 		builder.addDocumentTypes("Email", "TextMessage", "Conversation");
 		builder.addSelectorTypes("Localname", "DisplayedName", "Domain", "EmailAddress", "PublicId", "PrivateId");
 		builder.addSimpleRepresentableTypes("Localname", "DisplayedName", "Domain", "EmailAddress", "PublicId", "PrivateId");
+		return builder;
 	}
 
-	private static void addEmailIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
+	private static HbaseIndexSchemaBuilder addEmailIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
 		for (final String selectorType : selectorTypes) {
 			builder.addIndexable(selectorType, "send", "Email", "from");
 			builder.addIndexable(selectorType, "received", "Email", "to");
 			builder.addIndexable(selectorType, "ccReceived", "Email", "cc");
 			builder.addIndexable(selectorType, "bccReceived", "Email", "bcc");
 		}
+		return builder;
 	}
 
-	private static void addTextMessageIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
+	private static HbaseIndexSchemaBuilder addTextMessageIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
 		for (final String selectorType : selectorTypes) {
 			builder.addIndexable(selectorType, "send", "TextMessage", "sender");
 			builder.addIndexable(selectorType, "received", "TextMessage", "receiver");
 		}
+		return builder;
 	}
 
-	private static void addConversationIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
+	private static HbaseIndexSchemaBuilder addConversationIndexables(HbaseIndexSchemaBuilder builder, String... selectorTypes) {
 		for (final String selectorType : selectorTypes) {
 			builder.addIndexable(selectorType, "primary", "Conversation", "primary");
 			builder.addIndexable(selectorType, "secondary", "Conversation", "secondary");
 		}
+		return builder;
+	}
+
+	private static HbaseIndexSchemaBuilder addSimpleRepresentableParsers(HbaseIndexSchemaBuilder builder) {
+		builder.addStringFieldParser("Localname", "name")
+			.addStringFieldParser("DisplayedName", "name")
+			.addIntegerFieldParser("PublicId", "number")
+			.addIntegerFieldParser("PrivateId", "number")
+			.addDomainParser()
+			.addEmailAddressParser();
+		return builder;
 	}
 }

@@ -8,12 +8,12 @@ import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerat
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class TextMessageGenerator extends DocumentGenerator {
 	private final StringGenerator messageGenerator;
-	private final IdGenerator uidTool;
+	private final IdCalculator uidTool;
 	private final Person initiator;
 	private final List<Person> personalRelations;
 
@@ -22,7 +22,7 @@ public class TextMessageGenerator extends DocumentGenerator {
 		this.initiator = initiator;
 		this.personalRelations = personalRelations;
 		messageGenerator = new StringGenerator(5, 250, 0.1, random.nextLong());
-		uidTool = new IdGenerator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
+		uidTool = new IdCalculator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class TextMessageGenerator extends DocumentGenerator {
 	private DataType createCommunicationEndpoint(String numberField, DataType number) {
 		final DataType endpoint = new RawDataType();
 		endpoint.put(numberField, number);
-		endpoint.setId(uidTool.calculateId("CommunicationEndpoint", endpoint));
+		endpoint.setId(uidTool.calculate("CommunicationEndpoint", endpoint));
 		return endpoint;
 	}
 }

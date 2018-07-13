@@ -15,13 +15,13 @@ import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class EmailGenerator extends DocumentGenerator {
 	private final StringGenerator subjectGenerator;
 	private final StringGenerator messageGenerator;
-	private final IdGenerator uidTool;
+	private final IdCalculator uidTool;
 
 	private final Map<String, List<DataType>> previousDisplayedNameMatches;
 	private final Person sender;
@@ -33,7 +33,7 @@ public class EmailGenerator extends DocumentGenerator {
 		this.potentialRecipients = potentialRecipients;
 		subjectGenerator = new StringGenerator(0, 125, .2, random.nextLong());
 		messageGenerator = new StringGenerator(30, 400, .10, random.nextLong());
-		uidTool = new IdGenerator(schema.getFieldsForDataType("EmailEndpoint"), true);
+		uidTool = new IdCalculator(schema.getFieldsForDataType("EmailEndpoint"), true);
 		previousDisplayedNameMatches = new HashMap<>();
 	}
 
@@ -72,7 +72,7 @@ public class EmailGenerator extends DocumentGenerator {
 			endpoint.put("displayedName", displayedName);
 		}
 		endpoint.put("address", address);
-		endpoint.setId(uidTool.calculateId("EmailEndpoint", endpoint));
+		endpoint.setId(uidTool.calculate("EmailEndpoint", endpoint));
 		return endpoint;
 	}
 

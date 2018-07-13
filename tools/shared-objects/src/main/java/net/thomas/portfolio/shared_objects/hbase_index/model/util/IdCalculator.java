@@ -16,18 +16,18 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
-public class IdGenerator {
+public class IdCalculator {
 	private final Fields fields;
 	private final boolean keyShouldBeUnique;
 	private int counter;
 
-	public IdGenerator(Fields fields, boolean keyShouldBeUnique) {
+	public IdCalculator(Fields fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
 		this.keyShouldBeUnique = keyShouldBeUnique;
 		counter = 0;
 	}
 
-	public synchronized DataTypeId calculateId(String type, DataType entity) {
+	public synchronized DataTypeId calculate(String type, DataType entity) {
 		try {
 			final MessageDigest hasher = MessageDigest.getInstance("MD5");
 			if (keyShouldBeUnique) {
