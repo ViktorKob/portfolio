@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -30,8 +31,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=render-service", "server.port:18150", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class RenderServiceControllerServiceAdaptorTest {
-	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("render-service",
-			18150);
+	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("render-service", 18150);
 
 	private static final String DATA_TYPE = "TYPE";
 	private static final String UID = "FF";
@@ -59,34 +59,36 @@ public class RenderServiceControllerServiceAdaptorTest {
 	private RestTemplate restTemplate;
 	@Autowired
 	private RendererProvider rendererProvider;
-	private static RenderingAdaptorImpl renderingAdaptor;
+	private Adaptors adaptors;
 
 	@Before
 	public void setUpController() {
 		reset(rendererProvider);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		renderingAdaptor = new RenderingAdaptorImpl();
+		final RenderingAdaptorImpl renderingAdaptor = new RenderingAdaptorImpl();
 		renderingAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		adaptors = new Adaptors.Builder().setRenderingAdaptor(renderingAdaptor)
+			.build();
 	}
 
 	@Test
 	public void shouldLookupDataTypeAndRenderAsSimpleRep() {
 		when(rendererProvider.renderAsSimpleRep(eq(ENTITY), any())).thenReturn(RENDERED_ENTITY);
-		final String simpleRep = renderingAdaptor.renderAsSimpleRepresentation(DATA_TYPE_ID);
+		final String simpleRep = adaptors.renderAsSimpleRepresentation(DATA_TYPE_ID);
 		assertEquals(RENDERED_ENTITY, simpleRep);
 	}
 
 	@Test
 	public void shouldLookupDataTypeAndRenderAsText() {
 		when(rendererProvider.renderAsText(eq(ENTITY), any())).thenReturn(RENDERED_ENTITY);
-		final String simpleRep = renderingAdaptor.renderAsText(DATA_TYPE_ID);
+		final String simpleRep = adaptors.renderAsText(DATA_TYPE_ID);
 		assertEquals(RENDERED_ENTITY, simpleRep);
 	}
 
 	@Test
 	public void shouldLookupDataTypeAndRenderAsHtml() {
 		when(rendererProvider.renderAsHtml(eq(ENTITY), any())).thenReturn(RENDERED_ENTITY);
-		final String simpleRep = renderingAdaptor.renderAsHtml(DATA_TYPE_ID);
+		final String simpleRep = adaptors.renderAsHtml(DATA_TYPE_ID);
 		assertEquals(RENDERED_ENTITY, simpleRep);
 	}
 }

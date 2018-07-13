@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -86,70 +87,72 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	private HbaseIndex index;
 	@Autowired
 	private RestTemplate restTemplate;
-	private HbaseIndexModelAdaptorImpl hbaseAdaptor;
+	private Adaptors adaptors;
 
 	@Before
 	public void setUpController() throws Exception {
 		reset(index);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		hbaseAdaptor = new HbaseIndexModelAdaptorImpl();
+		final HbaseIndexModelAdaptorImpl hbaseAdaptor = new HbaseIndexModelAdaptorImpl();
 		hbaseAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		adaptors = new Adaptors.Builder().setHbaseModelAdaptor(hbaseAdaptor)
+			.build();
 	}
 
 	@Test
 	public void shouldGetDataTypesFromSchema() {
-		final Collection<String> dataTypes = hbaseAdaptor.getDataTypes();
+		final Collection<String> dataTypes = adaptors.getDataTypes();
 		assertEquals(schema.getDataTypes(), dataTypes);
 	}
 
 	@Test
 	public void shouldGetDocumentTypesFromSchema() {
-		final Collection<String> dataTypes = hbaseAdaptor.getDocumentTypes();
+		final Collection<String> dataTypes = adaptors.getDocumentTypes();
 		assertEquals(schema.getDocumentTypes(), dataTypes);
 	}
 
 	@Test
 	public void shouldGetSelectorTypesFromSchema() {
-		final Collection<String> dataTypes = hbaseAdaptor.getSelectorTypes();
+		final Collection<String> dataTypes = adaptors.getSelectorTypes();
 		assertEquals(schema.getSelectorTypes(), dataTypes);
 	}
 
 	@Test
 	public void shouldBeSimpleRepresentable() {
-		final boolean isSimpleRepresentable = hbaseAdaptor.isSimpleRepresentable(SIMPLE_REPRESENTABLE_TYPE);
+		final boolean isSimpleRepresentable = adaptors.isSimpleRepresentable(SIMPLE_REPRESENTABLE_TYPE);
 		assertTrue(isSimpleRepresentable);
 	}
 
 	@Test
 	public void shouldNotBeSimpleRepresentable() {
-		final boolean isSimpleRepresentable = hbaseAdaptor.isSimpleRepresentable(DOCUMENT_TYPE);
+		final boolean isSimpleRepresentable = adaptors.isSimpleRepresentable(DOCUMENT_TYPE);
 		assertFalse(isSimpleRepresentable);
 	}
 
 	@Test
 	public void shouldGetDataTypeFromIndex() {
 		when(index.getDataType(eq(SELECTOR_ID))).thenReturn(ENTITY);
-		final DataType dataType = hbaseAdaptor.getDataType(SELECTOR_ID);
+		final DataType dataType = adaptors.getDataType(SELECTOR_ID);
 		assertEquals(ENTITY, dataType);
 	}
 
 	@Test
 	public void shouldGetDataTypeFromCacheOnSecondQuery() {
 		when(index.getDataType(eq(SELECTOR_ID))).thenReturn(ENTITY);
-		hbaseAdaptor.getDataType(SELECTOR_ID);
-		hbaseAdaptor.getDataType(SELECTOR_ID);
+		adaptors.getDataType(SELECTOR_ID);
+		adaptors.getDataType(SELECTOR_ID);
 		verify(index, times(1)).getDataType(eq(SELECTOR_ID));
 	}
 
 	@Test
 	public void shouldGetIndexedRelationsFromSchema() {
-		final Collection<String> dataTypes = hbaseAdaptor.getAllIndexedRelations();
+		final Collection<String> dataTypes = adaptors.getAllIndexedRelations();
 		assertEquals(schema.getAllIndexableRelations(), dataTypes);
 	}
 
 	@Test
 	public void shouldGetDataTypeFieldsFromSchema() {
-		final Fields dataTypes = hbaseAdaptor.getFieldsForDataType(DOCUMENT_TYPE);
+		final Fields dataTypes = adaptors.getFieldsForDataType(DOCUMENT_TYPE);
 		assertEquals(schema.getFieldsForDataType(DOCUMENT_TYPE), dataTypes);
 	}
 }

@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
@@ -45,18 +46,20 @@ public class AnalyticsServiceControllerServiceAdaptorTest {
 
 	@Autowired
 	private RestTemplate restTemplate;
-	private AnalyticsAdaptorImpl analyticsAdaptor;
+	private Adaptors adaptors;
 
 	@Before
 	public void setUpController() {
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		analyticsAdaptor = new AnalyticsAdaptorImpl();
+		final AnalyticsAdaptorImpl analyticsAdaptor = new AnalyticsAdaptorImpl();
 		analyticsAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		adaptors = new Adaptors.Builder().setAnalyticsAdaptor(analyticsAdaptor)
+			.build();
 	}
 
 	@Test
 	public void shouldReturnFakeKnowledgeUsingEndpoint() {
-		final AnalyticalKnowledge knowledge = analyticsAdaptor.getKnowledge(SELECTOR_ID);
+		final AnalyticalKnowledge knowledge = adaptors.getKnowledge(SELECTOR_ID);
 		assertEquals(CERTAIN, knowledge.isKnown);
 		assertEquals(CERTAIN, knowledge.isRestricted);
 		assertEquals("Target " + KNOWN_RESTRICTED_UID_WITH_ALIAS, knowledge.alias);

@@ -11,7 +11,7 @@ public class GraphQlModelBuilder {
 	public GraphQlModelBuilder() {
 	}
 
-	public GraphQlModelBuilder setAdaptor(Adaptors adaptors) {
+	public GraphQlModelBuilder setAdaptors(Adaptors adaptors) {
 		this.adaptors = adaptors;
 		return this;
 	}

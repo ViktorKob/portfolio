@@ -25,7 +25,7 @@ public class UsageActivitiesFetcher extends ModelDataFetcher<List<UsageActivity>
 	@Override
 	public List<UsageActivity> get(DataFetchingEnvironment environment) {
 		final Bounds bounds = extractBounds(environment);
-		return adaptors.fetchUsageActivity(getId(environment), bounds);
+		return adaptors.fetchUsageActivities(getId(environment), bounds);
 	}
 
 	private Bounds extractBounds(DataFetchingEnvironment environment) {

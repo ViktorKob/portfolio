@@ -49,6 +49,7 @@ public class NexusServiceController {
 	private UsageAdaptor usageAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
+	private Adaptors adaptors;
 
 	public NexusServiceController(NexusServiceConfiguration config) {
 		this.config = config;
@@ -85,7 +86,12 @@ public class NexusServiceController {
 	}
 
 	@PostConstruct
-	public void buildHttpClient() {
+	public void initializeInfrastructure() {
+		initializeIndividualAdaptors();
+		adaptors = buildCompositeAdaptors();
+	}
+
+	private void initializeIndividualAdaptors() {
 		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		((LegalAdaptorImpl) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
@@ -93,10 +99,20 @@ public class NexusServiceController {
 		((UsageAdaptorImpl) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
 	}
 
+	private Adaptors buildCompositeAdaptors() {
+		final Adaptors.Builder builder = new Adaptors.Builder();
+		final Adaptors adaptors = builder.setAnalyticsAdaptor(analyticsAdaptor)
+			.setHbaseModelAdaptor(hbaseAdaptor)
+			.setLegalAdaptor(legalAdaptor)
+			.setRenderingAdaptor(renderingAdaptor)
+			.setUsageAdaptor(usageAdaptor)
+			.build();
+		return adaptors;
+	}
+
 	@Bean
 	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
-		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder();
-		schemaBuilder.setAdaptor(new Adaptors(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor));
+		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder().setAdaptors(adaptors);
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
 		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
 	}
