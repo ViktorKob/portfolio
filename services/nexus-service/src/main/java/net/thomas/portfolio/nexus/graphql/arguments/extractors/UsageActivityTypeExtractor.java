@@ -3,7 +3,7 @@ package net.thomas.portfolio.nexus.graphql.arguments.extractors;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.arguments.ArgumentExtractor;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 public class UsageActivityTypeExtractor implements ArgumentExtractor {

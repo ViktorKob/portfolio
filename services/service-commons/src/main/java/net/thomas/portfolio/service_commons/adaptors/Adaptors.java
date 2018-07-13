@@ -1,10 +1,15 @@
-package net.thomas.portfolio.shared_objects.adaptors;
+package net.thomas.portfolio.service_commons.adaptors;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
+import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;

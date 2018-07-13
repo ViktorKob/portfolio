@@ -1,6 +1,6 @@
 package net.thomas.portfolio.nexus.graphql.data_proxies;
 
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 
 public abstract class RawTypeProxy<CONTENT_TYPE> extends DataTypeProxy<CONTENT_TYPE, RawDataType> {

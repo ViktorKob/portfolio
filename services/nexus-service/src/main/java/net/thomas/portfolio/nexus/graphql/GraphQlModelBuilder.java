@@ -3,7 +3,7 @@ package net.thomas.portfolio.nexus.graphql;
 import static graphql.schema.GraphQLSchema.newSchema;
 
 import graphql.schema.GraphQLSchema;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 
 public class GraphQlModelBuilder {
 	private Adaptors adaptors;

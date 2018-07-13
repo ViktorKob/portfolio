@@ -10,7 +10,7 @@ import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.GraphQLInputType;
 import net.thomas.portfolio.nexus.graphql.arguments.extractors.FormattedDateExtractor;
 import net.thomas.portfolio.nexus.graphql.arguments.extractors.UsageActivityTypeExtractor;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 
 public enum GraphQlArgument {
 	DOCUMENT_TYPE("documentType", nonNull(GraphQLString)),

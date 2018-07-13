@@ -4,7 +4,7 @@ import java.util.Map;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 
 public class SelectorStatisticsForPeriodFetcher extends ModelDataFetcher<Long> {
