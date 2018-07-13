@@ -56,7 +56,9 @@ public class DataTypeId implements ParameterGroup {
 
 	@Override
 	public int hashCode() {
-		return type.hashCode() * uid.hashCode() * 254147;
+		int hash = type.hashCode();
+		hash = 37 * hash + uid.hashCode();
+		return hash;
 	}
 
 	@Override

@@ -108,6 +108,15 @@ public class PrimitiveField implements Field {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = name.hashCode();
+		hash = 37 * hash + type.ordinal();
+		hash = 37 * hash + (isArray ? 1 : 0);
+		hash = 37 * hash + (isKeyComponent ? 1 : 0);
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof PrimitiveField) {
 			final PrimitiveField other = (PrimitiveField) obj;

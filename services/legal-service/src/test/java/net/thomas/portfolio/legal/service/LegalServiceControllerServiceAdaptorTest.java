@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import net.thomas.portfolio.legal.system.LegalInfoBuilder;
+import net.thomas.portfolio.legal.system.LegalInfoForTestBuilder;
 import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
@@ -61,12 +61,12 @@ public class LegalServiceControllerServiceAdaptorTest {
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
-	private LegalInfoBuilder legalInfoBuilder;
+	private LegalInfoForTestBuilder legalInfoBuilder;
 	private Adaptors adaptors;
 
 	@Before
 	public void setupController() {
-		legalInfoBuilder = new LegalInfoBuilder();
+		legalInfoBuilder = new LegalInfoForTestBuilder();
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl();
 		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());

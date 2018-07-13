@@ -58,7 +58,7 @@ public class AnalyticsServiceController {
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
-		}).run();
+		}).start();
 		analyticsSystem = new AnalyticsControl();
 	}
 

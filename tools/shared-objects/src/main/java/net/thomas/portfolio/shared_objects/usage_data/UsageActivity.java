@@ -59,6 +59,14 @@ public class UsageActivity implements ParameterGroup {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = user.hashCode();
+		hash = 37 * hash + type.ordinal();
+		hash = (int) (37 * hash + timeOfActivity);
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof UsageActivity) {
 			final UsageActivity other = (UsageActivity) obj;

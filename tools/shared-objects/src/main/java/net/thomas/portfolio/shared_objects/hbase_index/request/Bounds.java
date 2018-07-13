@@ -107,6 +107,15 @@ public class Bounds implements ParameterGroup {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = offset;
+		hash = 37 * hash + limit;
+		hash = (int) (37 * hash + after);
+		hash = (int) (37 * hash + before);
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Bounds) {
 			final Bounds other = (Bounds) obj;

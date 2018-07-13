@@ -106,7 +106,7 @@ public class FakeWorld extends World {
 	}
 
 	private Map<String, Collection<Reference>> generateSourceReferences(Collection<DataType> events, long randomSeed) {
-		final Random random = new Random(randomSeed++);
+		final Random random = new Random(randomSeed);
 		final ReferenceGenerator generator = new ReferenceGenerator(random.nextLong());
 		final Map<String, Collection<Reference>> allReferences = new HashMap<>();
 		for (final DataType entity : events) {
