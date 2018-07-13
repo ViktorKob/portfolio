@@ -31,6 +31,11 @@ public class DomainSimpleRepParser extends SimpleRepresentationParser {
 	}
 
 	@Override
+	public String getImplementationClass() {
+		return getClass().getSimpleName();
+	}
+
+	@Override
 	public String toString() {
 		return asString(this);
 	}

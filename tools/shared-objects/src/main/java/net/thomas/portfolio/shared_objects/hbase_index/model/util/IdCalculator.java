@@ -8,6 +8,8 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
@@ -19,6 +21,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 public class IdCalculator {
 	private final Fields fields;
 	private final boolean keyShouldBeUnique;
+	@JsonIgnore
 	private int counter;
 
 	public IdCalculator(Fields fields, boolean keyShouldBeUnique) {
@@ -71,6 +74,14 @@ public class IdCalculator {
 			final DataTypeId id = ((DataType) value).getId();
 			hasher.update(id.uid.getBytes());
 		}
+	}
+
+	public Fields getFields() {
+		return fields;
+	}
+
+	public boolean isKeyShouldBeUnique() {
+		return keyShouldBeUnique;
 	}
 
 	@Override

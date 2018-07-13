@@ -35,6 +35,15 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 	}
 
 	@Override
+	public String getImplementationClass() {
+		return getClass().getSimpleName();
+	}
+
+	public String getField() {
+		return field;
+	}
+
+	@Override
 	public String toString() {
 		return asString(this);
 	}
