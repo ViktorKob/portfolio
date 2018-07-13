@@ -49,6 +49,21 @@ logging:
       springframework: INFO
     springfox: INFO
 
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+      circuitBreaker:
+        requestVolumeThreshold: 5
+        sleepWindowInMilliseconds: 1000
+      metrics:
+        rollingStats:
+          timeInMilliseconds: 600000
+          numBuckets: 600
+
 eureka:
   client:
     registerWithEureka: true
