@@ -31,25 +31,25 @@ public class Adaptors {
 	private final UsageAdaptor usageAdaptor;
 	private final ModelUtilities utilities;
 
-	public Adaptors(AnalyticsAdaptor analyticsAdaptor, HbaseIndexModelAdaptor hbaseModelAdaptor, LegalAdaptor legalAdaptor, RenderingAdaptor renderingAdaptor,
-			UsageAdaptor usageAdaptor) {
+	private Adaptors(AnalyticsAdaptor analyticsAdaptor, HbaseIndexModelAdaptor hbaseModelAdaptor, LegalAdaptor legalAdaptor, RenderingAdaptor renderingAdaptor,
+			UsageAdaptor usageAdaptor, ModelUtilities utilities) {
 		this.analyticsAdaptor = analyticsAdaptor;
 		this.hbaseModelAdaptor = hbaseModelAdaptor;
 		this.legalAdaptor = legalAdaptor;
 		this.renderingAdaptor = renderingAdaptor;
 		this.usageAdaptor = usageAdaptor;
-		utilities = new ModelUtilities();
+		this.utilities = utilities;
 	}
 
 	/***
-	 * Using {@link AnalyticsAdaptor#getPriorKnowledge}<BR>
+	 * Using {@link AnalyticsAdaptor#getKnowledge}<BR>
 	 * This method will run a query in the analytics system to fetch relevant information about the selector.
 	 *
 	 * @param selectorId
 	 *            The ID of the selector to query about
 	 * @return A summary of the knowledge about this exact selector present in the system
 	 */
-	public AnalyticalKnowledge getPriorKnowledge(DataTypeId selectorId) {
+	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
 		return analyticsAdaptor.getKnowledge(selectorId);
 	}
 
@@ -169,13 +169,13 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link HbaseIndexModelAdaptor#getDataTypeFields}<BR>
+	 * Using {@link HbaseIndexModelAdaptor#getFieldsForDataType}<BR>
 	 *
 	 * @param dataType
 	 *            The data type in question
 	 * @return All fields belonging to this type in the current schema
 	 */
-	public Fields getDataTypeFields(String dataType) {
+	public Fields getFieldsForDataType(String dataType) {
 		return hbaseModelAdaptor.getFieldsForDataType(dataType);
 	}
 
@@ -316,7 +316,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link UsageAdaptor#fetchUsageActivity}<BR>
+	 * Using {@link UsageAdaptor#fetchUsageActivities}<BR>
 	 *
 	 * @param documentId
 	 *            The ID of the document to fetch usage events for
@@ -324,7 +324,7 @@ public class Adaptors {
 	 *            The parameters for the fetch
 	 * @return An ordered (newest first) list of events for the document
 	 */
-	public List<UsageActivity> fetchUsageActivity(DataTypeId documentId, Bounds bounds) {
+	public List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
 		return usageAdaptor.fetchUsageActivities(documentId, bounds);
 	}
 
@@ -335,5 +335,50 @@ public class Adaptors {
 	 */
 	public DateConverter getIec8601DateConverter() {
 		return utilities.getIec8601DateConverter();
+	}
+
+	public static class Builder {
+		private AnalyticsAdaptor analyticsAdaptor;
+		private HbaseIndexModelAdaptor hbaseModelAdaptor;
+		private LegalAdaptor legalAdaptor;
+		private RenderingAdaptor renderingAdaptor;
+		private UsageAdaptor usageAdaptor;
+
+		public Builder() {
+			analyticsAdaptor = null;
+			hbaseModelAdaptor = null;
+			legalAdaptor = null;
+			renderingAdaptor = null;
+			usageAdaptor = null;
+		}
+
+		public Builder setAnalyticsAdaptor(AnalyticsAdaptor analyticsAdaptor) {
+			this.analyticsAdaptor = analyticsAdaptor;
+			return this;
+		}
+
+		public Builder setHbaseModelAdaptor(HbaseIndexModelAdaptor hbaseModelAdaptor) {
+			this.hbaseModelAdaptor = hbaseModelAdaptor;
+			return this;
+		}
+
+		public Builder setLegalAdaptor(LegalAdaptor legalAdaptor) {
+			this.legalAdaptor = legalAdaptor;
+			return this;
+		}
+
+		public Builder setRenderingAdaptor(RenderingAdaptor renderingAdaptor) {
+			this.renderingAdaptor = renderingAdaptor;
+			return this;
+		}
+
+		public Builder setUsageAdaptor(UsageAdaptor usageAdaptor) {
+			this.usageAdaptor = usageAdaptor;
+			return this;
+		}
+
+		public Adaptors build() {
+			return new Adaptors(analyticsAdaptor, hbaseModelAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor, new ModelUtilities());
+		}
 	}
 }

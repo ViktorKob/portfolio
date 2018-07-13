@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
@@ -74,45 +75,47 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 	private SqlProxy sqlProxy;
 	@Autowired
 	private RestTemplate restTemplate;
-	private UsageAdaptorImpl usageAdaptor;
+	private Adaptors adaptors;
 
 	@Before
 	public void setUpController() throws Exception {
 		reset(sqlProxy);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		usageAdaptor = new UsageAdaptorImpl();
+		final UsageAdaptorImpl usageAdaptor = new UsageAdaptorImpl();
 		usageAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		adaptors = new Adaptors.Builder().setUsageAdaptor(usageAdaptor)
+			.build();
 	}
 
 	@Test
 	public void shouldStoreUsageActivityUsingSqlProxy() {
-		usageAdaptor.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
+		adaptors.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
 		verify(sqlProxy, times(1)).storeUsageActivity(eq(DOCUMENT_ID), eq(DEFAULT_ACTIVITY));
 	}
 
 	@Test
 	public void shouldRespondWithStoredUsageActivity() {
-		final UsageActivity responseActivity = usageAdaptor.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
+		final UsageActivity responseActivity = adaptors.storeUsageActivity(DOCUMENT_ID, DEFAULT_ACTIVITY);
 		assertEquals(DEFAULT_ACTIVITY, responseActivity);
 	}
 
 	@Test
 	public void shouldFetchActivitiesUsingSqlProxy() {
 		when(sqlProxy.fetchUsageActivities(eq(DOCUMENT_ID), eq(EVERYTHING))).thenReturn(singletonList(DEFAULT_ACTIVITY));
-		final List<UsageActivity> activities = usageAdaptor.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
+		final List<UsageActivity> activities = adaptors.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
 		assertEquals(1, activities.size());
 		assertEquals(DEFAULT_ACTIVITY, activities.get(0));
 	}
 
 	@Test
 	public void shouldFixMissingValues() {
-		usageAdaptor.fetchUsageActivities(DOCUMENT_ID, new Bounds(null, null, null, null));
+		adaptors.fetchUsageActivities(DOCUMENT_ID, new Bounds(null, null, null, null));
 		verify(sqlProxy, times(1)).fetchUsageActivities(eq(DOCUMENT_ID), eq(DEFAULT_BOUNDS));
 	}
 
 	@Test
 	public void shouldFixInvalidDates() {
-		usageAdaptor.fetchUsageActivities(DOCUMENT_ID, new Bounds(DEFAULT_BOUNDS.offset, DEFAULT_BOUNDS.limit, Long.MIN_VALUE, Long.MAX_VALUE));
+		adaptors.fetchUsageActivities(DOCUMENT_ID, new Bounds(DEFAULT_BOUNDS.offset, DEFAULT_BOUNDS.limit, Long.MIN_VALUE, Long.MAX_VALUE));
 		verify(sqlProxy, times(1)).fetchUsageActivities(eq(DOCUMENT_ID), eq(DEFAULT_BOUNDS));
 	}
 }

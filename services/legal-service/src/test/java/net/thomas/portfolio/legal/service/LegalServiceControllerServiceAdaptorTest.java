@@ -27,6 +27,7 @@ import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
+import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
@@ -61,21 +62,23 @@ public class LegalServiceControllerServiceAdaptorTest {
 	@Autowired
 	private RestTemplate restTemplate;
 	private LegalInfoBuilder legalInfoBuilder;
-	private LegalAdaptorImpl legalAdaptor;
+	private Adaptors adaptors;
 
 	@Before
 	public void setupController() {
 		legalInfoBuilder = new LegalInfoBuilder();
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		legalAdaptor = new LegalAdaptorImpl();
+		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl();
 		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		adaptors = new Adaptors.Builder().setLegalAdaptor(legalAdaptor)
+			.build();
 	}
 
 	@Test
 	public void searchingForUnrestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -83,7 +86,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForSemiRestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -91,19 +94,19 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForRestrictedSelectorWithJustificationIsLegal() {
 		legalInfoBuilder.setValidJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = legalAdaptor.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingInvertedIndexLookup() {
-		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogInvertedIndexLookup(SELECTOR_ID, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = adaptors.auditLogInvertedIndexLookup(SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingStatisticsLookup() {
-		final Boolean loggingWasSuccessfull = legalAdaptor.auditLogStatisticsLookup(SELECTOR_ID, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = adaptors.auditLogStatisticsLookup(SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 

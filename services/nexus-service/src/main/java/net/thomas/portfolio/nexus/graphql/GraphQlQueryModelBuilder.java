@@ -201,7 +201,7 @@ public class GraphQlQueryModelBuilder {
 			builder.field(createInvertedIndexLookupField(dataType, adaptors));
 		}
 
-		for (final Field field : adaptors.getDataTypeFields(dataType)) {
+		for (final Field field : adaptors.getFieldsForDataType(dataType)) {
 			if (field instanceof PrimitiveField) {
 				builder.field(buildFieldDefinition((PrimitiveField) field, dataType, adaptors));
 			} else if (field instanceof ReferenceField) {
@@ -560,7 +560,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("knowledge")
 			.description("Fetch prior knowledge about the selector from the analytics platform")
 			.type(new GraphQLTypeReference("Knowledge"))
-			.dataFetcher(environment -> adaptors.getPriorKnowledge(getId(environment)))
+			.dataFetcher(environment -> adaptors.getKnowledge(getId(environment)))
 			.build();
 	}
 
