@@ -176,8 +176,6 @@ Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup
 - [ ] Failover for services and red-green deployment of changes 
 - [ ] Make Eureka and the clients AWS aware
 - [ ] Add OpenAPI 3 integration to the services
-- [ ] Add circuit breakers where relevant
-- [ ] Add Hystrix integration
 - [ ] Look into replacing / supplementing proxy with Zuul
 - [ ] Add authentication layer, e.g. using UAA, JWS, OAuth2, JWT, JWA and OpenID
 - [ ] Containerization of services (probably using Docker)
