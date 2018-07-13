@@ -27,8 +27,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.UsageAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;

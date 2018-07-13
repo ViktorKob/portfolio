@@ -1,6 +1,6 @@
 package net.thomas.portfolio.render.common.context;
 
-import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 
 public class SimpleRepresentationRenderContextBuilder {
 	private HbaseIndexModelAdaptor adaptor;

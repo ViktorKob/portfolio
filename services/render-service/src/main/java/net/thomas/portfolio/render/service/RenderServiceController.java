@@ -27,10 +27,10 @@ import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderCont
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContextBuilder;
 import net.thomas.portfolio.render.common.context.TextRenderContext;
 import net.thomas.portfolio.render.common.context.TextRenderContextBuilder;
+import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
-import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 

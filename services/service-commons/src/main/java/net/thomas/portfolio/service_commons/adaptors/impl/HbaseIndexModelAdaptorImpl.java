@@ -1,4 +1,4 @@
-package net.thomas.portfolio.service_commons.services;
+package net.thomas.portfolio.service_commons.adaptors.impl;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -19,15 +19,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.core.ParameterizedTypeReference;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.common.services.ParameterGroup;
+import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
@@ -38,6 +41,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLook
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
+@EnableCircuitBreaker
 public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
@@ -122,6 +126,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
@@ -131,6 +136,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public DataType getDataType(DataTypeId id) {
 		try {
 			return dataTypeCache.get(id, () -> {
@@ -156,6 +162,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Collection<Reference> getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Collection<Reference>> responseType = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
@@ -165,6 +172,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> responseType = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
@@ -174,6 +182,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 	}
 
 	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
