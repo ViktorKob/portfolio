@@ -4,7 +4,7 @@ import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERT
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 
-import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;

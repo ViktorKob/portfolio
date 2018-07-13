@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.adaptors;
+package net.thomas.portfolio.service_commons.adaptors.specific;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 

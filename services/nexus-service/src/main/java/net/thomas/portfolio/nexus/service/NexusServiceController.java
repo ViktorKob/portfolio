@@ -18,17 +18,17 @@ import graphql.servlet.SimpleGraphQLServlet;
 import graphql.servlet.SimpleGraphQLServlet.Builder;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.LegalAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.RenderingAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.impl.UsageAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
+import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.services.AnalyticsAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.LegalAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.RenderingAdaptorImpl;
-import net.thomas.portfolio.service_commons.services.UsageAdaptorImpl;
-import net.thomas.portfolio.shared_objects.adaptors.AnalyticsAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.HbaseIndexModelAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.LegalAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.RenderingAdaptor;
-import net.thomas.portfolio.shared_objects.adaptors.UsageAdaptor;
 
 @SpringBootApplication
 public class NexusServiceController {

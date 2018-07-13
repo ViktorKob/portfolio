@@ -3,6 +3,12 @@ spring.application.name: infrastructure-master
 server:
   port: 8000
 
+security:
+  user:
+    name: service-user 
+    password: password 
+    roles: USER 
+
 eureka:
   instance:
     hostname: localhost
