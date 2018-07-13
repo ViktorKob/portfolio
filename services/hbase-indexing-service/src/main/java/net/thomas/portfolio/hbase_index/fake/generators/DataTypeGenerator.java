@@ -6,23 +6,23 @@ import java.util.Random;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public abstract class DataTypeGenerator implements Iterable<DataType>, Iterator<DataType> {
 
 	protected final String dataTypeName;
 	protected final Random random;
-	private final IdGenerator idTool;
+	private final IdCalculator idTool;
 
 	public DataTypeGenerator(String dataTypeName, boolean keyShouldBeUnique, HbaseIndexSchema schema, long randomSeed) {
 		this.dataTypeName = dataTypeName;
 		random = new Random(randomSeed);
-		idTool = new IdGenerator(schema.getFieldsForDataType(dataTypeName), keyShouldBeUnique);
+		idTool = new IdCalculator(schema.getFieldsForDataType(dataTypeName), keyShouldBeUnique);
 	}
 
 	protected synchronized void populateUid(DataType sample) {
-		sample.setId(idTool.calculateId(dataTypeName, sample));
+		sample.setId(idTool.calculate(dataTypeName, sample));
 	}
 
 	@Override

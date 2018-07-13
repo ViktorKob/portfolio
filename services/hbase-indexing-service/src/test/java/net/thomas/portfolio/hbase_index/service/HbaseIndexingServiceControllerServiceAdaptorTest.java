@@ -61,9 +61,9 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 		private HbaseIndexSchema buildSchemaForTesting() {
 			final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
-			builder.addField(DOCUMENT_TYPE, fields(string("name"), dataType("reference", RAW_DATA_TYPE)));
-			builder.addField(RAW_DATA_TYPE, fields(string("name"), dataType("reference", SELECTOR_TYPE)));
-			builder.addField(SELECTOR_TYPE, fields(string("name")));
+			builder.addFields(DOCUMENT_TYPE, fields(string("name"), dataType("reference", RAW_DATA_TYPE)));
+			builder.addFields(RAW_DATA_TYPE, fields(string("name"), dataType("reference", SELECTOR_TYPE)));
+			builder.addFields(SELECTOR_TYPE, fields(string("name")));
 			builder.addDocumentTypes(DOCUMENT_TYPE);
 			builder.addSelectorTypes(SELECTOR_TYPE, SIMPLE_REPRESENTABLE_TYPE);
 			builder.addSimpleRepresentableTypes(SIMPLE_REPRESENTABLE_TYPE);

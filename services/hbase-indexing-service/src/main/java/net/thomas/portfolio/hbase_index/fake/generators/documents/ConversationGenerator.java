@@ -7,11 +7,11 @@ import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdGenerator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class ConversationGenerator extends DocumentGenerator {
-	private final IdGenerator uidTool;
+	private final IdCalculator uidTool;
 	private final Person initiator;
 	private final List<Person> personalRelations;
 
@@ -19,7 +19,7 @@ public class ConversationGenerator extends DocumentGenerator {
 		super("Conversation", schema, randomSeed);
 		this.initiator = initiator;
 		this.personalRelations = personalRelations;
-		uidTool = new IdGenerator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
+		uidTool = new IdCalculator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class ConversationGenerator extends DocumentGenerator {
 	private DataType createCommunicationEndpoint(String numberField, DataType number) {
 		final DataType endpoint = new RawDataType();
 		endpoint.put(numberField, number);
-		endpoint.setId(uidTool.calculateId("CommunicationEndpoint", endpoint));
+		endpoint.setId(uidTool.calculate("CommunicationEndpoint", endpoint));
 		return endpoint;
 	}
 }

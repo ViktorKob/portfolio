@@ -1,5 +1,10 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser.newDomainParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser.newEmailAddressParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser.newStringFieldParser;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +14,8 @@ import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibraryBuilder;
 
 public class HbaseIndexSchemaBuilder {
 	private final HashMap<String, Fields> dataTypeFields;
@@ -16,6 +23,7 @@ public class HbaseIndexSchemaBuilder {
 	private final Set<String> documentTypes;
 	private final Set<String> selectorTypes;
 	private final Set<String> simpleRepresentableTypes;
+	private final SimpleRepresentationParserLibraryBuilder parserBuilder;
 
 	public HbaseIndexSchemaBuilder() {
 		dataTypeFields = new HashMap<>();
@@ -23,9 +31,10 @@ public class HbaseIndexSchemaBuilder {
 		selectorTypes = new HashSet<>();
 		simpleRepresentableTypes = new HashSet<>();
 		indexableBuilder = new IndexableBuilder();
+		parserBuilder = new SimpleRepresentationParserLibraryBuilder();
 	}
 
-	public HbaseIndexSchemaBuilder addField(String dataType, Fields fields) {
+	public HbaseIndexSchemaBuilder addFields(String dataType, Fields fields) {
 		dataTypeFields.put(dataType, fields);
 		return this;
 	}
@@ -62,6 +71,7 @@ public class HbaseIndexSchemaBuilder {
 		schema.setDocumentTypes(documentTypes);
 		schema.setSelectorTypes(selectorTypes);
 		schema.setSimpleRepresentableTypes(simpleRepresentableTypes);
+		schema.setSimpleRepParsers(parserBuilder.build());
 		schema.setIndexables(indexableBuilder.build());
 		return schema;
 	}
@@ -99,5 +109,29 @@ public class HbaseIndexSchemaBuilder {
 		public Map<String, Collection<Indexable>> build() {
 			return indexables;
 		}
+	}
+
+	public HbaseIndexSchemaBuilder addStringFieldParser(final String type, final String field) {
+		parserBuilder.add(newStringFieldParser(type, field, createIdCalculator(type)));
+		return this;
+	}
+
+	public HbaseIndexSchemaBuilder addIntegerFieldParser(final String type, final String field) {
+		parserBuilder.add(newPositiveIntegerFieldParser(type, field, createIdCalculator(type)));
+		return this;
+	}
+
+	public HbaseIndexSchemaBuilder addDomainParser() {
+		parserBuilder.add(newDomainParser(createIdCalculator("Domain")));
+		return this;
+	}
+
+	public HbaseIndexSchemaBuilder addEmailAddressParser() {
+		parserBuilder.add(newEmailAddressParser(createIdCalculator("EmailAddress")));
+		return this;
+	}
+
+	private IdCalculator createIdCalculator(final String type) {
+		return new IdCalculator(dataTypeFields.get(type), false);
 	}
 }
