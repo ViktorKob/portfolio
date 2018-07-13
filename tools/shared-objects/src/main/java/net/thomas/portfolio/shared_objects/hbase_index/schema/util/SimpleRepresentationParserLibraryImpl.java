@@ -7,7 +7,7 @@ import java.util.Map;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class SimpleRepresentationParserLibraryImpl implements SimpleRepresentationParserLibrary {
-	private final Map<String, SimpleRepresentationParser> parsers;
+	protected Map<String, SimpleRepresentationParser> parsers;
 
 	public SimpleRepresentationParserLibraryImpl(Map<String, SimpleRepresentationParser> parsers) {
 		this.parsers = parsers;

@@ -5,11 +5,17 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = ParserDeserializer.class)
 public abstract class SimpleRepresentationParser implements Parser<String, Selector> {
 	private final String type;
 	private final Pattern pattern;
@@ -48,6 +54,21 @@ public abstract class SimpleRepresentationParser implements Parser<String, Selec
 
 	protected void populateUid(final Selector selector, String type) {
 		selector.setId(idCalculator.calculate(type, selector));
+	}
+
+	public abstract String getImplementationClass();
+
+	public String getPattern() {
+		return pattern.toString();
+	}
+
+	public IdCalculator getIdCalculator() {
+		return idCalculator;
+	}
+
+	@JsonIgnore
+	public SimpleRepresentationParserLibrary getLibrary() {
+		return library;
 	}
 
 	@Override

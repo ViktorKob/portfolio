@@ -80,6 +80,7 @@ public class SimpleRepresentationParserUnitTest {
 			super(type, pattern, idCalculator);
 		}
 
+		@Override
 		public SimpleRepresentationParserLibrary getLibrary() {
 			return library;
 		}
@@ -87,6 +88,11 @@ public class SimpleRepresentationParserUnitTest {
 		@Override
 		protected void populateValues(DataType entity, String source) {
 			entity.put(FIELD, VALUE);
+		}
+
+		@Override
+		public String getImplementationClass() {
+			return getClass().getSimpleName();
 		}
 	}
 }

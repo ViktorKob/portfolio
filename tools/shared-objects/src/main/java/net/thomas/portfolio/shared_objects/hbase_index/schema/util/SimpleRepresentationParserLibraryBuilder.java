@@ -17,7 +17,7 @@ public class SimpleRepresentationParserLibraryBuilder {
 		parsers.put(parser.getType(), parser);
 	}
 
-	public SimpleRepresentationParserLibrary build() {
-		return new SimpleRepresentationParserLibraryImpl(parsers);
+	public SimpleRepresentationParserLibrarySerializable build() {
+		return new SimpleRepresentationParserLibrarySerializable(parsers);
 	}
 }
