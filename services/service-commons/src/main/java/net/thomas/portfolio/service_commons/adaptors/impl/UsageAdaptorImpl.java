@@ -38,7 +38,8 @@ public class UsageAdaptorImpl implements UsageAdaptor {
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3"),
+			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000") })
 	public List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
 		return client.loadUrlAsObject(USAGE_DATA_SERVICE, () -> {
 			return USAGE_ACTIVITIES.getPath() + "/" + documentId.type + "/" + documentId.uid;
