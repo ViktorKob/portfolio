@@ -8,7 +8,7 @@ import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.extra
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;

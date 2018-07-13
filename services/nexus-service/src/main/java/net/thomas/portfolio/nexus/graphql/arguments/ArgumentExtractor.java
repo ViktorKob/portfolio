@@ -1,7 +1,7 @@
 package net.thomas.portfolio.nexus.graphql.arguments;
 
 import graphql.schema.DataFetchingEnvironment;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 
 public interface ArgumentExtractor {
 	public void initialize(Adaptors adaptors);

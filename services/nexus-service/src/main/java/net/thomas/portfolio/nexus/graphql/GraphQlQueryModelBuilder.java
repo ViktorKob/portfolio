@@ -54,7 +54,7 @@ import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatistics
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;

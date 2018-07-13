@@ -27,9 +27,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.services.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
-import net.thomas.portfolio.shared_objects.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
