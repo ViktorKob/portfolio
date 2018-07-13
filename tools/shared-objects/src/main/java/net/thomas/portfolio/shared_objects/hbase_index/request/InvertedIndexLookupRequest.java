@@ -81,6 +81,16 @@ public class InvertedIndexLookupRequest {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = selectorId.hashCode();
+		hash = 37 * hash + legalInfo.hashCode();
+		hash = 37 * hash + bounds.hashCode();
+		hash = 37 * hash + documentTypes.hashCode();
+		hash = 37 * hash + relations.hashCode();
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof InvertedIndexLookupRequest) {
 			final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;

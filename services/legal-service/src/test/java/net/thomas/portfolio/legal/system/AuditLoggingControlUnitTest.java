@@ -12,13 +12,13 @@ public class AuditLoggingControlUnitTest {
 	private static final String UID = "FF";
 
 	private DataTypeId selectorId;
-	private LegalInfoBuilder legalInfoBuilder;
+	private LegalInfoForTestBuilder legalInfoBuilder;
 	private AuditLoggingControl auditLoggingSystem;
 
 	@Before
 	public void setupForTests() {
 		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		legalInfoBuilder = new LegalInfoBuilder();
+		legalInfoBuilder = new LegalInfoForTestBuilder();
 		auditLoggingSystem = new AuditLoggingControl();
 	}
 

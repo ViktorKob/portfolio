@@ -78,6 +78,13 @@ public class DataType {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = id.hashCode();
+		hash = 37 * hash + fields.hashCode();
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DataType) {
 			final DataType other = (DataType) obj;

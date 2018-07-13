@@ -75,7 +75,7 @@ public class LegalServiceController {
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
-		}).run();
+		}).start();
 		auditingRulesSystem = new AuditingRulesControl();
 		auditingRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
 		auditLoggingSystem = new AuditLoggingControl();

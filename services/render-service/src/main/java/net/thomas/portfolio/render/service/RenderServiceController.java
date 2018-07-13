@@ -73,7 +73,7 @@ public class RenderServiceController {
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
-		}).run();
+		}).start();
 	}
 
 	@Secured("ROLE_USER")

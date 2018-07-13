@@ -24,14 +24,14 @@ public class AuditingRulesControlUnitTest {
 
 	private AnalyticsAdaptorImpl analyticsAdaptor;
 	private DataTypeId selectorId;
-	private LegalInfoBuilder legalInfoBuilder;
+	private LegalInfoForTestBuilder legalInfoBuilder;
 	private AuditingRulesControl auditingSystem;
 
 	@Before
 	public void setupForTests() {
 		analyticsAdaptor = mock(AnalyticsAdaptorImpl.class);
 		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
-		legalInfoBuilder = new LegalInfoBuilder();
+		legalInfoBuilder = new LegalInfoForTestBuilder();
 		auditingSystem = new AuditingRulesControl();
 		auditingSystem.setAnalyticsAdaptor(analyticsAdaptor);
 	}

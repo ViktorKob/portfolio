@@ -15,10 +15,14 @@ public class UidValidator extends StringPresenceValidator {
 
 	@Override
 	public String getReason(String uid) {
-		if (uid != null && uid.length() % 2 == 1) {
+		if (uid != null && lengthIsOdd(uid)) {
 			return parameterName + " ( was " + uid + " ) is of odd length, but HEX numbers must be of even length";
 		} else {
 			return super.getReason(uid);
 		}
+	}
+
+	private boolean lengthIsOdd(String uid) {
+		return uid.length() % 2 != 0;
 	}
 }

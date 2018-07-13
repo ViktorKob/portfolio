@@ -48,6 +48,14 @@ public class AnalyticalKnowledge {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = alias.hashCode();
+		hash = 37 * hash + isKnown.ordinal();
+		hash = 37 * hash + isRestricted.ordinal();
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof AnalyticalKnowledge) {
 			final AnalyticalKnowledge other = (AnalyticalKnowledge) obj;

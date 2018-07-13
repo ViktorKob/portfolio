@@ -89,7 +89,7 @@ public class UsageDataServiceController {
 		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
-		}).run();
+		}).start();
 	}
 
 	@Secured("ROLE_USER")

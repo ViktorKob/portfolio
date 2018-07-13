@@ -83,6 +83,15 @@ public class ReferenceField implements Field {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = name.hashCode();
+		hash = 37 * hash + type.hashCode();
+		hash = 37 * hash + (isArray ? 1 : 0);
+		hash = 37 * hash + (isKeyComponent ? 1 : 0);
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ReferenceField) {
 			final ReferenceField other = (ReferenceField) obj;

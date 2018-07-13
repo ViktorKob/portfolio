@@ -39,6 +39,14 @@ public class Document extends DataType {
 	}
 
 	@Override
+	public int hashCode() {
+		int hash = (int) timeOfEvent;
+		hash = (int) (37 * hash + timeOfInterception);
+		hash = 37 * hash + super.hashCode();
+		return hash;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Document) {
 			final Document other = (Document) obj;

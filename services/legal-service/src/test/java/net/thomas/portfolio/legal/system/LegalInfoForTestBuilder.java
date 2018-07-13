@@ -2,7 +2,8 @@ package net.thomas.portfolio.legal.system;
 
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
-public class LegalInfoBuilder {
+public class LegalInfoForTestBuilder {
+	private static final int HALF_A_YEAR = 180 * 24 * 60 * 60 * 1000;
 	static final String JUSTIFICATION = "JUSTIFICATION";
 	static final String USER = "USER";
 
@@ -11,40 +12,50 @@ public class LegalInfoBuilder {
 	public Long lowerBound;
 	public Long upperBound;
 
-	public LegalInfoBuilder() {
+	public LegalInfoForTestBuilder() {
 		user = USER;
 		justification = null;
 		lowerBound = null;
 		upperBound = null;
 	}
 
-	public LegalInfoBuilder setNullUser() {
+	public LegalInfoForTestBuilder setNullUser() {
 		user = null;
 		return this;
 	}
 
-	public LegalInfoBuilder setEmptyUser() {
+	public LegalInfoForTestBuilder setEmptyUser() {
 		user = "";
 		return this;
 	}
 
-	public LegalInfoBuilder setValidUser() {
+	public LegalInfoForTestBuilder setValidUser() {
 		user = USER;
 		return this;
 	}
 
-	public LegalInfoBuilder setNullJustification() {
+	public LegalInfoForTestBuilder setNullJustification() {
 		justification = null;
 		return this;
 	}
 
-	public LegalInfoBuilder setEmptyJustification() {
+	public LegalInfoForTestBuilder setEmptyJustification() {
 		justification = "";
 		return this;
 	}
 
-	public LegalInfoBuilder setValidJustification() {
+	public LegalInfoForTestBuilder setValidJustification() {
 		justification = JUSTIFICATION;
+		return this;
+	}
+
+	public LegalInfoForTestBuilder setValidLowerBound() {
+		lowerBound = System.currentTimeMillis() - HALF_A_YEAR;
+		return this;
+	}
+
+	public LegalInfoForTestBuilder setValidUpperBound() {
+		upperBound = System.currentTimeMillis() + HALF_A_YEAR;
 		return this;
 	}
 
