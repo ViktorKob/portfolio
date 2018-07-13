@@ -71,9 +71,9 @@ public class LegalServiceController {
 
 	@PostConstruct
 	public void initializeService() {
-		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
+			((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+			((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 		}).start();
 		auditingRulesSystem = new AuditingRulesControl();

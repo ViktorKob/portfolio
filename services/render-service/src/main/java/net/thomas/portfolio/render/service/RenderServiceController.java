@@ -70,8 +70,8 @@ public class RenderServiceController {
 
 	@PostConstruct
 	public void initializeService() {
-		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
+			((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
 		}).start();
 	}
