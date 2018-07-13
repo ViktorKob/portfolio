@@ -51,7 +51,13 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 
 	public void initialize(HttpRestClient client) {
 		this.client = client;
-		schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaImpl.class);
+		while (schema == null) {
+			try {
+				schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaImpl.class);
+			} catch (final RuntimeException e) {
+				// We try again until we succeed or the service is closed from the outside
+			}
+		}
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 			.maximumSize(10000)
 			.build(new CacheLoader<DataTypeId, DataType>() {
