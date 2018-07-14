@@ -63,7 +63,8 @@ In general, my focus is on reducing wasted development time and getting features
 ### Development approach
 
 I use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible.<BR>
-Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.
+Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.<BR>
+For bug-tracking and issue management, I have experience using [JIRA](https://www.atlassian.com/software/jira) and some [companion](https://www.atlassian.com/software/bitbucket) [Atlassian](https://www.atlassian.com/software/fisheye) [products](https://www.atlassian.com/software/confluence). 
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
 
@@ -81,14 +82,15 @@ But ultimately these are just tools. When I develop a new feature, a plan I ofte
 
 If you already agree with "Clean Code" by Robert C. Martin, much of this will seem self-evident (though I do not strictly follow all his principles). 
 
-* Write the code to be read, using comment to elaborate invisible details, not explain the code itself
-* Consider every code warning and decide how to handle it 
-* Perfection is a dream, continuous improvement is real.
-* Make it work at all before worrying about details and niceness
-* Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
-* [SOLID](https://en.wikipedia.org/wiki/SOLID)
-* [KISS](https://en.wikipedia.org/wiki/KISS_principle)
-* And numerous other, that I do not necessarily know the name for
+- Write the code to be read, using comment to elaborate invisible details, not explain the code itself
+- Consider every code warning and decide how to handle it 
+- Perfection is a dream, continuous improvement is real.
+- Make it work at all before worrying about details and niceness
+- Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
+- [SOLID](https://en.wikipedia.org/wiki/SOLID)
+- [KISS](https://en.wikipedia.org/wiki/KISS_principle)
+- When checking in, try to 
+- And numerous other, that I do not necessarily know the name for
 
 # Status at the moment
 The project contains a set of services:
