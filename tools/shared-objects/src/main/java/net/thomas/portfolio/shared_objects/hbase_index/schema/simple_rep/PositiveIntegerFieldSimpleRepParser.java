@@ -5,10 +5,13 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationParser {
 	private final String field;
 	private final Pattern invalidCharactersPattern;

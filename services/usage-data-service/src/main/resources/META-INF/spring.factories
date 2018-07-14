@@ -1,1 +1,0 @@
-org.springframework.context.ApplicationListener=net.thomas.portfolio.usage_data.service.UsageDataServiceBasepathInitializer

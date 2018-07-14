@@ -1,5 +1,6 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
@@ -23,8 +24,12 @@ public class SubTypeArrayFetcher extends ModelDataFetcher<List<DataTypeEntityPro
 	@Override
 	public List<DataTypeEntityProxy> get(DataFetchingEnvironment environment) {
 		final DataTypeProxy<?, ?> parentProxy = (DataTypeProxy<?, ?>) environment.getSource();
-		return convert(parentProxy, parentProxy.getEntity()
-			.get(fieldName));
+		final DataType entity = parentProxy.getEntity();
+		if (entity != null) {
+			return convert(parentProxy, entity.get(fieldName));
+		} else {
+			return emptyList();
+		}
 	}
 
 	private List<DataTypeEntityProxy> convert(DataTypeProxy<?, ?> parentProxy, List<? extends DataType> entities) {

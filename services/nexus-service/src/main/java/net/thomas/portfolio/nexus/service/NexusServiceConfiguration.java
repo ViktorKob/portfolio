@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import net.thomas.portfolio.common.services.ServiceDependency;
 
 @Configuration
-@ConfigurationProperties("nexusService")
+@ConfigurationProperties("nexus-service")
 public class NexusServiceConfiguration {
 
 	private ServiceDependency analytics;

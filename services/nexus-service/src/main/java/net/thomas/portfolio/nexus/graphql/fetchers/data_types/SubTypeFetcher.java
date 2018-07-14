@@ -18,11 +18,18 @@ public class SubTypeFetcher extends ModelDataFetcher<DataTypeEntityProxy> {
 
 	@Override
 	public DataTypeEntityProxy get(DataFetchingEnvironment environment) {
-		final DataTypeProxy<?, ?> parentProxy = (DataTypeProxy<?, ?>) environment.getSource();
-		final DataType subEntity = parentProxy.getEntity()
-			.get(fieldName);
+		final DataType entity = ((DataTypeProxy<?, ?>) environment.getSource()).getEntity();
+		if (entity != null) {
+			return getSubType(environment, entity);
+		} else {
+			return null;
+		}
+	}
+
+	private DataTypeEntityProxy getSubType(DataFetchingEnvironment environment, final DataType entity) {
+		final DataType subEntity = entity.get(fieldName);
 		if (subEntity != null) {
-			return new DataTypeEntityProxy(parentProxy, subEntity, adaptors);
+			return new DataTypeEntityProxy((DataTypeProxy<?, ?>) environment.getSource(), subEntity, adaptors);
 		} else {
 			return null;
 		}

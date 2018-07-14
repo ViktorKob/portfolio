@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import net.thomas.portfolio.common.services.ServiceDependency;
 
 @Configuration
-@ConfigurationProperties("analyticsService")
+@ConfigurationProperties("analytics-service")
 public class AnalyticsServiceConfiguration {
 
 	private ServiceDependency hbaseIndexing;

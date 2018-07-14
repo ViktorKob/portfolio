@@ -1,22 +1,22 @@
-spring.application.name: infrastructure-master
+server.port: 8000
 
-server:
-  port: 8000
-
-security:
-  user:
-    name: service-user 
-    password: password 
-    roles: USER 
+spring:
+  application:
+    name: infrastructure-master
+  security:
+    user:
+      name: service-user 
+      password: password 
+      roles: USER 
 
 eureka:
   instance:
     hostname: localhost
-    leaseRenewalIntervalInSeconds: 10
+    lease-renewal-interval-in-seconds: 10
   client:
-    registerWithEureka: false
-    fetchRegistry: false
+    register-with-eureka: false
+    fetch-registry: false
     server:
-      waitTimeInMsWhenSyncEmpty: 0
-    serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      wait-time-in-ms-when-sync-empty: 0
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/Infrastructure/eureka/

@@ -1,24 +1,25 @@
-spring.application.name: render-service
-
 server.port: 8150
 
-security:
-  user:
-    name: service-user 
-    password: password 
-    roles: USER 
+spring:
+  application:
+    name: render-service
+  security:
+    user:
+      name: service-user 
+      password: password 
+      roles: USER 
 
-renderService:
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registryFetchIntervalSeconds: 5    
+    service-url:
+      defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
+
+render-service:
   hbaseIndexing:
     name: hbase-indexing-service
     credentials:
       user: service-user
       password: password
-
-eureka:
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    registryFetchIntervalSeconds: 5    
-    serviceUrl:
-      defaultZone: http://service-user:password@localhost:8000/eureka

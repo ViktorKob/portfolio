@@ -1,11 +1,3 @@
-spring.application.name: nexus-service
-
-security:
-  user:
-    name: service-user 
-    password: password 
-    roles: USER 
-
 server:
   port: 8100
   max-http-header-size: 200000
@@ -15,8 +7,38 @@ server:
     max-http-post-size: 200000
     max-threads: 50
     min-spare-threads: 10
+
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+  endpoints:
+    web:
+      cors:
+        allowed-origins: true
+      exposure:
+        include: hystrix.stream, info, health
+
+spring:
+  application:
+    name: nexus-service
+  security:
+    user:
+      name: service-user 
+      password: password 
+      roles: USER 
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registryFetchIntervalSeconds: 5    
+    service-url:
+      defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
     
-nexusService:
+nexus-service:
   analytics:
     name: analytics-service
     credentials:
@@ -63,11 +85,3 @@ hystrix:
         rollingStats:
           timeInMilliseconds: 600000
           numBuckets: 600
-
-eureka:
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    registryFetchIntervalSeconds: 5    
-    serviceUrl:
-      defaultZone: http://service-user:password@localhost:8000/eureka

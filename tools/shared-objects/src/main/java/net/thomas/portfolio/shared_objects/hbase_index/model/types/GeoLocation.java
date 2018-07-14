@@ -3,10 +3,8 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 import static java.lang.Double.doubleToLongBits;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonSerialize(using = GeoLocationSerializer.class)
 public class GeoLocation {
 	public double longitude;
 	public double latitude;

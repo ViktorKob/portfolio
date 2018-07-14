@@ -62,7 +62,7 @@ public class UsageActivity implements ParameterGroup {
 	public int hashCode() {
 		int hash = user.hashCode();
 		hash = 37 * hash + type.ordinal();
-		hash = (int) (37 * hash + timeOfActivity);
+		hash = 37 * hash + (int) (timeOfActivity ^ timeOfActivity >>> 32);
 		return hash;
 	}
 
@@ -73,7 +73,7 @@ public class UsageActivity implements ParameterGroup {
 			return user.equals(other.user) && type == other.type
 					&& (timeOfActivity == other.timeOfActivity || timeOfActivity != null && timeOfActivity.equals(other.timeOfActivity));
 		} else {
-			return super.equals(obj);
+			return false;
 		}
 	}
 

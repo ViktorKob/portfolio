@@ -13,11 +13,11 @@ public abstract class DocumentProxy<CONTENT> extends DataTypeProxy<CONTENT, Docu
 		super(parent, contents, adaptors);
 	}
 
-	public long getTimeOfEvent() {
-		return getEntity().getTimeOfEvent();
+	public Long getTimeOfEvent() {
+		return getEntity() == null ? null : getEntity().getTimeOfEvent();
 	}
 
-	public long getTimeOfInterception() {
-		return getEntity().getTimeOfInterception();
+	public Long getTimeOfInterception() {
+		return getEntity() == null ? null : getEntity().getTimeOfInterception();
 	}
 }

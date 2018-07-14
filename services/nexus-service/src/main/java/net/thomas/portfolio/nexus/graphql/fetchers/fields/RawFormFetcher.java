@@ -13,7 +13,7 @@ public class RawFormFetcher implements DataFetcher<String> {
 	public String get(DataFetchingEnvironment environment) {
 		try {
 			final DataType entity = ((DataTypeProxy<?, ?>) environment.getSource()).getEntity();
-			return entity.getInRawForm();
+			return entity == null ? null : entity.getInRawForm();
 		} catch (final JsonProcessingException e) {
 			throw new GraphQLException("Unable to extract raw form for data type", e);
 		}

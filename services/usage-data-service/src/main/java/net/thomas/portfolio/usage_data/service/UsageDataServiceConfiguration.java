@@ -2,15 +2,12 @@ package net.thomas.portfolio.usage_data.service;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import net.thomas.portfolio.common.services.ServiceDependency;
 
 @Configuration
-@ConfigurationProperties("usageDataService")
-@EnableWebMvc
-public class UsageDataServiceConfiguration extends WebMvcConfigurerAdapter {
+@ConfigurationProperties("usage-data-service")
+public class UsageDataServiceConfiguration {
 
 	private Database database;
 	private ServiceDependency hbaseIndexing;

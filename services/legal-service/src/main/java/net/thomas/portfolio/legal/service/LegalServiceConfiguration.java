@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import net.thomas.portfolio.common.services.ServiceDependency;
 
 @Configuration
-@ConfigurationProperties("legalService")
+@ConfigurationProperties("legal-service")
 public class LegalServiceConfiguration {
 
 	private ServiceDependency hbaseIndexing;
