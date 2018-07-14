@@ -66,16 +66,17 @@ I use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS 
 Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling (e.g. [VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.<BR>
 For bug-tracking and issue management, I have experience using [JIRA](https://www.atlassian.com/software/jira) and some [companion](https://www.atlassian.com/software/bitbucket) [Atlassian](https://www.atlassian.com/software/fisheye) [products](https://www.atlassian.com/software/confluence). 
 
-But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
+But ultimately these are just tools. When I develop a new feature, a plan I often use is the following:
  
 1. Plan layout based on domain knowledge, feature requirement and existing infrastructure
 2. Define points of contact with the existing system and planned(near future) sister components
-3. Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
-4. Run the system, making sure the fake component behaves as intended
-5. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
-6. Implement the details
-7. Deploy and check everything works
-8. Cleanup obvious omissions and do general refactoring  
+3. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
+4. Deploy the system and make sure the fake component behaves as intended; change whatever doesn't
+5. Either check for thirds party tools that match / can be used for parts of the implementation, or reason why it should be implemented directly
+6. Either replace the fake with the integration of a third party tool or implement the details
+7. Deploy component with the rest of the system and check everything works
+8. Cleanup obvious omissions and do general refactoring of the system
+9. Over time, visit the component once in a while and check if anything should be refactored based on other feature implementations  
 
 ### Design principles
 
@@ -84,7 +85,7 @@ If you already agree with "Clean Code" by Robert C. Martin, much of this will se
 - Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
 - Write the code to be read, using comment to elaborate invisible details, not explain the code itself
 - Consider every code warning and decide how to handle it 
-- Perfection is a dream, continuous improvement is real.
+- Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385)
 - Make it work at all before worrying about details and niceness
 - Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
