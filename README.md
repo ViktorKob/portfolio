@@ -63,20 +63,20 @@ In general, my focus is on reducing wasted development time and getting features
 ### Development approach
 
 I use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible.<BR>
-Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.<BR>
+Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling (e.g. [VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.<BR>
 For bug-tracking and issue management, I have experience using [JIRA](https://www.atlassian.com/software/jira) and some [companion](https://www.atlassian.com/software/bitbucket) [Atlassian](https://www.atlassian.com/software/fisheye) [products](https://www.atlassian.com/software/confluence). 
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
 
-* Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
-* Plan layout based on domain knowledge, feature requirement and existing infrastructure
-* Define points of contact with the existing system and planned(near future) sister components
-* Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
-* Run the system, making sure the fake component behaves as intended
-* Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
-* Implement the details
-* Deploy and check everything works
-* Cleanup obvious omissions and do general refactoring  
+1. Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
+2. Plan layout based on domain knowledge, feature requirement and existing infrastructure
+3. Define points of contact with the existing system and planned(near future) sister components
+4. Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
+5. Run the system, making sure the fake component behaves as intended
+6. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
+7. Implement the details
+8. Deploy and check everything works
+9. Cleanup obvious omissions and do general refactoring  
 
 ### Design principles
 
@@ -89,7 +89,8 @@ If you already agree with "Clean Code" by Robert C. Martin, much of this will se
 - Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
-- When checking in, try to 
+- When checking in, try to make it clean what is changed, e.g. by using a ticket id and a few lines about the specific change
+- Commit often, deploy often, get feedback often; several times a day is good 
 - And numerous other, that I do not necessarily know the name for
 
 # Status at the moment
