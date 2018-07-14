@@ -82,19 +82,18 @@ If I am "just" adding features to an existing component, many of the steps are p
 
 ### Design principles
 
-If you already agree with "Clean Code" by Robert C. Martin, much of this will seem self-evident (though I do not strictly follow all his principles). 
+When I write code, there is a set of principles that I try to respect more than others. "Try", because it is a process, not a goal, but still I value these highly. If you already know "Clean Code" by Robert C. Martin (Uncle Bob), much of this will seem self-evident (though I do not strictly follow all his principles). 
 
-- Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
-- Write the code to be read, using comment to elaborate invisible details, not explain the code itself
-- Consider every code warning and decide how to handle it 
+- Only start feature implementation that can be completed in at most a few days; instead make the sub-features production ready, before working on the complex features that depend on these
+- Write the code to be read, using comments to elaborate invisible details, not explain the code itself
+- Consider every warning in the code and decide how to handle it 
 - Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385)
 - Make it work at all before worrying about details and niceness
-- Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
+- Stay agile and "light-weight" for as long as possible; embrace change, and document and test when the right level of maturity is reached
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
-- When checking in, try to make it clean what is changed, e.g. by using a ticket id and a few lines about the specific change
-- Commit often, deploy often, get feedback often; several times a day is good 
-- And numerous other, that I do not necessarily know the name for
+- When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change
+- Commit often, merge often, deploy often, get feedback often; argue why not rather than why 
 
 # Status at the moment
 The project contains a set of services:
