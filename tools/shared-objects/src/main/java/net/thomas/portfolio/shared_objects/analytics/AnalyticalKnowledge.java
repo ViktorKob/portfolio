@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.analytics;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -61,12 +61,12 @@ public class AnalyticalKnowledge {
 			final AnalyticalKnowledge other = (AnalyticalKnowledge) obj;
 			return alias.equals(other.alias) && isKnown == other.isKnown && isRestricted == other.isRestricted;
 		} else {
-			return super.equals(obj);
+			return false;
 		}
 	}
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

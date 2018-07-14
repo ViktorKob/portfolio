@@ -1,9 +1,9 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.Collections.emptyMap;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -30,8 +30,8 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;

@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model;
+package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
 
 import java.io.IOException;
 import java.util.Map;
@@ -7,6 +7,8 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 
 public class FieldsSerializer extends StdSerializer<Map<String, Object>> {
 

@@ -23,8 +23,8 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.DomainGenerato
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.EmailAddressGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.NumberGenerator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.transformation.World;
 

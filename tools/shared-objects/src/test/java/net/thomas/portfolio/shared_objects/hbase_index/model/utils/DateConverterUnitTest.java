@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
 import static java.util.Calendar.NOVEMBER;
 import static org.junit.Assert.assertEquals;
@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 
 public class DateConverterUnitTest {
 	private DateConverter converter;

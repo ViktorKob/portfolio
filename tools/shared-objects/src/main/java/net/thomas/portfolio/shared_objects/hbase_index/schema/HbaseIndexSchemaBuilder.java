@@ -12,9 +12,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibraryBuilder;
 
 public class HbaseIndexSchemaBuilder {

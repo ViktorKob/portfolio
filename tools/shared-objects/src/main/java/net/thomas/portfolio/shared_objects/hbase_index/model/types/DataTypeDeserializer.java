@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model;
+package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,12 +17,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	private static final long serialVersionUID = 1L;
@@ -46,17 +40,15 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 			throws JsonParseException, JsonMappingException, IOException, JsonProcessingException {
 		if (node.has("dataType")) {
 			switch (node.get("dataType")
-					.asText()) {
-				case "Document":
-					return deserializeDocument(node, mapper);
-				case "Selector":
-					return deserializeSelector(node, mapper);
-				case "RawDataType":
-					return deserializeRawDataType(node, mapper);
-				case "GeoLocation":
-					return deserializeGeoLocation(node, mapper);
-				default:
-					throw new RuntimeException("Unable to deserialize " + node);
+				.asText()) {
+			case "Document":
+				return deserializeDocument(node, mapper);
+			case "Selector":
+				return deserializeSelector(node, mapper);
+			case "RawDataType":
+				return deserializeRawDataType(node, mapper);
+			default:
+				throw new RuntimeException("Unable to deserialize " + node);
 			}
 		} else if (node instanceof ArrayNode) {
 			final List<Object> values = new LinkedList<>();
@@ -73,9 +65,9 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	public Document deserializeDocument(JsonNode node, ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException {
 		final Document document = (Document) populateWithValues(new Document(), node, mapper);
 		document.setTimeOfEvent(node.get("timeOfEvent")
-				.asLong(0));
+			.asLong(0));
 		document.setTimeOfInterception(node.get("timeOfInterception")
-				.asLong(0));
+			.asLong(0));
 		return document;
 	}
 
@@ -85,10 +77,6 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 
 	public RawDataType deserializeRawDataType(JsonNode node, ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException {
 		return (RawDataType) populateWithValues(new RawDataType(), node, mapper);
-	}
-
-	public GeoLocation deserializeGeoLocation(JsonNode node, ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException {
-		return mapper.treeToValue(node, GeoLocation.class);
 	}
 
 	private DataType populateWithValues(final DataType dataType, JsonNode node, ObjectMapper mapper)

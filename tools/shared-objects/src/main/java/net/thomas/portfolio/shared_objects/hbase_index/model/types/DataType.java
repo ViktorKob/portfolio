@@ -1,4 +1,6 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model;
+package net.thomas.portfolio.shared_objects.hbase_index.model.types;
+
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,10 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsSerializer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(using = DataTypeSerializer.class)
@@ -68,34 +67,26 @@ public class DataType {
 	}
 
 	@JsonIgnore
-	public String getInRawForm() {
-		try {
-			return new ObjectMapper().writeValueAsString(this);
-		} catch (final JsonProcessingException e) {
-			e.printStackTrace();
-			return "Unable to fetch data";
-		}
+	public String getInRawForm() throws JsonProcessingException {
+		return new ObjectMapper().writeValueAsString(this);
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = id.hashCode();
-		hash = 37 * hash + fields.hashCode();
-		return hash;
+		return id.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DataType) {
-			final DataType other = (DataType) obj;
-			return id.equals(other.id) && fields.equals(other.fields);
+			return id.equals(((DataType) obj).id);
 		} else {
-			return super.equals(obj);
+			return false;
 		}
 	}
 
 	@Override
 	public String toString() {
-		return id + ": " + fields.toString();
+		return asString(this);
 	}
 }

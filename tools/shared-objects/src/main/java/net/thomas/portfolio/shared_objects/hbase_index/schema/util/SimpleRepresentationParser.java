@@ -9,10 +9,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.Parser;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.Parser;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = ParserDeserializer.class)

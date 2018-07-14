@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

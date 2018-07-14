@@ -1,6 +1,6 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.data;
+package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.FieldType.REFERENCE;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldType.REFERENCE;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.StandardToStringStyle;

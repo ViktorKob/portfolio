@@ -5,9 +5,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataTypeDeserializer;
-
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = Document.class, using = DataTypeDeserializer.class)
 public class Document extends DataType {
@@ -36,28 +33,5 @@ public class Document extends DataType {
 
 	public long getTimeOfInterception() {
 		return timeOfInterception;
-	}
-
-	@Override
-	public int hashCode() {
-		int hash = (int) timeOfEvent;
-		hash = (int) (37 * hash + timeOfInterception);
-		hash = 37 * hash + super.hashCode();
-		return hash;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof Document) {
-			final Document other = (Document) obj;
-			return super.equals(other) && timeOfEvent == other.timeOfEvent && timeOfInterception == other.timeOfInterception;
-		} else {
-			return super.equals(obj);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return id + "@" + getTimeOfEvent() + ": " + super.toString();
 	}
 }

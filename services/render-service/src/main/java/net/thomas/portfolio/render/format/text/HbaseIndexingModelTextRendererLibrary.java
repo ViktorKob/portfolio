@@ -7,10 +7,10 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.render.common.Renderer;
 import net.thomas.portfolio.render.common.context.TextRenderContext;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter.Iec8601DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iec8601DateConverter;
 
 public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, TextRenderContext> {
 	private final HbaseIndexingModelTextRendererLibrary library;

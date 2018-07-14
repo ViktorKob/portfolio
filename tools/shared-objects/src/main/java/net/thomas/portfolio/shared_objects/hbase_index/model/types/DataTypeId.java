@@ -65,9 +65,9 @@ public class DataTypeId implements ParameterGroup {
 	public boolean equals(Object obj) {
 		if (obj instanceof DataTypeId) {
 			final DataTypeId other = (DataTypeId) obj;
-			return type.equals(other.type) && uid.equals(other.uid);
+			return type.equals(other.type) && uid != null && uid.equals(other.uid);
 		} else {
-			return super.equals(obj);
+			return false;
 		}
 	}
 

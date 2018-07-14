@@ -9,9 +9,9 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;

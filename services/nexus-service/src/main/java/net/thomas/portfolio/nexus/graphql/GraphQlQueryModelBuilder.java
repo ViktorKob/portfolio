@@ -50,6 +50,7 @@ import net.thomas.portfolio.nexus.graphql.fetchers.data_types.SubTypeFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.DecimalFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.FormattedTimestampFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.IntegerFieldDataFetcher;
+import net.thomas.portfolio.nexus.graphql.fetchers.fields.RawFormFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
@@ -57,14 +58,14 @@ import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFet
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
@@ -488,7 +489,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("rawData")
 			.description("Raw representation of the document as stored in the index")
 			.type(GraphQLString)
-			.dataFetcher(environment -> getEntity(environment).getInRawForm())
+			.dataFetcher(new RawFormFetcher())
 			.build();
 	}
 

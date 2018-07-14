@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import static java.lang.Double.doubleToLongBits;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -31,6 +33,25 @@ public class GeoLocation {
 
 	public void setLatitude(double latitude) {
 		this.latitude = latitude;
+	}
+
+	@Override
+	public int hashCode() {
+		final long longitudeAsLong = doubleToLongBits(longitude);
+		final long latitudeAsLong = doubleToLongBits(latitude);
+		int hash = (int) (longitudeAsLong ^ longitudeAsLong >>> 32);
+		hash = 37 * hash + (int) (latitudeAsLong ^ latitudeAsLong >>> 32);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof GeoLocation) {
+			final GeoLocation other = (GeoLocation) obj;
+			return longitude == other.longitude && latitude == other.latitude;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
