@@ -13,6 +13,8 @@ The **arrows** represent the flow of data in the system.
 # Quickstart
 ### To just see the infrastructure (Tested in Chrome and Firefox)
 
+***Note that access to the service is spotty at the moment while I am upgrading to Spring boot 2.0 and Spring cloud Finchley.RELEASE***
+
 When running the example queries below, login using **service-user** and **password**.
 
 | Examples | |
