@@ -78,6 +78,8 @@ But ultimately these are just tools. When I develop a new feature, a plan I ofte
 8. Cleanup obvious omissions and do general refactoring of the system
 9. Over time, visit the component once in a while and check if anything should be refactored based on other feature implementations  
 
+If I am "just" adding features to an existing component, many of the steps are pretty light-weight or perhaps even skipped, but it is still the primary approach I use.
+
 ### Design principles
 
 If you already agree with "Clean Code" by Robert C. Martin, much of this will seem self-evident (though I do not strictly follow all his principles). 
