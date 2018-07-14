@@ -1,1 +1,0 @@
-org.springframework.context.ApplicationListener=net.thomas.portfolio.analytics.service.AnalyticsServiceBasepathInitializer

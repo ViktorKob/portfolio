@@ -1,13 +1,23 @@
-spring.application.name: usage-data-service
 server.port: 8200
 
-security:
-  user:
-    name: service-user 
-    password: password
-    roles: USER
+spring:
+  application:
+    name: usage-data-service
+  security:
+    user:
+      name: service-user 
+      password: password
+      roles: USER
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registryFetchIntervalSeconds: 5    
+    service-url:
+      defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
      
-usageDataService:
+usage-data-service:
   hbaseIndexing:
     name: hbase-indexing-service
     credentials:
@@ -19,12 +29,4 @@ usageDataService:
     schema: usage_data
     user: root
     password: computer
-    
-eureka:
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    registryFetchIntervalSeconds: 5    
-    serviceUrl:
-      defaultZone: http://service-user:password@localhost:8000/eureka
     

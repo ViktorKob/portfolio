@@ -240,7 +240,7 @@ public class GraphQlQueryModelBuilder {
 			break;
 		case STRING:
 		default:
-			fetcher = environment -> getEntity(environment).get(field.getName());
+			fetcher = environment -> getEntity(environment) == null ? null : getEntity(environment).get(field.getName());
 			graphQlType = GraphQLString;
 			description = buildDescription("Textual field", field, parentType);
 			break;

@@ -111,9 +111,9 @@ public class NexusServiceController {
 	}
 
 	@Bean
-	public ServletRegistrationBean graphQLServletRegistrationBean() throws IOException {
+	public ServletRegistrationBean<SimpleGraphQLServlet> graphQLServletRegistrationBean() throws IOException {
 		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder().setAdaptors(adaptors);
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
-		return new ServletRegistrationBean(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
+		return new ServletRegistrationBean<>(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
 	}
 }

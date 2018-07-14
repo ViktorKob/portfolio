@@ -1,6 +1,9 @@
 package net.thomas.portfolio.render;
 
-import org.springframework.boot.SpringApplication;
+import static java.lang.System.setProperty;
+import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
+import static org.springframework.boot.SpringApplication.run;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class RenderServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RenderServiceApplication.class, args);
+		setProperty("server.servlet.context-path", RENDER_SERVICE_PATH);
+		run(RenderServiceApplication.class, args);
 	}
 }

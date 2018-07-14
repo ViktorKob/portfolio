@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.fake;
+package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaFactory.buildSchema;
@@ -10,9 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
+import net.thomas.portfolio.hbase_index.fake.FakeWorld;
 import net.thomas.portfolio.hbase_index.fake.index_steps.FakeInvertedIndexStep;
 import net.thomas.portfolio.hbase_index.fake.index_steps.FakeSelectorStatisticsStep;
-import net.thomas.portfolio.hbase_index.service.HbaseIndexingServiceConfiguration;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.transformation.IndexControl;

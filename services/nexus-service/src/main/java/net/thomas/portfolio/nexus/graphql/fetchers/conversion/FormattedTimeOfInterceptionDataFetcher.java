@@ -12,7 +12,7 @@ public class FormattedTimeOfInterceptionDataFetcher extends FormattedTimestampDa
 
 	@Override
 	public String get(DataFetchingEnvironment environment) {
-		final long timestamp = ((DocumentProxy<?>) getProxy(environment)).getTimeOfInterception();
-		return formatTimestampAsIec8601(environment, timestamp);
+		final Long timestamp = ((DocumentProxy<?>) getProxy(environment)).getTimeOfInterception();
+		return timestamp == null ? null : formatTimestampAsIec8601(environment, timestamp);
 	}
 }

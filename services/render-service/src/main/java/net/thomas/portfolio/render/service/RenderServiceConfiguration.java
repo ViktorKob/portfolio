@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import net.thomas.portfolio.common.services.ServiceDependency;
 
 @Configuration
-@ConfigurationProperties("renderService")
+@ConfigurationProperties("render-service")
 public class RenderServiceConfiguration {
 
 	private ServiceDependency hbaseIndexing;
