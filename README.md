@@ -67,21 +67,21 @@ Also, I value using static code analyzers like [FindBugs](http://findbugs.source
 For bug-tracking and issue management, I have experience using [JIRA](https://www.atlassian.com/software/jira) and some [companion](https://www.atlassian.com/software/bitbucket) [Atlassian](https://www.atlassian.com/software/fisheye) [products](https://www.atlassian.com/software/confluence). 
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
-
-1. Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
-2. Plan layout based on domain knowledge, feature requirement and existing infrastructure
-3. Define points of contact with the existing system and planned(near future) sister components
-4. Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
-5. Run the system, making sure the fake component behaves as intended
-6. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
-7. Implement the details
-8. Deploy and check everything works
-9. Cleanup obvious omissions and do general refactoring  
+ 
+1. Plan layout based on domain knowledge, feature requirement and existing infrastructure
+2. Define points of contact with the existing system and planned(near future) sister components
+3. Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
+4. Run the system, making sure the fake component behaves as intended
+5. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
+6. Implement the details
+7. Deploy and check everything works
+8. Cleanup obvious omissions and do general refactoring  
 
 ### Design principles
 
 If you already agree with "Clean Code" by Robert C. Martin, much of this will seem self-evident (though I do not strictly follow all his principles). 
 
+- Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
 - Write the code to be read, using comment to elaborate invisible details, not explain the code itself
 - Consider every code warning and decide how to handle it 
 - Perfection is a dream, continuous improvement is real.
