@@ -51,12 +51,13 @@ This project was created as a green field project, but also contains code fragme
 
 In general, my focus is on reducing wasted development time and getting features to market as soon as possible, both for the added value and to gain feedback early. I try to observe the following:
 
-- Never get sucked down into the details, time spend working on one component is time not spend working on everything else
-- Make it work at all before trying to make it nice
-- Early feedback is key for quality; rather than nursing a feature forever, throw it out of the nest and check whether it can fly
-- Write tests for units that worry you right away, do the rest when the units have matured
-- Whenever possible, write tests for public bugs before fixing them to guarantee reoccurrences are caught and fixed
-- If someone already made it for you, consider if using their solution is better than building your own.
+- Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
+- Make it work at all, before trying to make it nice
+- Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
+- Write tests for units that worry you right away, do the rest when the units have matured reasonably
+- Whenever possible, write tests for public bugs before fixing them to guarantee reoccurrences will be caught and fixed
+- If someone else already made it for you, consider if using their solution is better than building your own
+- Adding features is good, but remember to also go back and cleanup the code; try to always keep up with changes in the immidiate code base
 
 ### Development approach
 
