@@ -55,13 +55,15 @@ In general, my focus is on reducing wasted development time and getting features
 - Make it work at all, before trying to make it nice
 - Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
 - Write tests for units that worry you right away, do the rest when the units have matured reasonably
+- Consider (and preferably fix) bugs as soon as possible
 - Whenever possible, write tests for public bugs before fixing them to guarantee reoccurrences will be caught and fixed
 - If someone else already made it for you, consider if using their solution is better than building your own
-- Adding features is good, but remember to also go back and cleanup the code; try to always keep up with changes in the immidiate code base
+- Adding features is gold, but remember to also go back and cleanup the code; try to always keep up with changes in the immidiate code base
 
 ### Development approach
 
-I of cause use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible. I also value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and of cause the IDE, and coverage tools like [Emma](http://emma.sourceforge.net/). And finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.
+I use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible.<BR>
+Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
 
