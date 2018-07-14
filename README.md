@@ -31,6 +31,7 @@ Feel free to experiment, but also note that the resources are very limited (AWS 
 To familiarize yourself with GraphiQL, I recommend going to [their introduction of queries](https://graphql.github.io/learn/queries/). The model can be browsed directly from the tool (in the right pane), and it will try to auto-complete queries when typing. 
 
 ### For a local setup
+
 - To experiment locally, check out the entire repository.
 - I recommend hooking it up to an IDE (Eclipse project files are included, and there are three pom.xml's you can import as well).
 - Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data".
@@ -41,6 +42,50 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 Now you can do as described above, but locally. <BR>
 Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).<BR>
 Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql).
+
+# Development strategy and major design principles used
+
+This project was created as a green field project, but also contains code fragments from several older projects. Every component added has been (re-)written using the following.
+
+### Prioritization
+
+In general, my focus is on reducing wasted development time and getting features to market as soon as possible, both for the added value and to gain feedback early.
+
+- Never get sucked down into the details, time spend working on one component is time not spend working on everything else
+- Make it work at all before trying to make it nice
+- Early feedback is key for quality; rather than nursing a feature forever, throw it out of the nest and check whether it can fly
+- Write tests for units that worry you right away, do the rest when the units have matured
+- Whenever possible, write tests for public bugs before fixing them to guarantee reoccurrences are caught and fixed
+- If someone already made it for you, consider if using their solution is better than building your own.
+
+### Development approach
+
+I of cause use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible. I also value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and of cause the IDE, and coverage tools like [Emma](http://emma.sourceforge.net/). And finally I use debugging and profiling ([e.g. VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.
+
+But ultimately these are just tools. When I develop a new feature, a plan I often use is similar to the following:
+
+* Only start feature implementation that can be completed in at most a few days, instead make the sub-features into production candidates, before working on the complex features
+* Plan layout based on domain knowledge, feature requirement and existing infrastructure
+* Define points of contact with the existing system and planned(near future) sister components
+* Either check for open source tools that match / can be used for parts of the implementation, or reason why it should be done directly
+* Run the system, making sure the fake component behaves as intended
+* Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
+* Implement the details
+* Deploy and check everything works
+* Cleanup obvious omissions and do general refactoring  
+
+### Design principles
+
+If you already agree with "Clean Code" by Robert C. Martin, much of this will seem self-evident (though I do not strictly follow all his principles). 
+
+* Write the code to be read, using comment to elaborate invisible details, not explain the code itself
+* Consider every code warning and decide how to handle it 
+* Perfection is a dream, continuous improvement is real.
+* Make it work at all before worrying about details and niceness
+* Stay agile and "light-weight" for as long as possible; document and test when the right level of maturity is reached 
+* [SOLID](https://en.wikipedia.org/wiki/SOLID)
+* [KISS](https://en.wikipedia.org/wiki/KISS_principle)
+* And numerous other, that I do not necessarily know the name for
 
 # Status at the moment
 The project contains a set of services:
@@ -92,7 +137,7 @@ _Rendering service that can lookup data in the Hbase index and then renderer it 
 
 One could argue that this service contains functionality that should be a part of the HBASE index service, but I have chosen to separate them, because I expect that the teams maintaining either service will be very different (HBASE specialists vs. front-end specialists). Still, it is heavily model dependent, and will likely need to be updated any time the HBASE index service is updated.
 
-_Note that HTML rendering is not implemented yet_. 
+_Note that HTML rendering has not been implemented yet_. 
 
 ### Usage data
 _Service responsible for storing and showing user interaction with the model_
