@@ -82,14 +82,16 @@ If I am "just" adding features to an existing component, many of the steps are p
 
 ### Design principles
 
-When I write code, there is a set of principles that I try to respect more than others. "Try", because it is a process, not a goal, but still I value these highly. If you already know "Clean Code" by Robert C. Martin (Uncle Bob), much of this will seem self-evident (though I do not strictly follow all his principles). 
+When I write code, there is a set of principles that I try to respect more than others. "Try", because it is a process, not a goal, but still I value these highly. If you already know "Clean Code" by Robert C. Martin (Uncle Bob), much of this will seem self-evident. I do not agree, however, with the principle that you should always prioritize code quality over development speed, rather I believe both to be equally important. I do not expect you do agree with these, but I stand by them, and update them as I evolve. 
 
 - Only start feature implementation that can be completed in at most a few days; instead make the sub-features production ready, before working on the complex features that depend on these
 - Write the code to be read, using comments to elaborate invisible details, not explain the code itself
-- Consider every warning in the code and decide how to handle it 
-- Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385)
+- Use meaningful names; use the domain, spend time choosing them, don't use personal acronyms, and refactor when encountering strange or misleading names
+- Keep it small; make short functions, short classes and split into meaningful sub-classes when possible
+- Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing to the build server
+- Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving
 - Make it work at all before worrying about details and niceness
-- Stay agile and "light-weight" for as long as possible; embrace change, and document and test when the right level of maturity is reached
+- Stay agile and "light-weight" for as long as possible; optimize for change initially, and add documentation and tests when the right level of maturity is reached
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
 - When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change
