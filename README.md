@@ -49,7 +49,7 @@ This project was created as a green field project, but also contains code fragme
 
 ### Prioritization
 
-In general, my focus is on reducing wasted development time and getting features to market as soon as possible, both for the added value and to gain feedback early.
+In general, my focus is on reducing wasted development time and getting features to market as soon as possible, both for the added value and to gain feedback early. I try to observe the following:
 
 - Never get sucked down into the details, time spend working on one component is time not spend working on everything else
 - Make it work at all before trying to make it nice
