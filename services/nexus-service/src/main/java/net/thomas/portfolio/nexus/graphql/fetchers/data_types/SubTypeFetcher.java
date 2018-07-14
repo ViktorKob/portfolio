@@ -5,7 +5,7 @@ import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeEntityProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 
 public class SubTypeFetcher extends ModelDataFetcher<DataTypeEntityProxy> {
 

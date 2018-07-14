@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;

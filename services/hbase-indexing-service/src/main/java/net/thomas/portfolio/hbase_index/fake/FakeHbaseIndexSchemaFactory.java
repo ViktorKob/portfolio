@@ -1,12 +1,12 @@
 package net.thomas.portfolio.hbase_index.fake;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.geoLocation;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.integer;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.nonKeyDataType;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.nonKeyDataTypeArray;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.geoLocation;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.integer;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.nonKeyDataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.nonKeyDataTypeArray;
 
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;

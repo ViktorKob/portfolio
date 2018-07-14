@@ -89,6 +89,7 @@ When I write code, there is a set of principles that I try to respect more than 
 - Use meaningful names; use the domain, spend time choosing them, don't use personal acronyms, and refactor when encountering strange or misleading names
 - Keep it small; make short functions, short classes and split into meaningful sub-classes when possible
 - Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing to the build server
+- Code coverage is a tool, not a goal; 100% in itself is irrelevant
 - Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving
 - Make it work at all before worrying about details and niceness
 - Stay agile and "light-weight" for as long as possible; optimize for change initially, and add documentation and tests when the right level of maturity is reached

@@ -12,19 +12,13 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 
 public class SimpleRepresentationParserUnitTest {
-	private static final String ANY_PATTERN = ".+$";
-	private static final String MATCHING_PATTERN = ANY_PATTERN;
-	private static final String MISMATCHING_PATTERN = "$";
-	private static final String FIELD = "FIELD";
-	private static final String VALUE = "VALUE";
-	private static final String TYPE = "TYPE";
-	private static final DataTypeId ID = new DataTypeId(TYPE, "ABCD");
+
 	private IdCalculator idCalculatorMock;
 
 	@Before
@@ -73,6 +67,14 @@ public class SimpleRepresentationParserUnitTest {
 		final Selector entity = parser.parse(TYPE, VALUE);
 		assertEquals(VALUE, entity.get(FIELD));
 	}
+
+	private static final String ANY_PATTERN = ".+$";
+	private static final String MATCHING_PATTERN = ANY_PATTERN;
+	private static final String MISMATCHING_PATTERN = "$";
+	private static final String FIELD = "FIELD";
+	private static final String VALUE = "VALUE";
+	private static final String TYPE = "TYPE";
+	private static final DataTypeId ID = new DataTypeId(TYPE, "ABCD");
 
 	private static class TestSimpleRepresentationParser extends SimpleRepresentationParser {
 

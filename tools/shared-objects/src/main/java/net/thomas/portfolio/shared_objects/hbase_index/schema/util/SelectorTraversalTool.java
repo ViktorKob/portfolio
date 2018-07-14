@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class SelectorTraversalTool {

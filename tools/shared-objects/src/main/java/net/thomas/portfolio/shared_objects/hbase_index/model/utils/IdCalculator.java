@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -10,11 +10,11 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Field;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField;
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 

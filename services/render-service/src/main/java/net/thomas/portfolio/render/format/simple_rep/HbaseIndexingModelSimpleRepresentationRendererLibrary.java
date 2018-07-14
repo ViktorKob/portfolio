@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.render.common.Renderer;
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContext;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 
 public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Renderer<String, SimpleRepresentationRenderContext> {
 	private final HbaseIndexingModelSimpleRepresentationRendererLibrary library;

@@ -1,8 +1,8 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.util;
+package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields.fields;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.string;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.ReferenceField.dataType;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -12,34 +12,13 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.data.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
 
 public class IdCalculatorUnitTest {
-	private static final String VALUE_FIELD = "value";
-	private static final String REFERENCE_FIELD = "reference";
-	private static final String RECURSIVE_SUB_TYPE_FIELD = "subType";
-	private static final String COMPLEX_ENTITY_FIELD_1 = "complexEntityField";
-	private static final String COMPLEX_ENTITY_FIELD_2 = "complexEntityField2";
-	private static final String SIMPLE_TYPE = "SimpleType";
-	private static final String NULL_REFERENCE_TYPE = "NullReferenceType";
-	private static final String RECURSIVE_TYPE = "RecursiveType";
-	private static final String COMPLEX_TYPE = "ComplexType";
-
-	private static final String RECURSIVE_SUBTYPE_UID = "ABCD1234";
-	private static final boolean KEYS_SHOULD_BE_CONSISTENT = false;
-	private static final boolean KEYS_SHOULD_BE_UNIQUE = true;
-
-	private static final Fields SIMPLE_TYPE_FIELDS;
-	private static final Fields NULL_REFERENCE_TYPE_FIELDS;
-	private static final Fields RECURSIVE_TYPE_FIELDS;
-	private static final Fields COMPLEX_TYPE_FIELDS;
-	private static final Selector SIMPLE_ENTITY;
-	private static final Selector NULL_REFERENCE_ENTITY;
-	private static final Selector RECURSIVE_ENTITY;
-	private static final Selector COMPLEX_ENTITY;
-
 	private IdCalculator simpleTypeIdGenerator;
 	private IdCalculator nullReferenceTypeIdGenerator;
 	private IdCalculator recursiveTypeIdGenerator;
@@ -95,6 +74,29 @@ public class IdCalculatorUnitTest {
 		final DataTypeId actualId2 = uniqueKeyIdGenerator.calculate(SIMPLE_TYPE, SIMPLE_ENTITY);
 		assertNotEquals(actualId1.uid, actualId2.uid);
 	}
+
+	private static final String VALUE_FIELD = "value";
+	private static final String REFERENCE_FIELD = "reference";
+	private static final String RECURSIVE_SUB_TYPE_FIELD = "subType";
+	private static final String COMPLEX_ENTITY_FIELD_1 = "complexEntityField";
+	private static final String COMPLEX_ENTITY_FIELD_2 = "complexEntityField2";
+	private static final String SIMPLE_TYPE = "SimpleType";
+	private static final String NULL_REFERENCE_TYPE = "NullReferenceType";
+	private static final String RECURSIVE_TYPE = "RecursiveType";
+	private static final String COMPLEX_TYPE = "ComplexType";
+
+	private static final String RECURSIVE_SUBTYPE_UID = "ABCD1234";
+	private static final boolean KEYS_SHOULD_BE_CONSISTENT = false;
+	private static final boolean KEYS_SHOULD_BE_UNIQUE = true;
+
+	private static final Fields SIMPLE_TYPE_FIELDS;
+	private static final Fields NULL_REFERENCE_TYPE_FIELDS;
+	private static final Fields RECURSIVE_TYPE_FIELDS;
+	private static final Fields COMPLEX_TYPE_FIELDS;
+	private static final Selector SIMPLE_ENTITY;
+	private static final Selector NULL_REFERENCE_ENTITY;
+	private static final Selector RECURSIVE_ENTITY;
+	private static final Selector COMPLEX_ENTITY;
 
 	static {
 		SIMPLE_TYPE_FIELDS = fields(string(VALUE_FIELD));

@@ -5,7 +5,7 @@ import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.arguments.ArgumentExtractor;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.util.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 
 public class FormattedDateExtractor implements ArgumentExtractor {
 

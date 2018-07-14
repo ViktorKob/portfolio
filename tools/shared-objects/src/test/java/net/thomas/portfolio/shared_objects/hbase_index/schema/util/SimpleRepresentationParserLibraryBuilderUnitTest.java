@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SimpleRepresentationParserLibraryBuilderUnitTest {
-	private static final String TYPE = "TYPE";
+
 	private SimpleRepresentationParserLibraryBuilder builder;
 	private SimpleRepresentationParser parserMock;
 
@@ -23,4 +23,6 @@ public class SimpleRepresentationParserLibraryBuilderUnitTest {
 		builder.add(parserMock);
 		builder.add(parserMock);
 	}
+
+	private static final String TYPE = "TYPE";
 }

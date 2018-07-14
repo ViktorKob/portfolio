@@ -2,7 +2,7 @@ package net.thomas.portfolio.hbase_index.fake.generators.selectors;
 
 import net.thomas.portfolio.hbase_index.fake.generators.SelectorGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.DigitsGenerator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class NumberGenerator extends SelectorGenerator {

@@ -1,11 +1,11 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.data;
+package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.FieldType.PRIMITIVE;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.DECIMAL;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.GEO_LOCATION;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.INTEGER;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.STRING;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.data.PrimitiveField.PrimitiveType.TIMESTAMP;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldType.PRIMITIVE;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.DECIMAL;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.GEO_LOCATION;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.INTEGER;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.STRING;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.TIMESTAMP;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.StandardToStringStyle;

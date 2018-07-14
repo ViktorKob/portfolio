@@ -24,7 +24,7 @@ import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptor
 import net.thomas.portfolio.service_commons.adaptors.impl.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @RunWith(SpringRunner.class)

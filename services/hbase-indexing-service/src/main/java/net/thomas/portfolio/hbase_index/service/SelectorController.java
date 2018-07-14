@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
-import net.thomas.portfolio.shared_objects.hbase_index.model.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
