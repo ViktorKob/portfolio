@@ -1,13 +1,10 @@
 server {
-    server_name ec2-35-163-101-53.us-west-2.compute.amazonaws.com;
-    listen 80;
-	large_client_header_buffers 10 64k;
-	
-    location = / {
-            proxy_pass http://eureka/;
-    }
-    location /eureka {
-            proxy_pass http://eureka/eureka;
+    server_name viktorkob.tk;
+
+    large_client_header_buffers 4 200k;
+
+    location /Infrastructure {
+            proxy_pass http://infrastructure/Infrastructure;
     }
     location /HbaseIndexingService {
             proxy_pass http://hbase_index/HbaseIndexingService;
@@ -39,4 +36,19 @@ server {
     location /NexusService {
             proxy_pass http://nexus/NexusService;
     }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/viktorkob.tk/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/viktorkob.tk/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+server {
+    #We want to use HTTPS so we redirect them instead
+    server_name viktorkob.tk;
+    listen 80;
+    return 301 https://viktorkob.tk$request_uri;
 }
