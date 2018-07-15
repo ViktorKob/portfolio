@@ -1,23 +1,27 @@
 package net.thomas.portfolio.legal.service;
 
+import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static net.thomas.portfolio.services.ServiceGlobals.LEGAL_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.POSSIBLY;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
@@ -40,24 +44,22 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 public class LegalServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("legal-service", 18350);
 
-	private static final DataTypeId SELECTOR_ID = new DataTypeId("TYPE", "FF");
+	@BeforeClass
+	public static void setupContextPath() {
+		setProperty("server.servlet.context-path", LEGAL_SERVICE_PATH);
+	}
 
 	@TestConfiguration
 	static class ServiceMocksSetup {
-		@Bean
+		@Bean(name = "HbaseIndexModelAdaptor")
 		public HbaseIndexModelAdaptor getHbaseModelAdaptor() {
-			final HbaseIndexModelAdaptorImpl adaptor = mock(HbaseIndexModelAdaptorImpl.class);
-			when(adaptor.getSelectorTypes()).thenReturn(asList(SELECTOR_ID.type));
+			final HbaseIndexModelAdaptor adaptor = mock(HbaseIndexModelAdaptorImpl.class);
+			when(adaptor.getSelectorTypes()).thenReturn(asList(SOME_SELECTOR_ID.type));
 			return adaptor;
-		}
-
-		@Bean
-		public AnalyticsAdaptorImpl getAnalyticsAdaptor() {
-			return mock(AnalyticsAdaptorImpl.class);
 		}
 	}
 
-	@Autowired
+	@MockBean(name = "AnalyticsAdaptor", classes = { AnalyticsAdaptorImpl.class })
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
@@ -78,7 +80,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForUnrestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -86,7 +88,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForSemiRestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
-		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -94,32 +96,36 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void searchingForRestrictedSelectorWithJustificationIsLegal() {
 		legalInfoBuilder.setValidJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingInvertedIndexLookup() {
-		final Boolean loggingWasSuccessfull = adaptors.auditLogInvertedIndexLookup(SELECTOR_ID, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = adaptors.auditLogInvertedIndexLookup(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 
 	@Test
 	public void shouldReturnOkAfterAuditLoggingStatisticsLookup() {
-		final Boolean loggingWasSuccessfull = adaptors.auditLogStatisticsLookup(SELECTOR_ID, legalInfoBuilder.build());
+		final Boolean loggingWasSuccessfull = adaptors.auditLogStatisticsLookup(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertTrue(loggingWasSuccessfull);
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsUnrestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
+		// when(analyticsAdaptor.getKnowledge(eq(SOME_SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
+		when(analyticsAdaptor.getKnowledge((DataTypeId) any())).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, UNLIKELY));
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
+		// when(analyticsAdaptor.getKnowledge(eq(SOME_SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
+		when(analyticsAdaptor.getKnowledge((DataTypeId) any())).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, POSSIBLY));
 	}
 
 	private void setupAnalyticsServiceToRespondSelectorIsRestricted() {
-		when(analyticsAdaptor.getKnowledge(eq(SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
+		// when(analyticsAdaptor.getKnowledge(eq(SOME_SELECTOR_ID))).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
+		when(analyticsAdaptor.getKnowledge((DataTypeId) any())).thenReturn(new AnalyticalKnowledge(null, UNLIKELY, CERTAIN));
 	}
 
+	private static final DataTypeId SOME_SELECTOR_ID = new DataTypeId("TYPE", "FF");
 }

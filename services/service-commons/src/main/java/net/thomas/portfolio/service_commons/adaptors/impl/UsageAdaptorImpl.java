@@ -15,16 +15,18 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 @EnableCircuitBreaker
-public class UsageAdaptorImpl implements UsageAdaptor {
+public class UsageAdaptorImpl implements HttpRestClientInitializable, UsageAdaptor {
 	private static final ParameterizedTypeReference<List<UsageActivity>> USAGE_ACTIVITY_ITEMS_TYPE_REFERENCE = new ParameterizedTypeReference<List<UsageActivity>>() {
 	};
 	private HttpRestClient client;
 
+	@Override
 	public void initialize(HttpRestClient client) {
 		this.client = client;
 	}

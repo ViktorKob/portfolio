@@ -1,6 +1,8 @@
 package net.thomas.portfolio.analytics.service;
 
+import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static net.thomas.portfolio.services.ServiceGlobals.ANALYTICS_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -8,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
+import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -30,15 +34,17 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 public class AnalyticsServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("analytics-service", 18300);
 
-	private static final String SELECTOR_TYPE = "TYPE";
-	private static final String KNOWN_RESTRICTED_UID_WITH_ALIAS = "FFABCD";
-	private static final DataTypeId SELECTOR_ID = new DataTypeId(SELECTOR_TYPE, KNOWN_RESTRICTED_UID_WITH_ALIAS);
+	@BeforeClass
+	public static void setupContextPath() {
+		setProperty("server.servlet.context-path", ANALYTICS_SERVICE_PATH);
+	}
 
 	@TestConfiguration
 	static class HbaseServiceMockSetup {
-		@Bean
-		public HbaseIndexModelAdaptorImpl getHbaseModelAdaptor() {
-			final HbaseIndexModelAdaptorImpl adaptor = mock(HbaseIndexModelAdaptorImpl.class);
+
+		@Bean(name = "HbaseIndexModelAdaptor")
+		public HbaseIndexModelAdaptor getHbaseModelAdaptor() {
+			final HbaseIndexModelAdaptor adaptor = mock(HbaseIndexModelAdaptorImpl.class);
 			when(adaptor.getDataTypes()).thenReturn(asList(SELECTOR_TYPE));
 			return adaptor;
 		}
@@ -64,4 +70,8 @@ public class AnalyticsServiceControllerServiceAdaptorTest {
 		assertEquals(CERTAIN, knowledge.isRestricted);
 		assertEquals("Target " + KNOWN_RESTRICTED_UID_WITH_ALIAS, knowledge.alias);
 	}
+
+	private static final String SELECTOR_TYPE = "TYPE";
+	private static final String KNOWN_RESTRICTED_UID_WITH_ALIAS = "FFABCD";
+	private static final DataTypeId SELECTOR_ID = new DataTypeId(SELECTOR_TYPE, KNOWN_RESTRICTED_UID_WITH_ALIAS);
 }

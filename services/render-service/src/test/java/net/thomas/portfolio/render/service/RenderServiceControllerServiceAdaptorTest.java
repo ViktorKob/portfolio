@@ -1,15 +1,18 @@
 package net.thomas.portfolio.render.service;
 
+import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
+import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +36,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 public class RenderServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("render-service", 18150);
 
-	private static final String DATA_TYPE = "TYPE";
-	private static final String UID = "FF";
-	private static final DataTypeId DATA_TYPE_ID = new DataTypeId(DATA_TYPE, UID);
-	private static final DataType ENTITY = new DataType();
-	private static final String RENDERED_ENTITY = "RENDERED";
+	@BeforeClass
+	public static void setupContextPath() {
+		setProperty("server.servlet.context-path", RENDER_SERVICE_PATH);
+	}
 
 	@TestConfiguration
 	static class ServiceMocksSetup {
-		@Bean
+		@Bean(name = "HbaseIndexModelAdaptor")
 		public HbaseIndexModelAdaptor getHbaseAdaptor() {
 			final HbaseIndexModelAdaptorImpl adaptor = mock(HbaseIndexModelAdaptorImpl.class);
 			when(adaptor.getDataTypes()).thenReturn(asList(DATA_TYPE));
@@ -91,4 +93,9 @@ public class RenderServiceControllerServiceAdaptorTest {
 		final String simpleRep = adaptors.renderAsHtml(DATA_TYPE_ID);
 		assertEquals(RENDERED_ENTITY, simpleRep);
 	}
+
+	private static final String DATA_TYPE = "TYPE";
+	private static final DataTypeId DATA_TYPE_ID = new DataTypeId(DATA_TYPE, "FF");
+	private static final DataType ENTITY = new DataType();
+	private static final String RENDERED_ENTITY = "Rendered";
 }

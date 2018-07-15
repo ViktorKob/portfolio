@@ -1,13 +1,15 @@
 package net.thomas.portfolio.hbase_index.service;
 
+import static java.lang.System.setProperty;
 import static java.util.Collections.emptyMap;
+import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -18,6 +20,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import java.util.Collection;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,13 +47,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBu
 public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("hbase-indexing-service", 18120);
 
-	private static final String SELECTOR_TYPE = "SELECTOR_TYPE";
-	private static final String DOCUMENT_TYPE = "DOCUMENT_TYPE";
-	private static final String RAW_DATA_TYPE = "RAW_TYPE";
-	private static final String SIMPLE_REPRESENTABLE_TYPE = "SIMPLE_REP";
-	private static final String UID = "FFABCD";
-	private static final DataTypeId SELECTOR_ID = new DataTypeId(SELECTOR_TYPE, UID);
-	private static final DataType ENTITY = new Selector(SELECTOR_ID, emptyMap());
+	@BeforeClass
+	public static void setupContextPath() {
+		setProperty("server.servlet.context-path", HBASE_INDEXING_SERVICE_PATH);
+	}
 
 	@TestConfiguration
 	static class ServiceBeansSetup {
@@ -131,17 +131,17 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldGetDataTypeFromIndex() {
-		when(index.getDataType(eq(SELECTOR_ID))).thenReturn(ENTITY);
-		final DataType dataType = adaptors.getDataType(SELECTOR_ID);
-		assertEquals(ENTITY, dataType);
+		when(index.getDataType(eq(SOME_SELECTOR_ID))).thenReturn(SOME_ENTITY);
+		final DataType dataType = adaptors.getDataType(SOME_SELECTOR_ID);
+		assertEquals(SOME_ENTITY, dataType);
 	}
 
 	@Test
 	public void shouldGetDataTypeFromCacheOnSecondQuery() {
-		when(index.getDataType(eq(SELECTOR_ID))).thenReturn(ENTITY);
-		adaptors.getDataType(SELECTOR_ID);
-		adaptors.getDataType(SELECTOR_ID);
-		verify(index, times(1)).getDataType(eq(SELECTOR_ID));
+		when(index.getDataType(eq(SOME_SELECTOR_ID))).thenReturn(SOME_ENTITY);
+		adaptors.getDataType(SOME_SELECTOR_ID);
+		adaptors.getDataType(SOME_SELECTOR_ID);
+		verify(index, times(1)).getDataType(eq(SOME_SELECTOR_ID));
 	}
 
 	@Test
@@ -155,4 +155,11 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 		final Fields dataTypes = adaptors.getFieldsForDataType(DOCUMENT_TYPE);
 		assertEquals(schema.getFieldsForDataType(DOCUMENT_TYPE), dataTypes);
 	}
+
+	private static final String SELECTOR_TYPE = "SELECTOR_TYPE";
+	private static final String DOCUMENT_TYPE = "DOCUMENT_TYPE";
+	private static final String RAW_DATA_TYPE = "RAW_TYPE";
+	private static final String SIMPLE_REPRESENTABLE_TYPE = "SIMPLE_REP";
+	private static final DataTypeId SOME_SELECTOR_ID = new DataTypeId(SELECTOR_TYPE, "FFABCD");
+	private static final DataType SOME_ENTITY = new Selector(SOME_SELECTOR_ID, emptyMap());
 }

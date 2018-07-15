@@ -135,5 +135,4 @@ public interface HbaseIndexModelAdaptor {
 	 * @return A list of document information containers ordered by time of event (descending)
 	 */
 	List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request);
-
 }

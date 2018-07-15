@@ -32,6 +32,7 @@ import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -42,15 +43,6 @@ import net.thomas.portfolio.usage_data.sql.SqlProxy;
 @Controller
 @RequestMapping(value = USAGE_ACTIVITIES_PATH + "/{dti_type}/{dti_uid}")
 public class UsageDataServiceController {
-	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
-	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
-	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
-	private static final UidValidator UID = new UidValidator("dti_uid", true);
-	private static final StringPresenceValidator USERNAME = new StringPresenceValidator("uai_user", true);
-	private static final EnumValueValidator<UsageActivityType> USAGE_ACTIVITY_TYPE = new EnumValueValidator<>("uai_type", UsageActivityType.values(), true);
-	private static final IntegerRangeValidator OFFSET = new IntegerRangeValidator("offset", 0, MAX_VALUE, false);
-	private static final IntegerRangeValidator LIMIT = new IntegerRangeValidator("limit", 1, MAX_VALUE, false);
-	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 
 	private final UsageDataServiceConfiguration config;
 	@Autowired
@@ -77,7 +69,7 @@ public class UsageDataServiceController {
 		return new RestTemplate();
 	}
 
-	@Bean
+	@Bean(name = "HbaseIndexModelAdaptor")
 	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
 		return new HbaseIndexModelAdaptorImpl();
 	}
@@ -86,7 +78,7 @@ public class UsageDataServiceController {
 	public void initializeService() {
 		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
-		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
 			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
 		}).start();
@@ -131,4 +123,14 @@ public class UsageDataServiceController {
 					+ LIMIT.getReason(bounds.limit));
 		}
 	}
+
+	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
+	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
+	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
+	private static final UidValidator UID = new UidValidator("dti_uid", true);
+	private static final StringPresenceValidator USERNAME = new StringPresenceValidator("uai_user", true);
+	private static final EnumValueValidator<UsageActivityType> USAGE_ACTIVITY_TYPE = new EnumValueValidator<>("uai_type", UsageActivityType.values(), true);
+	private static final IntegerRangeValidator OFFSET = new IntegerRangeValidator("offset", 0, MAX_VALUE, false);
+	private static final IntegerRangeValidator LIMIT = new IntegerRangeValidator("limit", 1, MAX_VALUE, false);
+	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 }

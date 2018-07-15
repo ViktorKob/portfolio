@@ -16,4 +16,5 @@ public interface AnalyticsAdaptor {
 	 * @return A summary of the knowledge about this exact selector present in the system
 	 */
 	AnalyticalKnowledge getKnowledge(DataTypeId selectorId);
+
 }

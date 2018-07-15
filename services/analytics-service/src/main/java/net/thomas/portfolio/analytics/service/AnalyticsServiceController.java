@@ -22,6 +22,7 @@ import net.thomas.portfolio.common.services.validation.SpecificStringPresenceVal
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
@@ -48,7 +49,7 @@ public class AnalyticsServiceController {
 		return new RestTemplate();
 	}
 
-	@Bean
+	@Bean(name = "HbaseIndexModelAdaptor")
 	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
 		return new HbaseIndexModelAdaptorImpl();
 	}
@@ -56,7 +57,7 @@ public class AnalyticsServiceController {
 	@PostConstruct
 	public void initialize() {
 		new Thread(() -> {
-			((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
 		}).start();
 		analyticsSystem = new AnalyticsControl();
