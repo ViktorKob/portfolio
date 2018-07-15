@@ -22,9 +22,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
+		<portfolio.version>0.0.1-SNAPSHOT</portfolio.version>
 	</properties>
 
-	<dependencies> 
+	<dependencies>
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>architecture</artifactId>
@@ -45,11 +46,11 @@
 
 	<dependencyManagement>
 		<dependencies>
-		<dependency>
-			<groupId>net.thomas.portfolio.tools</groupId>
-			<artifactId>architecture</artifactId>
-			<version>0.0.1.SNAPSHOT</version>
-		</dependency>
+			<dependency>
+				<groupId>net.thomas.portfolio.tools</groupId>
+				<artifactId>architecture</artifactId>
+				<version>${portfolio.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>

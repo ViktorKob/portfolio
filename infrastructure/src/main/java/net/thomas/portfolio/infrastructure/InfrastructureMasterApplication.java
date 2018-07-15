@@ -1,6 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static java.lang.System.setProperty;
+import static net.thomas.portfolio.services.ServiceGlobals.INFRASTRUCTURE_MASTER_PATH;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,7 +34,7 @@ public class InfrastructureMasterApplication {
 	}
 
 	public static void main(String[] args) {
-		setProperty("server.servlet.context-path", "/Infrastructure");
+		setProperty("server.servlet.context-path", INFRASTRUCTURE_MASTER_PATH);
 		run(InfrastructureMasterApplication.class);
 	}
 }
