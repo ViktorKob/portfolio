@@ -2,7 +2,8 @@ package net.thomas.portfolio.service_commons.adaptors.impl;
 
 import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_INVERTED_INDEX_LOOKUP;
 import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_STATISTICS_LOOKUP;
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.CHECK_LEGALITY_OF_QUERY_ON_SELECTOR;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGALITY_OF_INVERTED_INDEX_QUERY;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGALITY_OF_STATISTICS_LOOKUP;
 import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -43,7 +44,13 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, CHECK_LEGALITY_OF_QUERY_ON_SELECTOR, GET, Legality.class, selectorId, legalInfo);
+	public Legality checkLegalityOfInvertedIndexQuery(DataTypeId selectorId, LegalInformation legalInfo) {
+		return client.loadUrlAsObject(LEGAL_SERVICE, LEGALITY_OF_INVERTED_INDEX_QUERY, GET, Legality.class, selectorId, legalInfo);
+	}
+
+	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	public Legality checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return client.loadUrlAsObject(LEGAL_SERVICE, LEGALITY_OF_STATISTICS_LOOKUP, GET, Legality.class, selectorId, legalInfo);
 	}
 }

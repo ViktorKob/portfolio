@@ -2,7 +2,8 @@ package net.thomas.portfolio.legal.service;
 
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_STATISTICS_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_INVERTED_INDEX_QUERY_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_STATISTICS_LOOKUP_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -22,7 +23,7 @@ import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
-import net.thomas.portfolio.legal.system.AuditingRulesControl;
+import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
@@ -48,7 +49,7 @@ public class LegalServiceController {
 	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
-	private AuditingRulesControl auditingRulesSystem;
+	private LegalRulesControl legalRulesSystem;
 	private AuditLoggingControl auditLoggingSystem;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
@@ -77,13 +78,35 @@ public class LegalServiceController {
 			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 		}).start();
-		auditingRulesSystem = new AuditingRulesControl();
-		auditingRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
+		legalRulesSystem = new LegalRulesControl();
+		legalRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
 		auditLoggingSystem = new AuditLoggingControl();
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH, method = POST)
+	@RequestMapping(path = LEGALITY_OF_INVERTED_INDEX_QUERY_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
+			final Legality response = legalRulesSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
+			return ok(response);
+		} else {
+			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(path = LEGALITY_OF_STATISTICS_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
+		if (TYPE.isValid(dataTypeId.type) && UID.isValid(dataTypeId.uid)) {
+			final Legality response = legalRulesSystem.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
+			return ok(response);
+		} else {
+			return badRequest().body(TYPE.getReason(dataTypeId.type) + "<BR>" + UID.getReason(dataTypeId.uid));
+		}
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(path = AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = POST)
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
@@ -94,22 +117,11 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = AUDIT_LOG_STATISTICS_LOOKUP_PATH, method = POST)
+	@RequestMapping(path = AUDIT_LOG_STATISTICS_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
 			return ok(accepted);
-		} else {
-			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
-		}
-	}
-
-	@Secured("ROLE_USER")
-	@RequestMapping(path = CHECK_LEGALITY_OF_QUERY_ON_SELECTOR_PATH, method = GET)
-	public ResponseEntity<?> checkLegalityOfQueryOnSelector(DataTypeId selectorId, LegalInformation legalInfo) {
-		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final Legality response = auditingRulesSystem.checkLegalityOfSelectorQuery(selectorId, legalInfo);
-			return ok(response);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
