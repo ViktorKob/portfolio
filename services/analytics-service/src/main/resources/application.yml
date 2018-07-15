@@ -1,4 +1,6 @@
-server.port: 8300
+server:
+  port: 8300
+  max-http-header-size: 200000
 
 spring:
   application:
@@ -13,7 +15,7 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
-    registryFetchIntervalSeconds: 5    
+    registry-fetch-interval-seconds: 5    
     service-url:
       defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
 

@@ -29,12 +29,26 @@ spring:
       password: password 
       roles: USER 
 
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000
+      circuitBreaker:
+        requestVolumeThreshold: 5
+        sleepWindowInMilliseconds: 1000
+      metrics:
+        rollingStats:
+          timeInMilliseconds: 600000
+          numBuckets: 600
 
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
-    registryFetchIntervalSeconds: 5    
+    registry-fetch-interval-seconds: 5    
     service-url:
       defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
     
@@ -70,18 +84,3 @@ logging:
     org:
       springframework: INFO
     springfox: INFO
-
-hystrix:
-  command:
-    default:
-      execution:
-        isolation:
-          thread:
-            timeoutInMilliseconds: 5000
-      circuitBreaker:
-        requestVolumeThreshold: 5
-        sleepWindowInMilliseconds: 1000
-      metrics:
-        rollingStats:
-          timeInMilliseconds: 600000
-          numBuckets: 600
