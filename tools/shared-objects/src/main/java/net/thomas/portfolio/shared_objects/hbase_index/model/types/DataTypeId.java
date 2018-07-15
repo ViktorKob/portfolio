@@ -9,7 +9,8 @@ import net.thomas.portfolio.common.services.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DataTypeId implements ParameterGroup {
-	public static final String GET_REQUEST_PATH = "";
+	public static final DataTypeId NULL_ID = new NullId();
+
 	@JsonIgnore
 	public String type;
 	@JsonIgnore
@@ -74,5 +75,8 @@ public class DataTypeId implements ParameterGroup {
 	@Override
 	public String toString() {
 		return type + "-" + uid;
+	}
+
+	private static final class NullId extends DataTypeId {
 	}
 }

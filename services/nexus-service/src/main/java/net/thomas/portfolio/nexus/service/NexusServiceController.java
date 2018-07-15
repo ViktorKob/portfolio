@@ -29,6 +29,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -55,27 +56,27 @@ public class NexusServiceController {
 		this.config = config;
 	}
 
-	@Bean
+	@Bean(name = "AnalyticsAdaptor")
 	public AnalyticsAdaptor getAnalyticsAdaptor() {
 		return new AnalyticsAdaptorImpl();
 	}
 
-	@Bean
+	@Bean(name = "HbaseIndexModelAdaptor")
 	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
 		return new HbaseIndexModelAdaptorImpl();
 	}
 
-	@Bean
+	@Bean(name = "LegalAdaptor")
 	public LegalAdaptor getLegalAdaptor() {
 		return new LegalAdaptorImpl();
 	}
 
-	@Bean
+	@Bean(name = "RenderingAdaptor")
 	public RenderingAdaptor getRenderingAdaptor() {
 		return new RenderingAdaptorImpl();
 	}
 
-	@Bean
+	@Bean(name = "UsageAdaptor")
 	public UsageAdaptor getUsageAdaptor() {
 		return new UsageAdaptorImpl();
 	}
@@ -92,11 +93,11 @@ public class NexusServiceController {
 	}
 
 	private void initializeIndividualAdaptors() {
-		((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-		((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
-		((LegalAdaptorImpl) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
-		((RenderingAdaptorImpl) renderingAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
-		((UsageAdaptorImpl) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
+		((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+		((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		((HttpRestClientInitializable) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
+		((HttpRestClientInitializable) renderingAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
+		((HttpRestClientInitializable) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
 	}
 
 	private Adaptors buildCompositeAdaptors() {

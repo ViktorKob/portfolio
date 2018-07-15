@@ -11,6 +11,7 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId.NULL_ID;
 import static org.springframework.http.HttpMethod.GET;
 
 import java.util.Collection;
@@ -31,6 +32,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.thomas.portfolio.common.services.ParameterGroup;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
@@ -42,13 +44,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 @EnableCircuitBreaker
-public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
+public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, HbaseIndexModelAdaptor {
 
 	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
 	private HttpRestClient client;
 	private HbaseIndexSchema schema;
 	private Cache<DataTypeId, DataType> dataTypeCache;
 
+	@Override
 	public void initialize(HttpRestClient client) {
 		this.client = client;
 		while (schema == null) {
@@ -80,7 +83,7 @@ public class HbaseIndexModelAdaptorImpl implements HbaseIndexModelAdaptor {
 		if (uid != null) {
 			return new DataTypeId(type, uid);
 		} else {
-			return null;
+			return NULL_ID;
 		}
 	}
 

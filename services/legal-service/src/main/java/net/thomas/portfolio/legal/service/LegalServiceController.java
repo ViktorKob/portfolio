@@ -28,6 +28,7 @@ import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptor
 import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
@@ -54,7 +55,7 @@ public class LegalServiceController {
 		this.config = config;
 	}
 
-	@Bean
+	@Bean(name = "AnalyticsAdaptor")
 	public AnalyticsAdaptor getAnalyticsAdaptor() {
 		return new AnalyticsAdaptorImpl();
 	}
@@ -72,8 +73,8 @@ public class LegalServiceController {
 	@PostConstruct
 	public void initializeService() {
 		new Thread(() -> {
-			((AnalyticsAdaptorImpl) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-			((HbaseIndexModelAdaptorImpl) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 		}).start();
 		auditingRulesSystem = new AuditingRulesControl();
