@@ -78,8 +78,8 @@ public class UsageDataServiceController {
 	public void initializeService() {
 		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
-		((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 		new Thread(() -> {
+			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
 		}).start();
 	}
