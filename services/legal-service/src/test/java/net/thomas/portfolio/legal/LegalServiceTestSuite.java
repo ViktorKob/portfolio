@@ -5,9 +5,9 @@ import org.junit.runners.Suite;
 
 import net.thomas.portfolio.legal.service.LegalServiceControllerServiceAdaptorTest;
 import net.thomas.portfolio.legal.system.AuditLoggingControlUnitTest;
-import net.thomas.portfolio.legal.system.AuditingRulesControlUnitTest;
+import net.thomas.portfolio.legal.system.LegalRulesControlUnitTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ AuditingRulesControlUnitTest.class, AuditLoggingControlUnitTest.class, LegalServiceControllerServiceAdaptorTest.class })
+@Suite.SuiteClasses({ LegalRulesControlUnitTest.class, AuditLoggingControlUnitTest.class, LegalServiceControllerServiceAdaptorTest.class })
 public class LegalServiceTestSuite {
 }

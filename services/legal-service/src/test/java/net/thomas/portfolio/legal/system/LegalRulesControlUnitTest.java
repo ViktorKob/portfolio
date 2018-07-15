@@ -6,7 +6,7 @@ import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLI
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,21 +18,21 @@ import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
-public class AuditingRulesControlUnitTest {
+public class LegalRulesControlUnitTest {
 	private static final String SELECTOR_TYPE = "TYPE";
 	private static final String UID = "FF";
 
 	private AnalyticsAdaptorImpl analyticsAdaptor;
 	private DataTypeId selectorId;
 	private LegalInfoForTestBuilder legalInfoBuilder;
-	private AuditingRulesControl auditingSystem;
+	private LegalRulesControl auditingSystem;
 
 	@Before
 	public void setupForTests() {
 		analyticsAdaptor = mock(AnalyticsAdaptorImpl.class);
 		selectorId = new DataTypeId(SELECTOR_TYPE, UID);
 		legalInfoBuilder = new LegalInfoForTestBuilder();
-		auditingSystem = new AuditingRulesControl();
+		auditingSystem = new LegalRulesControl();
 		auditingSystem.setAnalyticsAdaptor(analyticsAdaptor);
 	}
 
@@ -40,7 +40,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingForUnrestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -48,7 +48,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingForSemiRestrictedSelectorWithValidUserIsLegal() {
 		legalInfoBuilder.setValidUser();
 		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 
@@ -56,7 +56,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingWithNullUserIsIllegal() {
 		legalInfoBuilder.setNullUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(ILLEGAL, legality);
 	}
 
@@ -64,7 +64,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingWithEmptyUserIsIllegal() {
 		legalInfoBuilder.setEmptyUser();
 		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(ILLEGAL, legality);
 	}
 
@@ -72,7 +72,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingForRestrictedSelectorWithNullJustificationIsIllegal() {
 		legalInfoBuilder.setNullJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(ILLEGAL, legality);
 	}
 
@@ -80,7 +80,7 @@ public class AuditingRulesControlUnitTest {
 	public void searchingForRestrictedSelectorWithEmptyJustificationIsIllegal() {
 		legalInfoBuilder.setEmptyJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(ILLEGAL, legality);
 	}
 
@@ -88,7 +88,63 @@ public class AuditingRulesControlUnitTest {
 	public void searchingForRestrictedSelectorWithJustificationIsLegal() {
 		legalInfoBuilder.setValidJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = auditingSystem.checkLegalityOfSelectorQuery(selectorId, legalInfoBuilder.build());
+		final Legality legality = auditingSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(LEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsForUnrestrictedSelectorWithValidUserIsLegal() {
+		legalInfoBuilder.setValidUser();
+		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(LEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsForSemiRestrictedSelectorWithValidUserIsLegal() {
+		legalInfoBuilder.setValidUser();
+		setupAnalyticsServiceToRespondSelectorIsPartiallyRestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(LEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsWithNullUserIsIllegal() {
+		legalInfoBuilder.setNullUser();
+		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(ILLEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsWithEmptyUserIsIllegal() {
+		legalInfoBuilder.setEmptyUser();
+		setupAnalyticsServiceToRespondSelectorIsUnrestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(ILLEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsForRestrictedSelectorWithNullJustificationIsIllegal() {
+		legalInfoBuilder.setNullJustification();
+		setupAnalyticsServiceToRespondSelectorIsRestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(ILLEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsForRestrictedSelectorWithEmptyJustificationIsIllegal() {
+		legalInfoBuilder.setEmptyJustification();
+		setupAnalyticsServiceToRespondSelectorIsRestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(ILLEGAL, legality);
+	}
+
+	@Test
+	public void lookingUpStatisticsForRestrictedSelectorWithJustificationIsLegal() {
+		legalInfoBuilder.setValidJustification();
+		setupAnalyticsServiceToRespondSelectorIsRestricted();
+		final Legality legality = auditingSystem.checkLegalityOfStatisticsLookup(selectorId, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 

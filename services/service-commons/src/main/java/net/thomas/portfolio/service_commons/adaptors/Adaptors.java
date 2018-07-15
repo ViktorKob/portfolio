@@ -245,7 +245,20 @@ public class Adaptors {
 	 * @return An assessment of whether the lookup would be legal to complete
 	 */
 	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
-		return legalAdaptor.checkLegalityOfSelectorQuery(selectorId, legalInfo);
+		return legalAdaptor.checkLegalityOfInvertedIndexQuery(selectorId, legalInfo);
+	}
+
+	/***
+	 * Using {@link LegalAdaptor#checkLegalityOfStatisticsLookup}<BR>
+	 *
+	 * @param dataTypeId
+	 *            The ID of the entity is being queried
+	 * @param legalInfo
+	 *            The legal parameters supporting the lookup
+	 * @return An assessment of whether the lookup would be legal to complete
+	 */
+	public Legality checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
+		return legalAdaptor.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
 	}
 
 	/***
