@@ -1,8 +1,7 @@
 package net.thomas.portfolio.render.service;
 
-import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
-import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,14 +30,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=render-service", "server.port:18150", "eureka.client.registerWithEureka:false",
+@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18150", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class RenderServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("render-service", 18150);
 
 	@BeforeClass
 	public static void setupContextPath() {
-		setProperty("server.servlet.context-path", RENDER_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 	}
 
 	@TestConfiguration

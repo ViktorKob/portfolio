@@ -1,29 +1,40 @@
+discovery-address: localhost:8000
+external-service-address: localhost:${server.port}
+
 server:
   port: 8120
   max-http-header-size: 200000
+  servlet.context-path: ${hbase-indexing-context-path}
 
 spring:
-  application:
-    name: hbase-indexing-service
-  security:
-    user:
-      name: service-user 
-      password: password
-      roles: USER
+  application.name: hbase-indexing-service
+  security.user:
+    name: service-user 
+    password: password
+    roles: USER
+
+management:
+  endpoints.web.exposure.include: "*" 
+  endpoint.health.show-details: ALWAYS
 
 eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: ${hbase-indexing-context-path}/actuator/health
+    status-page-url-path: http://${external-service-address}${hbase-indexing-context-path}/v1/schema
+    management.context-path: ${hbase-indexing-context-path}
+    metadata-map.user:
+      name: service-user
+      password: password
   client:
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 5    
-    service-url:
-      defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
+    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
 
 http:
   mappers:
     jsonPrettyPrint: true
 
 hbase-indexing-service:
-  randomSeed: 1234
-          
-    
+  randomSeed: 1234 

@@ -2,10 +2,9 @@ package net.thomas.portfolio.usage_data.service;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,14 +39,14 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=usage-data-service", "server.port:18200", "eureka.client.registerWithEureka:false",
+@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18200", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class UsageDataServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("usage-data-service", 18200);
 
 	@BeforeClass
 	public static void setupContextPath() {
-		setProperty("server.servlet.context-path", USAGE_DATA_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 	}
 
 	@TestConfiguration

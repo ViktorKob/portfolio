@@ -1,8 +1,7 @@
 package net.thomas.portfolio.legal.service;
 
-import static java.lang.System.setProperty;
 import static java.util.Arrays.asList;
-import static net.thomas.portfolio.services.ServiceGlobals.LEGAL_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
@@ -38,14 +37,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=legal-service", "server.port:18350", "eureka.client.registerWithEureka:false",
+@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18350", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class LegalServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("legal-service", 18350);
 
 	@BeforeClass
 	public static void setupContextPath() {
-		setProperty("server.servlet.context-path", LEGAL_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 	}
 
 	@TestConfiguration

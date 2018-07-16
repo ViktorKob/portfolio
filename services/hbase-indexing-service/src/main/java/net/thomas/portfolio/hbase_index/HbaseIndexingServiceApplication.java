@@ -1,18 +1,17 @@
 package net.thomas.portfolio.hbase_index;
 
-import static java.lang.System.setProperty;
-import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @SpringBootApplication
-@EnableEurekaClient
+@EnableDiscoveryClient
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class HbaseIndexingServiceApplication {
 	@Configuration
@@ -30,7 +29,7 @@ public class HbaseIndexingServiceApplication {
 	}
 
 	public static void main(String[] args) {
-		setProperty("server.servlet.context-path", HBASE_INDEXING_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 		run(HbaseIndexingServiceApplication.class, args);
 	}
 }

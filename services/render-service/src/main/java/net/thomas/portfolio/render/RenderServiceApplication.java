@@ -1,7 +1,6 @@
 package net.thomas.portfolio.render;
 
-import static java.lang.System.setProperty;
-import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class RenderServiceApplication {
 
 	public static void main(String[] args) {
-		setProperty("server.servlet.context-path", RENDER_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 		run(RenderServiceApplication.class, args);
 	}
 }

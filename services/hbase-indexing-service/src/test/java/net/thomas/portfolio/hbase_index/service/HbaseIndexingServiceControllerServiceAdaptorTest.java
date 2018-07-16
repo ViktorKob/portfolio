@@ -1,8 +1,7 @@
 package net.thomas.portfolio.hbase_index.service;
 
-import static java.lang.System.setProperty;
 import static java.util.Collections.emptyMap;
-import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
@@ -42,14 +41,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.name=hbase-indexing-service", "server.port:18120",
-		"eureka.client.registerWithEureka:false", "eureka.client.fetchRegistry:false" })
+@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18120", "eureka.client.registerWithEureka:false",
+		"eureka.client.fetchRegistry:false" })
 public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("hbase-indexing-service", 18120);
 
 	@BeforeClass
 	public static void setupContextPath() {
-		setProperty("server.servlet.context-path", HBASE_INDEXING_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 	}
 
 	@TestConfiguration
