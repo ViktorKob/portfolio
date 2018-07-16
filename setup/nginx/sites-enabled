@@ -6,6 +6,9 @@ server {
     location /Infrastructure {
             proxy_pass http://infrastructure/Infrastructure;
     }
+    location /Admin {
+            proxy_pass http://admin/Admin;
+    }
     location /HbaseIndexingService {
             proxy_pass http://hbase_index/HbaseIndexingService;
     }
@@ -21,18 +24,6 @@ server {
     location /UsageDataService {
             proxy_pass http://usage_data/UsageDataService;
     }
-    location = /schema.json {
-            proxy_pass http://nexus/NexusService/schema.json;
-    }
-    location = /NexusService/graphiql {
-            proxy_pass http://nexus/graphiql;
-    }
-    location /NexusService/vendor {
-            proxy_pass http://nexus/vendor;
-    }
-    location /graphql {
-            proxy_pass http://nexus/NexusService;
-    }
     location /NexusService {
             proxy_pass http://nexus/NexusService;
     }
@@ -42,8 +33,6 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/viktorkob.tk/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-
 }
 
 server {
