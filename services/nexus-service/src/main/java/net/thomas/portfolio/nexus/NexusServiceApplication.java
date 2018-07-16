@@ -1,7 +1,6 @@
 package net.thomas.portfolio.nexus;
 
-import static java.lang.System.setProperty;
-import static net.thomas.portfolio.services.ServiceGlobals.NEXUS_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,8 +29,7 @@ public class NexusServiceApplication {
 	}
 
 	public static void main(String[] args) {
-		setProperty("management.endpoints.web.base-path", NEXUS_SERVICE_PATH + "/actuator");
-		setProperty("management.endpoints.jmx.exposure.include", "*");
+		loadServicePathsIntoProperties();
 		run(NexusServiceApplication.class, args);
 	}
 }

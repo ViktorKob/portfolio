@@ -1,6 +1,12 @@
+discovery-address: localhost:8000
+external-service-address: localhost:${server.port}
+
+
 server:
   port: 8100
   max-http-header-size: 200000
+  #servlet.path: ${nexus-context-path}
+  servlet.context-path: ${nexus-context-path}
   
   tomcat:
     max-connections: 2000
@@ -8,26 +14,39 @@ server:
     max-threads: 50
     min-spare-threads: 10
 
+spring:
+  application.name: nexus-service
+  security.user:
+    name: service-user 
+    password: password
+    roles: USER
+
+graphiql.endpoint: ${nexus-context-path}/graphql
+
 management:
-  endpoint:
-    health:
-      enabled: true
-      show-details: always
   endpoints:
     web:
-      cors:
-        allowed-origins: true
-      exposure:
-        include: hystrix.stream, info, health
+      base-path: /actuator
+      cors.allowed-origins: true
+      exposure.include: "*"
+    jmx:
+      exposure.include: "*"
+  endpoint.health.show-details: ALWAYS
 
-spring:
-  application:
-    name: nexus-service
-  security:
-    user:
-      name: service-user 
-      password: password 
-      roles: USER 
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: ${nexus-context-path}/actuator/health
+    status-page-url-path: http://${external-service-address}${nexus-context-path}/graphiql
+    management.context-path: ${nexus-context-path}/actuator
+    metadata-map.user:
+      name: service-user
+      password: password
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5    
+    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
 
 hystrix:
   command:
@@ -44,14 +63,6 @@ hystrix:
           timeInMilliseconds: 600000
           numBuckets: 600
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5    
-    service-url:
-      defaultZone: http://service-user:password@localhost:8000/Infrastructure/eureka/
-    
 nexus-service:
   analytics:
     name: analytics-service

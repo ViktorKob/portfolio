@@ -1,7 +1,5 @@
 package net.thomas.portfolio.nexus.service;
 
-import static net.thomas.portfolio.services.ServiceGlobals.NEXUS_SERVICE_PATH;
-
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -33,8 +31,6 @@ import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 
 @SpringBootApplication
 public class NexusServiceController {
-
-	private static final String GRAPHQL_SERVLET_MAPPING = NEXUS_SERVICE_PATH + "/*";
 	private final NexusServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
@@ -115,6 +111,6 @@ public class NexusServiceController {
 	public ServletRegistrationBean<SimpleGraphQLServlet> graphQLServletRegistrationBean() throws IOException {
 		final GraphQlModelBuilder schemaBuilder = new GraphQlModelBuilder().setAdaptors(adaptors);
 		final Builder servletBuilder = SimpleGraphQLServlet.builder(schemaBuilder.build());
-		return new ServletRegistrationBean<>(servletBuilder.build(), "/schema.json", GRAPHQL_SERVLET_MAPPING, "/graphql/*");
+		return new ServletRegistrationBean<>(servletBuilder.build(), "/schema.json", "/graphql/*");
 	}
 }

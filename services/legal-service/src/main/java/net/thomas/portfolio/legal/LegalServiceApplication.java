@@ -1,7 +1,6 @@
 package net.thomas.portfolio.legal;
 
-import static java.lang.System.setProperty;
-import static net.thomas.portfolio.services.ServiceGlobals.LEGAL_SERVICE_PATH;
+import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,7 +31,7 @@ public class LegalServiceApplication {
 	}
 
 	public static void main(String[] args) {
-		setProperty("server.servlet.context-path", LEGAL_SERVICE_PATH);
+		loadServicePathsIntoProperties();
 		run(LegalServiceApplication.class, args);
 	}
 }

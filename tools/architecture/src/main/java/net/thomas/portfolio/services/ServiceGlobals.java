@@ -2,6 +2,7 @@ package net.thomas.portfolio.services;
 
 public class ServiceGlobals {
 	public static final String INFRASTRUCTURE_MASTER_PATH = "/Infrastructure";
+	public static final String ADMIN_SERVICE_PATH = "/Admin";
 
 	public static final String ANALYTICS_SERVICE_PATH = "/AnalyticsService";
 	public static final String HBASE_INDEXING_SERVICE_PATH = "/HbaseIndexingService";
