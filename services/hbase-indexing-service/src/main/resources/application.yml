@@ -21,7 +21,7 @@ eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: ${hbase-indexing-context-path}/actuator/health
-    status-page-url-path: http://${external-service-address}${hbase-indexing-context-path}/v1/schema
+    status-page-url-path: http://service-user:password@${external-service-address}${hbase-indexing-context-path}/v1/schema
     management.context-path: ${hbase-indexing-context-path}
     metadata-map.user:
       name: service-user
