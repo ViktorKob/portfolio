@@ -1,7 +1,6 @@
 discovery-address: localhost:8000
 external-service-address: localhost:${server.port}
 
-
 server:
   port: 8100
   max-http-header-size: 200000
