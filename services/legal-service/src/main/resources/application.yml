@@ -5,6 +5,12 @@ server:
   port: 8350
   max-http-header-size: 200000
   servlet.context-path: ${legal-context-path}
+  
+  tomcat:
+    max-connections: 2000
+    max-http-post-size: 200000
+    max-threads: 50
+    min-spare-threads: 10
 
 spring:
   application.name: legal-service
@@ -21,7 +27,7 @@ eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: ${legal-context-path}/actuator/health
-    status-page-url-path: http://service-user:password@${external-service-address}${legal-context-path}/actuator/info
+    status-page-url-path: http://${external-service-address}${legal-context-path}/actuator/info
     management.context-path: ${legal-context-path}
     metadata-map.user:
       name: service-user

@@ -36,7 +36,7 @@ eureka:
   instance:
     leaseRenewalIntervalInSeconds: 10
     health-check-url-path: ${nexus-context-path}/actuator/health
-    status-page-url-path: http://service-user:password@${external-service-address}${nexus-context-path}/graphiql
+    status-page-url-path: http://${external-service-address}${nexus-context-path}/graphiql
     management.context-path: ${nexus-context-path}/actuator
     metadata-map.user:
       name: service-user
