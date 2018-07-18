@@ -5,8 +5,8 @@ import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
-import org.springframework.cloud.netflix.hystrix.dashboard.EnableHystrixDashboard;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,10 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@EnableEurekaServer
-@EnableHystrixDashboard
+@EnableZuulProxy
+@EnableEurekaClient
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-public class InfrastructureMasterApplication {
+public class ProxyApplication {
 	@Configuration
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
@@ -34,6 +34,6 @@ public class InfrastructureMasterApplication {
 
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
-		run(InfrastructureMasterApplication.class);
+		run(ProxyApplication.class);
 	}
 }
