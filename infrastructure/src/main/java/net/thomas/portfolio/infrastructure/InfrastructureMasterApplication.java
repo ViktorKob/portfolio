@@ -1,7 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.InfrastructureServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.InfrastructureServiceParameters.loadInfrastructureServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,7 +35,7 @@ public class InfrastructureMasterApplication {
 
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
-		loadDefaultServiceConfigurationIntoProperties();
+		loadInfrastructureServiceConfigurationIntoProperties();
 		run(InfrastructureMasterApplication.class);
 	}
 }

@@ -1,7 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.ProxyServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.ProxyServiceParameters.loadProxyServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,7 +35,7 @@ public class ProxyApplication {
 
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
-		loadDefaultServiceConfigurationIntoProperties();
+		loadProxyServiceConfigurationIntoProperties();
 		run(ProxyApplication.class);
 	}
 }

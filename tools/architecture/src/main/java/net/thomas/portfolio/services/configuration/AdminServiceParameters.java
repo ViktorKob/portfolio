@@ -72,7 +72,7 @@ public class AdminServiceParameters {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 
-	public static void loadDefaultServiceConfigurationIntoProperties() {
+	public static void loadAdminServiceConfigurationIntoProperties() {
 		for (final Entry<String, String> property : SERVICE_PROPERTIES.entrySet()) {
 			setProperty(property.getKey(), property.getValue());
 		}

@@ -31,6 +31,8 @@ public class InfrastructureServiceParameters {
 
 		put("eureka.server.enableSelfPreservation", "false");
 		put("ribbon.eureka.enabled", "true");
+		put("ribbon.eureka.ConnectTimeout", "2000");
+		put("ribbon.eureka.ReadTimeout", "600000");
 
 		// ####################
 		// Standard settings:
@@ -77,7 +79,7 @@ public class InfrastructureServiceParameters {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 
-	public static void loadDefaultServiceConfigurationIntoProperties() {
+	public static void loadInfrastructureServiceConfigurationIntoProperties() {
 		for (final Entry<String, String> property : SERVICE_PROPERTIES.entrySet()) {
 			setProperty(property.getKey(), property.getValue());
 		}
