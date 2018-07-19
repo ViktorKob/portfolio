@@ -69,8 +69,8 @@ For bug-tracking and issue management, I have experience using [JIRA](https://ww
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is the following:
  
-1. Plan layout based on domain knowledge, feature requirement and existing infrastructure
-2. Define points of contact with the existing system and planned(near future) sister components
+1. Plan layout based on domain knowledge, feature requirements and existing infrastructure
+2. Define points of contact with the existing system and planned (near future) sister components
 3. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
 4. Deploy the system and make sure the fake component behaves as intended; change whatever doesn't
 5. Either check for thirds party tools that match / can be used for parts of the implementation, or reason why it should be implemented directly
@@ -86,14 +86,14 @@ If I am "just" adding features to an existing component, many of the steps are p
 When I write code, there is a set of principles that I try to respect more than others. "Try", because it is a process, not a goal, but still I value these highly. If you already know "Clean Code" by Robert C. Martin (Uncle Bob), much of this will seem self-evident. I do not agree, however, with the principle that you should always prioritize code quality over development speed, rather I believe both to be equally important. I do not expect you do agree with these, but I stand by them, and update them as I evolve. 
 
 - Only start feature implementation that can be completed in at most a few days; instead make the sub-features production ready, before working on the complex features that depend on these
-- Write the code to be read, using comments to elaborate invisible details, not explain the code itself
+- Write the code to be read, using comments to elaborate invisible details, not to explain the code itself
 - Use meaningful names; use the domain, spend time choosing them, don't use personal acronyms, and refactor when encountering strange or misleading names
-- Keep it small; make short functions, short classes and split into meaningful sub-classes when possible
-- Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing to the build server
+- Keep it small; start large, but work towards short functions, short classes and split into meaningful sub-classes when possible
+- Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing for the build server
 - Code coverage is a tool, not a goal; 100% in itself is irrelevant
 - Perfection is a dream, continuous improvement is real; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving
 - Make it work at all before worrying about details and niceness
-- Stay agile and "light-weight" for as long as possible; optimize for change initially, and add documentation and tests when the right level of maturity is reached
+- Stay agile and "light-weight" for as long as possible; optimize for change initially, and add documentation and tests when the right level of maturity has been reached
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
 - When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change
@@ -194,7 +194,7 @@ _Legal service responsible for validating legal requirements and audit logging m
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/LegalService/checkLegalityOfQueryOnSelector</li><li>/LegalService/auditLogInvertedIndexLookup</li><li>/LegalService/auditLogStatistics</li></ul>|
+|**Endpoints**|<ul><li>/LegalService/v1/legalRules/invertedIndexLookup</li><li>/LegalService/v1/legalRules/statisticsLookup</li><li>/LegalService/v1/auditLog/invertedIndexLookup</li><li>/LegalService/v1/auditLog/statisticsLookup</li></ul>|
 
 The purpose here is to enclose all logic related to legal requirements into a separate service, to allow the developers working with the legal department to focus on a simple API instead of actual usage scenarios. 
 
@@ -203,36 +203,46 @@ It has two responsibilities:
 - audit log the execution of a query into protected data on demand  
 
 ### Eureka
-_Simple discovery service implementation_
+_Simple discovery service implementation with a hystrix UI_
 
 [Source](https://github.com/ViktorKob/portfolio/tree/master/infrastructure "Infrastructure root")
 
 | Settings | |
 |---|---|
 |**Port**|8000|
-|**Technologies**|Eureka, Spring|
-|**Endpoints**|<ul><li>/</li><li>/eureka/*</li></ul>|
+|**Technologies**|Eureka, Hystrix, Spring|
+|**Endpoints**|<ul><li>/Infrastructure/</li></ul>|
 
-This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. When using a reverse-proxy setup, the status page is used as the root entry point for the server. All standard Eureka endpoints are accessible through /eureka.
+This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. All standard Eureka endpoints are accessible through the sub-context-path /eureka. It also enables the Hystrix UI, if you have access to a Hystrix stream you wan't to monitor.
 
-### Nginx
+### Admin
+_Service _
+
+[Source](https://github.com/ViktorKob/portfolio/tree/master/infrastructure "Infrastructure root")
+
+| Settings | |
+|---|---|
+|**Port**|8000|
+|**Technologies**|Spring Boot Admin, Spring|
+|**Endpoints**|<ul><li>/Admin/</li></ul>|
+
+The Admin service / UI gives easy access to data from the actuator endpoints. It uses the discovery service both for service discovery and for looking up context paths.
+
+### Zuul
 _Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 
-[Source](https://github.com/ViktorKob/portfolio/tree/master/setup/nginx "Nginx root")
+[Source](https://github.com/ViktorKob/portfolio/tree/master/proxy "Proxy root")
 
 | Settings | |
 |---|---|
 |**Port**|443, 80 (redirected)|
-|**Technologies**|Nginx|
-|**Endpoints**|<ul><li>__All of the above__</li><li>/schema.json</li><li>/graphql/*</li></ul>|
+|**Technologies**|Spring, Zuul|
+|**Endpoints**|<ul><li>__All of the above__</li></ul>|
 
-Reverse proxy for the entire setup. May seem counter intuitive in a Eureka setup, but is used to hide ports and simplify the graphql / graphiql endpoints. Also responsible for diverting HTTP calls to HTTPS and is the only encrypted service in the infrastructure.
+Reverse proxy for the entire setup and single point of access to the services. Also responsible for diverting HTTP calls to HTTPS and is the only encrypted service in the infrastructure at the moment.
 
 # Pending experimentation ideas
-- [ ] Automated service level acceptance testing
-- [ ] Failover for services and red-green deployment of changes 
-- [ ] Make Eureka and the clients AWS aware
+- [ ] Red-green deployment of changes 
 - [ ] Add OpenAPI 3 integration to the services
-- [ ] Look into replacing / supplementing proxy with Zuul
 - [ ] Add authentication layer, e.g. using UAA, JWS, OAuth2, JWT, JWA and OpenID
 - [ ] Containerization of services (probably using Docker)
