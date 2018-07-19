@@ -64,7 +64,7 @@ In general, my focus is on reducing wasted development time and getting features
 ### Development approach
 
 I use a modern IDE (preferably eclipse) and a proper build pipeline (IDE -> VCS -> build server -> artifact store -> deployment server -> execution environment), when possible.<BR>
-Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging and profiling (e.g. [VisualVm](https://visualvm.github.io/) to track down and fix the harder issues.<BR>
+Also, I value using static code analyzers like [FindBugs](http://findbugs.sourceforge.net/), pylint (for Python) and the IDE itself, and coverage tools like [Emma](http://emma.sourceforge.net/). Finally I use debugging for simple problems and profiling (e.g. [VisualVm](https://visualvm.github.io/)) to track down and fix the harder issues.<BR>
 For bug-tracking and issue management, I have experience using [JIRA](https://www.atlassian.com/software/jira) and some [companion](https://www.atlassian.com/software/bitbucket) [Atlassian](https://www.atlassian.com/software/fisheye) [products](https://www.atlassian.com/software/confluence). 
 
 But ultimately these are just tools. When I develop a new feature, a plan I often use is the following:
