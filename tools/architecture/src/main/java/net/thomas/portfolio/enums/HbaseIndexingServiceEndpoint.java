@@ -21,7 +21,7 @@ public enum HbaseIndexingServiceEndpoint implements ServiceEndpoint {
 	}
 
 	@Override
-	public String getPath() {
+	public String getContextPath() {
 		return path;
 	}
 }

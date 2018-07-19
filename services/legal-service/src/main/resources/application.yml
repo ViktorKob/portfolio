@@ -2,74 +2,9 @@
 Service settings:
 ####################
 
-service-context-path: ${legal-context-path}
 service-port: 8350
-service-name: ${legal-service-name}
-service-status-page: http://${external-service-address}${service-context-path}/actuator/health
 discovery-address: localhost:8000
 external-service-address: localhost:80
 
 ####################
-Unique settings:
-####################
-
-legal-service:
-  analytics:
-    name: analytics-service
-    credentials:
-      user: service-user
-      password: password
-  hbaseIndexing:
-    name: hbase-indexing-service
-    credentials:
-      user: service-user
-      password: password
-
-####################
-Standard settings:
-####################
-
-server:
-  port: ${service-port}
-  max-http-header-size: 200000
-  servlet.context-path: ${service-context-path}
-  
-  tomcat:
-    max-connections: 2000
-    max-http-post-size: 200000
-    max-threads: 50
-    min-spare-threads: 10
-
-spring:
-  application.name: ${service-name}
-  security.user:
-    name: service-user 
-    password: password
-    roles: USER
-
-management:
-  endpoints.web:
-    base-path: /actuator
-    cors.allowed-origins: true
-    exposure.include: "*" 
-  endpoint.health.show-details: ALWAYS
-
-eureka:
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 10
-    health-check-url-path: ${service-context-path}/actuator/health
-    status-page-url-path: ${service-status-page}
-    metadata-map:
-      management.context-path: ${service-context-path}/actuator
-      user:
-        name: service-user
-        password: password
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5    
-    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
-
-####################
-        
+    

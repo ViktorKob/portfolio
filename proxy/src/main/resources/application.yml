@@ -1,73 +1,9 @@
+####################
+Service settings:
+####################
+
+service-port: 80
 discovery-address: localhost:8000
-external-service-address: localhost:${server.port}
+external-service-address: localhost:80
 
-server:
-  port: 80
-  max-http-header-size: 200000
-
-spring:
-  application.name: proxy-service
-  security.user:
-    name: service-user
-    password: password 
-    roles: USER 
-
-management:
-  endpoints.web:
-    base-path: /proxy/actuator
-    exposure.include: "*" 
-  endpoint.health.show-details: ALWAYS
-
-zuul:
-  ignored-services: "*"
-  sensitive-headers: 
-  routes:
-    infrastructure:
-      path: /${infrastructure-context-path}/**
-      strip-prefix: false      
-      service-id: ${infrastructure-service-name}
-    admin:
-      path: /${admin-context-path}/**
-      strip-prefix: false      
-      service-id: ${admin-service-name}
-    analytics:
-      path: /${analytics-context-path}/**
-      strip-prefix: false      
-      service-id: ${analytics-service-name}
-    hbase-indexing:
-      path: /${hbase-indexing-context-path}/**
-      strip-prefix: false      
-      service-id: ${hbase-indexing-service-name}
-    legal:
-      path: /${legal-context-path}/**
-      strip-prefix: false      
-      service-id: ${legal-service-name}
-    nexus:
-      path: /${nexus-context-path}/**
-      strip-prefix: false      
-      service-id: ${nexus-service-name}
-    render:
-      path: /${render-context-path}/**
-      strip-prefix: false      
-      service-id: ${render-service-name}
-    usage-data:
-      path: /${usage-data-context-path}/**
-      strip-prefix: false      
-      service-id: ${usage-data-service-name}
-
-eureka:
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 10
-    health-check-url-path: /proxy/actuator/health
-    status-page-url-path: http://service-user:password@${external-service-address}/proxy/actuator/health
-    metadata-map:
-      management.context-path: /proxy/actuator
-      user:
-        name: service-user
-        password: password
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5    
-    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
+####################

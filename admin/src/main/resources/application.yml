@@ -1,38 +1,9 @@
-service-context-path: ${admin-context-path}
+####################
+Service settings:
+####################
+
+service-port: 8001
 discovery-address: localhost:8000
 external-service-address: localhost:80
 
-server:
-  port: 8001
-  max-http-header-size: 200000
-
-spring:
-  application.name: ${admin-service-name}
-  boot.admin.context-path: ${admin-context-path}
-  security.user:
-    name: service-user 
-    password: password 
-    roles: USER 
-
-management:
-  endpoints.web:
-    base-path: ${service-context-path}/actuator
-    exposure.include: "*" 
-  endpoint.health.show-details: ALWAYS
-
-eureka:
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 10
-    health-check-url-path: ${service-context-path}/actuator/health
-    status-page-url-path: http://service-user:password@${external-service-address}${service-context-path}
-    metadata-map:
-      management.context-path: ${service-context-path}/actuator
-      user:
-        name: service-user
-        password: password
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5    
-    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
+####################

@@ -15,7 +15,7 @@ public enum RenderServiceEndpoint implements ServiceEndpoint {
 	}
 
 	@Override
-	public String getPath() {
+	public String getContextPath() {
 		return path;
 	}
 }

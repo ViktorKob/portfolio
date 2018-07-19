@@ -34,7 +34,7 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Legality checkLegalityOfInvertedIndexQuery(DataTypeId selectorId, LegalInformation legalInfo) {
 		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return LEGALITY_OF_INVERTED_INDEX_QUERY.getPath() + "/" + selectorId.type + "/" + selectorId.uid;
+			return LEGALITY_OF_INVERTED_INDEX_QUERY.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
 		}, GET, Legality.class, legalInfo);
 	}
 
@@ -42,7 +42,7 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Legality checkLegalityOfStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
 		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return LEGALITY_OF_STATISTICS_LOOKUP.getPath() + "/" + id.type + "/" + id.uid;
+			return LEGALITY_OF_STATISTICS_LOOKUP.getContextPath() + "/" + id.type + "/" + id.uid;
 		}, GET, Legality.class, legalInfo);
 	}
 
@@ -50,7 +50,7 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return AUDIT_LOG_INVERTED_INDEX_LOOKUP.getPath() + "/" + selectorId.type + "/" + selectorId.uid;
+			return AUDIT_LOG_INVERTED_INDEX_LOOKUP.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
 		}, POST, Boolean.class, legalInfo);
 	}
 
@@ -58,7 +58,7 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
 		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return AUDIT_LOG_STATISTICS_LOOKUP.getPath() + "/" + id.type + "/" + id.uid;
+			return AUDIT_LOG_STATISTICS_LOOKUP.getContextPath() + "/" + id.type + "/" + id.uid;
 		}, POST, Boolean.class, legalInfo);
 	}
 }

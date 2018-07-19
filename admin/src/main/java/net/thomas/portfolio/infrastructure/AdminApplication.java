@@ -1,6 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
+import static net.thomas.portfolio.services.configuration.AdminServiceParameters.loadDefaultServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -35,6 +36,7 @@ public class AdminApplication {
 
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
+		loadDefaultServiceConfigurationIntoProperties();
 		run(AdminApplication.class);
 	}
 }

@@ -13,7 +13,7 @@ public enum AnalyticsServiceEndpoint implements ServiceEndpoint {
 	}
 
 	@Override
-	public String getPath() {
+	public String getContextPath() {
 		return path;
 	}
 }
