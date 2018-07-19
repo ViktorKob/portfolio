@@ -31,6 +31,9 @@ public class ProxyServiceParameters {
 			addServiceToProxy(service);
 		}
 
+		put("hystrix.command.default.execution.isolation.strategy", "THREAD");
+		put("hystrix.command.default.execution.thread.timeoutInMilliseconds", "300000");
+
 		// ####################
 		// Standard settings:
 		// ####################
