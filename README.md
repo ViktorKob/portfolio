@@ -17,8 +17,6 @@ The **arrows** represent the flow of data in the system.
 
 When running the example queries below, login using **service-user** and **password**.
 
-***Note that connections are currently timing out in zuul after 1 second***.
-
 | Examples | |
 |---|---|
 |[Eureka](https://viktorkob.tk/Infrastructure/)|The Eureka server I use for service discovery|

@@ -31,8 +31,16 @@ public class ProxyServiceParameters {
 			addServiceToProxy(service);
 		}
 
-		put("hystrix.command.default.execution.isolation.strategy", "THREAD");
-		put("hystrix.command.default.execution.thread.timeoutInMilliseconds", "300000");
+		put("zuul.host.connect-timeout-millis", "2000");
+		put("zuul.host.socket-timeout-millis", "20000");
+		put("zuul.host.max-total-connections", "10000");
+		put("zuul.host.max-per-router-connections", "2000");
+		put("zuul.host.time-to-live", "2000");
+		put("zuul.host.time-unit", "MILLISECONDS");
+		put("ribbon.eureka.enabled", "true");
+		put("ribbon.ConnectTimeout", "2000");
+		put("ribbon.ReadTimeout", "600000");
+		put("hystrix.command.default.execution.timeout.enabled", "false");
 
 		// ####################
 		// Standard settings:
@@ -83,7 +91,7 @@ public class ProxyServiceParameters {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 
-	public static void loadDefaultServiceConfigurationIntoProperties() {
+	public static void loadProxyServiceConfigurationIntoProperties() {
 		for (final Entry<String, String> property : SERVICE_PROPERTIES.entrySet()) {
 			setProperty(property.getKey(), property.getValue());
 		}
