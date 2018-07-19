@@ -3,6 +3,8 @@ This repository contains examples of how I prioritize tasks and solve problems. 
 
 For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation and GraphQL to expose the API.
 
+It is very much a work in progress, and I plan on adding new features continuously until I run out of ideas or get the job I want.
+
 ### Quick-and-dirty structural diagram
 ![Rough diagram of the services in the architecture and the flow of data](/images/rough_diagram.png)
 
@@ -194,7 +196,7 @@ _Legal service responsible for validating legal requirements and audit logging m
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/LegalService/v1/legalRules/invertedIndexLookup</li><li>/LegalService/v1/legalRules/statisticsLookup</li><li>/LegalService/v1/auditLog/invertedIndexLookup</li><li>/LegalService/v1/auditLog/statisticsLookup</li></ul>|
+|**Endpoints**|<ul><li>/LegalService/v1/legalRules/invertedIndexLookup/{type}/{uid}</li><li>/LegalService/v1/legalRules/statisticsLookup/{type}/{uid}</li><li>/LegalService/v1/auditLog/invertedIndexLookup/{type}/{uid}</li><li>/LegalService/v1/auditLog/statisticsLookup/{type}/{uid}</li></ul>|
 
 The purpose here is to enclose all logic related to legal requirements into a separate service, to allow the developers working with the legal department to focus on a simple API instead of actual usage scenarios. 
 
