@@ -1,44 +1,10 @@
-service-context-path: ${infrastructure-context-path}
-discovery-address: localhost:${server.port}
-external-service-address: localhost:${server.port}
+####################
+Service settings:
+####################
 
-server:
-  port: 8000
-  max-http-header-size: 200000
-  servlet.context-path: ${service-context-path}
+service-port: 8000
+discovery-address: localhost:${service-port}
+external-service-address: localhost:80
+eureka.instance.hostname: localhost
 
-spring:
-  application.name: ${infrastructure-service-name}
-  security.user:
-    name: service-user 
-    password: password 
-    roles: USER 
-
-management:
-  endpoints.web:
-    base-path: /actuator  
-    exposure.include: "*" 
-  endpoint.health.show-details: ALWAYS
-
-eureka:
-  instance:
-    hostname: localhost
-    leaseRenewalIntervalInSeconds: 10
-    health-check-url-path: ${service-context-path}/actuator/health
-    status-page-url-path: http://${external-service-address}${infrastructure-context-path}/hystrix/monitor?stream=http%3A%2F%2Fservice-user%3Apassword%40localhost%3A8100%2FNexusService%2Factuator%2Fhystrix.stream&delay=1000&title=Nexus%20Service%20Monitor
-    metadata-map:
-      management.context-path: ${service-context-path}/actuator
-      user:
-        name: service-user
-        password: password
-  client:
-    register-with-eureka: true
-    fetch-registry: false
-    server.wait-time-in-ms-when-sync-empty: 0
-    service-url.defaultZone: http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/
-  server:
-    enableSelfPreservation: false
-    
-ribbon:
-  eureka:
-    enabled: true    
+####################

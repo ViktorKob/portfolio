@@ -40,8 +40,12 @@ public enum Service implements ServiceEndpoint {
 	}
 
 	@Override
-	public String getPath() {
+	public String getContextPath() {
 		return contextPath;
+	}
+
+	public String getServiceName() {
+		return serviceName;
 	}
 
 	public static void loadServicePathsIntoProperties() {

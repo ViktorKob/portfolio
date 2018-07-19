@@ -140,7 +140,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SELECTORS.getPath() + "/" + SUGGESTIONS.getPath() + "/" + selectorString + "/";
+			return SELECTORS.getContextPath() + "/" + SUGGESTIONS.getContextPath() + "/" + selectorString + "/";
 		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
@@ -166,7 +166,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	private DataType fetchDataType(DataTypeId id) {
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return ENTITIES.getPath() + "/" + id.getDti_type() + "/" + id.getDti_uid();
+			return ENTITIES.getContextPath() + "/" + id.getDti_type() + "/" + id.getDti_uid();
 		}, GET, DataType.class);
 	}
 
@@ -176,7 +176,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		final ParameterizedTypeReference<Collection<Reference>> responseType = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return DOCUMENTS.getPath() + "/" + documentId.getDti_type() + "/" + documentId.getDti_uid() + REFERENCES.getPath();
+			return DOCUMENTS.getContextPath() + "/" + documentId.getDti_type() + "/" + documentId.getDti_uid() + REFERENCES.getContextPath();
 		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
@@ -186,7 +186,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> responseType = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + STATISTICS.getPath();
+			return SELECTORS.getContextPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + STATISTICS.getContextPath();
 		}, GET, responseType, EMPTY_GROUP_LIST);
 	}
 
@@ -197,7 +197,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
 			final DataTypeId selectorId = request.getSelectorId();
-			return SELECTORS.getPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + INVERTED_INDEX.getPath();
+			return SELECTORS.getContextPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + INVERTED_INDEX.getContextPath();
 		}, GET, responseType, request.getGroups());
 	}
 }

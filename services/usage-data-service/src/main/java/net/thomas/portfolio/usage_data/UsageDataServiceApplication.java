@@ -1,6 +1,8 @@
 package net.thomas.portfolio.usage_data;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.UsageDataServiceProperties.loadGenericConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,6 +32,8 @@ public class UsageDataServiceApplication {
 
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
+		loadDefaultServiceConfigurationIntoProperties();
+		loadGenericConfigurationIntoProperties();
 		run(UsageDataServiceApplication.class, args);
 	}
 }

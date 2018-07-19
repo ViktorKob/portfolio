@@ -178,6 +178,6 @@ public class HttpRestClient {
 	}
 
 	private String buildResourceUrl(Service serviceId, ServiceEndpoint endpoint) {
-		return serviceId.getPath() + endpoint.getPath();
+		return serviceId.getContextPath() + endpoint.getContextPath();
 	}
 }

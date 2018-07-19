@@ -30,7 +30,7 @@ public class RenderingAdaptorImpl implements HttpRestClientInitializable, Render
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
 		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_SIMPLE_REPRESENTATION.getPath() + "/" + selectorId.type + "/" + selectorId.uid;
+			return RENDER_AS_SIMPLE_REPRESENTATION.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
 		}, GET, String.class);
 	}
 
@@ -38,7 +38,7 @@ public class RenderingAdaptorImpl implements HttpRestClientInitializable, Render
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsText(DataTypeId id) {
 		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_TEXT.getPath() + "/" + id.type + "/" + id.uid;
+			return RENDER_AS_TEXT.getContextPath() + "/" + id.type + "/" + id.uid;
 		}, GET, String.class);
 	}
 
@@ -46,7 +46,7 @@ public class RenderingAdaptorImpl implements HttpRestClientInitializable, Render
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsHtml(DataTypeId id) {
 		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_HTML.getPath() + "/" + id.type + "/" + id.uid;
+			return RENDER_AS_HTML.getContextPath() + "/" + id.type + "/" + id.uid;
 		}, GET, String.class);
 	}
 }

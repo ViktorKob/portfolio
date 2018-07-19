@@ -28,7 +28,7 @@ public class AnalyticsAdaptorImpl implements HttpRestClientInitializable, Analyt
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
 		return client.loadUrlAsObject(ANALYTICS_SERVICE, () -> {
-			return LOOKUP_KNOWLEDGE.getPath() + "/" + selectorId.type + "/" + selectorId.uid;
+			return LOOKUP_KNOWLEDGE.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
 		}, GET, AnalyticalKnowledge.class);
 	}
 }
