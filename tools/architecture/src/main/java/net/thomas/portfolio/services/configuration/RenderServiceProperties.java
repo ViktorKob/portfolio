@@ -21,7 +21,7 @@ public class RenderServiceProperties {
 
 		put("service-context-path", "${render-context-path}");
 		put("service-name", "${render-service-name}");
-		put("service-status-page", "${external-service-address}${service-context-path}/actuator/health");
+		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/actuator/health");
 
 		// ####################
 		// Unique settings:

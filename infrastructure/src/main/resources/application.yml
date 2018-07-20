@@ -5,7 +5,7 @@ Service settings:
 service-port: 8000
 discovery-address: localhost:${service-port}
 external-service-address: localhost:80
-service-status-page-protocol: http://
+external-protocol: http://
 eureka.instance.hostname: localhost
 
 ####################

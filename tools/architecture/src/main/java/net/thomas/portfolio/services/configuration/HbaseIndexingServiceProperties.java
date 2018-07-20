@@ -21,7 +21,7 @@ public class HbaseIndexingServiceProperties {
 
 		put("service-context-path", "${hbase-indexing-context-path}");
 		put("service-name", "${hbase-indexing-service-name}");
-		put("service-status-page", "service-user:password@${external-service-address}${service-context-path}/v1/schema");
+		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/v1/schema");
 
 		// ####################
 		// Unique settings:

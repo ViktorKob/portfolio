@@ -21,7 +21,8 @@ public class NexusServiceProperties {
 
 		put("service-context-path", "${nexus-context-path}");
 		put("service-name", "${nexus-service-name}");
-		put("service-status-page", "${external-service-address}${nexus-context-path}/graphiql");
+		// GraphiQL does not support final credentials in url
+		put("service-status-page", "${external-protocol}${external-service-address}${nexus-context-path}/graphiql");
 
 		// ####################
 		// Unique settings:
