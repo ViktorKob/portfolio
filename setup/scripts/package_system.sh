@@ -5,6 +5,10 @@ cd ~/git/portfolio/tools
 mvn clean install
 cd ~/git/portfolio/infrastructure
 mvn clean package
+cd ~/git/portfolio/admin
+mvn clean package
+cd ~/git/portfolio/proxy
+mvn clean package
 cd ~/git/portfolio/services
 mvn clean package
 
@@ -13,6 +17,8 @@ cd
 echo "Moving services to staging folder"
 mkdir -p ~/services 
 cp ~/git/portfolio/infrastructure/target/infrastructure-service.jar ~/services/
+cp ~/git/portfolio/admin/target/admin-service.jar ~/services/
+cp ~/git/portfolio/proxy/target/proxy-service.jar ~/services/
 
 cp ~/git/portfolio/services/analytics-service/target/analytics-service.jar ~/services/
 cp ~/git/portfolio/services/hbase-indexing-service/target/hbase-indexing-service.jar ~/services/
