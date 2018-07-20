@@ -246,6 +246,10 @@ _Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 Reverse proxy for the entire setup and single point of access to the services. Also responsible for diverting HTTP calls to HTTPS and is the only encrypted service in the infrastructure at the moment.
 
 # Pending experimentation ideas
+- [ ] Config server 
+- [ ] Serialization format 
+- [ ] Read and write sample data from disk during queries 
+- [ ] Global model name constants
 - [ ] Red-green deployment of changes 
 - [ ] Add OpenAPI 3 integration to the services
 - [ ] Add authentication layer, e.g. using UAA, JWS, OAuth2, JWT, JWA and OpenID
