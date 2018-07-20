@@ -21,7 +21,7 @@ public class InfrastructureServiceParameters {
 		put("service-context-path", "${infrastructure-context-path}");
 		put("service-name", "${infrastructure-service-name}");
 		put("service-status-page",
-				"${external-service-address}${infrastructure-context-path}/hystrix/monitor?stream="
+				"${external-protocol}service-user:password@${external-service-address}${infrastructure-context-path}/hystrix/monitor?stream="
 						+ "http%3A%2F%2Fservice-user%3Apassword%40localhost%3A8100%2FNexusService%2Factuator%2F"
 						+ "hystrix.stream&delay=1000&title=Nexus%20Service%20Monitor");
 
@@ -60,7 +60,7 @@ public class InfrastructureServiceParameters {
 		put("eureka.instance.lease-renewal-interval-in-seconds", "5");
 		put("eureka.instance.lease-expiration-duration-in-seconds", "10");
 		put("eureka.instance.health-check-url-path", "${service-context-path}/actuator/health");
-		put("eureka.instance.status-page-url-path", "${service-status-page-protocol}${service-status-page}");
+		put("eureka.instance.status-page-url-path", "${service-status-page}");
 
 		put("eureka.instance.metadata-map.management.context-path", "${service-context-path}/actuator");
 		put("eureka.instance.metadata-map.user.name", "${spring.security.user.name}");

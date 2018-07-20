@@ -5,7 +5,7 @@ Service settings:
 service-port: 8300
 discovery-address: localhost:8000
 external-service-address: localhost:80
-service-status-page-protocol: http://
+external-protocol: http://
 
 ####################
  

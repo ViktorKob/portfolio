@@ -21,7 +21,7 @@ public class UsageDataServiceProperties {
 
 		put("service-context-path", "${usage-data-context-path}");
 		put("service-name", "${usage-data-service-name}");
-		put("service-status-page", "${external-service-address}${service-context-path}/actuator/health");
+		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/actuator/health");
 
 		// ####################
 		// Unique settings:
