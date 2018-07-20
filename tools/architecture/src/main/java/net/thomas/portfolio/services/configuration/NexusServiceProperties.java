@@ -21,7 +21,7 @@ public class NexusServiceProperties {
 
 		put("service-context-path", "${nexus-context-path}");
 		put("service-name", "${nexus-service-name}");
-		put("service-status-page", "http://${external-service-address}${nexus-context-path}/graphiql");
+		put("service-status-page", "${external-service-address}${nexus-context-path}/graphiql");
 
 		// ####################
 		// Unique settings:

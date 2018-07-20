@@ -21,7 +21,7 @@ public class AnalyticsServiceProperties {
 
 		put("service-context-path", "${analytics-context-path}");
 		put("service-name", "${analytics-service-name}");
-		put("service-status-page", "http://${external-service-address}${service-context-path}/actuator/health");
+		put("service-status-page", "${external-service-address}${service-context-path}/actuator/health");
 
 		// ####################
 		// Unique settings:

@@ -62,7 +62,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 			}
 		}
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
-			.maximumSize(10000)
+			.maximumSize(500)
 			.build(new CacheLoader<DataTypeId, DataType>() {
 				@Override
 				public DataType load(DataTypeId id) throws Exception {

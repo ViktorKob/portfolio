@@ -40,7 +40,7 @@ public class DefaultServiceParameters {
 		put("eureka.instance.lease-renewal-interval-in-seconds", "5");
 		put("eureka.instance.lease-expiration-duration-in-seconds", "10");
 		put("eureka.instance.health-check-url-path", "${service-context-path}/actuator/health");
-		put("eureka.instance.status-page-url-path", "${service-status-page}");
+		put("eureka.instance.status-page-url-path", "${service-status-page-protocol}${service-status-page}");
 
 		put("eureka.instance.metadata-map.management.context-path", "${service-context-path}/actuator");
 		put("eureka.instance.metadata-map.user.name", "${spring.security.user.name}");
