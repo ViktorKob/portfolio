@@ -21,7 +21,7 @@ public class LegalServiceProperties {
 
 		put("service-context-path", "${legal-context-path}");
 		put("service-name", "${legal-service-name}");
-		put("service-status-page", "http://${external-service-address}${service-context-path}/actuator/health");
+		put("service-status-page", "${external-service-address}${service-context-path}/actuator/health");
 
 		// ####################
 		// Unique settings:
