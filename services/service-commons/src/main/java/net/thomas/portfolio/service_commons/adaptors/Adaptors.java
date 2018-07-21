@@ -2,7 +2,6 @@ package net.thomas.portfolio.service_commons.adaptors;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
@@ -12,11 +11,11 @@ import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.ModelUtilities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -203,7 +202,7 @@ public class Adaptors {
 	 *            The ID of the document to load references for
 	 * @return All references for this data type in the index
 	 */
-	public Collection<Reference> getReferences(DataTypeId id) {
+	public References getReferences(DataTypeId id) {
 		return hbaseModelAdaptor.getReferences(id);
 	}
 
@@ -216,7 +215,7 @@ public class Adaptors {
 	 *            The ID of the selector to load statistics for
 	 * @return An occurrence count for how often this selector is seen in the data, grouped by a set of time periods from today backwards
 	 */
-	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
+	public Statistics getStatistics(DataTypeId selectorId) {
 		return hbaseModelAdaptor.getStatistics(selectorId);
 	}
 
@@ -232,7 +231,7 @@ public class Adaptors {
 	 *            The description of a lookup in the inverted index
 	 * @return A list of document information containers ordered by time of event (descending)
 	 */
-	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
+	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		return hbaseModelAdaptor.lookupSelectorInInvertedIndex(request);
 	}
 

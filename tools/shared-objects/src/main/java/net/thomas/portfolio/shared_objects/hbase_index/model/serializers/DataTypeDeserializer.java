@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.types;
+package net.thomas.portfolio.shared_objects.hbase_index.model.serializers;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -17,6 +17,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	private static final long serialVersionUID = 1L;

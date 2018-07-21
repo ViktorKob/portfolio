@@ -30,7 +30,7 @@ import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
@@ -106,8 +106,9 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>
 		return convert(parent, adaptors.lookupSelectorInInvertedIndex(request));
 	}
 
-	private List<DocumentProxy<?>> convert(DataTypeProxy<?, ?> parent, List<DocumentInfo> lookupResult) {
-		return lookupResult.stream()
+	private List<DocumentProxy<?>> convert(DataTypeProxy<?, ?> parent, DocumentInfos infos) {
+		return infos.getInfos()
+			.stream()
 			.map(documentInfo -> new DocumentInfoProxy(parent, documentInfo, adaptors))
 			.collect(toList());
 	}

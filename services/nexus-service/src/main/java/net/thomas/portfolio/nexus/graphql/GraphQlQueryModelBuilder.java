@@ -52,7 +52,6 @@ import net.thomas.portfolio.nexus.graphql.fetchers.fields.FormattedTimestampFiel
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.IntegerFieldDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.fields.RawFormFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsFetcher;
-import net.thomas.portfolio.nexus.graphql.fetchers.statistics.SelectorStatisticsForPeriodFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.FormattedTimeOfActivityFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.usage_data.UsageActivitiesFetcher;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
@@ -64,6 +63,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceFie
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -335,11 +335,11 @@ public class GraphQlQueryModelBuilder {
 		return builder.build();
 	}
 
-	private GraphQLFieldDefinition createStatisticsTotalField(String namePrefix, String descriptionSuffix, StatisticsPeriod fieldName, Adaptors adaptors) {
+	private GraphQLFieldDefinition createStatisticsTotalField(String namePrefix, String descriptionSuffix, StatisticsPeriod period, Adaptors adaptors) {
 		return newFieldDefinition().name(namePrefix + "Total")
 			.description("How often have we seen this selector since " + descriptionSuffix)
 			.type(GraphQLLong)
-			.dataFetcher(new SelectorStatisticsForPeriodFetcher(fieldName, adaptors))
+			.dataFetcher(environment -> ((Statistics) environment.getSource()).get(period))
 			.build();
 	}
 
@@ -497,7 +497,8 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("references")
 			.description("References describing how the document was obtained and restrictions on its usage")
 			.type(list(new GraphQLTypeReference("DocumentReference")))
-			.dataFetcher(environment -> adaptors.getReferences(getId(environment)))
+			.dataFetcher(environment -> adaptors.getReferences(getId(environment))
+				.getReferences())
 			.build();
 	}
 

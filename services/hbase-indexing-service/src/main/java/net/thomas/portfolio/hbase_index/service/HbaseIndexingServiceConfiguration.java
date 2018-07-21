@@ -3,7 +3,7 @@ package net.thomas.portfolio.hbase_index.service;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import net.thomas.portfolio.common.services.ServiceDependency;
+import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 
 @Configuration
 @ConfigurationProperties("hbase-indexing-service")

@@ -14,7 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsSerializer;
+import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTypeDeserializer;
+import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTypeSerializer;
+import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.FieldsSerializer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(using = DataTypeSerializer.class)

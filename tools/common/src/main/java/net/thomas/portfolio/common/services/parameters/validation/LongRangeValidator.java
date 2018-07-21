@@ -1,12 +1,12 @@
-package net.thomas.portfolio.common.services.validation;
+package net.thomas.portfolio.common.services.parameters.validation;
 
-public class IntegerRangeValidator extends ParameterValidator<Integer> {
+public class LongRangeValidator extends ParameterValidator<Long> {
 
-	private final int min;
-	private final int max;
+	private final long min;
+	private final long max;
 	private final boolean required;
 
-	public IntegerRangeValidator(String parameterName, int min, int max, boolean required) {
+	public LongRangeValidator(String parameterName, long min, long max, boolean required) {
 		super(parameterName);
 		this.min = min;
 		this.max = max;
@@ -14,12 +14,12 @@ public class IntegerRangeValidator extends ParameterValidator<Integer> {
 	}
 
 	@Override
-	public boolean isValid(Integer value) {
+	public boolean isValid(Long value) {
 		return value == null && !required || value != null && min <= value && value <= max;
 	}
 
 	@Override
-	public String getReason(Integer value) {
+	public String getReason(Long value) {
 		if (value == null) {
 			return parameterName + " is missing" + (required ? " and required" : ", but not required");
 		} else if (value < min) {

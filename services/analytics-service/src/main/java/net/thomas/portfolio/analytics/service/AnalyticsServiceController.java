@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.analytics.system.AnalyticsControl;
-import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;

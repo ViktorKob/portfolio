@@ -2,15 +2,14 @@ package net.thomas.portfolio.service_commons.adaptors.specific;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
 /***
@@ -113,7 +112,7 @@ public interface HbaseIndexModelAdaptor {
 	 *            The ID of the document to load references for
 	 * @return All references for this data type in the index
 	 */
-	Collection<Reference> getReferences(DataTypeId documentId);
+	References getReferences(DataTypeId documentId);
 
 	/***
 	 * <B>All queries into the selector statistics are validated using the legal service before the query is executed.</B>
@@ -122,7 +121,7 @@ public interface HbaseIndexModelAdaptor {
 	 *            The ID of the selector to load statistics for
 	 * @return An occurrence count for how often this selector is seen in the data, grouped by a set of time periods from today backwards
 	 */
-	Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId);
+	Statistics getStatistics(DataTypeId selectorId);
 
 	/***
 	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds, legal information and a set of optional filtering
@@ -134,5 +133,5 @@ public interface HbaseIndexModelAdaptor {
 	 *            The description of a lookup in the inverted index
 	 * @return A list of document information containers ordered by time of event (descending)
 	 */
-	List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request);
+	DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request);
 }

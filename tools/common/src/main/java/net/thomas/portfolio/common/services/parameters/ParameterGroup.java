@@ -1,4 +1,4 @@
-package net.thomas.portfolio.common.services;
+package net.thomas.portfolio.common.services.parameters;
 
 import static java.util.stream.Collectors.toList;
 

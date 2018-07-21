@@ -9,7 +9,6 @@ import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -57,7 +57,7 @@ public class HbaseIndexingServiceController {
 		if (amount == null) {
 			amount = 10;
 		}
-		final Collection<DataType> samples = index.getSamples(dti_type, amount);
+		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.size() > 0) {
 			return ok(samples);
 		} else {

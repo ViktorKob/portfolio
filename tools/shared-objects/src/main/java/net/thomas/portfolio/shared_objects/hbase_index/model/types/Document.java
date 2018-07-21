@@ -5,6 +5,8 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTypeDeserializer;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = Document.class, using = DataTypeDeserializer.class)
 public class Document extends DataType {

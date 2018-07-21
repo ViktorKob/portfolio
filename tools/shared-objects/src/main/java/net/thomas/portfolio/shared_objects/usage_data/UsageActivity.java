@@ -5,9 +5,9 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import net.thomas.portfolio.common.services.Parameter;
-import net.thomas.portfolio.common.services.ParameterGroup;
-import net.thomas.portfolio.common.services.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.Parameter;
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UsageActivity implements ParameterGroup {

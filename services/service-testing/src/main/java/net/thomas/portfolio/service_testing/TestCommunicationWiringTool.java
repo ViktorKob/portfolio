@@ -10,8 +10,8 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.common.services.Credentials;
-import net.thomas.portfolio.common.services.ServiceDependency;
+import net.thomas.portfolio.common.services.parameters.Credentials;
+import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 
 public class TestCommunicationWiringTool {

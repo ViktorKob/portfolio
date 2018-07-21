@@ -1,15 +1,13 @@
 package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,10 +17,15 @@ import java.util.Stack;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
@@ -144,42 +147,57 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 	}
 
 	@Override
-	public List<Document> invertedIndexLookup(DataTypeId selectorId, Indexable indexable) {
+	public DocumentInfos invertedIndexLookup(DataTypeId selectorId, Indexable indexable) {
 		final String uid = selectorId.uid;
 		if (invertedIndex.containsKey(uid)) {
-			final Map<String, SortedMap<Long, Document>> entityData = invertedIndex.get(uid);
-			if (entityData.containsKey(indexable.path)) {
-				return new LinkedList<>(entityData.get(indexable.path)
-					.values());
-			}
+			return fetchDocumentInfos(indexable, uid);
+		} else {
+			return new DocumentInfos();
 		}
-		return emptyList();
+	}
+
+	private DocumentInfos fetchDocumentInfos(Indexable indexable, final String uid) {
+		final Map<String, SortedMap<Long, Document>> entityData = invertedIndex.get(uid);
+		if (entityData.containsKey(indexable.path)) {
+			final Collection<Document> documents = entityData.get(indexable.path)
+				.values();
+			return new DocumentInfos(documents.stream()
+				.map(document -> extractInfo(document))
+				.collect(toList()));
+		} else {
+			return new DocumentInfos();
+		}
+	}
+
+	private DocumentInfo extractInfo(Document document) {
+		return new DocumentInfo(document.getId(), document.getTimeOfEvent(), document.getTimeOfInterception());
 	}
 
 	@Override
-	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
-		return selectorStatistics.get(selectorId.uid);
-	}
-
-	public Map<StatisticsPeriod, Long> getStatistics(String uid) {
-		return selectorStatistics.get(uid);
+	public Statistics getStatistics(DataTypeId selectorId) {
+		if (selectorStatistics.containsKey(selectorId.uid)) {
+			return new Statistics(selectorStatistics.get(selectorId.uid));
+		} else {
+			return new Statistics();
+		}
 	}
 
 	@Override
-	public Collection<Reference> getReferences(DataTypeId documentId) {
+	public References getReferences(DataTypeId documentId) {
 		if (sourceReferences.containsKey(documentId.uid)) {
-			return sourceReferences.get(documentId.uid);
+			return new References(sourceReferences.get(documentId.uid));
+		} else {
+			return new References();
 		}
-		return emptyList();
 	}
 
 	@Override
-	public Collection<DataType> getSamples(String type, int amount) {
+	public Entities getSamples(String type, int amount) {
 		if (storage.containsKey(type)) {
 			if (amount >= storage.get(type)
 				.size()) {
-				return storage.get(type)
-					.values();
+				return new Entities(storage.get(type)
+					.values());
 			} else {
 				final List<DataType> instances = new ArrayList<>(storage.get(type)
 					.values());
@@ -187,10 +205,10 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 				while (samples.size() < amount) {
 					samples.add(getRandomInstance(instances));
 				}
-				return samples;
+				return new Entities(samples);
 			}
 		} else {
-			return emptySet();
+			return new Entities();
 		}
 	}
 
@@ -200,14 +218,14 @@ public class FakeHbaseIndex implements HbaseIndex, Iterable<DataType> {
 
 	public void printSamples(int amount) {
 		for (final String type : storage.keySet()) {
-			for (final DataType sample : getSamples(type, amount)) {
+			for (final DataType sample : getSamples(type, amount).getEntities()) {
 				System.out.println(sample);
 			}
 		}
 	}
 
-	public Collection<DataType> getAll(String dataType) {
-		return new HashSet<>(storage.get(dataType)
+	public Entities getAll(String dataType) {
+		return new Entities(storage.get(dataType)
 			.values());
 	}
 

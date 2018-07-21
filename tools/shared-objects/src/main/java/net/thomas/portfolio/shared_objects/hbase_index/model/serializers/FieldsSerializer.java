@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
+package net.thomas.portfolio.shared_objects.hbase_index.model.serializers;
 
 import java.io.IOException;
 import java.util.Map;

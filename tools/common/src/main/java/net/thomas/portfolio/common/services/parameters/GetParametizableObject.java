@@ -1,4 +1,4 @@
-package net.thomas.portfolio.common.services;
+package net.thomas.portfolio.common.services.parameters;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -9,10 +9,7 @@ import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -27,10 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
@@ -56,7 +54,7 @@ public class SelectorController {
 		if (amount == null) {
 			amount = 10;
 		}
-		final Collection<DataType> samples = index.getSamples(dti_type, amount);
+		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.size() > 0) {
 			return ok(samples);
 		} else {
@@ -68,8 +66,8 @@ public class SelectorController {
 	@RequestMapping(path = "/{dti_uid}" + STATISTICS_PATH, method = GET)
 	public ResponseEntity<?> getStatistics(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
-		final Map<StatisticsPeriod, Long> statistics = index.getStatistics(id);
-		if (statistics != null && statistics.size() > 0) {
+		final Statistics statistics = index.getStatistics(id);
+		if (statistics.size() > 0) {
 			return ok(statistics);
 		} else {
 			return notFound().build();
@@ -94,7 +92,7 @@ public class SelectorController {
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
 			@RequestParam(value = "relation", required = false) HashSet<String> relations) {
 		final DataTypeId selectorId = new DataTypeId(dti_type, dti_uid);
-		final List<DocumentInfo> results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
+		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
 		return ok(results);
 	}
 
