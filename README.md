@@ -1,5 +1,5 @@
 # Portfolio 
-![Current build status](https://travis-ci.org/ViktorKob/portfolio#)
+[![Build Status](https://travis-ci.org/ViktorKob/portfolio.svg?branch=master)](https://travis-ci.org/ViktorKob/portfolio)
 
 This repository contains examples of how I prioritize tasks and solve problems. It is meant to give potential employers an idea of, what they can expect from me as a developer.
 
