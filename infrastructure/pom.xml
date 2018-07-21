@@ -6,7 +6,6 @@
 
 	<groupId>net.thomas.portfolio.infrastructure</groupId>
 	<artifactId>infrastructure-service</artifactId>
-	<packaging>jar</packaging>
 
 	<name>infrastructure-service</name>
 	<description>Config, Discovery and Hystrix services</description>
@@ -69,29 +68,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<build>
-		<finalName>${project.artifactId}</finalName>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-</project> 
+</project>
