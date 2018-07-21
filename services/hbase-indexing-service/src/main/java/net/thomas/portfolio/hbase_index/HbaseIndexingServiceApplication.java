@@ -2,7 +2,7 @@ package net.thomas.portfolio.hbase_index;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
-import static net.thomas.portfolio.services.configuration.HbaseIndexingServiceProperties.loadGenericConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.HbaseIndexingServiceProperties.loadHbaseIndexingConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +33,7 @@ public class HbaseIndexingServiceApplication {
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();
-		loadGenericConfigurationIntoProperties();
+		loadHbaseIndexingConfigurationIntoProperties();
 		run(HbaseIndexingServiceApplication.class, args);
 	}
 }

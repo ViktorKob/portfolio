@@ -44,7 +44,7 @@ public class UsageDataServiceProperties {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 
-	public static void loadGenericConfigurationIntoProperties() {
+	public static void loadUsageDataConfigurationIntoProperties() {
 		for (final Entry<String, String> property : SERVICE_PROPERTIES.entrySet()) {
 			setProperty(property.getKey(), property.getValue());
 		}

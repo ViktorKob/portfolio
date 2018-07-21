@@ -5,6 +5,8 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.UsageDataServiceProperties.loadUsageDataConfigurationIntoProperties;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
@@ -46,6 +48,8 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 
 	@BeforeClass
 	public static void setupContextPath() {
+		loadUsageDataConfigurationIntoProperties();
+		loadDefaultServiceConfigurationIntoProperties();
 		loadServicePathsIntoProperties();
 	}
 

@@ -2,7 +2,7 @@ package net.thomas.portfolio.render;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
-import static net.thomas.portfolio.services.configuration.RenderServiceProperties.loadGenericConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.RenderServiceProperties.loadRenderConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +33,7 @@ public class RenderServiceApplication {
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();
-		loadGenericConfigurationIntoProperties();
+		loadRenderConfigurationIntoProperties();
 		run(RenderServiceApplication.class, args);
 	}
 }
