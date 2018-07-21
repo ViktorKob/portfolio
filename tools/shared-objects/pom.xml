@@ -17,7 +17,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -26,18 +25,15 @@
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>2.15.0</version>
 		</dependency>
 	</dependencies>
 

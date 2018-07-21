@@ -9,7 +9,7 @@
 
 	<parent>
 		<groupId>net.thomas.portfolio.services</groupId>
-		<artifactId>portfolio-parent</artifactId>
+		<artifactId>services-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
