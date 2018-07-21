@@ -2,7 +2,7 @@ package net.thomas.portfolio.legal;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
-import static net.thomas.portfolio.services.configuration.LegalServiceProperties.loadGenericConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.LegalServiceProperties.loadLegalConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,7 +35,7 @@ public class LegalServiceApplication {
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();
-		loadGenericConfigurationIntoProperties();
+		loadLegalConfigurationIntoProperties();
 		run(LegalServiceApplication.class, args);
 	}
 }

@@ -2,6 +2,8 @@ package net.thomas.portfolio.render.service;
 
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.RenderServiceProperties.loadRenderConfigurationIntoProperties;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,6 +39,8 @@ public class RenderServiceControllerServiceAdaptorTest {
 
 	@BeforeClass
 	public static void setupContextPath() {
+		loadRenderConfigurationIntoProperties();
+		loadDefaultServiceConfigurationIntoProperties();
 		loadServicePathsIntoProperties();
 	}
 

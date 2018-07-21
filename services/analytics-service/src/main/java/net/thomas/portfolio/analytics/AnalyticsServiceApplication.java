@@ -1,7 +1,7 @@
 package net.thomas.portfolio.analytics;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.AnalyticsServiceProperties.loadGenericConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.AnalyticsServiceProperties.loadAnalyticsConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
@@ -33,7 +33,7 @@ public class AnalyticsServiceApplication {
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();
-		loadGenericConfigurationIntoProperties();
+		loadAnalyticsConfigurationIntoProperties();
 		run(AnalyticsServiceApplication.class, args);
 	}
 }
