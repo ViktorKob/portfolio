@@ -132,7 +132,7 @@ _Fake HBASE service, allowing for model-discovery and emulating lookups in HBASE
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/HbaseIndexingService/v1/schema</li><li>/HbaseIndexingService/v1/documents/{type}/samples</li><li>/HbaseIndexingService/v1/documents/{type}/{uid}</li><li>/HbaseIndexingService/v1/documents/{type}/{uid}/references</li><li>/HbaseIndexingService/v1/selectors/{type}/samples</li><li>/HbaseIndexingService/v1/selectors/suggestions/{string}</li><li>/HbaseIndexingService/v1/selectors/{type}/{uid}</li><li>/HbaseIndexingService/v1/selectors/{type}/{uid}/statistics</li><li>/HbaseIndexingService/v1/selectors/{type}/{uid}/invertedIndex</li><li>/HbaseIndexingService/v1/entities/{type}/samples</li><li>/HbaseIndexingService/v1/entities/{type}/{uid}</li></ul>|
+|**Endpoints**|[Swagger](https://viktorkob.tk/HbaseIndexingService/swagger-ui.html)|
 
 The purpose of this service is to emulate lookups into HBASE tables. This should be seen as an index build on top of whatever data is ingested into the infrastructure, with a data model representing the content of the index.
 
@@ -149,7 +149,7 @@ _Rendering service that can lookup data in the Hbase index and then renderer it 
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/RenderService/v1/headline/{type}/{uid}</li><li>/RenderService/v1/html/{type}/{uid}</li><li>/RenderService/v1/simpleRep/{type}/{uid}</li></ul>|
+|**Endpoints**|[Swagger](https://viktorkob.tk/RenderService/swagger-ui.html)|
 
 One could argue that this service contains functionality that should be a part of the HBASE index service, but I have chosen to separate them, because I expect that the teams maintaining either service will be very different (HBASE specialists vs. front-end specialists). Still, it is heavily model dependent, and will likely need to be updated any time the HBASE index service is updated.
 
@@ -166,7 +166,7 @@ _Service responsible for storing and showing user interaction with the model_
 |**Technologies**|MySQL, jOOQ, Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/UsageDataService/v1/usageActivities/{documentType}/{uid}</li></ul>|
+|**Endpoints**|[Swagger](https://viktorkob.tk/UsageDataService/swagger-ui.html)|
 
 To enable storage of data about usage of the data model, this service employ a mysql backend and exposes two endpoint for manipulating the contents of this. jOOQ is used as a middle layer to enable compile-time validation of SQL queries. 
 
@@ -183,7 +183,7 @@ _Fake service representing interaction with the analytical information in the co
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/AnalyticsService/v1/knowledge/{selectorType}/{uid}</li></ul>|
+|**Endpoints**|[Swagger](https://viktorkob.tk/AnalyticsService/swagger-ui.html)|
 
 Another fake service, this time representing the existing analytical knowledge in the company, outside this infrastructure.
 
@@ -198,7 +198,7 @@ _Legal service responsible for validating legal requirements and audit logging m
 |**Technologies**|Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/LegalService/v1/legalRules/invertedIndexLookup/{type}/{uid}</li><li>/LegalService/v1/legalRules/statisticsLookup/{type}/{uid}</li><li>/LegalService/v1/auditLog/invertedIndexLookup/{type}/{uid}</li><li>/LegalService/v1/auditLog/statisticsLookup/{type}/{uid}</li></ul>|
+|**Endpoints**|[Swagger](https://viktorkob.tk/LegalService/swagger-ui.html)|
 
 The purpose here is to enclose all logic related to legal requirements into a separate service, to allow the developers working with the legal department to focus on a simple API instead of actual usage scenarios. 
 
