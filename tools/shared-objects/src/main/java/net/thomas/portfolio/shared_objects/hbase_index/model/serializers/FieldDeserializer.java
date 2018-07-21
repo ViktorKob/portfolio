@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
+package net.thomas.portfolio.shared_objects.hbase_index.model.serializers;
 
 import java.io.IOException;
 
@@ -8,6 +8,11 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField;
 
 public class FieldDeserializer extends JsonDeserializer<Field> {
 

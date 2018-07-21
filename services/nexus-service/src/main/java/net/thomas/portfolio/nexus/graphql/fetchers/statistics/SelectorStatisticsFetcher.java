@@ -1,29 +1,26 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.statistics;
 
-import static java.util.Collections.emptyMap;
 import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId.USER_ID;
 import static net.thomas.portfolio.nexus.graphql.fetchers.LocalServiceArgumentId.JUSTIFICATION;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
-
-import java.util.Map;
 
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
-public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPeriod, Long>> {
+public class SelectorStatisticsFetcher extends ModelDataFetcher<Statistics> {
 
 	public SelectorStatisticsFetcher(Adaptors adaptors) {
 		super(adaptors);
 	}
 
 	@Override
-	public Map<StatisticsPeriod, Long> get(DataFetchingEnvironment environment) {
+	public Statistics get(DataFetchingEnvironment environment) {
 		if (environment.getSource() == null) {
 			return null;
 		}
@@ -33,12 +30,10 @@ public class SelectorStatisticsFetcher extends ModelDataFetcher<Map<StatisticsPe
 			throw new GraphQLException("Statistics lookup for selector " + selectorId.type + "-" + selectorId.uid + " must be justified by a specific user");
 		} else {
 			if (adaptors.auditLogStatisticsLookup(selectorId, legalInfo)) {
-				final Map<StatisticsPeriod, Long> statistics = adaptors.getStatistics(selectorId);
-				if (statistics != null) {
-					return statistics;
-				}
+				return adaptors.getStatistics(selectorId);
+			} else {
+				return new Statistics();
 			}
-			return emptyMap();
 		}
 	}
 

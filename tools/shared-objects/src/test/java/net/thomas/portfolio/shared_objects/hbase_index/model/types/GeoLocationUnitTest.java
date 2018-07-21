@@ -9,6 +9,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class GeoLocationUnitTest {
 	@Test
 	public void shouldBeEqual() {
@@ -17,13 +20,13 @@ public class GeoLocationUnitTest {
 
 	@Test
 	public void shouldNotBeEqualWithDifferentLongitude() {
-		final GeoLocation differentLocation = new GeoLocation(SOME_OTHER_LONGITUDE, SOME_LOCATION.latitude);
+		final GeoLocation differentLocation = new GeoLocation(SOME_LOCATION.longitude, SOME_OTHER_LATITUDE);
 		assertFalse(SOME_LOCATION.equals(differentLocation));
 	}
 
 	@Test
 	public void shouldNotBeEqualWithDifferentLatitude() {
-		final GeoLocation differentLocation = new GeoLocation(SOME_LOCATION.longitude, SOME_OTHER_LATITUDE);
+		final GeoLocation differentLocation = new GeoLocation(SOME_OTHER_LONGITUDE, SOME_LOCATION.latitude);
 		assertFalse(SOME_LOCATION.equals(differentLocation));
 	}
 

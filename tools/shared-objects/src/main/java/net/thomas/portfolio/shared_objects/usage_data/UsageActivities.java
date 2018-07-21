@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,6 +31,7 @@ public class UsageActivities {
 		return activities.size();
 	}
 
+	@JsonIgnore
 	public UsageActivity get(int index) {
 		return activities.get(0);
 	}

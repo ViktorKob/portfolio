@@ -23,11 +23,11 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.common.services.validation.EnumValueValidator;
-import net.thomas.portfolio.common.services.validation.IntegerRangeValidator;
-import net.thomas.portfolio.common.services.validation.LongRangeValidator;
-import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
-import net.thomas.portfolio.common.services.validation.StringPresenceValidator;
+import net.thomas.portfolio.common.services.parameters.validation.EnumValueValidator;
+import net.thomas.portfolio.common.services.parameters.validation.IntegerRangeValidator;
+import net.thomas.portfolio.common.services.parameters.validation.LongRangeValidator;
+import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.common.services.parameters.validation.StringPresenceValidator;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;

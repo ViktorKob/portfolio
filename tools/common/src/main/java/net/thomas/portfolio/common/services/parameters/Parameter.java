@@ -1,4 +1,4 @@
-package net.thomas.portfolio.common.services;
+package net.thomas.portfolio.common.services.parameters;
 
 public interface Parameter {
 	String getName();

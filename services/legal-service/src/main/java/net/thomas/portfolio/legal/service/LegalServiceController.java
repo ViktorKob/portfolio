@@ -22,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.common.services.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;

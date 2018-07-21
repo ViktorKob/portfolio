@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.types;
+package net.thomas.portfolio.shared_objects.hbase_index.model.serializers;
 
 import java.io.IOException;
 
@@ -6,7 +6,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsSerializer;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 
 public class DataTypeSerializer extends StdSerializer<DataType> {
 	private static final long serialVersionUID = 1L;

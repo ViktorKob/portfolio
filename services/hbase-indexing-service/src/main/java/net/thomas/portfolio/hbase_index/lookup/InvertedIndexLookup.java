@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
@@ -38,21 +38,20 @@ public class InvertedIndexLookup {
 		this.executor = executor;
 	}
 
-	public List<DocumentInfo> execute() {
-		final Collection<Collection<Document>> resultSets = lookupDocuments();
-		final List<DocumentInfo> documents = extractResult(resultSets);
-		return documents;
+	public DocumentInfos execute() {
+		final Collection<DocumentInfos> resultSets = lookupDocuments();
+		return extractResult(resultSets);
 	}
 
-	private Collection<Collection<Document>> lookupDocuments() {
+	private Collection<DocumentInfos> lookupDocuments() {
 		final CountDownLatch latch = new CountDownLatch(indexables.size());
-		final Collection<Collection<Document>> resultSets = startLookups(latch);
+		final Collection<DocumentInfos> resultSets = startLookups(latch);
 		waitForLatch(latch);
 		return resultSets;
 	}
 
-	private Collection<Collection<Document>> startLookups(final CountDownLatch latch) {
-		final Collection<Collection<Document>> resultSets = synchronizedCollection(new LinkedList<>());
+	private Collection<DocumentInfos> startLookups(final CountDownLatch latch) {
+		final Collection<DocumentInfos> resultSets = synchronizedCollection(new LinkedList<>());
 		for (final Indexable indexable : indexables) {
 			executor.execute(() -> {
 				resultSets.add(index.invertedIndexLookup(selectorId, indexable));
@@ -70,48 +69,44 @@ public class InvertedIndexLookup {
 		}
 	}
 
-	private List<DocumentInfo> extractResult(final Collection<Collection<Document>> resultSets) {
-		final Comparator<Document> byTimeOfEventInversed = Comparator.comparingLong((document) -> MAX_VALUE - document.getTimeOfEvent());
-		final PriorityQueue<Document> allDocuments = convertToSortedQueue(resultSets, byTimeOfEventInversed);
+	private DocumentInfos extractResult(final Collection<DocumentInfos> resultSets) {
+		final Comparator<DocumentInfo> byTimeOfEventInversed = Comparator.comparingLong((info) -> MAX_VALUE - info.getTimeOfEvent());
+		final PriorityQueue<DocumentInfo> allDocuments = convertToSortedQueue(resultSets, byTimeOfEventInversed);
 		skipUntilDate(allDocuments, bounds.before);
 		skipUntilOffset(allDocuments, bounds.offset);
 		int count = 0;
-		final List<DocumentInfo> documentInfos = new LinkedList<>();
+		final List<DocumentInfo> result = new LinkedList<>();
 		while (!allDocuments.isEmpty() && allDocuments.peek()
 			.getTimeOfEvent() >= bounds.after && count++ < bounds.limit) {
-			documentInfos.add(extractInfo(allDocuments.poll()));
+			result.add(allDocuments.poll());
 		}
-		return documentInfos;
+		return new DocumentInfos(result);
 	}
 
-	private PriorityQueue<Document> convertToSortedQueue(final Collection<Collection<Document>> resultSets, final Comparator<Document> byTimeOfEventInversed) {
-		final Supplier<PriorityQueue<Document>> supplier = createPriorityQueueSupplier(byTimeOfEventInversed);
-		final PriorityQueue<Document> allDocuments = resultSets.stream()
+	private PriorityQueue<DocumentInfo> convertToSortedQueue(final Collection<DocumentInfos> resultSets, final Comparator<DocumentInfo> byTimeOfEventInversed) {
+		final Supplier<PriorityQueue<DocumentInfo>> supplier = createPriorityQueueSupplier(byTimeOfEventInversed);
+		final PriorityQueue<DocumentInfo> allDocuments = resultSets.stream()
+			.map(DocumentInfos::getInfos)
 			.flatMap(Collection::stream)
 			.collect(toCollection(supplier));
 		return allDocuments;
 	}
 
-	private void skipUntilDate(final PriorityQueue<Document> allDocuments, Long before) {
+	private void skipUntilDate(final PriorityQueue<DocumentInfo> allDocuments, Long before) {
 		while (!allDocuments.isEmpty() && allDocuments.peek()
 			.getTimeOfEvent() > before) {
 			allDocuments.poll();
 		}
 	}
 
-	private void skipUntilOffset(final PriorityQueue<Document> allDocuments, Integer offset) {
+	private void skipUntilOffset(final PriorityQueue<DocumentInfo> allDocuments, Integer offset) {
 		int count = 0;
 		while (!allDocuments.isEmpty() && count++ < offset) {
 			allDocuments.poll();
 		}
 	}
 
-	private Supplier<PriorityQueue<Document>> createPriorityQueueSupplier(Comparator<Document> byTimeOfEventInversed) {
-		final Supplier<PriorityQueue<Document>> supplier = () -> new PriorityQueue<>(byTimeOfEventInversed);
-		return supplier;
-	}
-
-	private DocumentInfo extractInfo(Document document) {
-		return new DocumentInfo(document.getId(), document.getTimeOfEvent(), document.getTimeOfInterception());
+	private Supplier<PriorityQueue<DocumentInfo>> createPriorityQueueSupplier(Comparator<DocumentInfo> byTimeOfEventInversed) {
+		return () -> new PriorityQueue<>(byTimeOfEventInversed);
 	}
 }

@@ -17,7 +17,6 @@ import static org.springframework.http.HttpMethod.GET;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -30,16 +29,16 @@ import com.google.common.cache.LoadingCache;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
-import net.thomas.portfolio.common.services.ParameterGroup;
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
@@ -167,26 +166,20 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Collection<Reference> getReferences(DataTypeId documentId) {
-		final ParameterizedTypeReference<Collection<Reference>> responseType = new ParameterizedTypeReference<Collection<Reference>>() {
-		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES), GET, responseType, EMPTY_GROUP_LIST);
+	public References getReferences(DataTypeId documentId) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES), GET, References.class, EMPTY_GROUP_LIST);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
-		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> responseType = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
-		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS), GET, responseType, EMPTY_GROUP_LIST);
+	public Statistics getStatistics(DataTypeId selectorId) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS), GET, Statistics.class, EMPTY_GROUP_LIST);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
-		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
-		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, request.getSelectorId(), INVERTED_INDEX), GET, responseType,
+	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, request.getSelectorId(), INVERTED_INDEX), GET, DocumentInfos.class,
 				request.getGroups());
 	}
 }

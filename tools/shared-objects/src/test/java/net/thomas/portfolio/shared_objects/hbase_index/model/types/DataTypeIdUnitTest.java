@@ -10,7 +10,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import net.thomas.portfolio.common.services.Parameter;
+import net.thomas.portfolio.common.services.parameters.Parameter;
 
 public class DataTypeIdUnitTest {
 

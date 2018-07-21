@@ -1,4 +1,4 @@
-package net.thomas.portfolio.common.services.validation;
+package net.thomas.portfolio.common.services.parameters.validation;
 
 public class StringPresenceValidator extends ParameterValidator<String> {
 

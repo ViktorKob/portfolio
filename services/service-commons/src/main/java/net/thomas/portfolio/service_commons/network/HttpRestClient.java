@@ -25,10 +25,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 
-import net.thomas.portfolio.common.services.Credentials;
-import net.thomas.portfolio.common.services.Parameter;
-import net.thomas.portfolio.common.services.ParameterGroup;
-import net.thomas.portfolio.common.services.ServiceDependency;
+import net.thomas.portfolio.common.services.parameters.Credentials;
+import net.thomas.portfolio.common.services.parameters.Parameter;
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.services.Service;
 import net.thomas.portfolio.services.ServiceEndpoint;
 
