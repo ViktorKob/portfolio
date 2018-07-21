@@ -1,9 +1,11 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_INVERTED_INDEX_LOOKUP;
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG_STATISTICS_LOOKUP;
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGALITY_OF_INVERTED_INDEX_QUERY;
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGALITY_OF_STATISTICS_LOOKUP;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.AUDIT_LOG;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.INVERTED_INDEX_QUERY;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGAL_ROOT;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.LEGAL_RULES;
+import static net.thomas.portfolio.enums.LegalServiceEndpoint.STATISTICS_LOOKUP;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
@@ -33,32 +35,24 @@ public class LegalAdaptorImpl implements HttpRestClientInitializable, LegalAdapt
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Legality checkLegalityOfInvertedIndexQuery(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return LEGALITY_OF_INVERTED_INDEX_QUERY.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
-		}, GET, Legality.class, legalInfo);
+		return client.loadUrlAsObject(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, LEGAL_RULES), GET, Legality.class, legalInfo);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Legality checkLegalityOfStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return LEGALITY_OF_STATISTICS_LOOKUP.getContextPath() + "/" + id.type + "/" + id.uid;
-		}, GET, Legality.class, legalInfo);
+	public Legality checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return client.loadUrlAsObject(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, LEGAL_RULES), GET, Legality.class, legalInfo);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return AUDIT_LOG_INVERTED_INDEX_LOOKUP.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
-		}, POST, Boolean.class, legalInfo);
+		return client.loadUrlAsObject(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, AUDIT_LOG), POST, Boolean.class, legalInfo);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Boolean auditLogStatisticsLookup(DataTypeId id, LegalInformation legalInfo) {
-		return client.loadUrlAsObject(LEGAL_SERVICE, () -> {
-			return AUDIT_LOG_STATISTICS_LOOKUP.getContextPath() + "/" + id.type + "/" + id.uid;
-		}, POST, Boolean.class, legalInfo);
+	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return client.loadUrlAsObject(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, AUDIT_LOG), POST, Boolean.class, legalInfo);
 	}
 }

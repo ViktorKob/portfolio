@@ -1,8 +1,11 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_HTML;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_SIMPLE_REPRESENTATION;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_AS_TEXT;
+import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_HTML;
+import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_SIMPLE_REPRESENTATION;
+import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_TEXT;
+import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_ENTITY_ROOT;
+import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_SELECTOR_ROOT;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.RENDER_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -29,24 +32,18 @@ public class RenderingAdaptorImpl implements HttpRestClientInitializable, Render
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_SIMPLE_REPRESENTATION.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
-		}, GET, String.class);
+		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_SELECTOR_ROOT, selectorId, AS_SIMPLE_REPRESENTATION), GET, String.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsText(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_TEXT.getContextPath() + "/" + id.type + "/" + id.uid;
-		}, GET, String.class);
+		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT), GET, String.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsHtml(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, () -> {
-			return RENDER_AS_HTML.getContextPath() + "/" + id.type + "/" + id.uid;
-		}, GET, String.class);
+		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML), GET, String.class);
 	}
 }

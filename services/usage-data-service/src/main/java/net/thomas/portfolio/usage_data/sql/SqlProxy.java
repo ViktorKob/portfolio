@@ -18,7 +18,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jooq.Configuration;
@@ -30,6 +29,7 @@ import org.jooq.types.UInteger;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
@@ -133,7 +133,7 @@ public class SqlProxy {
 			.get(ACCESS_TYPE.ID);
 	}
 
-	public List<UsageActivity> fetchUsageActivities(DataTypeId id, Bounds bounds) {
+	public UsageActivities fetchUsageActivities(DataTypeId id, Bounds bounds) {
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
 			final Result<Record3<String, String, Timestamp>> result = create.select(USER.NAME, ACCESS_TYPE.NAME, USER_ACCESSED_DOCUMENT.TIME_OF_ACCESS)
@@ -157,8 +157,7 @@ public class SqlProxy {
 					.getTime();
 				activities.add(new UsageActivity(username, activityType, timeOfActivity));
 			}
-
-			return activities;
+			return new UsageActivities(activities);
 		} catch (final SQLException e) {
 			throw new RuntimeException("Unable to fetch activity from database", e);
 		}
