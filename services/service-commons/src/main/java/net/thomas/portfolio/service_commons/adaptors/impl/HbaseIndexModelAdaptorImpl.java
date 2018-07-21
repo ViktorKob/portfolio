@@ -10,6 +10,7 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId.NULL_ID;
 import static org.springframework.http.HttpMethod.GET;
@@ -23,9 +24,9 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.core.ParameterizedTypeReference;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+import com.google.common.cache.LoadingCache;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
@@ -49,7 +50,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
 	private HttpRestClient client;
 	private HbaseIndexSchema schema;
-	private Cache<DataTypeId, DataType> dataTypeCache;
+	private LoadingCache<DataTypeId, DataType> dataTypeCache;
 
 	@Override
 	public void initialize(HttpRestClient client) {
@@ -63,12 +64,16 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		}
 		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
 			.maximumSize(500)
-			.build(new CacheLoader<DataTypeId, DataType>() {
-				@Override
-				public DataType load(DataTypeId id) throws Exception {
-					return fetchDataType(id);
-				}
-			});
+			.build(buildDataTypeCacheLoader(client));
+	}
+
+	private CacheLoader<DataTypeId, DataType> buildDataTypeCacheLoader(HttpRestClient client) {
+		return new CacheLoader<DataTypeId, DataType>() {
+			@Override
+			public DataType load(DataTypeId id) throws Exception {
+				return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, id), GET, DataType.class);
+			}
+		};
 	}
 
 	@Override
@@ -139,18 +144,14 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SELECTORS.getContextPath() + "/" + SUGGESTIONS.getContextPath() + "/" + selectorString + "/";
-		}, GET, responseType, EMPTY_GROUP_LIST);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, selectorString), GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public DataType getDataType(DataTypeId id) {
 		try {
-			return dataTypeCache.get(id, () -> {
-				return fetchDataType(id);
-			});
+			return dataTypeCache.get(id);
 		} catch (final InvalidCacheLoadException e) {
 			if (e.getMessage()
 				.contains("CacheLoader returned null for key")) {
@@ -164,20 +165,12 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		}
 	}
 
-	private DataType fetchDataType(DataTypeId id) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return ENTITIES.getContextPath() + "/" + id.getDti_type() + "/" + id.getDti_uid();
-		}, GET, DataType.class);
-	}
-
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Collection<Reference> getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Collection<Reference>> responseType = new ParameterizedTypeReference<Collection<Reference>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return DOCUMENTS.getContextPath() + "/" + documentId.getDti_type() + "/" + documentId.getDti_uid() + REFERENCES.getContextPath();
-		}, GET, responseType, EMPTY_GROUP_LIST);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES), GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -185,9 +178,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 	public Map<StatisticsPeriod, Long> getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Map<StatisticsPeriod, Long>> responseType = new ParameterizedTypeReference<Map<StatisticsPeriod, Long>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			return SELECTORS.getContextPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + STATISTICS.getContextPath();
-		}, GET, responseType, EMPTY_GROUP_LIST);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS), GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -195,9 +186,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 	public List<DocumentInfo> lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<List<DocumentInfo>> responseType = new ParameterizedTypeReference<List<DocumentInfo>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, () -> {
-			final DataTypeId selectorId = request.getSelectorId();
-			return SELECTORS.getContextPath() + "/" + selectorId.getDti_type() + "/" + selectorId.getDti_uid() + INVERTED_INDEX.getContextPath();
-		}, GET, responseType, request.getGroups());
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, request.getSelectorId(), INVERTED_INDEX), GET, responseType,
+				request.getGroups());
 	}
 }

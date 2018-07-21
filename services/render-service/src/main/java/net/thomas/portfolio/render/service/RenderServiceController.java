@@ -1,8 +1,10 @@
 package net.thomas.portfolio.render.service;
 
-import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_HTML_PATH;
-import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_SIMPLE_REPRESENTATION_PATH;
-import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_AS_TEXT_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_HTML_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_SIMPLE_REPRESENTATION_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_TEXT_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_ENTITY_ROOT_PATH;
+import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_SELECTOR_ROOT_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -78,7 +80,7 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = RENDER_AS_SIMPLE_REPRESENTATION_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = RENDER_SELECTOR_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_SIMPLE_REPRESENTATION_PATH, method = GET)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = hbaseAdaptor.getDataType(id);
@@ -95,7 +97,7 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = RENDER_AS_TEXT_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = RENDER_ENTITY_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_TEXT_PATH, method = GET)
 	public ResponseEntity<String> renderAsText(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = hbaseAdaptor.getDataType(id);
@@ -111,7 +113,7 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = RENDER_AS_HTML_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = RENDER_ENTITY_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_HTML_PATH, method = GET)
 	public ResponseEntity<String> renderAsHtml(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = hbaseAdaptor.getDataType(id);

@@ -1,17 +1,20 @@
 package net.thomas.portfolio.enums;
 
-import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_STATISTICS_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_INVERTED_INDEX_QUERY_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_STATISTICS_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 
 import net.thomas.portfolio.services.ServiceEndpoint;
 
 public enum LegalServiceEndpoint implements ServiceEndpoint {
-	AUDIT_LOG_INVERTED_INDEX_LOOKUP(AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH),
-	AUDIT_LOG_STATISTICS_LOOKUP(AUDIT_LOG_STATISTICS_LOOKUP_PATH),
-	LEGALITY_OF_INVERTED_INDEX_QUERY(LEGALITY_OF_INVERTED_INDEX_QUERY_PATH),
-	LEGALITY_OF_STATISTICS_LOOKUP(LEGALITY_OF_STATISTICS_LOOKUP_PATH);
+	LEGAL_ROOT(LEGAL_ROOT_PATH),
+	LEGAL_RULES(LEGAL_RULES_PATH),
+	AUDIT_LOG(AUDIT_LOGGING_PATH),
+	INVERTED_INDEX_QUERY(INVERTED_INDEX_PATH),
+	STATISTICS_LOOKUP(STATISTICS_PATH);
+
 	private final String path;
 
 	private LegalServiceEndpoint(String path) {

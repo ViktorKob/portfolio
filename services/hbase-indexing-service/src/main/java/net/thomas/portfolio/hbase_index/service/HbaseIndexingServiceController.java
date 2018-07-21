@@ -35,8 +35,8 @@ public class HbaseIndexingServiceController {
 	HbaseIndex index;
 
 	@Secured("ROLE_USER")
-	@RequestMapping(SCHEMA_PATH)
-	public ResponseEntity<?> getSchemaEndpoint() {
+	@RequestMapping(path = SCHEMA_PATH, method = GET)
+	public ResponseEntity<?> getSchema() {
 		return ok(schema);
 	}
 

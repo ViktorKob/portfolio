@@ -1,6 +1,8 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
+import static net.thomas.portfolio.enums.AnalyticsServiceEndpoint.ANALYTICS_BASE;
 import static net.thomas.portfolio.enums.AnalyticsServiceEndpoint.LOOKUP_KNOWLEDGE;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.ANALYTICS_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -27,8 +29,6 @@ public class AnalyticsAdaptorImpl implements HttpRestClientInitializable, Analyt
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
-		return client.loadUrlAsObject(ANALYTICS_SERVICE, () -> {
-			return LOOKUP_KNOWLEDGE.getContextPath() + "/" + selectorId.type + "/" + selectorId.uid;
-		}, GET, AnalyticalKnowledge.class);
+		return client.loadUrlAsObject(ANALYTICS_SERVICE, asEndpoint(ANALYTICS_BASE, selectorId, LOOKUP_KNOWLEDGE), GET, AnalyticalKnowledge.class);
 	}
 }

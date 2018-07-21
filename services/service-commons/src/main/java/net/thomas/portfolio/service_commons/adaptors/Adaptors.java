@@ -23,6 +23,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 /***
@@ -252,7 +253,7 @@ public class Adaptors {
 	 * Using {@link LegalAdaptor#checkLegalityOfStatisticsLookup}<BR>
 	 *
 	 * @param dataTypeId
-	 *            The ID of the entity is being queried
+	 *            The ID of the selector is being queried
 	 * @param legalInfo
 	 *            The legal parameters supporting the lookup
 	 * @return An assessment of whether the lookup would be legal to complete
@@ -342,7 +343,7 @@ public class Adaptors {
 	 *            The parameters for the fetch
 	 * @return An ordered (newest first) list of events for the document
 	 */
-	public List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
+	public UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
 		return usageAdaptor.fetchUsageActivities(documentId, bounds);
 	}
 

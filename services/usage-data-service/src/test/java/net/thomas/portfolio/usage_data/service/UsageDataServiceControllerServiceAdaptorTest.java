@@ -17,8 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,6 +35,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAda
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
@@ -98,8 +97,8 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldFetchActivitiesUsingSqlProxy() {
-		when(sqlProxy.fetchUsageActivities(eq(DOCUMENT_ID), eq(EVERYTHING))).thenReturn(singletonList(DEFAULT_ACTIVITY));
-		final List<UsageActivity> activities = adaptors.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
+		when(sqlProxy.fetchUsageActivities(eq(DOCUMENT_ID), eq(EVERYTHING))).thenReturn(new UsageActivities(singletonList(DEFAULT_ACTIVITY)));
+		final UsageActivities activities = adaptors.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
 		assertEquals(1, activities.size());
 		assertEquals(DEFAULT_ACTIVITY, activities.get(0));
 	}

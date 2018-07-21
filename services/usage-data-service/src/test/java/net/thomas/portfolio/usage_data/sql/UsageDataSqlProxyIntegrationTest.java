@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +16,7 @@ import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
 
@@ -34,13 +34,14 @@ public class UsageDataSqlProxyIntegrationTest {
 		return System.currentTimeMillis() / 1000 * 1000;
 	}
 
-	private UsageDataSqlProxy sqlProxy;
+	private SqlProxy sqlProxy;
 
 	@Before
 	public void setup() throws SQLException {
 		final Database databaseConfig = createTestDatabaseConfig();
 		wipeOldTests(databaseConfig);
-		sqlProxy = new UsageDataSqlProxy(databaseConfig);
+		sqlProxy = new SqlProxy();
+		sqlProxy.setDatabase(databaseConfig);
 		sqlProxy.ensurePresenceOfSchema();
 	}
 
@@ -48,7 +49,7 @@ public class UsageDataSqlProxyIntegrationTest {
 	public void shouldContainEntryAfterWrite() {
 		final UsageActivity activity = new UsageActivity(USER, READ_DOCUMENT, TIME_OF_ACTIVITY);
 		sqlProxy.storeUsageActivity(DOCUMENT_ID, activity);
-		final List<UsageActivity> activities = sqlProxy.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
+		final UsageActivities activities = sqlProxy.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
 		assertEquals(1, activities.size());
 		assertEquals(activity, activities.get(0));
 	}
@@ -57,7 +58,7 @@ public class UsageDataSqlProxyIntegrationTest {
 	public void shouldAddTimestampWhenMissing() {
 		final UsageActivity activity = new UsageActivity(USER, READ_DOCUMENT, null);
 		sqlProxy.storeUsageActivity(DOCUMENT_ID, activity);
-		final List<UsageActivity> activities = sqlProxy.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
+		final UsageActivities activities = sqlProxy.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
 		assertNotNull(activities.get(0).timeOfActivity);
 	}
 

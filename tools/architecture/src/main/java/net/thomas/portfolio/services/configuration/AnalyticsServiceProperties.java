@@ -21,7 +21,7 @@ public class AnalyticsServiceProperties {
 
 		put("service-context-path", "${analytics-context-path}");
 		put("service-name", "${analytics-service-name}");
-		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/actuator/health");
+		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/swagger-ui.html");
 
 		// ####################
 		// Unique settings:

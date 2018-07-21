@@ -1,6 +1,7 @@
 package net.thomas.portfolio.analytics.service;
 
 import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_KNOWLEDGE_PATH;
+import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_KNOWLEDGE_ROOT_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -64,7 +65,7 @@ public class AnalyticsServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = LOOKUP_KNOWLEDGE_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = LOOKUP_KNOWLEDGE_ROOT_PATH + "/{dti_type}/{dti_uid}" + LOOKUP_KNOWLEDGE_PATH, method = GET)
 	public ResponseEntity<?> lookupPriorKnowledge(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			return ok(analyticsSystem.getPriorKnowledge(id));

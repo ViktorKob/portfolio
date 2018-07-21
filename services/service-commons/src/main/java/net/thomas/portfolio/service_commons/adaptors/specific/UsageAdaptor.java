@@ -1,9 +1,8 @@
 package net.thomas.portfolio.service_commons.adaptors.specific;
 
-import java.util.List;
-
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public interface UsageAdaptor {
@@ -23,5 +22,5 @@ public interface UsageAdaptor {
 	 *            The parameters for the fetch
 	 * @return An ordered (newest first) list of events for the document
 	 */
-	List<UsageActivity> fetchUsageActivities(DataTypeId documentId, Bounds bounds);
+	UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds);
 }

@@ -1,9 +1,10 @@
 package net.thomas.portfolio.legal.service;
 
-import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOG_STATISTICS_LOOKUP_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_INVERTED_INDEX_QUERY_PATH;
-import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGALITY_OF_STATISTICS_LOOKUP_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -84,7 +85,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = LEGALITY_OF_INVERTED_INDEX_QUERY_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final Legality response = legalRulesSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
@@ -95,7 +96,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = LEGALITY_OF_STATISTICS_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = GET)
+	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
 		if (TYPE.isValid(dataTypeId.type) && UID.isValid(dataTypeId.uid)) {
 			final Legality response = legalRulesSystem.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
@@ -106,7 +107,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = AUDIT_LOG_INVERTED_INDEX_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = POST)
+	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
@@ -117,7 +118,7 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = AUDIT_LOG_STATISTICS_LOOKUP_PATH + "/{dti_type}/{dti_uid}", method = POST)
+	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
