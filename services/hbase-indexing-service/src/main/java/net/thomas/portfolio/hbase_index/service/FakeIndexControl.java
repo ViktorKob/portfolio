@@ -73,7 +73,7 @@ public class FakeIndexControl implements IndexControl {
 		final HbaseIndexSchema schema = new SchemaIntrospection().examine(Email.class)
 			.examine(TextMessage.class)
 			.examine(Conversation.class)
-			.describe();
+			.describeSchema();
 		final World world = new FakeWorld(schema, randomSeed, 80, 10, 800);
 		worldControl.exportWorld(schema, world);
 	}

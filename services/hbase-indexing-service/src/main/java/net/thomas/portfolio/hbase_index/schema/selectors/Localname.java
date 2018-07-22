@@ -9,7 +9,8 @@ public class Localname extends SelectorEntity {
 	@PartOfKey
 	public final String name;
 
-	public Localname(String name) {
+	public Localname(String uid, String name) {
+		super(uid);
 		this.name = name;
 	}
 }

@@ -20,9 +20,9 @@ public class Email extends DocumentEntity {
 	@IndexablePathAnnotation("bccReceived")
 	public final EmailEndpoint[] bcc;
 
-	public Email(Timestamp timeOfEvent, Timestamp timeOfInterception, String subject, String message, EmailEndpoint from, EmailEndpoint[] to,
+	public Email(String uid, Timestamp timeOfEvent, Timestamp timeOfInterception, String subject, String message, EmailEndpoint from, EmailEndpoint[] to,
 			EmailEndpoint[] cc, EmailEndpoint[] bcc) {
-		super(timeOfEvent, timeOfInterception);
+		super(uid, timeOfEvent, timeOfInterception);
 		this.subject = subject;
 		this.message = message;
 		this.from = from;
