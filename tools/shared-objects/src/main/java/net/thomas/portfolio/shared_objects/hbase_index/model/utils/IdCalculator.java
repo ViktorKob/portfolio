@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
+import static java.lang.String.valueOf;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -13,10 +15,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 public class IdCalculator {
 	private final Fields fields;
@@ -68,8 +72,12 @@ public class IdCalculator {
 
 	private void addField(final MessageDigest hasher, final Field field, final Object value) {
 		if (field instanceof PrimitiveField) {
-			hasher.update(value.toString()
-				.getBytes());
+			if (PrimitiveType.TIMESTAMP == ((PrimitiveField) field).getType()) {
+				hasher.update(valueOf(((Timestamp) value).getTimestamp()).getBytes());
+			} else {
+				hasher.update(value.toString()
+					.getBytes());
+			}
 		} else if (field instanceof ReferenceField) {
 			final DataTypeId id = ((DataType) value).getId();
 			hasher.update(id.uid.getBytes());

@@ -24,7 +24,7 @@ public class TimestampUnitTest {
 
 	@Test
 	public void shouldNotBeEqualWithDifferentZone() {
-		final Timestamp differentLocation = new Timestamp(SOME_OTHER_TIME, SOME_TIMESTAMP.getZone());
+		final Timestamp differentLocation = new Timestamp(SOME_OTHER_TIME, SOME_TIMESTAMP.getOriginalTimeZone());
 		assertFalse(SOME_TIMESTAMP.equals(differentLocation));
 	}
 
@@ -58,7 +58,7 @@ public class TimestampUnitTest {
 
 	@Test
 	public void shouldContainTimeZoneInStringRepresentation() {
-		final ZoneId expectedContents = SOME_TIMESTAMP.getZone();
+		final ZoneId expectedContents = SOME_TIMESTAMP.getOriginalTimeZone();
 		final String actualString = SOME_TIMESTAMP.toString();
 		assertTrue(actualString.contains(expectedContents.toString()));
 	}

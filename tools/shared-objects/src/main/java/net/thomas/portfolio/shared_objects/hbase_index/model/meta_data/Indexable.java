@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 public class Indexable {
 	public String selectorType;
@@ -52,6 +52,6 @@ public class Indexable {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

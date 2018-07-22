@@ -35,6 +35,24 @@ public class ReferenceField implements Field {
 		return new ReferenceField(name, type, true, false);
 	}
 
+	public static class ReferenceFieldBuilder extends FieldBuilder<ReferenceField> {
+		private String type;
+
+		public ReferenceFieldBuilder(String name) {
+			super(name);
+		}
+
+		public ReferenceFieldBuilder setType(String type) {
+			this.type = type;
+			return this;
+		}
+
+		@Override
+		public ReferenceField build() {
+			return new ReferenceField(name, type, isArray, isPartOfKey);
+		}
+	}
+
 	private ReferenceField(String name, String type, boolean isArray, boolean isKeyComponent) {
 		this.name = name;
 		this.type = type;

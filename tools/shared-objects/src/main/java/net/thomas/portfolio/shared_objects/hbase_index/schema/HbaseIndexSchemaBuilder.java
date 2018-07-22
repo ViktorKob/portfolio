@@ -15,6 +15,11 @@ import java.util.Set;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibraryBuilder;
 
 public class HbaseIndexSchemaBuilder {
@@ -62,6 +67,21 @@ public class HbaseIndexSchemaBuilder {
 
 	public HbaseIndexSchemaBuilder addIndexable(String selectorType, String path, String documentType, String documentField) {
 		indexableBuilder.add(selectorType, path, documentType, documentField);
+		return this;
+	}
+
+	public HbaseIndexSchemaBuilder addSimpleRepresentationParser(String selectorType, String field, Class<? extends SimpleRepresentationParser> parser) {
+		if (parser == StringFieldSimpleRepParser.class) {
+			addStringFieldParser(selectorType, field);
+		} else if (parser == PositiveIntegerFieldSimpleRepParser.class) {
+			addIntegerFieldParser(selectorType, field);
+		} else if (parser == DomainSimpleRepParser.class) {
+			addDomainParser();
+		} else if (parser == EmailAddressSimpleRepParser.class) {
+			addEmailAddressParser();
+		} else {
+			throw new RuntimeException("Unknown simple representation parser of type " + parser.getSimpleName());
+		}
 		return this;
 	}
 

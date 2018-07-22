@@ -1,7 +1,6 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.Arrays.asList;
-import static net.thomas.portfolio.hbase_index.fake.FakeHbaseIndexSchemaFactory.buildSchema;
 
 import java.util.List;
 
@@ -14,6 +13,10 @@ import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.FakeWorld;
 import net.thomas.portfolio.hbase_index.fake.index_steps.FakeInvertedIndexStep;
 import net.thomas.portfolio.hbase_index.fake.index_steps.FakeSelectorStatisticsStep;
+import net.thomas.portfolio.hbase_index.schema.SchemaIntrospection;
+import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
+import net.thomas.portfolio.hbase_index.schema.documents.Email;
+import net.thomas.portfolio.hbase_index.schema.documents.TextMessage;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.transformation.IndexControl;
@@ -67,7 +70,10 @@ public class FakeIndexControl implements IndexControl {
 	}
 
 	private void buildAndExportWorld(final WorldControl worldControl, long randomSeed) {
-		final HbaseIndexSchema schema = buildSchema();
+		final HbaseIndexSchema schema = new SchemaIntrospection().examine(Email.class)
+			.examine(TextMessage.class)
+			.examine(Conversation.class)
+			.describe();
 		final World world = new FakeWorld(schema, randomSeed, 80, 10, 800);
 		worldControl.exportWorld(schema, world);
 	}
