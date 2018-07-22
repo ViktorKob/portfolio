@@ -17,9 +17,9 @@ public class Conversation extends DocumentEntity {
 	public final GeoLocation primaryLocation;
 	public final GeoLocation secondaryLocation;
 
-	public Conversation(Timestamp timeOfEvent, Timestamp timeOfInterception, Integer durationIsSeconds, CommunicationEndpoint primary,
+	public Conversation(String uid, Timestamp timeOfEvent, Timestamp timeOfInterception, Integer durationIsSeconds, CommunicationEndpoint primary,
 			CommunicationEndpoint secondary, GeoLocation primaryLocation, GeoLocation secondaryLocation) {
-		super(timeOfEvent, timeOfInterception);
+		super(uid, timeOfEvent, timeOfInterception);
 		this.durationIsSeconds = durationIsSeconds;
 		this.primary = primary;
 		this.secondary = secondary;

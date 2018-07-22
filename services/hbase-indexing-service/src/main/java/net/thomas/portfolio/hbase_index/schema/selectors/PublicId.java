@@ -9,7 +9,8 @@ public class PublicId extends SelectorEntity {
 	@PartOfKey
 	public final String number;
 
-	public PublicId(String number) {
+	public PublicId(String uid, String number) {
+		super(uid);
 		this.number = number;
 	}
 }

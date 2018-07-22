@@ -8,6 +8,7 @@ import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePathAnnotation;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
+import net.thomas.portfolio.hbase_index.schema.annotations.SchemaIgnore;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.hbase_index.schema.documents.DocumentEntity;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
@@ -70,7 +71,9 @@ public class SchemaIntrospection {
 	private void examineFields(final Class<?> entityClass) {
 		FieldsBuilder builder = new FieldsBuilder();
 		for (final Field field : entityClass.getFields()) {
-			builder = addField(builder, field);
+			if (!isIgnoredField(field)) {
+				builder = addField(builder, field);
+			}
 		}
 		this.builder.addFields(entityClass.getSimpleName(), builder.build());
 	}
@@ -145,6 +148,10 @@ public class SchemaIntrospection {
 		return selectors;
 	}
 
+	private boolean isIgnoredField(final Field field) {
+		return field.isAnnotationPresent(SchemaIgnore.class);
+	}
+
 	private boolean isSelector(Class<?> entityClass) {
 		return SelectorEntity.class.isAssignableFrom(entityClass);
 	}
@@ -158,7 +165,7 @@ public class SchemaIntrospection {
 		return field.getAnnotation(PartOfKey.class) != null;
 	}
 
-	public HbaseIndexSchema describe() {
+	public HbaseIndexSchema describeSchema() {
 		return builder.build();
 	}
 }

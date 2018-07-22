@@ -9,7 +9,8 @@ public class PrivateId extends SelectorEntity {
 	@PartOfKey
 	public final String number;
 
-	public PrivateId(String number) {
+	public PrivateId(String uid, String number) {
+		super(uid);
 		this.number = number;
 	}
 }

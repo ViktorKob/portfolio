@@ -18,9 +18,9 @@ public class TextMessage extends DocumentEntity {
 	public final GeoLocation senderLocation;
 	public final GeoLocation receiverLocation;
 
-	public TextMessage(Timestamp timeOfEvent, Timestamp timeOfInterception, String message, CommunicationEndpoint sender, CommunicationEndpoint receiver,
-			GeoLocation senderLocation, GeoLocation receiverLocation) {
-		super(timeOfEvent, timeOfInterception);
+	public TextMessage(String uid, Timestamp timeOfEvent, Timestamp timeOfInterception, String message, CommunicationEndpoint sender,
+			CommunicationEndpoint receiver, GeoLocation senderLocation, GeoLocation receiverLocation) {
+		super(uid, timeOfEvent, timeOfInterception);
 		this.message = message;
 		this.sender = sender;
 		this.receiver = receiver;

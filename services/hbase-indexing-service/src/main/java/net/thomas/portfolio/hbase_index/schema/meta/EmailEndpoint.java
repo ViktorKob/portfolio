@@ -10,7 +10,8 @@ public class EmailEndpoint extends MetaEntity {
 	@PartOfKey
 	public final EmailAddress address;
 
-	public EmailEndpoint(DisplayedName displayedName, EmailAddress address) {
+	public EmailEndpoint(String uid, DisplayedName displayedName, EmailAddress address) {
+		super(uid);
 		this.displayedName = displayedName;
 		this.address = address;
 	}
