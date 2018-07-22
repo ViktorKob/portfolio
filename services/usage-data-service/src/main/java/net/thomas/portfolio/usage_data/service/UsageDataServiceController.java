@@ -14,6 +14,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -41,6 +42,7 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @Controller
+@EnableConfigurationProperties
 @RequestMapping(value = USAGE_ACTIVITIES_ROOT_PATH + "/{dti_type}/{dti_uid}" + USAGE_ACTIVITIES_PATH)
 public class UsageDataServiceController {
 	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;

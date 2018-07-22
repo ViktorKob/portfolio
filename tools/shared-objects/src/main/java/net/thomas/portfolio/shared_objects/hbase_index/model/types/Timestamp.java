@@ -7,49 +7,49 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Timestamp {
-	private Long timestamp;
-	private String zoneId;
+	private Long timestampInUtc;
+	private String originalTimeZoneId;
 
 	public Timestamp() {
 	}
 
-	public Timestamp(Long timestamp, ZoneId zone) {
-		this.timestamp = timestamp;
-		zoneId = zone.getId();
+	public Timestamp(Long timestampInUtc, ZoneId zone) {
+		this.timestampInUtc = timestampInUtc;
+		originalTimeZoneId = zone.getId();
 	}
 
 	public Long getTimestamp() {
-		return timestamp;
+		return timestampInUtc;
 	}
 
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
+	public void setTimestamp(Long timestampInUtc) {
+		this.timestampInUtc = timestampInUtc;
 	}
 
-	public String getZoneId() {
-		return zoneId;
+	public String getOriginalTimeZoneId() {
+		return originalTimeZoneId;
 	}
 
-	public void setZoneId(String zoneId) {
-		this.zoneId = zoneId;
-	}
-
-	@JsonIgnore
-	public ZoneId getZone() {
-		return ZoneId.of(zoneId);
+	public void setOriginalTimeZoneId(String originalTimeZoneId) {
+		this.originalTimeZoneId = originalTimeZoneId;
 	}
 
 	@JsonIgnore
-	public void setZone(ZoneId zone) {
-		zoneId = zone.getId();
+	public ZoneId getOriginalTimeZone() {
+		return ZoneId.of(originalTimeZoneId);
+	}
+
+	@JsonIgnore
+	public void setOriginalTimeZone(ZoneId originalTimeZoneId) {
+		this.originalTimeZoneId = originalTimeZoneId.getId();
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (timestamp == null ? 0 : timestamp.hashCode());
-		result = prime * result + (zoneId == null ? 0 : zoneId.hashCode());
+		result = prime * result + (timestampInUtc == null ? 0 : timestampInUtc.hashCode());
+		result = prime * result + (originalTimeZoneId == null ? 0 : originalTimeZoneId.hashCode());
 		return result;
 	}
 
@@ -65,18 +65,18 @@ public class Timestamp {
 			return false;
 		}
 		final Timestamp other = (Timestamp) obj;
-		if (timestamp == null) {
-			if (other.timestamp != null) {
+		if (timestampInUtc == null) {
+			if (other.timestampInUtc != null) {
 				return false;
 			}
-		} else if (!timestamp.equals(other.timestamp)) {
+		} else if (!timestampInUtc.equals(other.timestampInUtc)) {
 			return false;
 		}
-		if (zoneId == null) {
-			if (other.zoneId != null) {
+		if (originalTimeZoneId == null) {
+			if (other.originalTimeZoneId != null) {
 				return false;
 			}
-		} else if (!zoneId.equals(other.zoneId)) {
+		} else if (!originalTimeZoneId.equals(other.originalTimeZoneId)) {
 			return false;
 		}
 		return true;
@@ -84,6 +84,6 @@ public class Timestamp {
 
 	@Override
 	public String toString() {
-		return "Timestamp [timestamp=" + timestamp + ", zone=" + zoneId + "]";
+		return "Timestamp [timestamp=" + timestampInUtc + ", zone=" + originalTimeZoneId + "]";
 	}
 }

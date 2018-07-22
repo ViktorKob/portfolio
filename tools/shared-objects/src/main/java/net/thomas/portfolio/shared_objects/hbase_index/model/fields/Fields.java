@@ -22,6 +22,10 @@ public class Fields extends LinkedHashMap<String, Field> implements Iterable<Fie
 		putAll(fields);
 	}
 
+	public static Fields fields(LinkedHashMap<String, Field> fields) {
+		return new Fields(fields);
+	}
+
 	public static Fields fields(Field... fields) {
 		return new Fields(stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new)));
 	}

@@ -7,17 +7,47 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.STRING;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.TIMESTAMP;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.StandardToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = PrimitiveField.class)
 public class PrimitiveField implements Field {
 	public static enum PrimitiveType {
-		STRING, INTEGER, DECIMAL, TIMESTAMP, GEO_LOCATION
+		STRING(String.class),
+		INTEGER(Integer.class, Long.class, Short.class, Byte.class),
+		DECIMAL(Double.class, Float.class),
+		TIMESTAMP(Timestamp.class),
+		GEO_LOCATION(GeoLocation.class);
+
+		public final Class<?>[] matchingClasses;
+
+		private PrimitiveType(Class<?>... matchingClasses) {
+			this.matchingClasses = matchingClasses;
+		}
+	}
+
+	private static Map<Class<?>, PrimitiveType> CLASS_2_PRIMITIVE_TYPE;
+	static {
+		CLASS_2_PRIMITIVE_TYPE = new HashMap<>();
+		for (final PrimitiveType type : PrimitiveType.values()) {
+			for (final Class<?> matchingClass : type.matchingClasses) {
+				CLASS_2_PRIMITIVE_TYPE.put(matchingClass, type);
+			}
+		}
+	}
+
+	public static boolean isPrimitiveClass(Class<?> candidateClass) {
+		return CLASS_2_PRIMITIVE_TYPE.containsKey(candidateClass);
 	}
 
 	private String name;
@@ -48,6 +78,26 @@ public class PrimitiveField implements Field {
 		return new PrimitiveField(name, GEO_LOCATION, false, true);
 	}
 
+	public static PrimitiveField nonKeyString(String name) {
+		return new PrimitiveField(name, STRING, false, false);
+	}
+
+	public static PrimitiveField nonKeyInteger(String name) {
+		return new PrimitiveField(name, INTEGER, false, false);
+	}
+
+	public static PrimitiveField nonKeyDecimal(String name) {
+		return new PrimitiveField(name, DECIMAL, false, false);
+	}
+
+	public static PrimitiveField nonKeyTimestamp(String name) {
+		return new PrimitiveField(name, TIMESTAMP, false, false);
+	}
+
+	public static PrimitiveField nonKeyGeoLocation(String name) {
+		return new PrimitiveField(name, GEO_LOCATION, false, false);
+	}
+
 	public static PrimitiveField createNonKeyField(String name, PrimitiveType type) {
 		return new PrimitiveField(name, type, false, false);
 	}
@@ -58,6 +108,24 @@ public class PrimitiveField implements Field {
 
 	public static PrimitiveField createArrayField(String name, PrimitiveType type) {
 		return new PrimitiveField(name, type, true, true);
+	}
+
+	public static class PrimitiveFieldBuilder extends FieldBuilder<PrimitiveField> {
+		private PrimitiveType type;
+
+		public PrimitiveFieldBuilder(String name) {
+			super(name);
+		}
+
+		public PrimitiveFieldBuilder setType(Class<?> originalClass) {
+			type = CLASS_2_PRIMITIVE_TYPE.get(originalClass);
+			return this;
+		}
+
+		@Override
+		public PrimitiveField build() {
+			return new PrimitiveField(name, type, isArray, isPartOfKey);
+		}
 	}
 
 	private PrimitiveField(String name, PrimitiveType type, boolean isArray, boolean isKeyComponent) {
