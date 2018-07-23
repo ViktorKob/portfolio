@@ -39,16 +39,20 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 
 ### For a local setup
 
-- To experiment locally, check out the entire repository.
-- I recommend hooking it up to an IDE (Eclipse project files are included, and there are three pom.xml's you can import as well).
-- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data".
-- Build everything (first tools, then infrastructure, then services).
-- Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication). 
+To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 8300 and 8350 are available on your system. Or simple run it, and check these first if a service fails. 
+
+- Check out the entire repository.
+- Import the root pom into your favorite IDE.
+- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.
+- Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
+- Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
+- Start the Proxy service from the proxy folder (net.thomas.portfolio.infrastructure.ProxyApplication). 
 - Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
+- Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
 
 Now you can do as described above, but locally. <BR>
-Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).<BR>
-Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql).
+-Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).- You should be able to both use the proxy and each service individually.<BR>
+-Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql)-GraphQL is now also locate behind the NexusService context path.
 
 # Development strategy and major design principles used
 
@@ -228,7 +232,7 @@ _Service _
 
 | Settings | |
 |---|---|
-|**Port**|8000|
+|**Port**|8001|
 |**Technologies**|Spring Boot Admin, Spring|
 |**Endpoints**|<ul><li>/Admin/</li></ul>|
 
@@ -241,7 +245,7 @@ _Reverse proxy for hiding ports, handling HTTPS and simplifying some endpoints_
 
 | Settings | |
 |---|---|
-|**Port**|443, 80 (redirected)|
+|**Port**|443|
 |**Technologies**|Spring, Zuul|
 |**Endpoints**|<ul><li>__All of the above__</li></ul>|
 
