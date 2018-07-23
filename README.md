@@ -123,7 +123,7 @@ _GraphQL service that enables easy access to the other services_
 |**Technologies**|Graph(i)QL, Spring|
 |**User**|service-user|
 |**Password**|password|
-|**Endpoints**|<ul><li>/schema.json</li><li>/graphql</li><li>/graphiql</li><li>/vendor</li>|
+|**Endpoints**|<ul><li>/NexusService/schema.json</li><li>/NexusService/graphql</li><li>/NexusService/graphiql</li>|
 
 Here every other service is tied together. Using the GraphiQL interface, it is possible to transparently interact with the data in the other services. 
 
