@@ -70,7 +70,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.0.3.RELEASE</version>
 				<configuration>
-					<mainClass>net.thomas.portfolio.infrastructure.HbaseIndexingServiceApplication</mainClass>
+					<mainClass>net.thomas.portfolio.hbase_index.HbaseIndexingServiceApplication</mainClass>
 				</configuration>
 				<executions>
 					<execution>
