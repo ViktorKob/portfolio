@@ -70,7 +70,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>2.0.3.RELEASE</version>
 				<configuration>
-					<mainClass>net.thomas.portfolio.infrastructure.LegalServiceApplication</mainClass>
+					<mainClass>net.thomas.portfolio.legal.LegalServiceApplication</mainClass>
 				</configuration>
 				<executions>
 					<execution>
