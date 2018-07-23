@@ -6,13 +6,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class DocumentInfo {
 
 	private DataTypeId id;
-	private long timeOfEvent;
-	private long timeOfInterception;
+	private Timestamp timeOfEvent;
+	private Timestamp timeOfInterception;
 
 	public DocumentInfo() {
 	}
 
-	public DocumentInfo(DataTypeId id, long timeOfEvent, long timeOfInterception) {
+	public DocumentInfo(DataTypeId id, Timestamp timeOfEvent, Timestamp timeOfInterception) {
 		this.id = id;
 		this.timeOfEvent = timeOfEvent;
 		this.timeOfInterception = timeOfInterception;
@@ -26,19 +26,19 @@ public class DocumentInfo {
 		this.id = id;
 	}
 
-	public long getTimeOfEvent() {
+	public Timestamp getTimeOfEvent() {
 		return timeOfEvent;
 	}
 
-	public void setTimeOfEvent(long timeOfEvent) {
+	public void setTimeOfEvent(Timestamp timeOfEvent) {
 		this.timeOfEvent = timeOfEvent;
 	}
 
-	public long getTimeOfInterception() {
+	public Timestamp getTimeOfInterception() {
 		return timeOfInterception;
 	}
 
-	public void setTimeOfInterception(long timeOfInterception) {
+	public void setTimeOfInterception(Timestamp timeOfInterception) {
 		this.timeOfInterception = timeOfInterception;
 	}
 

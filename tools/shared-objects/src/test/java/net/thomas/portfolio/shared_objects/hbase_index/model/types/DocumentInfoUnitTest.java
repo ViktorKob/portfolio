@@ -41,8 +41,8 @@ public class DocumentInfoUnitTest {
 		assertEquals(SOME_DOCUMENT_INFO.getTimeOfInterception(), deserializedInstance.getTimeOfInterception());
 	}
 
-	private static final long TIME_OF_EVENT = 1l;
-	private static final long TIME_OF_INTERCEPTION = 2l;
+	private static final Timestamp TIME_OF_EVENT = new Timestamp(1l);
+	private static final Timestamp TIME_OF_INTERCEPTION = new Timestamp(2l);
 	private static final DocumentInfo SOME_DOCUMENT_INFO;
 	private static final DocumentInfo OTHER_DOCUMENT_INFO;
 	private static final Object OTHER_OBJECT = "";

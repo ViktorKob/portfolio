@@ -82,7 +82,8 @@ public class FakeInvertedIndexStep implements IndexStep {
 				}
 				invertedIndex.get(uid)
 					.get(indexable.path)
-					.put(MAX_VALUE - document.getTimeOfEvent(), document);
+					.put(MAX_VALUE - document.getTimeOfEvent()
+						.getTimestamp(), document);
 			}
 			return this;
 		}

@@ -32,9 +32,9 @@ public class DataTypeSerializer extends StdSerializer<DataType> {
 		generator.writeObject(entity.getId());
 		if (entity instanceof Document) {
 			generator.writeFieldName("timeOfEvent");
-			generator.writeNumber(((Document) entity).getTimeOfEvent());
+			generator.writeObject(((Document) entity).getTimeOfEvent());
 			generator.writeFieldName("timeOfInterception");
-			generator.writeNumber(((Document) entity).getTimeOfInterception());
+			generator.writeObject(((Document) entity).getTimeOfInterception());
 		}
 		generator.writeFieldName("fields");
 		fieldsSerializer.serialize(entity.getFields(), generator, serializers);

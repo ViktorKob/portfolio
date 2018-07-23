@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import static java.time.ZoneId.of;
+
 import java.time.ZoneId;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,10 +9,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Timestamp {
+	public static final Timestamp UNKNOWN = new Timestamp(0l);
+
 	private Long timestampInUtc;
 	private String originalTimeZoneId;
 
 	public Timestamp() {
+	}
+
+	public Timestamp(Long timestampInUtc) {
+		this.timestampInUtc = timestampInUtc;
+		originalTimeZoneId = of("UTC").getId();
 	}
 
 	public Timestamp(Long timestampInUtc, ZoneId zone) {
@@ -36,12 +45,28 @@ public class Timestamp {
 
 	@JsonIgnore
 	public ZoneId getOriginalTimeZone() {
-		return ZoneId.of(originalTimeZoneId);
+		return of(originalTimeZoneId);
 	}
 
 	@JsonIgnore
 	public void setOriginalTimeZone(ZoneId originalTimeZoneId) {
 		this.originalTimeZoneId = originalTimeZoneId.getId();
+	}
+
+	public boolean isBefore(Timestamp timestamp) {
+		return timestampInUtc < timestamp.getTimestamp();
+	}
+
+	public boolean isBefore(Long timestamp) {
+		return timestampInUtc < timestamp;
+	}
+
+	public boolean after(Timestamp timestamp) {
+		return timestampInUtc > timestamp.getTimestamp();
+	}
+
+	public boolean after(Long timestamp) {
+		return timestampInUtc > timestamp;
 	}
 
 	@Override

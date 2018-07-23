@@ -70,14 +70,16 @@ public class InvertedIndexLookup {
 	}
 
 	private DocumentInfos extractResult(final Collection<DocumentInfos> resultSets) {
-		final Comparator<DocumentInfo> byTimeOfEventInversed = Comparator.comparingLong((info) -> MAX_VALUE - info.getTimeOfEvent());
+		final Comparator<DocumentInfo> byTimeOfEventInversed = Comparator.comparingLong((info) -> MAX_VALUE - info.getTimeOfEvent()
+			.getTimestamp());
 		final PriorityQueue<DocumentInfo> allDocuments = convertToSortedQueue(resultSets, byTimeOfEventInversed);
 		skipUntilDate(allDocuments, bounds.before);
 		skipUntilOffset(allDocuments, bounds.offset);
 		int count = 0;
 		final List<DocumentInfo> result = new LinkedList<>();
 		while (!allDocuments.isEmpty() && allDocuments.peek()
-			.getTimeOfEvent() >= bounds.after && count++ < bounds.limit) {
+			.getTimeOfEvent()
+			.getTimestamp() >= bounds.after && count++ < bounds.limit) {
 			result.add(allDocuments.poll());
 		}
 		return new DocumentInfos(result);
@@ -94,7 +96,8 @@ public class InvertedIndexLookup {
 
 	private void skipUntilDate(final PriorityQueue<DocumentInfo> allDocuments, Long before) {
 		while (!allDocuments.isEmpty() && allDocuments.peek()
-			.getTimeOfEvent() > before) {
+			.getTimeOfEvent()
+			.after(before)) {
 			allDocuments.poll();
 		}
 	}

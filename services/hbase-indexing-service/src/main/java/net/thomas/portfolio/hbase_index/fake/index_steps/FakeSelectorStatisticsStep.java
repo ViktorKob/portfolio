@@ -14,6 +14,7 @@ import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SelectorTraversalTool;
@@ -59,25 +60,26 @@ public class FakeSelectorStatisticsStep implements IndexStep {
 
 	private void ensurePresenceOfCounters(final Map<String, Map<StatisticsPeriod, Long>> allSelectorTotalCounts, final String uid) {
 		if (!allSelectorTotalCounts.containsKey(uid)) {
-			allSelectorTotalCounts.put(uid, blankSelectorStatistics());
+			allSelectorTotalCounts.put(uid, createBlankSelectorStatistics());
 		}
 	}
 
 	private void updateCounts(final Map<String, Map<StatisticsPeriod, Long>> allSelectorTotalCounts, final Document document, final String uid) {
 		final Map<StatisticsPeriod, Long> statistics = allSelectorTotalCounts.get(uid);
+		final Timestamp timeOfEvent = document.getTimeOfEvent();
 		statistics.put(INFINITY, statistics.get(INFINITY) + 1);
-		if (document.getTimeOfEvent() > threeMonthsAgo) {
+		if (timeOfEvent.after(threeMonthsAgo)) {
 			statistics.put(QUARTER, statistics.get(QUARTER) + 1);
-			if (document.getTimeOfEvent() > oneWeekAgo) {
+			if (timeOfEvent.after(oneWeekAgo)) {
 				statistics.put(WEEK, statistics.get(WEEK) + 1);
-				if (document.getTimeOfEvent() > yesterday) {
+				if (timeOfEvent.after(yesterday)) {
 					statistics.put(DAY, statistics.get(DAY) + 1);
 				}
 			}
 		}
 	}
 
-	private Map<StatisticsPeriod, Long> blankSelectorStatistics() {
+	private Map<StatisticsPeriod, Long> createBlankSelectorStatistics() {
 		final Map<StatisticsPeriod, Long> statistics = new EnumMap<>(StatisticsPeriod.class);
 		for (final StatisticsPeriod period : StatisticsPeriod.values()) {
 			statistics.put(period, 0l);
