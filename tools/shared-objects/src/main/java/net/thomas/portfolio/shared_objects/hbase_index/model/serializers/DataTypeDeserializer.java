@@ -23,6 +23,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	private static final long serialVersionUID = 1L;
@@ -70,10 +71,8 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 
 	public Document deserializeDocument(JsonNode node, ObjectMapper mapper) throws JsonParseException, JsonMappingException, IOException {
 		final Document document = (Document) populateWithValues(new Document(), node, mapper);
-		document.setTimeOfEvent(node.get("timeOfEvent")
-			.asLong(0));
-		document.setTimeOfInterception(node.get("timeOfInterception")
-			.asLong(0));
+		document.setTimeOfEvent(mapper.treeToValue(node.get("timeOfEvent"), Timestamp.class));
+		document.setTimeOfInterception(mapper.treeToValue(node.get("timeOfInterception"), Timestamp.class));
 		return document;
 	}
 

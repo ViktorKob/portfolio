@@ -1,6 +1,7 @@
 package net.thomas.portfolio.nexus.graphql;
 
 import static graphql.Scalars.GraphQLBigDecimal;
+import static graphql.Scalars.GraphQLBigInteger;
 import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -68,6 +69,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
@@ -117,6 +119,11 @@ public class GraphQlQueryModelBuilder {
 		fields.add(newFieldDefinition().name("UsageActivity")
 			.description("Activity by specific user on a specific document at a specific point in time")
 			.type(buildUsageActivityType(adaptors))
+			.build());
+
+		fields.add(newFieldDefinition().name("Timestamp")
+			.description("Timestamp in milliseconds since the Epoch and the original time zone before conversion")
+			.type(buildTimestampType(adaptors))
 			.build());
 		fields.add(newFieldDefinition().name("GeoLocation")
 			.description("Longitude and lattitude for position related to selectors or documents")
@@ -204,7 +211,9 @@ public class GraphQlQueryModelBuilder {
 
 		for (final Field field : adaptors.getFieldsForDataType(dataType)) {
 			if (field instanceof PrimitiveField) {
-				builder.field(buildFieldDefinition((PrimitiveField) field, dataType, adaptors));
+				if (!("timeOfEvent".equals(field.getName()) || "timeOfInterception".equals(field.getName()))) {
+					builder.field(buildFieldDefinition((PrimitiveField) field, dataType, adaptors));
+				}
 			} else if (field instanceof ReferenceField) {
 				builder.field(buildFieldDefinition((ReferenceField) field, dataType, adaptors));
 			}
@@ -427,6 +436,23 @@ public class GraphQlQueryModelBuilder {
 		return builder.build();
 	}
 
+	private GraphQLOutputType buildTimestampType(Adaptors adaptors) {
+		final GraphQLObjectType.Builder builder = newObject().name("Timestamp")
+			.description("Timestamp in milliseconds since the Epoch and the original time zone before conversion");
+		builder.field(newFieldDefinition().name("timestamp")
+			.description("Timestamp in milliseconds since the Epoch (1970-01-01T00:00:00Z")
+			.type(GraphQLBigInteger)
+			.dataFetcher(environment -> ((Timestamp) environment.getSource()).getTimestamp())
+			.build());
+		builder.field(newFieldDefinition().name("originalTimeZone")
+			.description("The timezone that was used in the source")
+			.type(GraphQLString)
+			.dataFetcher(environment -> ((Timestamp) environment.getSource()).getOriginalTimeZone()
+				.toString())
+			.build());
+		return builder.build();
+	}
+
 	private GraphQLEnumType enumType(Enum<?>[] values) {
 		final List<GraphQLEnumValueDefinition> enumValues = new LinkedList<>();
 		String name = null;
@@ -461,7 +487,7 @@ public class GraphQlQueryModelBuilder {
 	private GraphQLFieldDefinition createTimeOfInterceptionField(Adaptors adaptors) {
 		return newFieldDefinition().name("timeOfInterception")
 			.description("The exact time for when the event, defined by the document, was intercepted, in milliseconds since the epoch")
-			.type(GraphQLLong)
+			.type(new GraphQLTypeReference("Timestamp"))
 			.dataFetcher(environment -> getDocumentProxy(environment).getTimeOfInterception())
 			.build();
 	}
@@ -469,7 +495,7 @@ public class GraphQlQueryModelBuilder {
 	private GraphQLFieldDefinition createTimeOfEventField(Adaptors adaptors) {
 		return newFieldDefinition().name("timeOfEvent")
 			.description("The best guess for when the event, defined by the document, occurred, in milliseconds since the epoch")
-			.type(GraphQLLong)
+			.type(new GraphQLTypeReference("Timestamp"))
 			.dataFetcher(environment -> getDocumentProxy(environment).getTimeOfEvent())
 			.build();
 	}

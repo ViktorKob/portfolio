@@ -111,8 +111,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render(element.get("from"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
-					+ element.get("subject");
+			final String headline = library.render(element.get("from"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+				.getTimestamp()) + ": " + element.get("subject");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {
@@ -125,8 +125,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render(element.get("sender"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()) + ": "
-					+ element.get("message");
+			final String headline = library.render(element.get("sender"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+				.getTimestamp()) + ": " + element.get("message");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {
@@ -140,8 +140,8 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
 			final int duration = element.get("durationIsSeconds");
-			final String headline = library.render(element.get("primary"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent())
-					+ ": conversation duration was " + duration / 60 + "m " + duration % 60 + "s";
+			final String headline = library.render(element.get("primary"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+				.getTimestamp()) + ": conversation duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
 			} else {

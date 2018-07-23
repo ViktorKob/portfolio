@@ -33,8 +33,8 @@ public class DocumentUnitTest {
 	private static Document createSomeDocument() {
 		final Document document = new Document();
 		document.setId(new DataTypeId("TYPE", "ABDC06"));
-		document.setTimeOfEvent(1l);
-		document.setTimeOfInterception(2l);
+		document.setTimeOfEvent(new Timestamp(1l));
+		document.setTimeOfInterception(new Timestamp(2l));
 		return document;
 	}
 }

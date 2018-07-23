@@ -11,8 +11,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTyp
 @JsonDeserialize(as = Document.class, using = DataTypeDeserializer.class)
 public class Document extends DataType {
 
-	private long timeOfEvent;
-	private long timeOfInterception;
+	private Timestamp timeOfEvent;
+	private Timestamp timeOfInterception;
 
 	public Document() {
 	}
@@ -21,19 +21,19 @@ public class Document extends DataType {
 		super(id, fields);
 	}
 
-	public void setTimeOfEvent(long timeOfEvent) {
+	public void setTimeOfEvent(Timestamp timeOfEvent) {
 		this.timeOfEvent = timeOfEvent;
 	}
 
-	public void setTimeOfInterception(long timeOfInterception) {
+	public void setTimeOfInterception(Timestamp timeOfInterception) {
 		this.timeOfInterception = timeOfInterception;
 	}
 
-	public long getTimeOfEvent() {
+	public Timestamp getTimeOfEvent() {
 		return timeOfEvent;
 	}
 
-	public long getTimeOfInterception() {
+	public Timestamp getTimeOfInterception() {
 		return timeOfInterception;
 	}
 }

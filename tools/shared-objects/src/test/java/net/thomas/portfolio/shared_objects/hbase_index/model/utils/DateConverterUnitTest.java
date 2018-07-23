@@ -8,8 +8,6 @@ import java.util.GregorianCalendar;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
-
 public class DateConverterUnitTest {
 	private DateConverter converter;
 

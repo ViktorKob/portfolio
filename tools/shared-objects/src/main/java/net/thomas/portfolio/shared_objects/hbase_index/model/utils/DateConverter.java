@@ -14,9 +14,9 @@ public interface DateConverter {
 
 	String formatDate(Date date);
 
-	String formatTimestamp(long timestamp);
+	String formatTimestamp(Long timestamp);
 
-	String formatDateTimestamp(long timestamp);
+	String formatDateTimestamp(Long timestamp);
 
 	public static class Iec8601DateConverter implements DateConverter {
 		private final ThreadLocal<SimpleDateFormat> completeFormatter = new ThreadLocal<SimpleDateFormat>() {
@@ -37,9 +37,11 @@ public interface DateConverter {
 		public Date parse(String formattedDate) {
 			try {
 				if (formattedDate.length() <= 12) {
-					return dateFormatter.get().parse(formattedDate);
+					return dateFormatter.get()
+						.parse(formattedDate);
 				} else {
-					return completeFormatter.get().parse(formattedDate);
+					return completeFormatter.get()
+						.parse(formattedDate);
 				}
 			} catch (final ParseException e) {
 				throw new RuntimeException(e);
@@ -53,22 +55,26 @@ public interface DateConverter {
 
 		@Override
 		public String format(Date date) {
-			return completeFormatter.get().format(date);
+			return completeFormatter.get()
+				.format(date);
 		}
 
 		@Override
-		public String formatTimestamp(long timestamp) {
-			return completeFormatter.get().format(new Date(timestamp));
+		public String formatTimestamp(Long timestamp) {
+			return completeFormatter.get()
+				.format(new Date(timestamp));
 		}
 
 		@Override
 		public String formatDate(Date date) {
-			return dateFormatter.get().format(date);
+			return dateFormatter.get()
+				.format(date);
 		}
 
 		@Override
-		public String formatDateTimestamp(long timestamp) {
-			return dateFormatter.get().format(new Date(timestamp));
+		public String formatDateTimestamp(Long timestamp) {
+			return dateFormatter.get()
+				.format(new Date(timestamp));
 		}
 	}
 }
