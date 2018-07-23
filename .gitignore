@@ -1,6 +1,9 @@
 # Compiled class file
 *.class
 
+# Generated property files
+**/build-info.properties
+
 # Log file
 *.log
 
