@@ -50,7 +50,7 @@ To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 83
 - Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
 - Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
 
-Now you can do as described above, but locally. <BR>
+Now you can do as described above, but locally (without https, though). <BR>
 ~~Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).~~ You should be able both to go through the proxy and to go directly to each service.<BR>
 ~~Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql)~~ GraphQL is now also located behind the NexusService context path.
 
