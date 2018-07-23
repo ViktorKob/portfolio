@@ -51,8 +51,8 @@ To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 83
 - Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
 
 Now you can do as described above, but locally. <BR>
--Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).- You should be able to both use the proxy and each service individually.<BR>
--Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql)-GraphQL is now also locate behind the NexusService context path.
+~~Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).~~ You should be able to both use the proxy and each service individually.<BR>
+~~Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql)~~GraphQL is now also locate behind the NexusService context path.
 
 # Development strategy and major design principles used
 
