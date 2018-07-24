@@ -26,7 +26,7 @@ public class ProxyApplication {
 			http.csrf()
 				.disable()
 				.authorizeRequests()
-				.anyRequest()
+				.antMatchers("/proxy/**")
 				.authenticated()
 				.and()
 				.httpBasic();
