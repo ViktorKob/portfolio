@@ -9,8 +9,7 @@ public class DisplayedName extends SelectorEntity {
 	@PartOfKey
 	public final String name;
 
-	public DisplayedName(String uid, String name) {
-		super(uid);
+	public DisplayedName(String name) {
 		this.name = name;
 	}
 }

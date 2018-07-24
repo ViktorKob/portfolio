@@ -9,8 +9,7 @@ public abstract class DocumentEntity extends Entity {
 	public final Timestamp timeOfEvent;
 	public final Timestamp timeOfInterception;
 
-	public DocumentEntity(String uid, Timestamp timeOfEvent, Timestamp timeOfInterception) {
-		super(uid);
+	public DocumentEntity(Timestamp timeOfEvent, Timestamp timeOfInterception) {
 		this.timeOfEvent = timeOfEvent;
 		this.timeOfInterception = timeOfInterception;
 	}

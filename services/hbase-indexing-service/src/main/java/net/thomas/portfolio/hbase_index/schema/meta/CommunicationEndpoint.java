@@ -10,8 +10,7 @@ public class CommunicationEndpoint extends MetaEntity {
 	@PartOfKey
 	public final PrivateId privateId;
 
-	public CommunicationEndpoint(String uid, PublicId publicId, PrivateId privateId) {
-		super(uid);
+	public CommunicationEndpoint(PublicId publicId, PrivateId privateId) {
 		this.publicId = publicId;
 		this.privateId = privateId;
 	}

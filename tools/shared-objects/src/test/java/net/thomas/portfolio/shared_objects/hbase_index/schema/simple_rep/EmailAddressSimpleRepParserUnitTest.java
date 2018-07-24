@@ -14,9 +14,9 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrary;
 
 public class EmailAddressSimpleRepParserUnitTest {

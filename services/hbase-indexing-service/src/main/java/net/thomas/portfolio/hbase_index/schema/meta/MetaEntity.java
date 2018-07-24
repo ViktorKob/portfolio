@@ -6,7 +6,4 @@ import net.thomas.portfolio.hbase_index.schema.annotations.RandomizeKey;
 @RandomizeKey
 public abstract class MetaEntity extends Entity {
 
-	public MetaEntity(String uid) {
-		super(uid);
-	}
 }

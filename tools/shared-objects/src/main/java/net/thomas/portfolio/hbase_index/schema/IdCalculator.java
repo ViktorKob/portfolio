@@ -1,16 +1,10 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
+package net.thomas.portfolio.hbase_index.schema;
 
 import static java.lang.String.valueOf;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
@@ -25,62 +19,55 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 public class IdCalculator {
 	private final Fields fields;
 	private final boolean keyShouldBeUnique;
-	@JsonIgnore
-	private int counter;
 
 	public IdCalculator(Fields fields, boolean keyShouldBeUnique) {
 		this.fields = fields;
 		this.keyShouldBeUnique = keyShouldBeUnique;
-		counter = 0;
 	}
 
 	public synchronized DataTypeId calculate(String type, DataType entity) {
-		try {
-			final MessageDigest hasher = MessageDigest.getInstance("MD5");
-			if (keyShouldBeUnique) {
-				hasher.update(String.valueOf(counter++)
-					.getBytes());
-			}
+		final Hasher hasher = new Hasher();
+		if (keyShouldBeUnique) {
+			hasher.addUniqueness();
+		}
 
-			if (entity instanceof Document) {
-				hasher.update(String.valueOf(((Document) entity).getTimeOfEvent())
-					.getBytes());
-			}
-
-			hasher.update(type.getBytes());
-			for (final Field field : fields) {
-				if (field.isKeyComponent()) {
-					final Object value = entity.get(field.getName());
-					if (value != null) {
-						if (field.isArray()) {
-							for (final Object listEntity : (List<?>) value) {
-								addField(hasher, field, listEntity);
-							}
-						} else {
-							addField(hasher, field, value);
+		hasher.add(type.getBytes());
+		for (final Field field : fields) {
+			if (field.isKeyComponent()) {
+				final Object value = entity.get(field.getName());
+				if (value != null) {
+					if (field.isArray()) {
+						for (final Object listEntity : (List<?>) value) {
+							hasher.add(addField(field, listEntity));
 						}
+					} else {
+						hasher.add(addField(field, value));
 					}
 				}
 			}
-			final byte[] digest = hasher.digest();
-			final String uid = DatatypeConverter.printHexBinary(digest);
-			return new DataTypeId(type, uid);
-		} catch (final NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
 		}
+
+		if (entity instanceof Document) {
+			hasher.add(String.valueOf(((Document) entity).getTimeOfEvent())
+				.getBytes());
+		}
+		final String uid = hasher.digest();
+		return new DataTypeId(type, uid);
 	}
 
-	private void addField(final MessageDigest hasher, final Field field, final Object value) {
+	private byte[] addField(final Field field, final Object value) {
 		if (field instanceof PrimitiveField) {
 			if (PrimitiveType.TIMESTAMP == ((PrimitiveField) field).getType()) {
-				hasher.update(valueOf(((Timestamp) value).getTimestamp()).getBytes());
+				return valueOf(((Timestamp) value).getTimestamp()).getBytes();
 			} else {
-				hasher.update(value.toString()
-					.getBytes());
+				return value.toString()
+					.getBytes();
 			}
 		} else if (field instanceof ReferenceField) {
 			final DataTypeId id = ((DataType) value).getId();
-			hasher.update(id.uid.getBytes());
+			return id.uid.getBytes();
+		} else {
+			throw new RuntimeException("Unknown field " + field);
 		}
 	}
 

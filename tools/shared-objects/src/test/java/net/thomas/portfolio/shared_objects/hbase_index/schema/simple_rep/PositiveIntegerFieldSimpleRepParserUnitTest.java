@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 
 public class PositiveIntegerFieldSimpleRepParserUnitTest {
 

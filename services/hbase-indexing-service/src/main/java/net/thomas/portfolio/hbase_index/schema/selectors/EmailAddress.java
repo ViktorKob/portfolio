@@ -11,8 +11,7 @@ public class EmailAddress extends SelectorEntity {
 	@PartOfKey
 	public final Domain domain;
 
-	public EmailAddress(String uid, Localname localname, Domain domain) {
-		super(uid);
+	public EmailAddress(Localname localname, Domain domain) {
 		this.localname = localname;
 		this.domain = domain;
 	}
