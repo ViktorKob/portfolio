@@ -42,9 +42,9 @@ public class SchemaIntrospection {
 
 	private SchemaIntrospection examineSubElement(Class<?> entityClass) {
 		handledFieldTypes.add(entityClass.getSimpleName());
-		examineEntityTypes(entityClass);
-		examineFields(entityClass);
 		examineSubTypes(entityClass);
+		examineFields(entityClass);
+		examineEntityTypes(entityClass);
 		return this;
 	}
 
