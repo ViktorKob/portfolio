@@ -11,6 +11,6 @@ public class HtmlRenderControl implements Renderer<String, HtmlRenderContext> {
 
 	@Override
 	public String render(DataType datatype, HtmlRenderContext context) {
-		return "<B>Prending implementation</B>";
+		return "<B>Pending implementation</B>";
 	}
 }
