@@ -8,3 +8,19 @@ external-service-address: localhost:80
 external-protocol: http://
 
 ####################
+HTTPS settings:
+####################
+
+#security.require-ssl: true
+#server.ssl.key-store: <PATH_TO_KEY>
+#server.ssl.key-store-password: <PASSWORD>
+#server.ssl.keyStoreType: PKCS12
+#server.ssl.keyAlias: <KEY_ALIAS>
+
+# Use 
+# 'openssl pkcs12 -export -in fullchain.pem '
+# '-inkey privkey.pem -out keystore.p12 '
+# '-name <KEY_ALIAS> -CAfile chain.pem -caname root'
+# to construct key e.g. from letsencrypt key files
+
+####################
