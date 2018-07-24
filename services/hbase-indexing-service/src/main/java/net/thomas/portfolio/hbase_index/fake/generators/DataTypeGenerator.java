@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public abstract class DataTypeGenerator implements Iterable<DataType>, Iterator<DataType> {

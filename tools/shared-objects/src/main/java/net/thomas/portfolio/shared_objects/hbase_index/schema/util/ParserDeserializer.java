@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 
 public class ParserDeserializer extends JsonDeserializer<SimpleRepresentationParser> {
 

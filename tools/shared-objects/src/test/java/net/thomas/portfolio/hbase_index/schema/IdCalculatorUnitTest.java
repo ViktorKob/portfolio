@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
+package net.thomas.portfolio.hbase_index.schema;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
@@ -15,7 +15,6 @@ import org.junit.Test;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
 
 public class IdCalculatorUnitTest {
@@ -42,34 +41,34 @@ public class IdCalculatorUnitTest {
 
 	@Test
 	public void shouldIncludeFieldInCalculation() throws NoSuchAlgorithmException {
-		final DataTypeId actualId = simpleTypeIdGenerator.calculate(SIMPLE_TYPE, SIMPLE_ENTITY);
 		final String expectedUid = SIMPLE_ENTITY.getId().uid;
+		final DataTypeId actualId = simpleTypeIdGenerator.calculate(SIMPLE_TYPE, SIMPLE_ENTITY);
 		assertEquals(expectedUid, actualId.uid);
 	}
 
 	@Test
 	public void shouldHandleNullReferenceCorrectly() throws NoSuchAlgorithmException {
-		final DataTypeId actualId = nullReferenceTypeIdGenerator.calculate(NULL_REFERENCE_TYPE, NULL_REFERENCE_ENTITY);
 		final String expectedUid = NULL_REFERENCE_ENTITY.getId().uid;
+		final DataTypeId actualId = nullReferenceTypeIdGenerator.calculate(NULL_REFERENCE_TYPE, NULL_REFERENCE_ENTITY);
 		assertEquals(expectedUid, actualId.uid);
 	}
 
 	@Test
 	public void shouldHandleRecursiveEntityCorrectly() throws NoSuchAlgorithmException {
-		final DataTypeId actualId = recursiveTypeIdGenerator.calculate(RECURSIVE_TYPE, RECURSIVE_ENTITY);
 		final String expectedUid = RECURSIVE_ENTITY.getId().uid;
+		final DataTypeId actualId = recursiveTypeIdGenerator.calculate(RECURSIVE_TYPE, RECURSIVE_ENTITY);
 		assertEquals(expectedUid, actualId.uid);
 	}
 
 	@Test
 	public void shouldIncludeSubTypeIdsInCalculation() throws NoSuchAlgorithmException {
-		final DataTypeId actualId = complexTypeIdGenerator.calculate(COMPLEX_TYPE, COMPLEX_ENTITY);
 		final String expectedUid = COMPLEX_ENTITY.getId().uid;
+		final DataTypeId actualId = complexTypeIdGenerator.calculate(COMPLEX_TYPE, COMPLEX_ENTITY);
 		assertEquals(expectedUid, actualId.uid);
 	}
 
 	@Test
-	public void shouldIncludeGenerateUniqueKeyEveryTime() throws NoSuchAlgorithmException {
+	public void shouldGenerateUniqueKeyEveryTime() throws NoSuchAlgorithmException {
 		final DataTypeId actualId1 = uniqueKeyIdGenerator.calculate(SIMPLE_TYPE, SIMPLE_ENTITY);
 		final DataTypeId actualId2 = uniqueKeyIdGenerator.calculate(SIMPLE_TYPE, SIMPLE_ENTITY);
 		assertNotEquals(actualId1.uid, actualId2.uid);

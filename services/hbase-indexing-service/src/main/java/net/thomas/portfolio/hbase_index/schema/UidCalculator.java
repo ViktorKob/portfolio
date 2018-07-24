@@ -1,0 +1,76 @@
+package net.thomas.portfolio.hbase_index.schema;
+
+import static java.lang.String.valueOf;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
+
+public class UidCalculator {
+	private final boolean keyShouldBeUnique;
+	@JsonIgnore
+	private final int counter;
+
+	public UidCalculator(boolean keyShouldBeUnique) {
+		this.keyShouldBeUnique = keyShouldBeUnique;
+		counter = 0;
+	}
+
+	public String calculate(Entity entity) {
+		final Hasher hasher = new Hasher();
+		if (keyShouldBeUnique) {
+			hasher.addUniqueness();
+		}
+		hasher.add(getSimpleNameAsBytes(entity));
+		handleFields(hasher, entity);
+		return hasher.digest();
+	}
+
+	private byte[] getSimpleNameAsBytes(Entity entity) {
+		return entity.getClass()
+			.getSimpleName()
+			.getBytes();
+	}
+
+	private void handleFields(final Hasher hasher, Entity entity) {
+		try {
+			final Class<? extends Entity> entityClass = entity.getClass();
+			for (final java.lang.reflect.Field field : entityClass.getFields()) {
+				if (field.isAnnotationPresent(PartOfKey.class)) {
+					addField(hasher, entity, field);
+				}
+			}
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException("Unable to determine Uid", e);
+		}
+	}
+
+	private void addField(final Hasher hasher, Entity entity, final java.lang.reflect.Field field) throws IllegalAccessException {
+		if (field.getType()
+			.isArray()) {
+			for (final Object listEntity : (Object[]) field.get(entity)) {
+				hasher.add(interpret(field.get(listEntity)));
+			}
+		} else {
+			hasher.add(interpret(field.get(entity)));
+		}
+	}
+
+	private byte[] interpret(final Object value) {
+		if (value instanceof Timestamp) {
+			return valueOf(((Timestamp) value).getTimestamp()).getBytes();
+		} else if (value instanceof Entity) {
+			return ((Entity) value).uid.getBytes();
+		} else {
+			return valueOf(value).getBytes();
+		}
+	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
+}

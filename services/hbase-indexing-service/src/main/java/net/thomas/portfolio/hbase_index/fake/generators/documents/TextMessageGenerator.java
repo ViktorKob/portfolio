@@ -5,10 +5,10 @@ import java.util.List;
 import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class TextMessageGenerator extends DocumentGenerator {

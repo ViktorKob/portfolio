@@ -8,8 +8,8 @@ import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.
 import java.util.HashMap;
 import java.util.Map;
 
+import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.IdCalculator;
 
 public class SimpleRepresentationParserLibraryBuilder {
 	private final Map<String, SimpleRepresentationParser> parsers;
