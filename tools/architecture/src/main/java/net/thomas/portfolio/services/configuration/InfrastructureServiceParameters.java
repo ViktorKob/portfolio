@@ -22,7 +22,7 @@ public class InfrastructureServiceParameters {
 		put("service-name", "${infrastructure-service-name}");
 		put("service-status-page",
 				"${external-protocol}service-user:password@${external-service-address}${infrastructure-context-path}/hystrix/monitor?stream="
-						+ "http%3A%2F%2Fservice-user%3Apassword%40localhost%3A8100%2FNexusService%2Factuator%2F"
+						+ "${external-protocol}%3A%2F%2Fservice-user%3Apassword%40${external-service-address}%2FNexusService%2Factuator%2F"
 						+ "hystrix.stream&delay=1000&title=Nexus%20Service%20Monitor");
 
 		// ####################
