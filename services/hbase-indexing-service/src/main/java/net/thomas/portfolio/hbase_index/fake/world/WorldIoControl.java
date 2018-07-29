@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import net.thomas.portfolio.hbase_index.schema.EventDeserializer;
 import net.thomas.portfolio.hbase_index.schema.EventSerializer;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 
 public class WorldIoControl {
 

@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema.documents;
+package net.thomas.portfolio.hbase_index.schema.events;
 
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;

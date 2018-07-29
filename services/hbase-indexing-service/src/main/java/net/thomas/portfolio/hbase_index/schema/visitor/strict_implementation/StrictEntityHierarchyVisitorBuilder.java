@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
-import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
-import net.thomas.portfolio.hbase_index.schema.documents.Email;
-import net.thomas.portfolio.hbase_index.schema.documents.TextMessage;
+import net.thomas.portfolio.hbase_index.schema.events.Conversation;
+import net.thomas.portfolio.hbase_index.schema.events.Email;
+import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;

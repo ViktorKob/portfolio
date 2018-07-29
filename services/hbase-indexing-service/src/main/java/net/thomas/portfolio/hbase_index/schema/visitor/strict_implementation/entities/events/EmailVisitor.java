@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.entities.events;
 
-import net.thomas.portfolio.hbase_index.schema.documents.Email;
+import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPostAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;

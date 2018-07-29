@@ -12,7 +12,7 @@ import java.util.Stack;
 import javax.annotation.concurrent.ThreadSafe;
 
 import net.thomas.portfolio.hbase_index.schema.Entity2DataTypeConverter.ConversionContext;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.meta.MetaEntity;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;

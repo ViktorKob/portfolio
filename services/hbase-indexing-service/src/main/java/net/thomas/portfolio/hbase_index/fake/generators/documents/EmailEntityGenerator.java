@@ -12,7 +12,7 @@ import java.util.Set;
 import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.EventGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
-import net.thomas.portfolio.hbase_index.schema.documents.Email;
+import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
 import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;

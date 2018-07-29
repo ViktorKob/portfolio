@@ -14,7 +14,7 @@ import java.util.Set;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.Entity2DataTypeConverter;
 import net.thomas.portfolio.hbase_index.schema.EntityId;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.processed_data.InvertedIndex;
 import net.thomas.portfolio.hbase_index.schema.processed_data.SelectorStatistics;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
