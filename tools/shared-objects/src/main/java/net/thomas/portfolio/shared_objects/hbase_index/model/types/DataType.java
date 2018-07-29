@@ -27,7 +27,11 @@ public class DataType {
 	protected Map<String, Object> fields;
 
 	public DataType() {
-		fields = new LinkedHashMap<>();
+		this(null);
+	}
+
+	public DataType(DataTypeId id) {
+		this(id, new LinkedHashMap<>());
 	}
 
 	public DataType(DataTypeId id, Map<String, Object> fields) {

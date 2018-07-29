@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.transformation;
+package net.thomas.portfolio.hbase_index.fake.world;
 
 import static java.nio.file.Files.exists;
 import static java.nio.file.Paths.get;
@@ -13,15 +13,22 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
+import net.thomas.portfolio.hbase_index.schema.EventDeserializer;
+import net.thomas.portfolio.hbase_index.schema.EventSerializer;
+import net.thomas.portfolio.hbase_index.schema.documents.Event;
 
-public class WorldControl {
+public class WorldIoControl {
 
-	public HbaseIndexSchema importSchema() {
-		final HbaseIndexSchemaImpl schema = readFromFile("schema.json", HbaseIndexSchemaImpl.class);
-		return schema;
+	private final ObjectMapper visitorBasedMapper;
+
+	public WorldIoControl() {
+		visitorBasedMapper = new ObjectMapper();
+		final SimpleModule module = new SimpleModule();
+		module.addSerializer(Event.class, new EventSerializer());
+		module.addDeserializer(Event.class, new EventDeserializer());
+		visitorBasedMapper.registerModule(module);
 	}
 
 	public boolean canImportWorld() {
@@ -32,15 +39,14 @@ public class WorldControl {
 		return readFromFile("world.json", World.class);
 	}
 
-	public void exportWorld(HbaseIndexSchema schema, World world) {
-		writeToFile("schema.json", schema);
+	public void exportWorld(World world) {
 		writeToFile("world.json", world);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> T readFromFile(final String fileName, Class<?> dataType) {
 		try (InputStream dataStream = new GZIPInputStream(new FileInputStream(getPath(fileName).toFile()))) {
-			return (T) new ObjectMapper().readValue(dataStream, dataType);
+			return (T) visitorBasedMapper.readValue(dataStream, dataType);
 		} catch (final IOException e) {
 			throw new RuntimeException("Unable to import data from file " + fileName, e);
 		}
@@ -50,7 +56,7 @@ public class WorldControl {
 		get(".", "src", "main", "resources", "data").toFile()
 			.mkdirs();
 		try (final OutputStream outputStream = new GZIPOutputStream(new FileOutputStream(getPath(fileName).toFile()))) {
-			new ObjectMapper().writeValue(outputStream, outputData);
+			visitorBasedMapper.writeValue(outputStream, outputData);
 		} catch (final IOException e) {
 			throw new RuntimeException("Unable to export data to file " + fileName, e);
 		}

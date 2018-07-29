@@ -14,6 +14,10 @@ public class Selector extends DataType {
 	public Selector() {
 	}
 
+	public Selector(DataTypeId id) {
+		super(id);
+	}
+
 	public Selector(DataTypeId id, Map<String, Object> fields) {
 		super(id, fields);
 	}

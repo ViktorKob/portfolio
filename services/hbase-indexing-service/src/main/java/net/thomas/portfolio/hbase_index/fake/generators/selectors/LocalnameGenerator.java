@@ -1,10 +1,10 @@
 package net.thomas.portfolio.hbase_index.fake.generators.selectors;
 
-import net.thomas.portfolio.hbase_index.fake.generators.SelectorEntityGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.SelectorGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 
-public class LocalnameGenerator extends SelectorEntityGenerator<Localname> {
+public class LocalnameGenerator extends SelectorGenerator<Localname> {
 
 	private final StringGenerator generator;
 

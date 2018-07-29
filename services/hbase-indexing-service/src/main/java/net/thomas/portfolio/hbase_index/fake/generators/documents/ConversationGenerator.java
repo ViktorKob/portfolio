@@ -3,48 +3,34 @@ package net.thomas.portfolio.hbase_index.fake.generators.documents;
 import java.util.List;
 
 import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
-import net.thomas.portfolio.hbase_index.fake.generators.DocumentGenerator;
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
+import net.thomas.portfolio.hbase_index.fake.generators.EventGenerator;
+import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
+import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
-public class ConversationGenerator extends DocumentGenerator {
-	private final IdCalculator uidTool;
+public class ConversationGenerator extends EventGenerator<Conversation> {
 	private final Person initiator;
 	private final List<Person> personalRelations;
 
-	public ConversationGenerator(Person initiator, List<Person> personalRelations, HbaseIndexSchema schema, long randomSeed) {
-		super("Conversation", schema, randomSeed);
+	public ConversationGenerator(Person initiator, List<Person> personalRelations, long randomSeed) {
+		super(randomSeed);
 		this.initiator = initiator;
 		this.personalRelations = personalRelations;
-		uidTool = new IdCalculator(schema.getFieldsForDataType("CommunicationEndpoint"), true);
 	}
 
 	@Override
-	protected final boolean keyShouldBeUnique() {
-		return false;
-	}
-
-	@Override
-	protected void populateValues(final DataType sample) {
-		sample.put("durationIsSeconds", random.nextInt(60 * 60));
-		sample.put("primary", createCommunicationEndpoint("publicId", randomProgressiveSample(initiator.publicIdNumbers)));
-		sample.put("secondary", createCommunicationEndpoint("publicId", randomProgressiveSample(randomProgressiveSample(personalRelations).publicIdNumbers)));
-
-		if (random.nextDouble() < 0.5) {
-			sample.put("primaryLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
-		}
-		if (random.nextDouble() < 0.5) {
-			sample.put("secondaryLocation", new GeoLocation(random.nextDouble() * 360 - 180, random.nextDouble() * 180 - 90));
-		}
-	}
-
-	private DataType createCommunicationEndpoint(String numberField, DataType number) {
-		final DataType endpoint = new RawDataType();
-		endpoint.put(numberField, number);
-		endpoint.setId(uidTool.calculate("CommunicationEndpoint", endpoint));
-		return endpoint;
+	protected Conversation createInstance() {
+		final Timestamp timeOfEvent = generateTimeOfEvent();
+		final Timestamp timeOfInterception = generateTimeOfInterception(timeOfEvent);
+		final int durationIsSeconds = random.nextInt(60 * 60);
+		final CommunicationEndpoint primary = new CommunicationEndpoint(randomProgressiveSample(initiator.publicIdNumbers), null);
+		primary.uid = idTool.calculate(primary);
+		final CommunicationEndpoint secondary = new CommunicationEndpoint(null,
+				randomProgressiveSample(randomProgressiveSample(personalRelations).privateIdNumbers));
+		secondary.uid = idTool.calculate(secondary);
+		final GeoLocation senderLocation = randomLocation(0.5);
+		final GeoLocation receiverLocation = randomLocation(0.5);
+		return new Conversation(timeOfEvent, timeOfInterception, durationIsSeconds, primary, secondary, senderLocation, receiverLocation);
 	}
 }

@@ -11,18 +11,18 @@ import org.springframework.stereotype.Component;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.FakeWorld;
-import net.thomas.portfolio.hbase_index.fake.index_steps.FakeInvertedIndexStep;
-import net.thomas.portfolio.hbase_index.fake.index_steps.FakeSelectorStatisticsStep;
+import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeInvertedIndexStep;
+import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeSelectorStatisticsStep;
+import net.thomas.portfolio.hbase_index.fake.world.IndexControl;
+import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
+import net.thomas.portfolio.hbase_index.fake.world.World;
+import net.thomas.portfolio.hbase_index.fake.world.WorldIoControl;
 import net.thomas.portfolio.hbase_index.schema.SchemaIntrospection;
 import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
 import net.thomas.portfolio.hbase_index.schema.documents.Email;
 import net.thomas.portfolio.hbase_index.schema.documents.TextMessage;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.transformation.IndexControl;
-import net.thomas.portfolio.shared_objects.hbase_index.transformation.IndexStep;
-import net.thomas.portfolio.shared_objects.hbase_index.transformation.World;
-import net.thomas.portfolio.shared_objects.hbase_index.transformation.WorldControl;
 
 @Component
 @Scope("singleton")
@@ -31,7 +31,7 @@ public class FakeIndexControl implements IndexControl {
 	private HbaseIndexSchema schema;
 	private HbaseIndex index;
 
-	private List<IndexStep> indexSteps;
+	private List<ProcessingStep> indexSteps;
 	private boolean initialized;
 	private final long randomSeed;
 
@@ -57,25 +57,24 @@ public class FakeIndexControl implements IndexControl {
 
 	private synchronized void initialize() {
 		if (!initialized) {
-			final WorldControl worldControl = new WorldControl();
+			final WorldIoControl worldControl = new WorldIoControl();
 			if (!worldControl.canImportWorld()) {
 				buildAndExportWorld(worldControl, randomSeed);
 			}
-			setSchema(worldControl.importSchema());
 			setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
 			final World world = worldControl.importWorld();
 			index(world);
+			schema = new SchemaIntrospection().examine(Email.class)
+				.examine(TextMessage.class)
+				.examine(Conversation.class)
+				.describeSchema();
 			initialized = true;
 		}
 	}
 
-	private void buildAndExportWorld(final WorldControl worldControl, long randomSeed) {
-		final HbaseIndexSchema schema = new SchemaIntrospection().examine(Email.class)
-			.examine(TextMessage.class)
-			.examine(Conversation.class)
-			.describeSchema();
-		final World world = new FakeWorld(schema, randomSeed, 80, 10, 800);
-		worldControl.exportWorld(schema, world);
+	private void buildAndExportWorld(final WorldIoControl worldControl, long randomSeed) {
+		final World world = new FakeWorld(randomSeed, 80, 10, 800);
+		worldControl.exportWorld(world);
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class FakeIndexControl implements IndexControl {
 		this.schema = schema;
 	}
 
-	public void setIndexSteps(List<IndexStep> indexSteps) {
+	public void setIndexSteps(List<ProcessingStep> indexSteps) {
 		this.indexSteps = indexSteps;
 	}
 
@@ -92,8 +91,8 @@ public class FakeIndexControl implements IndexControl {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
 		index.addEntitiesAndChildren(world.getEvents());
 		index.setReferences(world.getSourceReferences());
-		for (final IndexStep step : indexSteps) {
-			step.executeAndUpdateIndex(schema, world, index);
+		for (final ProcessingStep step : indexSteps) {
+			step.executeAndUpdateIndex(world, index);
 		}
 		this.index = index;
 	}

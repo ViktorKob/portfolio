@@ -8,7 +8,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 
-public interface HbaseIndex extends Iterable<DataType> {
+public interface HbaseIndex {
 
 	Entities getSamples(String type, int amount);
 

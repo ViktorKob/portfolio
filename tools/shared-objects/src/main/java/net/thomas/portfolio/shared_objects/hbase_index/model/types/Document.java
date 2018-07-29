@@ -17,6 +17,10 @@ public class Document extends DataType {
 	public Document() {
 	}
 
+	public Document(DataTypeId id) {
+		super(id);
+	}
+
 	public Document(DataTypeId id, Map<String, Object> fields) {
 		super(id, fields);
 	}

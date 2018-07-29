@@ -15,4 +15,47 @@ public class EmailAddress extends SelectorEntity {
 		this.localname = localname;
 		this.domain = domain;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (domain == null ? 0 : domain.hashCode());
+		result = prime * result + (localname == null ? 0 : localname.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final EmailAddress other = (EmailAddress) obj;
+		if (domain == null) {
+			if (other.domain != null) {
+				return false;
+			}
+		} else if (!domain.equals(other.domain)) {
+			return false;
+		}
+		if (localname == null) {
+			if (other.localname != null) {
+				return false;
+			}
+		} else if (!localname.equals(other.localname)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EmailAddress [localname=" + localname + ", domain=" + domain + ", uid=" + uid + "]";
+	}
 }

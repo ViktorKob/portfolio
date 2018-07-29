@@ -6,11 +6,11 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePathAnnotation;
+import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.annotations.SchemaIgnore;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
-import net.thomas.portfolio.hbase_index.schema.documents.DocumentEntity;
+import net.thomas.portfolio.hbase_index.schema.documents.Event;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsBuilder;
@@ -31,7 +31,7 @@ public class SchemaIntrospection {
 		handledSimpleRepresentationTypes = new HashSet<>();
 	}
 
-	public SchemaIntrospection examine(Class<? extends DocumentEntity> entityClass) {
+	public SchemaIntrospection examine(Class<? extends Event> entityClass) {
 		handledFieldTypes.add(entityClass.getSimpleName());
 		examineEntityTypes(entityClass);
 		examineFields(entityClass);
@@ -50,7 +50,7 @@ public class SchemaIntrospection {
 
 	private void examineEntityTypes(final Class<?> entityClass) {
 		final String simpleName = entityClass.getSimpleName();
-		if (DocumentEntity.class.isAssignableFrom(entityClass)) {
+		if (Event.class.isAssignableFrom(entityClass)) {
 			builder.addDocumentTypes(simpleName);
 		} else if (isSelector(entityClass)) {
 			builder.addSelectorTypes(simpleName);
@@ -117,9 +117,9 @@ public class SchemaIntrospection {
 		}
 	}
 
-	private void examineIndexableRelations(Class<? extends DocumentEntity> document) {
+	private void examineIndexableRelations(Class<? extends Event> document) {
 		for (final Field field : document.getFields()) {
-			final IndexablePathAnnotation indexableDescription = field.getAnnotation(IndexablePathAnnotation.class);
+			final IndexablePath indexableDescription = field.getAnnotation(IndexablePath.class);
 			if (indexableDescription != null) {
 				final Set<Class<? extends Selector>> selectors = extractSelectors(field.getType(), new HashSet<>());
 				for (final Class<? extends Selector> selector : selectors) {

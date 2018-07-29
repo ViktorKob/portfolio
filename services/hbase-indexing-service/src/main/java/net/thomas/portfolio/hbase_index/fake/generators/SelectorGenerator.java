@@ -1,19 +1,10 @@
 package net.thomas.portfolio.hbase_index.fake.generators;
 
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
+import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 
-public abstract class SelectorGenerator extends DataTypeGenerator {
+public abstract class SelectorGenerator<TYPE extends SelectorEntity> extends EntityGenerator<TYPE> {
 
-	public SelectorGenerator(String dataTypeName, HbaseIndexSchema schema, long randomSeed) {
-		super(dataTypeName, false, schema, randomSeed);
-	}
-
-	@Override
-	public DataType next() {
-		final Selector sample = new Selector();
-		populateFields(sample);
-		return sample;
+	public SelectorGenerator(long randomSeed) {
+		super(false, randomSeed);
 	}
 }

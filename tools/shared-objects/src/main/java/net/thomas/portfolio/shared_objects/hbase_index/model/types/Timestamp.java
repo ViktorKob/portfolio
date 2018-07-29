@@ -27,6 +27,11 @@ public class Timestamp {
 		originalTimeZoneId = zone.getId();
 	}
 
+	public Timestamp(long timestampInUtc, String zoneId) {
+		this.timestampInUtc = timestampInUtc;
+		originalTimeZoneId = zoneId;
+	}
+
 	public Long getTimestamp() {
 		return timestampInUtc;
 	}
