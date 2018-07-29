@@ -56,7 +56,9 @@ public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingConte
 					}
 				} else {
 					object = field.get(entity);
-					fieldSimpleAction.performSimpleFieldAction(entity, context);
+					if (object != null) {
+						fieldSimpleAction.performSimpleFieldAction(entity, context);
+					}
 				}
 			}
 			entityPostAction.performEntityPostAction(entity, context);
