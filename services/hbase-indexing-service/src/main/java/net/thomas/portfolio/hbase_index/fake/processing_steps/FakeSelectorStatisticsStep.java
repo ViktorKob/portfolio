@@ -18,11 +18,11 @@ import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.processed_data.SelectorStatistics;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EntityHierarchyVisitorBuilder;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EventContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.EventContext;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeSelectorStatisticsStep implements ProcessingStep {
@@ -33,15 +33,15 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 
 	private SelectorStatistics generateSelectorStatistics(Collection<? extends Event> events) {
 		final SelectorStatistics statistics = new SelectorStatistics();
-		final EntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
+		final StrictEntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
 		for (final Event event : events) {
 			counter.visit(event, new EventContext(event));
 		}
 		return statistics;
 	}
 
-	private EntityHierarchyVisitor<EventContext> buildCounter(final SelectorStatistics statistics) {
-		return new EntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics))
+	private StrictEntityHierarchyVisitor<EventContext> buildCounter(final SelectorStatistics statistics) {
+		return new StrictEntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics))
 			.build();
 	}
 

@@ -10,16 +10,16 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import net.thomas.portfolio.hbase_index.schema.EntitySerializerActionFactory.SerializerContext;
 import net.thomas.portfolio.hbase_index.schema.documents.Event;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EntityHierarchyVisitorBuilder;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 
 @ThreadSafe
 public class EventSerializer extends JsonSerializer<Event> {
 
-	private static final EntityHierarchyVisitor<SerializerContext> SERIALIZATION_VISITOR;
+	private static final StrictEntityHierarchyVisitor<SerializerContext> SERIALIZATION_VISITOR;
 	static {
 		final EntitySerializerActionFactory serializerFactory = new EntitySerializerActionFactory();
-		SERIALIZATION_VISITOR = new EntityHierarchyVisitorBuilder<SerializerContext>().setEntityPreActionFactory(serializerFactory)
+		SERIALIZATION_VISITOR = new StrictEntityHierarchyVisitorBuilder<SerializerContext>().setEntityPreActionFactory(serializerFactory)
 			.setEntityPostActionFactory(serializerFactory)
 			.setFieldSimpleActionFactory(serializerFactory)
 			.setFieldPreActionFactory(serializerFactory)
