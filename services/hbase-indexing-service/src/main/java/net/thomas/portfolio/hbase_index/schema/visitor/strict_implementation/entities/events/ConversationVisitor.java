@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.entities.events;
 
-import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
+import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPostAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldSimpleAction;

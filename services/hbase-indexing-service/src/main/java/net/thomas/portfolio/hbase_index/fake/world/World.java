@@ -3,7 +3,7 @@ package net.thomas.portfolio.hbase_index.fake.world;
 import java.util.Collection;
 import java.util.Map;
 
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 
 public class World {

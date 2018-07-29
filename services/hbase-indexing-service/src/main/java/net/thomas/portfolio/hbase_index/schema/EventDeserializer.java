@@ -13,10 +13,10 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
-import net.thomas.portfolio.hbase_index.schema.documents.Email;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
-import net.thomas.portfolio.hbase_index.schema.documents.TextMessage;
+import net.thomas.portfolio.hbase_index.schema.events.Conversation;
+import net.thomas.portfolio.hbase_index.schema.events.Email;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
+import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;

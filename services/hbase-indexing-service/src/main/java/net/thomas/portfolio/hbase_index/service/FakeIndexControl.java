@@ -18,9 +18,9 @@ import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
 import net.thomas.portfolio.hbase_index.fake.world.World;
 import net.thomas.portfolio.hbase_index.fake.world.WorldIoControl;
 import net.thomas.portfolio.hbase_index.schema.SchemaIntrospection;
-import net.thomas.portfolio.hbase_index.schema.documents.Conversation;
-import net.thomas.portfolio.hbase_index.schema.documents.Email;
-import net.thomas.portfolio.hbase_index.schema.documents.TextMessage;
+import net.thomas.portfolio.hbase_index.schema.events.Conversation;
+import net.thomas.portfolio.hbase_index.schema.events.Email;
+import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 

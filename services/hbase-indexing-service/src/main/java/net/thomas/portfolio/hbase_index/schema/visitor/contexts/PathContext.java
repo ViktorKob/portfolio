@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.visitor.contexts;
 
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 
 public class PathContext extends EventContext {
 	public String path;

@@ -12,7 +12,6 @@ import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldSimpl
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
 public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
-	@SuppressWarnings("unused")
 	private Object object;
 	private final VisitorEntityPreAction<Entity, CONTEXT_TYPE> entityPreAction;
 	private final VisitorEntityPostAction<Entity, CONTEXT_TYPE> entityPostAction;

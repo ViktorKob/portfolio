@@ -11,7 +11,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.thomas.portfolio.hbase_index.schema.EntityId;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 
 public class InvertedIndex {

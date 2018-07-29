@@ -26,7 +26,7 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.LocalnameGener
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.PrivateIdGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.PublicIdGenerator;
 import net.thomas.portfolio.hbase_index.fake.world.World;
-import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
 import net.thomas.portfolio.hbase_index.schema.selectors.Domain;
 import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;

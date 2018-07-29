@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema.documents;
+package net.thomas.portfolio.hbase_index.schema.events;
 
 import java.util.Arrays;
 
