@@ -1,2 +1,4 @@
 language: java
-service_name: travis-ci
+
+after_success:
+  - mvn clean test jacoco:report coveralls:jacoco
