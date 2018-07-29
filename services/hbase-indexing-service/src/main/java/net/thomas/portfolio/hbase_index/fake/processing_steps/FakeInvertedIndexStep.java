@@ -22,13 +22,13 @@ import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
 import net.thomas.portfolio.hbase_index.schema.processed_data.InvertedIndex;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EntityHierarchyVisitorBuilder;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.PathContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.PathContext;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeInvertedIndexStep implements ProcessingStep {
@@ -39,13 +39,13 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 
 	private InvertedIndex generateInvertedIndex(Collection<? extends Event> events) {
 		final InvertedIndex invertedIndex = new InvertedIndex();
-		final EntityHierarchyVisitor<PathContext> traversal = buildIndexer(invertedIndex);
+		final StrictEntityHierarchyVisitor<PathContext> traversal = buildIndexer(invertedIndex);
 		indexEvents(events, traversal);
 		return invertedIndex;
 	}
 
-	private EntityHierarchyVisitor<PathContext> buildIndexer(final InvertedIndex invertedIndex) {
-		return new EntityHierarchyVisitorBuilder<PathContext>().setEntityPostActionFactory(createEntityPostActionFactory(invertedIndex))
+	private StrictEntityHierarchyVisitor<PathContext> buildIndexer(final InvertedIndex invertedIndex) {
+		return new StrictEntityHierarchyVisitorBuilder<PathContext>().setEntityPostActionFactory(createEntityPostActionFactory(invertedIndex))
 			.setFieldPreActionFactory(createFieldPreActionFactory(invertedIndex))
 			.build();
 	}
@@ -70,7 +70,7 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 		return actionFactory;
 	}
 
-	private void indexEvents(Collection<? extends Event> events, final EntityHierarchyVisitor<PathContext> traversal) {
+	private void indexEvents(Collection<? extends Event> events, final StrictEntityHierarchyVisitor<PathContext> traversal) {
 		for (final Event event : events) {
 			traversal.visit(event, new PathContext(event));
 		}

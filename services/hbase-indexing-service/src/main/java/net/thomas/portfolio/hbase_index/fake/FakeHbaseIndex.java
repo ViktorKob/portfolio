@@ -17,11 +17,11 @@ import net.thomas.portfolio.hbase_index.schema.EntityId;
 import net.thomas.portfolio.hbase_index.schema.documents.Event;
 import net.thomas.portfolio.hbase_index.schema.processed_data.InvertedIndex;
 import net.thomas.portfolio.hbase_index.schema.processed_data.SelectorStatistics;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.BlankVisitingContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EntityHierarchyVisitorBuilder;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.BlankVisitingContext;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
@@ -68,7 +68,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 
 	public void addEntitiesAndChildren(Collection<Event> entities) {
 		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = createActionFactory();
-		final EntityHierarchyVisitor<BlankVisitingContext> visitorControl = new EntityHierarchyVisitorBuilder<BlankVisitingContext>()
+		final StrictEntityHierarchyVisitor<BlankVisitingContext> visitorControl = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>()
 			.setEntityPostActionFactory(actionFactory)
 			.build();
 		for (final Event sample : entities) {

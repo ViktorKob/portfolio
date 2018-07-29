@@ -19,17 +19,17 @@ import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;
 import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
 import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitingContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldSimpleAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldSimpleActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldSimpleAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldSimpleActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
@@ -127,7 +127,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorFieldSimpleAction<T, SerializerContext> getFieldAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldSimpleAction<T, SerializerContext> getSimpleFieldAction(Class<T> entityClass, String field) {
 		if (actions.containsKey(entityClass)) {
 			return (VisitorFieldSimpleAction<T, SerializerContext>) actions.get(entityClass)
 				.getFieldSimpleAction(field);

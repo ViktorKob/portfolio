@@ -1,8 +1,8 @@
-package net.thomas.portfolio.hbase_index.schema.visitor;
+package net.thomas.portfolio.hbase_index.schema.visitor.actions.factories;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitingContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
 @FunctionalInterface
 public interface VisitorEntityPreActionFactory<CONTEXT_TYPE extends VisitingContext> {

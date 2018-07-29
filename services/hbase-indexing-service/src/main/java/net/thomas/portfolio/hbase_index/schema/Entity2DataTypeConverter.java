@@ -15,17 +15,17 @@ import net.thomas.portfolio.hbase_index.schema.Entity2DataTypeConverter.Conversi
 import net.thomas.portfolio.hbase_index.schema.documents.Event;
 import net.thomas.portfolio.hbase_index.schema.meta.MetaEntity;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.EntityHierarchyVisitorBuilder;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitingContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorEntityPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.EntityHierarchyVisitor.VisitorFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorEntityPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
@@ -36,10 +36,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 @ThreadSafe
 public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<ConversionContext>, VisitorEntityPostActionFactory<ConversionContext>,
 		VisitorFieldPreActionFactory<ConversionContext>, VisitorFieldPostActionFactory<ConversionContext> {
-	private final EntityHierarchyVisitor<ConversionContext> converter;
+	private final StrictEntityHierarchyVisitor<ConversionContext> converter;
 
 	public Entity2DataTypeConverter() {
-		converter = new EntityHierarchyVisitorBuilder<ConversionContext>().setEntityPreActionFactory(this)
+		converter = new StrictEntityHierarchyVisitorBuilder<ConversionContext>().setEntityPreActionFactory(this)
 			.setEntityPostActionFactory(this)
 			.setFieldPreActionFactory(this)
 			.setFieldPostActionFactory(this)
