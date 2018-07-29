@@ -14,4 +14,47 @@ public class EmailEndpoint extends MetaEntity {
 		this.displayedName = displayedName;
 		this.address = address;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (address == null ? 0 : address.hashCode());
+		result = prime * result + (displayedName == null ? 0 : displayedName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final EmailEndpoint other = (EmailEndpoint) obj;
+		if (address == null) {
+			if (other.address != null) {
+				return false;
+			}
+		} else if (!address.equals(other.address)) {
+			return false;
+		}
+		if (displayedName == null) {
+			if (other.displayedName != null) {
+				return false;
+			}
+		} else if (!displayedName.equals(other.displayedName)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "EmailEndpoint [displayedName=" + displayedName + ", address=" + address + "]";
+	}
 }

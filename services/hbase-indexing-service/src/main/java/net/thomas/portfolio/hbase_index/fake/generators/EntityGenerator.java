@@ -10,7 +10,7 @@ import net.thomas.portfolio.hbase_index.schema.UidCalculator;
 public abstract class EntityGenerator<TYPE extends Entity> implements Iterable<TYPE>, Iterator<TYPE> {
 
 	protected final Random random;
-	private final UidCalculator idTool;
+	protected final UidCalculator idTool;
 
 	public EntityGenerator(boolean keyShouldBeUnique, long randomSeed) {
 		idTool = new UidCalculator(keyShouldBeUnique);

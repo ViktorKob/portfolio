@@ -16,54 +16,62 @@ import java.util.Random;
 import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ConversationGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailEntityGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.TextMessageGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.selectors.DisplayedNameGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.DomainGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.EmailAddressGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.selectors.NameGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.selectors.NumberGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.selectors.LocalnameGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.selectors.PrivateIdGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.selectors.PublicIdGenerator;
+import net.thomas.portfolio.hbase_index.fake.world.World;
+import net.thomas.portfolio.hbase_index.schema.documents.Event;
+import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
+import net.thomas.portfolio.hbase_index.schema.selectors.Domain;
+import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;
+import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
+import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
+import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
-import net.thomas.portfolio.shared_objects.hbase_index.transformation.World;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 
 public class FakeWorld extends World {
-	private final List<DataType> domains;
+	private final List<Domain> domains;
 	private final List<Person> people;
 	private final Map<Integer, List<Person>> relations;
 
-	public FakeWorld(HbaseIndexSchema schema, long randomSeed, int populationCount, int averageRelationCount, int averageCommunicationCount) {
-		domains = registerDomains(schema, randomSeed);
-		people = populateWorld(populationCount, schema, randomSeed++);
-		relations = buildRelations(people, averageRelationCount, schema, randomSeed++);
-		setEvents(communicate(relations, averageCommunicationCount, schema, randomSeed++));
+	public FakeWorld(long randomSeed, int populationCount, int averageRelationCount, int averageCommunicationCount) {
+		domains = registerDomains(randomSeed);
+		people = populateWorld(populationCount, randomSeed++);
+		relations = buildRelations(people, averageRelationCount, randomSeed++);
+		setEvents(communicate(relations, averageCommunicationCount, randomSeed++));
 		setSourceReferences(generateSourceReferences(getEvents(), randomSeed++));
 	}
 
-	private List<DataType> registerDomains(HbaseIndexSchema schema, long randomSeed) {
+	private List<Domain> registerDomains(long randomSeed) {
 		final Random random = new Random(randomSeed++);
-		final Iterable<DataType> generator1 = new DomainGenerator(emptySet(), 2, 3, false, schema, randomSeed++);
-		final List<DataType> topLevelDomains = generateSamples(20, 40, random, generator1);
-		final Iterable<DataType> generator2 = new DomainGenerator(topLevelDomains, 4, 12, false, schema, randomSeed++);
-		final List<DataType> secondLevelDomains = generateSamples(150, 250, random, generator2);
-		final Iterable<DataType> generator3 = new DomainGenerator(secondLevelDomains, 4, 12, false, schema, randomSeed++);
-		final List<DataType> thirdLevelDomains = generateSamples(40, 60, random, generator3);
-		final List<DataType> domains = new ArrayList<>();
+		final Iterable<Domain> generator1 = new DomainGenerator(emptySet(), 2, 3, randomSeed++);
+		final List<Domain> topLevelDomains = generateSamples(20, 40, random, generator1);
+		final Iterable<Domain> generator2 = new DomainGenerator(topLevelDomains, 4, 12, randomSeed++);
+		final List<Domain> secondLevelDomains = generateSamples(150, 250, random, generator2);
+		final Iterable<Domain> generator3 = new DomainGenerator(secondLevelDomains, 4, 12, randomSeed++);
+		final List<Domain> thirdLevelDomains = generateSamples(40, 60, random, generator3);
+		final List<Domain> domains = new ArrayList<>();
 		domains.addAll(secondLevelDomains);
 		domains.addAll(thirdLevelDomains);
 		return domains;
 	}
 
-	private List<Person> populateWorld(int populationCount, HbaseIndexSchema schema, long randomSeed) {
+	private List<Person> populateWorld(int populationCount, long randomSeed) {
 		final List<Person> people = new ArrayList<>();
 		for (int i = 0; i < populationCount; i++) {
-			people.add(new Person(schema, randomSeed++, this));
+			people.add(new Person(randomSeed++));
 		}
 		return people;
 	}
 
-	private Map<Integer, List<Person>> buildRelations(List<Person> people, int averageRelationCount, HbaseIndexSchema schema, long randomSeed) {
+	private Map<Integer, List<Person>> buildRelations(List<Person> people, int averageRelationCount, long randomSeed) {
 		final Random random = new Random(randomSeed);
 		final Map<Integer, List<Person>> relations = new HashMap<>();
 		for (int personIndex = 0; personIndex < people.size(); personIndex++) {
@@ -88,15 +96,15 @@ public class FakeWorld extends World {
 		return relations;
 	}
 
-	private Collection<DataType> communicate(Map<Integer, List<Person>> relations, int averageCommunicationCount, HbaseIndexSchema schema, long randomSeed) {
+	private Collection<Event> communicate(Map<Integer, List<Person>> relations, int averageCommunicationCount, long randomSeed) {
 		final Random random = new Random(randomSeed);
-		final Collection<DataType> events = new LinkedList<>();
+		final Collection<Event> events = new LinkedList<>();
 		for (final Entry<Integer, List<Person>> entry : relations.entrySet()) {
 			final Person initiator = people.get(entry.getKey());
 			final List<Person> personalRelations = entry.getValue();
-			final List<Iterator<DataType>> eventGenerators = asList(new EmailGenerator(initiator, personalRelations, schema, randomSeed++).iterator(),
-					new TextMessageGenerator(initiator, personalRelations, schema, randomSeed++).iterator(),
-					new ConversationGenerator(initiator, personalRelations, schema, randomSeed++).iterator());
+			final List<Iterator<? extends Event>> eventGenerators = asList(new EmailEntityGenerator(initiator, personalRelations, randomSeed++).iterator(),
+					new TextMessageGenerator(initiator, personalRelations, randomSeed++).iterator(),
+					new ConversationGenerator(initiator, personalRelations, randomSeed++).iterator());
 			final int personalCommunicationCount = averageCommunicationCount / 2 + random.nextInt(averageCommunicationCount);
 			for (int eventCount = 0; eventCount < personalCommunicationCount; eventCount++) {
 				events.add(randomSample(eventGenerators, random).next());
@@ -105,17 +113,17 @@ public class FakeWorld extends World {
 		return events;
 	}
 
-	private Map<String, Collection<Reference>> generateSourceReferences(Collection<DataType> events, long randomSeed) {
+	private Map<String, References> generateSourceReferences(Collection<Event> events, long randomSeed) {
 		final Random random = new Random(randomSeed);
 		final ReferenceGenerator generator = new ReferenceGenerator(random.nextLong());
-		final Map<String, Collection<Reference>> allReferences = new HashMap<>();
-		for (final DataType entity : events) {
+		final Map<String, References> allReferences = new HashMap<>();
+		for (final Event entity : events) {
 			final Collection<Reference> references = new LinkedList<>();
 			final int referenceCount = random.nextInt(3) + 1;
 			while (references.size() < referenceCount) {
 				references.add(generator.generate());
 			}
-			allReferences.put(entity.getId().uid, references);
+			allReferences.put(entity.uid, new References(references));
 		}
 		return allReferences;
 	}
@@ -125,26 +133,26 @@ public class FakeWorld extends World {
 	}
 
 	public class Person {
-		public final List<DataType> aliases;
-		public final List<DataType> localnames;
-		public final List<DataType> emailAddresses;
-		public final List<DataType> publicIdNumbers;
-		public final List<DataType> privateIdNumbers;
+		public final List<DisplayedName> aliases;
+		public final List<Localname> localnames;
+		public final List<EmailAddress> emailAddresses;
+		public final List<PublicId> publicIdNumbers;
+		public final List<PrivateId> privateIdNumbers;
 
-		public Person(HbaseIndexSchema schema, long randomSeed, FakeWorld world) {
+		public Person(long randomSeed) {
 			final Random random = new Random(randomSeed++);
-			aliases = generateSamples(1, 3, random, new NameGenerator("DisplayedName", "name", 3, 15, 0.15, schema, randomSeed++));
-			localnames = generateSamples(1, 3, random, new NameGenerator("Localname", "name", 3, 15, 0.0, schema, randomSeed++));
-			emailAddresses = generateSamples(1, 3, random, new EmailAddressGenerator(localnames, domains, schema, randomSeed++));
-			publicIdNumbers = generateSamples(1, 3, random, new NumberGenerator("PublicId", 6, 14, schema, randomSeed++));
-			privateIdNumbers = generateSamples(1, 3, random, new NumberGenerator("PrivateId", 15, 15, schema, randomSeed++));
+			aliases = generateSamples(1, 3, random, new DisplayedNameGenerator(randomSeed++));
+			localnames = generateSamples(1, 3, random, new LocalnameGenerator(randomSeed++));
+			emailAddresses = generateSamples(1, 3, random, new EmailAddressGenerator(localnames, domains, randomSeed++));
+			publicIdNumbers = generateSamples(1, 3, random, new PublicIdGenerator(randomSeed++));
+			privateIdNumbers = generateSamples(1, 3, random, new PrivateIdGenerator(randomSeed++));
 		}
 	}
 
-	private List<DataType> generateSamples(final int minSampleCount, final int maxSampleCount, Random random, final Iterable<DataType> generator) {
+	private <T> List<T> generateSamples(final int minSampleCount, final int maxSampleCount, Random random, final Iterable<T> generator) {
 		final int sampleCount = minSampleCount + random.nextInt(maxSampleCount - minSampleCount);
-		final List<DataType> values = new ArrayList<>();
-		for (final DataType sample : generator) {
+		final List<T> values = new ArrayList<>();
+		for (final T sample : generator) {
 			values.add(sample);
 			if (values.size() == sampleCount) {
 				break;

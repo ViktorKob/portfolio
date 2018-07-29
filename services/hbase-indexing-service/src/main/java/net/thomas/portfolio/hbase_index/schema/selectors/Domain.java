@@ -15,4 +15,47 @@ public class Domain extends SelectorEntity {
 		this.domainPart = domainPart;
 		this.domain = domain;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (domain == null ? 0 : domain.hashCode());
+		result = prime * result + (domainPart == null ? 0 : domainPart.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final Domain other = (Domain) obj;
+		if (domain == null) {
+			if (other.domain != null) {
+				return false;
+			}
+		} else if (!domain.equals(other.domain)) {
+			return false;
+		}
+		if (domainPart == null) {
+			if (other.domainPart != null) {
+				return false;
+			}
+		} else if (!domainPart.equals(other.domainPart)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Domain [domainPart=" + domainPart + ", domain=" + domain + ", uid=" + uid + "]";
+	}
 }

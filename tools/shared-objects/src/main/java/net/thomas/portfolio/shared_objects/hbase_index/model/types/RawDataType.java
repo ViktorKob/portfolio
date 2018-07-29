@@ -14,6 +14,10 @@ public class RawDataType extends DataType {
 	public RawDataType() {
 	}
 
+	public RawDataType(DataTypeId id) {
+		super(id);
+	}
+
 	public RawDataType(DataTypeId id, Map<String, Object> fields) {
 		super(id, fields);
 	}

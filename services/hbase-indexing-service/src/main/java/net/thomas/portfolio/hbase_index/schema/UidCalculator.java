@@ -8,14 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
 
 public class UidCalculator {
 	private final boolean keyShouldBeUnique;
 	@JsonIgnore
 	private final int counter;
+	private final UidConverter uidConverter;
 
 	public UidCalculator(boolean keyShouldBeUnique) {
 		this.keyShouldBeUnique = keyShouldBeUnique;
+		uidConverter = new UidConverter();
 		counter = 0;
 	}
 
@@ -63,7 +66,8 @@ public class UidCalculator {
 		if (value instanceof Timestamp) {
 			return valueOf(((Timestamp) value).getTimestamp()).getBytes();
 		} else if (value instanceof Entity) {
-			return ((Entity) value).uid.getBytes();
+			final String uid = ((Entity) value).uid;
+			return uidConverter.convert(uid);
 		} else {
 			return valueOf(value).getBytes();
 		}
