@@ -1,10 +1,10 @@
-package net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection;
+package net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions;
 
 import java.util.Map;
 
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
-class EntityActions<CONTEXT_TYPE extends VisitingContext> {
+public class EntityActions<CONTEXT_TYPE extends VisitingContext> {
 	public final VisitorGenericEntityPreAction<CONTEXT_TYPE> preEntity;
 	public final VisitorGenericEntityPostAction<CONTEXT_TYPE> postEntity;
 	public final Map<String, FieldActions<CONTEXT_TYPE>> fieldActions;

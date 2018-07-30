@@ -18,14 +18,14 @@ import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
 import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
-public class EmailEntityGenerator extends EventGenerator<Email> {
+public class EmailGenerator extends EventGenerator<Email> {
 	private final Map<String, List<DisplayedName>> previousDisplayedNameMatches;
 	private final Person sender;
 	private final List<Person> potentialRecipients;
 	private final StringGenerator subjectGenerator;
 	private final StringGenerator messageGenerator;
 
-	public EmailEntityGenerator(Person sender, List<Person> potentialRecipients, long randomSeed) {
+	public EmailGenerator(Person sender, List<Person> potentialRecipients, long randomSeed) {
 		super(randomSeed);
 		this.sender = sender;
 		this.potentialRecipients = potentialRecipients;

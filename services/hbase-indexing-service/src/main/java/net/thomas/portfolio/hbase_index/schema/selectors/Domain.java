@@ -11,6 +11,11 @@ public class Domain extends SelectorEntity {
 	@PartOfKey
 	public final Domain domain;
 
+	public Domain(String domainPart) {
+		this.domainPart = domainPart;
+		domain = null;
+	}
+
 	public Domain(String domainPart, Domain domain) {
 		this.domainPart = domainPart;
 		this.domain = domain;

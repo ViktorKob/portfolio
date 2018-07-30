@@ -1,8 +1,8 @@
-package net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection;
+package net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions;
 
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
-class FieldActions<CONTEXT_TYPE extends VisitingContext> {
+public class FieldActions<CONTEXT_TYPE extends VisitingContext> {
 	public final VisitorGenericFieldPreAction<CONTEXT_TYPE> preField;
 	public final VisitorGenericFieldPostAction<CONTEXT_TYPE> postField;
 	public final VisitorGenericFieldSimpleAction<CONTEXT_TYPE> simpleField;

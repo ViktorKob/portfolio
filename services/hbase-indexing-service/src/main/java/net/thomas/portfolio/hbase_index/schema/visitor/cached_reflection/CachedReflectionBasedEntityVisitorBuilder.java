@@ -7,6 +7,18 @@ import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.EntityActions;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.FieldActions;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldSimpleAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericEntityPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldSimpleActionFactory;
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
 public class CachedReflectionBasedEntityVisitorBuilder<CONTEXT_TYPE extends VisitingContext> {

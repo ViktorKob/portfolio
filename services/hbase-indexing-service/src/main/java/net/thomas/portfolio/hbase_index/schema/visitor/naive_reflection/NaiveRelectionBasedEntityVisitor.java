@@ -6,22 +6,22 @@ import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.visitor.EntityVisitor;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldSimpleAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldSimpleAction;
 
 public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
 	private Object object;
 	private final VisitorEntityPreAction<Entity, CONTEXT_TYPE> entityPreAction;
 	private final VisitorEntityPostAction<Entity, CONTEXT_TYPE> entityPostAction;
-	private final VisitorFieldPreAction<Entity, CONTEXT_TYPE> fieldPreAction;
-	private final VisitorFieldPostAction<Entity, CONTEXT_TYPE> fieldPostAction;
-	private final VisitorFieldSimpleAction<Entity, CONTEXT_TYPE> fieldSimpleAction;
+	private final VisitorNaiveFieldPreAction<Entity, CONTEXT_TYPE> fieldPreAction;
+	private final VisitorNaiveFieldPostAction<Entity, CONTEXT_TYPE> fieldPostAction;
+	private final VisitorNaiveFieldSimpleAction<Entity, CONTEXT_TYPE> fieldSimpleAction;
 
 	public NaiveRelectionBasedEntityVisitor(VisitorEntityPreAction<Entity, CONTEXT_TYPE> entityPreAction,
-			VisitorEntityPostAction<Entity, CONTEXT_TYPE> entityPostAction, VisitorFieldPreAction<Entity, CONTEXT_TYPE> fieldPreAction,
-			VisitorFieldPostAction<Entity, CONTEXT_TYPE> fieldPostAction, VisitorFieldSimpleAction<Entity, CONTEXT_TYPE> fieldSimpleAction) {
+			VisitorEntityPostAction<Entity, CONTEXT_TYPE> entityPostAction, VisitorNaiveFieldPreAction<Entity, CONTEXT_TYPE> fieldPreAction,
+			VisitorNaiveFieldPostAction<Entity, CONTEXT_TYPE> fieldPostAction, VisitorNaiveFieldSimpleAction<Entity, CONTEXT_TYPE> fieldSimpleAction) {
 		this.entityPreAction = entityPreAction;
 		this.entityPostAction = entityPostAction;
 		this.fieldPreAction = fieldPreAction;
@@ -39,24 +39,23 @@ public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingConte
 					continue;
 				} else if (field.getType()
 					.isArray()) {
-					fieldPreAction.performFieldPreAction(entity, context);
+					fieldPreAction.performNaiveFieldPreAction(entity, context, field.getName());
 					final Entity[] subEntities = (Entity[]) field.get(entity);
 					for (final Entity subEntity : subEntities) {
 						visit(subEntity, context);
 					}
-					fieldPostAction.performFieldPostAction(entity, context);
-
+					fieldPostAction.performNaiveFieldPostAction(entity, context, field.getName());
 				} else if (Entity.class.isAssignableFrom(field.getType())) {
 					final Entity subEntity = (Entity) field.get(entity);
 					if (subEntity != null) {
-						fieldPreAction.performFieldPreAction(entity, context);
+						fieldPreAction.performNaiveFieldPreAction(entity, context, field.getName());
 						visit(subEntity, context);
-						fieldPostAction.performFieldPostAction(entity, context);
+						fieldPostAction.performNaiveFieldPostAction(entity, context, field.getName());
 					}
 				} else {
 					object = field.get(entity);
 					if (object != null) {
-						fieldSimpleAction.performSimpleFieldAction(entity, context);
+						fieldSimpleAction.performNaiveSimpleFieldAction(entity, context, field.getName());
 					}
 				}
 			}

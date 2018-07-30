@@ -29,18 +29,21 @@ import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.Visitor
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPreActionFactory;
 import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldSimpleActionFactory;
 import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.CachedReflectionBasedEntityVisitorBuilder;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericEntityPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericEntityPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldSimpleAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.VisitorGenericFieldSimpleActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericEntityPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.VisitorGenericFieldSimpleAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericEntityPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.factories.VisitorGenericFieldSimpleActionFactory;
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.NaiveRelectionBasedEntityVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldPostAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.visitor.naive_reflection.actions.VisitorNaiveFieldSimpleAction;
 import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 
 public class SchemaTraversalPerformanceTester
@@ -48,7 +51,9 @@ public class SchemaTraversalPerformanceTester
 		VisitorFieldPreActionFactory<TestContext>, VisitorFieldPostActionFactory<TestContext>, VisitorGenericFieldSimpleActionFactory<TestContext>,
 		VisitorGenericEntityPreActionFactory<TestContext>, VisitorGenericEntityPostActionFactory<TestContext>, VisitorGenericFieldPreActionFactory<TestContext>,
 		VisitorGenericFieldPostActionFactory<TestContext>, VisitorFieldSimpleAction<Entity, TestContext>, VisitorEntityPreAction<Entity, TestContext>,
-		VisitorEntityPostAction<Entity, TestContext>, VisitorFieldPreAction<Entity, TestContext>, VisitorFieldPostAction<Entity, TestContext> {
+		VisitorEntityPostAction<Entity, TestContext>, VisitorFieldPreAction<Entity, TestContext>, VisitorFieldPostAction<Entity, TestContext>,
+		VisitorNaiveFieldPreAction<Entity, TestContext>, VisitorNaiveFieldSimpleAction<Entity, TestContext>, VisitorNaiveFieldPostAction<Entity, TestContext> {
+
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException {
 		final int iterations = 10;
 		final TestCase[] testCases = buildTestCases();
@@ -258,5 +263,20 @@ public class SchemaTraversalPerformanceTester
 	@Override
 	public VisitorGenericFieldSimpleAction<TestContext> getGenericSimpleFieldAction(Class<? extends Entity> entityClass, String field) {
 		return this::performSimpleFieldAction;
+	}
+
+	@Override
+	public void performNaiveFieldPreAction(Entity entity, TestContext context, String field) {
+		performFieldPreAction(entity, context);
+	}
+
+	@Override
+	public void performNaiveFieldPostAction(Entity entity, TestContext context, String field) {
+		performFieldPostAction(entity, context);
+	}
+
+	@Override
+	public void performNaiveSimpleFieldAction(Entity entity, TestContext context, String field) {
+		performSimpleFieldAction(entity, context);
 	}
 }

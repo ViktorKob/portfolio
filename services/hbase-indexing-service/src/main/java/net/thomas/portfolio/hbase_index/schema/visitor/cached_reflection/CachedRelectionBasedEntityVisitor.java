@@ -5,6 +5,8 @@ import java.util.Map;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.visitor.EntityVisitor;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.EntityActions;
+import net.thomas.portfolio.hbase_index.schema.visitor.cached_reflection.actions.FieldActions;
 import net.thomas.portfolio.hbase_index.schema.visitor.contexts.VisitingContext;
 
 public class CachedRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
