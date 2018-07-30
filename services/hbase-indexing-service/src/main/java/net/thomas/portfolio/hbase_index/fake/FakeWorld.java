@@ -83,9 +83,11 @@ public class FakeWorld extends World {
 			final Set<Person> personalRelations = new LinkedHashSet<>(relations.get(personIndex));
 			for (int relationCount = 0; relationCount < personalRelationsCount; relationCount++) {
 				int nextPersonIndex;
+				int tries = 0;
 				do {
 					nextPersonIndex = random.nextInt(people.size());
-				} while (nextPersonIndex == personIndex || personalRelations.contains(people.get(nextPersonIndex)));
+					tries++;
+				} while (tries < 10 && (nextPersonIndex == personIndex || personalRelations.contains(people.get(nextPersonIndex))));
 				personalRelations.add(people.get(nextPersonIndex));
 				relations.get(nextPersonIndex)
 					.add(thisPerson);

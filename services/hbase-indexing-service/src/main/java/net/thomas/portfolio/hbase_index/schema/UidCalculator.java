@@ -2,10 +2,11 @@ package net.thomas.portfolio.hbase_index.schema;
 
 import static java.lang.String.valueOf;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import java.lang.reflect.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import net.thomas.portfolio.common.utils.ToStringUtil;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
@@ -51,7 +52,7 @@ public class UidCalculator {
 		}
 	}
 
-	private void addField(final Hasher hasher, Entity entity, final java.lang.reflect.Field field) throws IllegalAccessException {
+	private void addField(final Hasher hasher, Entity entity, final Field field) throws IllegalAccessException {
 		if (field.getType()
 			.isArray()) {
 			for (final Object listEntity : (Object[]) field.get(entity)) {
@@ -75,6 +76,6 @@ public class UidCalculator {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return ToStringUtil.asString(this);
 	}
 }
