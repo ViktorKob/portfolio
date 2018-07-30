@@ -16,7 +16,7 @@ import java.util.Random;
 import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ConversationGenerator;
-import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailEntityGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ReferenceGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.TextMessageGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.selectors.DisplayedNameGenerator;
@@ -102,7 +102,7 @@ public class FakeWorld extends World {
 		for (final Entry<Integer, List<Person>> entry : relations.entrySet()) {
 			final Person initiator = people.get(entry.getKey());
 			final List<Person> personalRelations = entry.getValue();
-			final List<Iterator<? extends Event>> eventGenerators = asList(new EmailEntityGenerator(initiator, personalRelations, randomSeed++).iterator(),
+			final List<Iterator<? extends Event>> eventGenerators = asList(new EmailGenerator(initiator, personalRelations, randomSeed++).iterator(),
 					new TextMessageGenerator(initiator, personalRelations, randomSeed++).iterator(),
 					new ConversationGenerator(initiator, personalRelations, randomSeed++).iterator());
 			final int personalCommunicationCount = averageCommunicationCount / 2 + random.nextInt(averageCommunicationCount);
