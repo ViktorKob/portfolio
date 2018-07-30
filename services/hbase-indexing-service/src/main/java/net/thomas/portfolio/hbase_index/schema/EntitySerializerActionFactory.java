@@ -147,8 +147,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		protected final VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> NO_SIMPLE_ACTION = (entity, context) -> {
 			try {
 				final JsonGenerator generator = getContext(context).generator;
-				generator.writeFieldName("unknownField");
-				generator.writeObject(entity.getClass()
+				generator.writeObjectField("unknownField", entity.getClass()
 					.getSimpleName());
 			} catch (final IOException e) {
 				throw new RuntimeException("Unable to serialize " + entity.toString(), e);
