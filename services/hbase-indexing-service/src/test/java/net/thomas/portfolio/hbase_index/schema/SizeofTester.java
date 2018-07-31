@@ -1,7 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema;
 
 /*** Take from https://www.javaworld.com/article/2077496/testing-debugging/java-tip-130--do-you-know-your-data-size-.html to experiment ***/
-public class Sizeof {
+public class SizeofTester {
 	public static void main(String[] args) throws Exception {
 		// Warm up all classes/methods we will use
 		runGC();
