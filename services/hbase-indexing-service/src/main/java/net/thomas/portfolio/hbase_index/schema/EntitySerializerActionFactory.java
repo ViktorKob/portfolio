@@ -391,7 +391,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		public VisitorFieldSimpleAction<Conversation, SerializerContext> getFieldSimpleAction(String field) {
 			if (field.equals("durationInSeconds")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
-					generator.writeNumberField("d", entity.durationIsSeconds);
+					generator.writeNumberField("d", entity.durationInSeconds);
 				});
 			} else if (field.equals("timeOfEvent")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {

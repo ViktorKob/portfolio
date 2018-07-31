@@ -15,6 +15,28 @@
 	</parent>
 
 	<dependencies>
+		<!-- GraphQL and tools -->
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-spring-boot-starter</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphiql-spring-boot-starter</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.embedler.moon.graphql</groupId>
+			<artifactId>spring-graphql-common</artifactId>
+			<version>2.1.0-2016-05-22T16-50-32</version>
+		</dependency>
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>graphql-java</artifactId>
+			<version>8.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>architecture</artifactId>
@@ -55,28 +77,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency>
-
-		<!-- GraphQL and tools -->
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-spring-boot-starter</artifactId>
-			<version>4.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphiql-spring-boot-starter</artifactId>
-			<version>4.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.embedler.moon.graphql</groupId>
-			<artifactId>spring-graphql-common</artifactId>
-			<version>2.1.0-2016-05-22T16-50-32</version>
-		</dependency>
-		<dependency>
-			<groupId>com.graphql-java</groupId>
-			<artifactId>graphql-java</artifactId>
-			<version>8.0</version>
 		</dependency>
 
 		<!-- Mocking -->
