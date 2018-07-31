@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
-import net.thomas.portfolio.hbase_index.schema.UidCalculator;
+import net.thomas.portfolio.hbase_index.schema.processing.UidCalculator;
 
 public abstract class EntityGenerator<TYPE extends Entity> implements Iterable<TYPE>, Iterator<TYPE> {
 

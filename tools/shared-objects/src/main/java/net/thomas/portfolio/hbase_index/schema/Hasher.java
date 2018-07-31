@@ -6,7 +6,7 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-class Hasher {
+public class Hasher {
 	private static int counter = 0;
 	private MessageDigest hasher;
 

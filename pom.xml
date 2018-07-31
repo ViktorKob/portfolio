@@ -201,6 +201,8 @@
 								<excludes>
 									<exclude>**/*Tester.class</exclude>
 								</excludes>
+								<ignoreTrivial>true</ignoreTrivial>
+								<ignoreMethodAnnotation>net.thomas.portfolio.annotations.CoverageIgnoredMethod</ignoreMethodAnnotation>
 							</instrumentation>
 						</configuration>
 					</plugin>
