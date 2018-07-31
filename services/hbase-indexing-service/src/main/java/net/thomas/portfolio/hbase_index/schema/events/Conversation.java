@@ -8,7 +8,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 public class Conversation extends Event {
 	@PartOfKey
-	public final Integer durationIsSeconds;
+	public final Integer durationInSeconds;
 	@PartOfKey
 	@IndexablePath("primary")
 	public final CommunicationEndpoint primary;
@@ -17,10 +17,10 @@ public class Conversation extends Event {
 	public final GeoLocation primaryLocation;
 	public final GeoLocation secondaryLocation;
 
-	public Conversation(Timestamp timeOfEvent, Timestamp timeOfInterception, Integer durationIsSeconds, CommunicationEndpoint primary,
+	public Conversation(Timestamp timeOfEvent, Timestamp timeOfInterception, Integer durationInSeconds, CommunicationEndpoint primary,
 			CommunicationEndpoint secondary, GeoLocation primaryLocation, GeoLocation secondaryLocation) {
 		super(timeOfEvent, timeOfInterception);
-		this.durationIsSeconds = durationIsSeconds;
+		this.durationInSeconds = durationInSeconds;
 		this.primary = primary;
 		this.secondary = secondary;
 		this.primaryLocation = primaryLocation;
@@ -31,7 +31,7 @@ public class Conversation extends Event {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (durationIsSeconds == null ? 0 : durationIsSeconds.hashCode());
+		result = prime * result + (durationInSeconds == null ? 0 : durationInSeconds.hashCode());
 		result = prime * result + (primary == null ? 0 : primary.hashCode());
 		result = prime * result + (primaryLocation == null ? 0 : primaryLocation.hashCode());
 		result = prime * result + (secondary == null ? 0 : secondary.hashCode());
@@ -51,11 +51,11 @@ public class Conversation extends Event {
 			return false;
 		}
 		final Conversation other = (Conversation) obj;
-		if (durationIsSeconds == null) {
-			if (other.durationIsSeconds != null) {
+		if (durationInSeconds == null) {
+			if (other.durationInSeconds != null) {
 				return false;
 			}
-		} else if (!durationIsSeconds.equals(other.durationIsSeconds)) {
+		} else if (!durationInSeconds.equals(other.durationInSeconds)) {
 			return false;
 		}
 		if (primary == null) {
@@ -91,7 +91,7 @@ public class Conversation extends Event {
 
 	@Override
 	public String toString() {
-		return "Conversation [durationIsSeconds=" + durationIsSeconds + ", primary=" + primary + ", secondary=" + secondary + ", primaryLocation="
+		return "Conversation [durationIsSeconds=" + durationInSeconds + ", primary=" + primary + ", secondary=" + secondary + ", primaryLocation="
 				+ primaryLocation + ", secondaryLocation=" + secondaryLocation + ", timeOfEvent=" + timeOfEvent + ", timeOfInterception=" + timeOfInterception
 				+ ", uid=" + uid + "]";
 	}
