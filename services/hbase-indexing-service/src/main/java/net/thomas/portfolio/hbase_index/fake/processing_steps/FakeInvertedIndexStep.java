@@ -20,15 +20,15 @@ import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
-import net.thomas.portfolio.hbase_index.schema.processed_data.InvertedIndex;
+import net.thomas.portfolio.hbase_index.schema.processing.data.InvertedIndex;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorEntityPostAction;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorFieldPreAction;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.factories.VisitorEntityPostActionFactory;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.factories.VisitorFieldPreActionFactory;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.PathContext;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.strict_implementation.StrictEntityHierarchyVisitor;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorEntityPostAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.VisitorFieldPreAction;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.actions.factories.VisitorFieldPreActionFactory;
-import net.thomas.portfolio.hbase_index.schema.visitor.contexts.PathContext;
-import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitor;
-import net.thomas.portfolio.hbase_index.schema.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeInvertedIndexStep implements ProcessingStep {

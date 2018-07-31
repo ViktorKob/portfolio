@@ -15,9 +15,9 @@ import java.util.zip.GZIPOutputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import net.thomas.portfolio.hbase_index.schema.EventDeserializer;
-import net.thomas.portfolio.hbase_index.schema.EventSerializer;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
+import net.thomas.portfolio.hbase_index.schema.processing.EventDeserializer;
+import net.thomas.portfolio.hbase_index.schema.processing.EventSerializer;
 
 public class WorldIoControl {
 

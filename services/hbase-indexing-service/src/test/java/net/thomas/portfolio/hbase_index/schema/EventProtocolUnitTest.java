@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import net.thomas.portfolio.hbase_index.fake.FakeWorld;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
+import net.thomas.portfolio.hbase_index.schema.processing.EventDeserializer;
+import net.thomas.portfolio.hbase_index.schema.processing.EventSerializer;
 
 public class EventProtocolUnitTest {
 	private static Collection<Event> events;

@@ -1,5 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.events;
 
+import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
@@ -28,6 +29,7 @@ public class Conversation extends Event {
 	}
 
 	@Override
+	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -40,6 +42,7 @@ public class Conversation extends Event {
 	}
 
 	@Override
+	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -90,6 +93,7 @@ public class Conversation extends Event {
 	}
 
 	@Override
+	@CoverageIgnoredMethod
 	public String toString() {
 		return "Conversation [durationIsSeconds=" + durationInSeconds + ", primary=" + primary + ", secondary=" + secondary + ", primaryLocation="
 				+ primaryLocation + ", secondaryLocation=" + secondaryLocation + ", timeOfEvent=" + timeOfEvent + ", timeOfInterception=" + timeOfInterception
