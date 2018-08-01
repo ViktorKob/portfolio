@@ -117,8 +117,8 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 
 	@Override
 	public <T extends Entity> VisitorEntityPreAction<T, ConversionContext> getEntityPreAction(Class<T> entityClass) {
-		final Set<Field> relevantFields = stream(entityClass.getFields()).filter(field -> !field.getType()
-			.isAssignableFrom(Entity.class) || "uid".equals(field.getName()))
+		final Set<Field> relevantFields = stream(entityClass.getFields())
+			.filter(field -> !Entity.class.isAssignableFrom(field.getType()) || "uid".equals(field.getName()))
 			.collect(toSet());
 		if (Event.class.isAssignableFrom(entityClass)) {
 			final Field timeOfEvent = getField(entityClass, "timeOfEvent");
@@ -163,7 +163,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 			final Field timeOfInterception) {
 		try {
 			dataTypeEntity.setTimeOfEvent((Timestamp) timeOfEvent.get(entity));
-			dataTypeEntity.setTimeOfEvent((Timestamp) timeOfInterception.get(entity));
+			dataTypeEntity.setTimeOfInterception((Timestamp) timeOfInterception.get(entity));
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			throw new RuntimeException("Unable to convert node " + entity, e);
 		}
