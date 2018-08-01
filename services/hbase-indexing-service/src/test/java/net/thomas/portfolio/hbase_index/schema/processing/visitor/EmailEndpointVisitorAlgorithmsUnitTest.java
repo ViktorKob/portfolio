@@ -1,5 +1,9 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.EMAIL_ENDPOINT_MISSING_ADDRESS;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_EMAIL_ENDPOINT;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,16 +25,16 @@ public class EmailEndpointVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnit
 	@Test
 	public void shouldNeverInvokeAnyFieldActionOnUid() {
 		visit(SOME_EMAIL_ENDPOINT);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL_ENDPOINT, "uid", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnDisplayedNameOnce() {
 		visit(SOME_EMAIL_ENDPOINT);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL_ENDPOINT, "displayedName", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "displayedName", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "displayedName", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL_ENDPOINT, "displayedName", ONCE);
 	}
 
@@ -38,18 +42,18 @@ public class EmailEndpointVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnit
 	public void shouldInvokeCorrectFieldActionOnAddressOnce() {
 		visit(SOME_EMAIL_ENDPOINT);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL_ENDPOINT, "address", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "address", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL_ENDPOINT, "address", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL_ENDPOINT, "address", ONCE);
 	}
 
 	@Test
 	public void shouldSurviveMissingDisplayedName() {
 		visit(EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "displayedName", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "address", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "address", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "address", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME, "address", ONCE);
 	}
 
@@ -57,11 +61,11 @@ public class EmailEndpointVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnit
 	public void shouldSurviceMissingEmailAddress() {
 		visit(EMAIL_ENDPOINT_MISSING_ADDRESS);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "displayedName", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "displayedName", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "displayedName", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "displayedName", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, EMAIL_ENDPOINT_MISSING_ADDRESS, "address", ZERO_TIMES);
 	}
 
 	@Test

@@ -1,5 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_EMAIL;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,48 +23,48 @@ public class EmailVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest {
 	@Test
 	public void shouldInvokeCorrectFieldActionOnTimeOfEventOnce() {
 		visit(SOME_EMAIL);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "timeOfEvent", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "timeOfEvent", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "timeOfEvent", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "timeOfEvent", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "timeOfEvent", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnTimeOfInterceptionOnce() {
 		visit(SOME_EMAIL);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "timeOfInterception", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "timeOfInterception", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "timeOfInterception", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "timeOfInterception", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "timeOfInterception", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokeCorrentFieldActionOnSubjectOnce() {
 		visit(SOME_EMAIL);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "subject", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "subject", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "subject", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "subject", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "subject", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnMessageOnce() {
 		visit(SOME_EMAIL);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "message", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "message", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "message", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "message", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "message", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldNeverInvokeAnyFieldActionOnUid() {
 		visit(SOME_EMAIL);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "uid", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "uid", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnFromOnce() {
 		visit(SOME_EMAIL);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "from", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "from", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "from", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "from", ONCE);
 	}
 
@@ -70,7 +72,7 @@ public class EmailVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest {
 	public void shouldInvokeCorrectFieldActionOnToOnce() {
 		visit(SOME_EMAIL);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "to", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "to", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "to", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "to", ONCE);
 	}
 
@@ -78,7 +80,7 @@ public class EmailVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest {
 	public void shouldInvokeCorrectFieldActionOnCcOnce() {
 		visit(SOME_EMAIL);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "cc", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "cc", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "cc", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "cc", ONCE);
 	}
 
@@ -86,7 +88,7 @@ public class EmailVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest {
 	public void shouldInvokeCorrectFieldActionOnBccOnce() {
 		visit(SOME_EMAIL);
 		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_EMAIL, "bcc", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "bcc", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_EMAIL, "bcc", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_EMAIL, "bcc", ONCE);
 	}
 

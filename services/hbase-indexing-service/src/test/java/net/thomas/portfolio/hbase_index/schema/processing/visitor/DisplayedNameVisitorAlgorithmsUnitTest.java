@@ -3,6 +3,7 @@ package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.thomas.portfolio.hbase_index.schema.TestSampleData;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.utils.InvocationCountingContext;
 
 public class DisplayedNameVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest {
@@ -14,29 +15,29 @@ public class DisplayedNameVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnit
 
 	@Test
 	public void shouldInvokePreEntityActionOnce() {
-		visit(SOME_DISPLAYED_NAME);
-		assertEqualsForAllAlgorithms(INVOKED_ENTITY_PRE_ACTION_ON, SOME_DISPLAYED_NAME, ONCE);
+		visit(TestSampleData.SOME_DISPLAYED_NAME);
+		assertEqualsForAllAlgorithms(INVOKED_ENTITY_PRE_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, ONCE);
 	}
 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnLocalnameOnce() {
-		visit(SOME_DISPLAYED_NAME);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_DISPLAYED_NAME, "name", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_DISPLAYED_NAME, "name", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_DISPLAYED_NAME, "name", NEVER);
+		visit(TestSampleData.SOME_DISPLAYED_NAME);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "name", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "name", ONCE);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "name", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldNeverInvokeAnyFieldActionOnUid() {
-		visit(SOME_DISPLAYED_NAME);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_DISPLAYED_NAME, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_DISPLAYED_NAME, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_DISPLAYED_NAME, "uid", NEVER);
+		visit(TestSampleData.SOME_DISPLAYED_NAME);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, "uid", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldInvokePostEntityActionOnce() {
-		visit(SOME_DISPLAYED_NAME);
-		assertEqualsForAllAlgorithms(INVOKED_ENTITY_POST_ACTION_ON, SOME_DISPLAYED_NAME, ONCE);
+		visit(TestSampleData.SOME_DISPLAYED_NAME);
+		assertEqualsForAllAlgorithms(INVOKED_ENTITY_POST_ACTION_ON, TestSampleData.SOME_DISPLAYED_NAME, ONCE);
 	}
 }
