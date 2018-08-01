@@ -8,6 +8,6 @@ import net.thomas.portfolio.hbase_index.schema.SchemaTestSuite;
 import net.thomas.portfolio.hbase_index.service.HbaseIndexingServiceControllerServiceAdaptorTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ HbaseIndexingServiceControllerServiceAdaptorTest.class, SchemaTestSuite.class, GeneratorTestSuite.class })
+@Suite.SuiteClasses({ SchemaTestSuite.class, GeneratorTestSuite.class, HbaseIndexingServiceControllerServiceAdaptorTest.class })
 public class HbaseIndexingServiceTestSuite {
 }

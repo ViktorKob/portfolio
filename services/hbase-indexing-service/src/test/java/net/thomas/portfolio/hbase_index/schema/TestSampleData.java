@@ -1,16 +1,24 @@
 package net.thomas.portfolio.hbase_index.schema;
 
+import static java.util.Arrays.stream;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
+import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
+import net.thomas.portfolio.hbase_index.schema.meta.MetaEntity;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
 import net.thomas.portfolio.hbase_index.schema.selectors.Domain;
 import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;
 import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
 import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
+import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
@@ -33,12 +41,18 @@ public class TestSampleData {
 	public static final CommunicationEndpoint SOME_COMMUNICATION_ENDPOINT = new CommunicationEndpoint(SOME_PUBLIC_ID, SOME_PRIVATE_ID);
 	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME = new CommunicationEndpoint(null, SOME_PRIVATE_ID);
 	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_ADDRESS = new CommunicationEndpoint(SOME_PUBLIC_ID, null);
-	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT, asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME),
-			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT, asArray(SOME_EMAIL_ENDPOINT),
+			asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME), asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
 	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION,
 			SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION,
-			SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
+			SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	private static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+			SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
+	private static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+			SOME_EMAIL_ADDRESS };
+	private static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
+	private static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
 
 	static {
 		SOME_DISPLAYED_NAME.uid = "00";
@@ -59,7 +73,95 @@ public class TestSampleData {
 		SOME_CONVERSATION.uid = "11";
 	}
 
-	protected static <T> T[] asArray(@SuppressWarnings("unchecked") T... endpoints) {
+	public static void runTestOnAllEntityTypes(TestRunner<Entity> runner) {
+		for (final Entity entity : INSTANCE_OF_EACH_ENTITY_TYPE) {
+			try {
+				runner.executeOn(entity);
+			} catch (final Exception t) {
+				throw new RuntimeException("Failed while testing " + entity, t);
+			}
+		}
+	}
+
+	public static void runTestOnAllEventTypes(TestRunner<Event> runner) {
+		for (final Event event : INSTANCE_OF_EACH_EVENT_TYPE) {
+			try {
+				runner.executeOn(event);
+			} catch (final Exception t) {
+				throw new RuntimeException("Failed testing " + event, t);
+			}
+		}
+	}
+
+	public static void runTestOnAllMetaTypes(TestRunner<MetaEntity> runner) {
+		for (final MetaEntity metaEntity : INSTANCE_OF_EACH_META_TYPE) {
+			try {
+				runner.executeOn(metaEntity);
+			} catch (final Exception t) {
+				throw new RuntimeException("Failed testing " + metaEntity, t);
+			}
+		}
+	}
+
+	public static void runTestOnAllSelectorTypes(TestRunner<SelectorEntity> runner) {
+		for (final SelectorEntity selector : INSTANCE_OF_EACH_SELECTOR_TYPE) {
+			try {
+				runner.executeOn(selector);
+			} catch (final Exception t) {
+				throw new RuntimeException("Failed testing " + selector, t);
+			}
+		}
+	}
+
+	@FunctionalInterface
+	public static interface TestRunner<ENTITY_TYPE> {
+		void executeOn(ENTITY_TYPE entity) throws Exception;
+	}
+
+	public static <T> T[] asArray(@SuppressWarnings("unchecked") T... endpoints) {
 		return endpoints;
+	}
+
+	public static boolean isEntityField(final Field field) {
+		return isArrayEntity(field) || isSingleEntity(field);
+	}
+
+	public static boolean isSingleEntity(final Field field) {
+		return Entity.class.isAssignableFrom(field.getType());
+	}
+
+	public static boolean isArrayEntity(final Field field) {
+		return isArray(field) && Entity.class.isAssignableFrom(getComponentType(field));
+	}
+
+	public static String getClassSimpleName(Entity entity) {
+		return entity.getClass()
+			.getSimpleName();
+	}
+
+	public static Field[] getFieldsExceptUid(Entity entity) {
+		return stream(entity.getClass()
+			.getFields()).filter(field -> !"uid".equals(field.getName()))
+				.toArray(Field[]::new);
+	}
+
+	public static Field[] getDeclaredFields(Entity entity) {
+		return entity.getClass()
+			.getDeclaredFields();
+	}
+
+	public static Class<?> getComponentType(Field field) {
+		return field.getType()
+			.getComponentType();
+	}
+
+	public static Constructor<?> getFirstConstructor(Entity entity) {
+		return entity.getClass()
+			.getDeclaredConstructors()[0];
+	}
+
+	public static boolean isArray(Field field) {
+		return field.getType()
+			.isArray();
 	}
 }
