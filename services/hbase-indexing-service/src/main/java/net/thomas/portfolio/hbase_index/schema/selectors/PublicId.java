@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.selectors;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser;
@@ -15,7 +16,6 @@ public class PublicId extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -24,7 +24,6 @@ public class PublicId extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -47,8 +46,7 @@ public class PublicId extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "PublicId [number=" + number + ", uid=" + uid + "]";
+		return asString(this);
 	}
 }

@@ -36,7 +36,7 @@ public class TextMessageGenerator extends EventGenerator<TextMessage> {
 		receiver.uid = idTool.calculate(receiver);
 		final GeoLocation senderLocation = randomLocation(0.5);
 		final GeoLocation receiverLocation = randomLocation(0.5);
-		return new TextMessage(timeOfEvent, timeOfInterception, message, sender, receiver, senderLocation, receiverLocation);
+		return new TextMessage(message, sender, receiver, senderLocation, receiverLocation, timeOfEvent, timeOfInterception);
 	}
 
 	private CommunicationEndpoint createCommunicationEndpoint(PublicId publicId, PrivateId privateId) {

@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.meta;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.selectors.DisplayedName;
 import net.thomas.portfolio.hbase_index.schema.selectors.EmailAddress;
@@ -17,7 +18,6 @@ public class EmailEndpoint extends MetaEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -27,7 +27,6 @@ public class EmailEndpoint extends MetaEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -57,8 +56,7 @@ public class EmailEndpoint extends MetaEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "EmailEndpoint [displayedName=" + displayedName + ", address=" + address + "]";
+		return asString(this);
 	}
 }

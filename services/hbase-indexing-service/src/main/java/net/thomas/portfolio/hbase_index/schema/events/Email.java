@@ -1,8 +1,9 @@
 package net.thomas.portfolio.hbase_index.schema.events;
 
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import java.util.Arrays;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;
@@ -23,8 +24,8 @@ public class Email extends Event {
 	@IndexablePath("bccReceived")
 	public final EmailEndpoint[] bcc;
 
-	public Email(Timestamp timeOfEvent, Timestamp timeOfInterception, String subject, String message, EmailEndpoint from, EmailEndpoint[] to,
-			EmailEndpoint[] cc, EmailEndpoint[] bcc) {
+	public Email(String subject, String message, EmailEndpoint from, EmailEndpoint[] to, EmailEndpoint[] cc, EmailEndpoint[] bcc, Timestamp timeOfEvent,
+			Timestamp timeOfInterception) {
 		super(timeOfEvent, timeOfInterception);
 		this.subject = subject;
 		this.message = message;
@@ -35,29 +36,27 @@ public class Email extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + Arrays.hashCode(bcc);
 		result = prime * result + Arrays.hashCode(cc);
 		result = prime * result + (from == null ? 0 : from.hashCode());
 		result = prime * result + (message == null ? 0 : message.hashCode());
 		result = prime * result + (subject == null ? 0 : subject.hashCode());
 		result = prime * result + Arrays.hashCode(to);
-		return uid.hashCode();
+		return result;
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof Email)) {
 			return false;
 		}
 		final Email other = (Email) obj;
@@ -95,9 +94,7 @@ public class Email extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "Email [subject=" + subject + ", message=" + message + ", from=" + from + ", to=" + Arrays.toString(to) + ", cc=" + Arrays.toString(cc)
-				+ ", bcc=" + Arrays.toString(bcc) + ", timeOfEvent=" + timeOfEvent + ", timeOfInterception=" + timeOfInterception + ", uid=" + uid + "]";
+		return asString(this);
 	}
 }

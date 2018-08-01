@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.selectors;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser;
@@ -18,7 +19,6 @@ public class EmailAddress extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -28,7 +28,6 @@ public class EmailAddress extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -58,8 +57,7 @@ public class EmailAddress extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "EmailAddress [localname=" + localname + ", domain=" + domain + ", uid=" + uid + "]";
+		return asString(this);
 	}
 }

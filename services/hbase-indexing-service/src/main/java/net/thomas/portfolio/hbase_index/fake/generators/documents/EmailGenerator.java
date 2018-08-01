@@ -45,7 +45,7 @@ public class EmailGenerator extends EventGenerator<Email> {
 		final EmailEndpoint[] to = createListOfEmailEndpoints(10, 0.3d);
 		final EmailEndpoint[] cc = createListOfEmailEndpoints(5, 0.1d);
 		final EmailEndpoint[] bcc = createListOfEmailEndpoints(2, 0.05d);
-		return new Email(timeOfEvent, timeOfInterception, subject, message, from, to, cc, bcc);
+		return new Email(subject, message, from, to, cc, bcc, timeOfEvent, timeOfInterception);
 	}
 
 	private EmailEndpoint createEmailEndpoint(Person person) {
