@@ -1,5 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_LOCALNAME;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,17 +23,17 @@ public class LocalnameVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest
 	@Test
 	public void shouldInvokeCorrectFieldActionOnLocalnameOnce() {
 		visit(SOME_LOCALNAME);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_LOCALNAME, "name", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_LOCALNAME, "name", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_LOCALNAME, "name", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_LOCALNAME, "name", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_LOCALNAME, "name", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldNeverInvokeAnyFieldActionOnUid() {
 		visit(SOME_LOCALNAME);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_LOCALNAME, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_LOCALNAME, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_LOCALNAME, "uid", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_LOCALNAME, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_LOCALNAME, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_LOCALNAME, "uid", ZERO_TIMES);
 	}
 
 	@Test

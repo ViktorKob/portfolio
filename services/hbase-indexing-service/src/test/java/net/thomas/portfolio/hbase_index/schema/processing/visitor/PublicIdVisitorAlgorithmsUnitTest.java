@@ -1,5 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_PUBLIC_ID;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,17 +23,17 @@ public class PublicIdVisitorAlgorithmsUnitTest extends VisitorAlgorithmUnitTest 
 	@Test
 	public void shouldInvokeCorrectFieldActionOnNumberOnce() {
 		visit(SOME_PUBLIC_ID);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_PUBLIC_ID, "number", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_PUBLIC_ID, "number", ZERO_TIMES);
 		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_PUBLIC_ID, "number", ONCE);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_PUBLIC_ID, "number", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_PUBLIC_ID, "number", ZERO_TIMES);
 	}
 
 	@Test
 	public void shouldNeverInvokeAnyFieldActionOnUid() {
 		visit(SOME_PUBLIC_ID);
-		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_PUBLIC_ID, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_PUBLIC_ID, "uid", NEVER);
-		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_PUBLIC_ID, "uid", NEVER);
+		assertThatAllAlgorithms(INVOKED_FIELD_PRE_ACTION_ON, SOME_PUBLIC_ID, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_SIMPLE_ACTION_ON, SOME_PUBLIC_ID, "uid", ZERO_TIMES);
+		assertThatAllAlgorithms(INVOKED_FIELD_POST_ACTION_ON, SOME_PUBLIC_ID, "uid", ZERO_TIMES);
 	}
 
 	@Test
