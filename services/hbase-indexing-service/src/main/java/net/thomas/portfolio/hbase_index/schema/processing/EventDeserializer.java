@@ -95,27 +95,27 @@ public class EventDeserializer extends JsonDeserializer<Event> {
 		DESERIALIZERS.put("Email", (node) -> {
 			final JsonNode subject = node.get("s");
 			final JsonNode message = node.get("m");
-			final Email outputNode = new Email(timestamp.deserialize(node.get("tOE")), timestamp.deserialize(node.get("tOI")), subject.asText(),
-					message.asText(), ifPresent(emailEndpoint, node, "a"), arrayOf(emailEndpoint, node.get("b")), arrayOf(emailEndpoint, node.get("c")),
-					arrayOf(emailEndpoint, node.get("d")));
+			final Email outputNode = new Email(subject.asText(), message.asText(), ifPresent(emailEndpoint, node, "a"),
+					arrayOf(emailEndpoint, node.get("b")), arrayOf(emailEndpoint, node.get("c")), arrayOf(emailEndpoint, node.get("d")), timestamp.deserialize(node.get("tOE")),
+					timestamp.deserialize(node.get("tOI")));
 			outputNode.uid = node.get("id")
 				.asText();
 			return outputNode;
 		});
 		DESERIALIZERS.put("TextMessage", (node) -> {
 			final JsonNode message = node.get("m");
-			final TextMessage outputNode = new TextMessage(timestamp.deserialize(node.get("tOE")), timestamp.deserialize(node.get("tOI")), message.asText(),
-					ifPresent(communicationEndpoint, node, "a"), ifPresent(communicationEndpoint, node, "b"), ifPresent(geoLocation, node, "aL"),
-					ifPresent(geoLocation, node, "bL"));
+			final TextMessage outputNode = new TextMessage(message.asText(), ifPresent(communicationEndpoint, node, "a"), ifPresent(communicationEndpoint, node, "b"),
+					ifPresent(geoLocation, node, "aL"), ifPresent(geoLocation, node, "bL"), timestamp.deserialize(node.get("tOE")),
+					timestamp.deserialize(node.get("tOI")));
 			outputNode.uid = node.get("id")
 				.asText();
 			return outputNode;
 		});
 		DESERIALIZERS.put("Conversation", (node) -> {
 			final JsonNode durationInSeconds = node.get("d");
-			final Conversation outputNode = new Conversation(timestamp.deserialize(node.get("tOE")), timestamp.deserialize(node.get("tOI")),
-					durationInSeconds.asInt(), ifPresent(communicationEndpoint, node, "a"), ifPresent(communicationEndpoint, node, "b"),
-					ifPresent(geoLocation, node, "aL"), ifPresent(geoLocation, node, "bL"));
+			final Conversation outputNode = new Conversation(durationInSeconds.asInt(), ifPresent(communicationEndpoint, node, "a"),
+					ifPresent(communicationEndpoint, node, "b"), ifPresent(geoLocation, node, "aL"), ifPresent(geoLocation, node, "bL"),
+					timestamp.deserialize(node.get("tOE")), timestamp.deserialize(node.get("tOI")));
 			outputNode.uid = node.get("id")
 				.asText();
 			return outputNode;

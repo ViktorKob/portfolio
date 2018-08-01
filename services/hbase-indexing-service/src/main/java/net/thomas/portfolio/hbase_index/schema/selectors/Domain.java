@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.selectors;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser;
@@ -12,18 +13,17 @@ public class Domain extends SelectorEntity {
 	@PartOfKey
 	public final Domain domain;
 
-	public Domain(String domainPart) {
-		this.domainPart = domainPart;
-		domain = null;
-	}
-
 	public Domain(String domainPart, Domain domain) {
 		this.domainPart = domainPart;
 		this.domain = domain;
 	}
 
+	public Domain(String domainPart) {
+		this.domainPart = domainPart;
+		domain = null;
+	}
+
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -33,7 +33,6 @@ public class Domain extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
@@ -63,8 +62,7 @@ public class Domain extends SelectorEntity {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "Domain [domainPart=" + domainPart + ", domain=" + domain + ", uid=" + uid + "]";
+		return asString(this);
 	}
 }

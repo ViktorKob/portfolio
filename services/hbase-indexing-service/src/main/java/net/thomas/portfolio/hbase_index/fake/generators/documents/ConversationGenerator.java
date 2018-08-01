@@ -31,6 +31,6 @@ public class ConversationGenerator extends EventGenerator<Conversation> {
 		secondary.uid = idTool.calculate(secondary);
 		final GeoLocation senderLocation = randomLocation(0.5);
 		final GeoLocation receiverLocation = randomLocation(0.5);
-		return new Conversation(timeOfEvent, timeOfInterception, durationIsSeconds, primary, secondary, senderLocation, receiverLocation);
+		return new Conversation(durationIsSeconds, primary, secondary, senderLocation, receiverLocation, timeOfEvent, timeOfInterception);
 	}
 }

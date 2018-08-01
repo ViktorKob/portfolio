@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.events;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
@@ -18,8 +19,8 @@ public class Conversation extends Event {
 	public final GeoLocation primaryLocation;
 	public final GeoLocation secondaryLocation;
 
-	public Conversation(Timestamp timeOfEvent, Timestamp timeOfInterception, Integer durationInSeconds, CommunicationEndpoint primary,
-			CommunicationEndpoint secondary, GeoLocation primaryLocation, GeoLocation secondaryLocation) {
+	public Conversation(Integer durationInSeconds, CommunicationEndpoint primary, CommunicationEndpoint secondary, GeoLocation primaryLocation,
+			GeoLocation secondaryLocation, Timestamp timeOfEvent, Timestamp timeOfInterception) {
 		super(timeOfEvent, timeOfInterception);
 		this.durationInSeconds = durationInSeconds;
 		this.primary = primary;
@@ -29,10 +30,9 @@ public class Conversation extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + (durationInSeconds == null ? 0 : durationInSeconds.hashCode());
 		result = prime * result + (primary == null ? 0 : primary.hashCode());
 		result = prime * result + (primaryLocation == null ? 0 : primaryLocation.hashCode());
@@ -42,15 +42,14 @@ public class Conversation extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof Conversation)) {
 			return false;
 		}
 		final Conversation other = (Conversation) obj;
@@ -93,10 +92,7 @@ public class Conversation extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "Conversation [durationIsSeconds=" + durationInSeconds + ", primary=" + primary + ", secondary=" + secondary + ", primaryLocation="
-				+ primaryLocation + ", secondaryLocation=" + secondaryLocation + ", timeOfEvent=" + timeOfEvent + ", timeOfInterception=" + timeOfInterception
-				+ ", uid=" + uid + "]";
+		return asString(this);
 	}
 }

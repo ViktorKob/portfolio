@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.events;
 
-import net.thomas.portfolio.annotations.CoverageIgnoredMethod;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
@@ -19,8 +20,8 @@ public class TextMessage extends Event {
 	public final GeoLocation senderLocation;
 	public final GeoLocation receiverLocation;
 
-	public TextMessage(Timestamp timeOfEvent, Timestamp timeOfInterception, String message, CommunicationEndpoint sender, CommunicationEndpoint receiver,
-			GeoLocation senderLocation, GeoLocation receiverLocation) {
+	public TextMessage(String message, CommunicationEndpoint sender, CommunicationEndpoint receiver, GeoLocation senderLocation, GeoLocation receiverLocation,
+			Timestamp timeOfEvent, Timestamp timeOfInterception) {
 		super(timeOfEvent, timeOfInterception);
 		this.message = message;
 		this.sender = sender;
@@ -30,10 +31,9 @@ public class TextMessage extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + (message == null ? 0 : message.hashCode());
 		result = prime * result + (receiver == null ? 0 : receiver.hashCode());
 		result = prime * result + (receiverLocation == null ? 0 : receiverLocation.hashCode());
@@ -43,15 +43,14 @@ public class TextMessage extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof TextMessage)) {
 			return false;
 		}
 		final TextMessage other = (TextMessage) obj;
@@ -94,10 +93,7 @@ public class TextMessage extends Event {
 	}
 
 	@Override
-	@CoverageIgnoredMethod
 	public String toString() {
-		return "TextMessage [message=" + message + ", sender=" + sender + ", receiver=" + receiver + ", senderLocation=" + senderLocation
-				+ ", receiverLocation=" + receiverLocation + ", timeOfEvent=" + timeOfEvent + ", timeOfInterception=" + timeOfInterception + ", uid=" + uid
-				+ "]";
+		return asString(this);
 	}
 }
