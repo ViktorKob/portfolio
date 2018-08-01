@@ -15,7 +15,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
@@ -90,7 +89,6 @@ public class Entity2DataTypeConverterUnitTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldConvertNonEntityFieldsCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);
@@ -103,7 +101,6 @@ public class Entity2DataTypeConverterUnitTest {
 	}
 
 	@Test
-	@Ignore
 	public void shouldConvertEntityFieldsCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);

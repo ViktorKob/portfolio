@@ -47,12 +47,12 @@ public class TestSampleData {
 			SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
 	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
 			SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	private static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+	public static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
 			SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
-	private static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+	public static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
 			SOME_EMAIL_ADDRESS };
-	private static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
-	private static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
+	public static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
+	public static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
 
 	static {
 		SOME_DISPLAYED_NAME.uid = "00";
@@ -146,8 +146,9 @@ public class TestSampleData {
 	}
 
 	public static Field[] getDeclaredFields(Entity entity) {
-		return entity.getClass()
-			.getDeclaredFields();
+		return stream(entity.getClass()
+			.getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
+				.toArray(Field[]::new);
 	}
 
 	public static Class<?> getComponentType(Field field) {
