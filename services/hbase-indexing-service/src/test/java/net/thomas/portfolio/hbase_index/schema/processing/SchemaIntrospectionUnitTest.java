@@ -1,23 +1,26 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
 import static net.thomas.portfolio.hbase_index.schema.TestSampleData.INSTANCE_OF_EACH_EVENT_TYPE;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getClassSimpleName;
 import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEntityTypes;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEventTypes;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllSelectorTypes;
+import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllSimpleRepresentableSelectorTypes;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.TestSampleData;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class SchemaIntrospectionUnitTest {
-	private HbaseIndexSchema schema;
+	private static HbaseIndexSchema schema;
 
-	@Before
-	public void setUpForTest() {
+	@BeforeClass
+	public static void setUpForTest() {
 		final SchemaIntrospection schemaIntrospection = new SchemaIntrospection();
 		for (final Event event : INSTANCE_OF_EACH_EVENT_TYPE) {
 			schemaIntrospection.examine(event.getClass());
@@ -29,7 +32,31 @@ public class SchemaIntrospectionUnitTest {
 	public void shouldContainAllDataTypes() {
 		final Collection<String> dataTypes = schema.getDataTypes();
 		runTestOnAllEntityTypes((entity) -> {
-			assertTrue(dataTypes.contains(TestSampleData.getClassSimpleName(entity)));
+			assertTrue(dataTypes.contains(getClassSimpleName(entity)));
+		});
+	}
+
+	@Test
+	public void shouldContainAllSelectorTypes() {
+		final Collection<String> dataTypes = schema.getSelectorTypes();
+		runTestOnAllSelectorTypes((entity) -> {
+			assertTrue(dataTypes.contains(getClassSimpleName(entity)));
+		});
+	}
+
+	@Test
+	public void shouldContainAllDocumentTypes() {
+		final Collection<String> dataTypes = schema.getDocumentTypes();
+		runTestOnAllEventTypes((entity) -> {
+			assertTrue(dataTypes.contains(getClassSimpleName(entity)));
+		});
+	}
+
+	@Test
+	public void shouldContainAllSimpleRepresentableTypes() {
+		final Collection<String> dataTypes = schema.getSimpleRepresentableTypes();
+		runTestOnAllSimpleRepresentableSelectorTypes((selector) -> {
+			assertTrue(dataTypes.contains(getClassSimpleName(selector)));
 		});
 	}
 }

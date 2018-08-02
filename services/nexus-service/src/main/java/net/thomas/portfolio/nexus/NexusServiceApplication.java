@@ -2,7 +2,7 @@ package net.thomas.portfolio.nexus;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
-import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadGenericConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,7 +33,7 @@ public class NexusServiceApplication {
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();
-		loadGenericConfigurationIntoProperties();
+		loadNexusConfigurationIntoProperties();
 		run(NexusServiceApplication.class, args);
 	}
 }
