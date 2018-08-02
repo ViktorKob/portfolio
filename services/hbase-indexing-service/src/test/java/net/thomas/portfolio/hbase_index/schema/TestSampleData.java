@@ -5,6 +5,7 @@ import static java.util.Arrays.stream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
+import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
@@ -109,6 +110,19 @@ public class TestSampleData {
 				runner.executeOn(selector);
 			} catch (final Exception t) {
 				throw new RuntimeException("Failed testing " + selector, t);
+			}
+		}
+	}
+
+	public static void runTestOnAllSimpleRepresentableSelectorTypes(TestRunner<SelectorEntity> runner) {
+		for (final SelectorEntity selector : INSTANCE_OF_EACH_SELECTOR_TYPE) {
+			if (selector.getClass()
+				.isAnnotationPresent(SimpleRepresentable.class)) {
+				try {
+					runner.executeOn(selector);
+				} catch (final Exception t) {
+					throw new RuntimeException("Failed testing " + selector, t);
+				}
 			}
 		}
 	}

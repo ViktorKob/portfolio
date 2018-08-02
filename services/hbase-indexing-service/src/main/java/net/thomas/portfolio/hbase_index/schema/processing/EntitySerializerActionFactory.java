@@ -51,17 +51,17 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	public EntitySerializerActionFactory() {
 		actions = new HashMap<>();
-		actions.put(Localname.class, new LocalnameVisitorActions());
+		actions.put(CommunicationEndpoint.class, new CommunicationEndpointVisitorActions());
+		actions.put(Conversation.class, new ConversationVisitorActions());
 		actions.put(DisplayedName.class, new DisplayedNameVisitorActions());
-		actions.put(PublicId.class, new PublicIdVisitorActions());
-		actions.put(PrivateId.class, new PrivateIdVisitorActions());
 		actions.put(Domain.class, new DomainVisitorActions());
+		actions.put(Email.class, new EmailVisitorActions());
 		actions.put(EmailAddress.class, new EmailAddressVisitorActions());
 		actions.put(EmailEndpoint.class, new EmailEndpointVisitorActions());
-		actions.put(CommunicationEndpoint.class, new CommunicationEndpointVisitorActions());
-		actions.put(Email.class, new EmailVisitorActions());
+		actions.put(Localname.class, new LocalnameVisitorActions());
+		actions.put(PublicId.class, new PublicIdVisitorActions());
+		actions.put(PrivateId.class, new PrivateIdVisitorActions());
 		actions.put(TextMessage.class, new TextMessageVisitorActions());
-		actions.put(Conversation.class, new ConversationVisitorActions());
 	}
 
 	@Override
@@ -71,12 +71,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorEntityPreAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
 			return (entity, context) -> {
-				final JsonGenerator generator = context.generator;
-				try {
-					generator.writeStartObject();
-					generator.writeObjectField("notImplementedYet", entityClass.getSimpleName());
-				} catch (final IOException e) {
-				}
+				throw new RuntimeException("Unable to serialize " + entity);
 			};
 		}
 	}
@@ -88,11 +83,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorEntityPostAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
 			return (entity, context) -> {
-				final JsonGenerator generator = context.generator;
-				try {
-					generator.writeEndObject();
-				} catch (final IOException e) {
-				}
+				throw new RuntimeException("Unable to serialize " + entity);
 			};
 		}
 	}
@@ -105,11 +96,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 				.getFieldPreAction(field);
 		} else {
 			return (entity, context) -> {
-				final JsonGenerator generator = context.generator;
-				try {
-					generator.writeFieldName(field);
-				} catch (final IOException e) {
-				}
+				throw new RuntimeException("Unable to serialize " + entity);
 			};
 		}
 	}
@@ -122,6 +109,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 				.getFieldPostAction(field);
 		} else {
 			return (entity, context) -> {
+				throw new RuntimeException("Unable to serialize " + entity);
 			};
 		}
 	}
@@ -134,11 +122,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 				.getFieldSimpleAction(field);
 		} else {
 			return (entity, context) -> {
-				final JsonGenerator generator = context.generator;
-				try {
-					generator.writeObjectField(field, "Not implemented yet");
-				} catch (final IOException e) {
-				}
+				throw new RuntimeException("Unable to serialize " + entity);
 			};
 		}
 	}
@@ -146,23 +130,8 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	abstract class SerializerVisitorActions<ENTITY_TYPE extends Entity>
 			implements VisitorEntityPreAction<ENTITY_TYPE, SerializerContext>, VisitorEntityPostAction<ENTITY_TYPE, SerializerContext> {
 		protected final VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> NO_SIMPLE_ACTION = (entity, context) -> {
-			try {
-				final JsonGenerator generator = getContext(context).generator;
-				generator.writeObjectField("unknownField", entity.getClass()
-					.getSimpleName());
-			} catch (final IOException e) {
-				throw new RuntimeException("Unable to serialize " + entity.toString(), e);
-			}
 		};
 		protected final VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> DEFAULT_PRE_ACTION = (entity, context) -> {
-			try {
-				final JsonGenerator generator = getContext(context).generator;
-				generator.writeFieldName("unknownField");
-				generator.writeObject(entity.getClass()
-					.getSimpleName());
-			} catch (final IOException e) {
-				throw new RuntimeException("Unable to serialize " + entity.toString(), e);
-			}
 		};
 		protected final VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> DEFAULT_POST_ACTION = (entity, context) -> {
 		};
