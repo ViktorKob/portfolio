@@ -12,8 +12,8 @@
 	<modules>
 		<module>tools</module>
 		<module>infrastructure</module>
-		<module>admin</module>
 		<module>proxy</module>
+		<module>admin</module>
 		<module>services</module>
 	</modules>
 
