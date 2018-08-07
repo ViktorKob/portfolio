@@ -33,8 +33,12 @@ public class SubTypeArrayFetcher extends ModelDataFetcher<List<DataTypeEntityPro
 	}
 
 	private List<DataTypeEntityProxy> convert(DataTypeProxy<?, ?> parentProxy, List<? extends DataType> entities) {
-		return entities.stream()
-			.map(entity -> new DataTypeEntityProxy(parentProxy, entity, adaptors))
-			.collect(toList());
+		if (entities == null) {
+			return emptyList();
+		} else {
+			return entities.stream()
+				.map(entity -> new DataTypeEntityProxy(parentProxy, entity, adaptors))
+				.collect(toList());
+		}
 	}
 }
