@@ -12,7 +12,7 @@ public interface LegalAdaptor {
 	 *            The legal parameters supporting the lookup
 	 * @return An assessment of whether the lookup would be legal to complete
 	 */
-	Legality checkLegalityOfInvertedIndexQuery(DataTypeId selectorId, LegalInformation legalInfo);
+	Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo);
 
 	/***
 	 * @param dataTypeId

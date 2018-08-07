@@ -26,6 +26,7 @@ import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentInfoProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
+import net.thomas.portfolio.nexus.graphql.fetchers.IllegalLookupException;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -33,6 +34,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
+import net.thomas.portfolio.shared_objects.legal.Legality;
 
 public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>> {
 
@@ -96,7 +98,8 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>
 	}
 
 	private boolean isIllegal(final DataTypeId id, final InvertedIndexLookupRequest request) {
-		return ILLEGAL == adaptors.checkLegalityOfSelectorQuery(id, request.legalInfo);
+		final Legality legality = adaptors.checkLegalityOfInvertedIndexLookup(id, request.legalInfo);
+		return legality == null || ILLEGAL == legality;
 	}
 
 	private List<DocumentProxy<?>> lookupDocumentType(DataTypeProxy<?, ?> parent, final InvertedIndexLookupRequest request) {
