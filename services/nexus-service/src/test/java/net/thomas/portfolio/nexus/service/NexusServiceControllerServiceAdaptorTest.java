@@ -1,21 +1,30 @@
 package net.thomas.portfolio.nexus.service;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonMap;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.EXAMPLE_IDS;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SIMPLE_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DOCUMENT_INFOS;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_SIMPLE_REP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.setUpHbaseAdaptorMock;
 import static net.thomas.portfolio.services.Service.NEXUS_SERVICE;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
+import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
+import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.http.HttpMethod.GET;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
@@ -31,10 +40,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.LegalAdaptorImpl;
@@ -48,8 +55,8 @@ import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.services.ServiceEndpoint;
-import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
@@ -66,7 +73,8 @@ public class NexusServiceControllerServiceAdaptorTest {
 	static class HbaseServiceMockSetup {
 		@Bean(name = "HbaseIndexModelAdaptor")
 		public HbaseIndexModelAdaptor getHbaseModelAdaptor() {
-			final HbaseIndexModelAdaptor adaptor = buildHbaseAdaptorMock();
+			final HbaseIndexModelAdaptor adaptor = mock(HbaseIndexModelAdaptorImpl.class);
+			setUpHbaseAdaptorMock(adaptor);
 			return adaptor;
 		}
 	}
@@ -91,73 +99,97 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Autowired
 	private RestTemplate restTemplate;
 	private HttpRestClient httpClient;
+	private GraphQlQueryBuilder queryBuilder;
 
 	@Before
 	public void setupController() {
+		reset(hbaseAdaptor);
+		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
+		queryBuilder = new GraphQlQueryBuilder();
 	}
 
 	@Test
-	public void should() {
-		final Map<String, Object> response = httpClient.loadUrlAsObject(NEXUS_SERVICE, GRAPHQL, GET, JSON,
-				new PreSerializedParameter("query", "query test($simpleRepresentation:String){Localname(simpleRep:$simpleRepresentation) {uid}}"),
-				new PreSerializedParameter("operationName", "test"), jsonParameter("variables", singletonMap("simpleRepresentation", SOME_SIMPLE_REP)));
-		assertEquals(SOME_UID, lookupReponseElement(response, "data", "Localname", "uid"));
+	public void shouldLookupUidAndFetchUid() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "uid");
+		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
+	}
+
+	@Test
+	public void shouldLookupSimpleRepAndFetchUid() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
+		queryBuilder.setSimpleRepToFieldValueQuery(SIMPLE_TYPE, "uid");
+		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
+	}
+
+	@Test
+	public void shouldThrowExceptionWhenSearchIsIllegal() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(ILLEGAL);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
+		final String response = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message");
+		assertTrue(response.contains("must be justified"));
+	}
+
+	@Test
+	public void shouldReturnEmptyListWhenAuditLoggingFails() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(false);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
+		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events"));
+	}
+
+	@Test
+	public void shouldFetchDocumentsForSelector() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(true);
+		when(hbaseAdaptor.lookupSelectorInInvertedIndex(any())).thenReturn(SOME_DOCUMENT_INFOS);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
+		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
+		assertEquals(firstId(SOME_DOCUMENT_INFOS.getInfos()).uid, result);
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object lookupReponseElement(Map<String, Object> response, String... path) {
-		Object result = response;
-		for (int i = 0; i < path.length; i++) {
-			result = ((Map<String, Object>) result).get(path[i]);
-		}
-		return result;
+	private <T> T executeQueryAndLookupResponseAtPath(final ParameterGroup query, String... path) {
+		final Map<String, Object> response = executeQuery(query);
+		return (T) lookupFirstValidReponseElement(response, path);
 	}
 
-	private PreSerializedParameter jsonParameter(String variable, Map<String, String> value) {
+	private Map<String, Object> executeQuery(final ParameterGroup parameterGroup) {
+		return httpClient.loadUrlAsObject(NEXUS_SERVICE, GRAPHQL, GET, JSON, parameterGroup);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Object lookupFirstValidReponseElement(Map<String, Object> response, String... path) {
 		try {
-			return new PreSerializedParameter(variable, new ObjectMapper().writeValueAsString(value));
-		} catch (final JsonProcessingException e) {
-			throw new RuntimeException("Parameter creation failed", e);
+			Object result = response;
+			for (int i = 0; i < path.length; i++) {
+				while (result instanceof List) {
+					result = ((List<?>) result).get(0);
+				}
+				result = ((Map<String, Object>) result).get(path[i]);
+			}
+			return result;
+		} catch (final Exception e) {
+			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response", e);
 		}
 	}
 
-	// @Test
-	// public void should() {
-	// final LinkedHashMap<String, Object> loadUrlAsObject = httpClient.loadUrlAsObject(NEXUS_SERVICE, GRAPHQL, GET, JSON, new PreSerializedParameter("query",
-	// "query ExampleSelectorLookup($simpleRepresentation: String, $username: String!, $justification: String) { Localname(simpleRep: $simpleRepresentation) {
-	// headline statistics(user: $username, justification: $justification) { dayTotal weekTotal quarterTotal infinityTotal } knowledge { alias isKnown
-	// isRestricted } events(user: $username, justification: $justification) { timeOfEvent { timestamp originalTimeZone } ... on Email { from { headline
-	// displayedName { name } address { headline localname { name } domain { domainPart domain { domainPart domain { domainPart domain { domainPart domain {
-	// domainPart } } } } } } } } } } } "),
-	// new PreSerializedParameter("operationName", "ExampleSelectorLookup"), new PreSerializedParameter("variables",
-	// "{ \"simpleRepresentation\": \"wxmeipdvhsg\", \"username\": \"me\", \"justification\": \"Because... Reasons...\" }"));
-	// System.out.println(loadUrlAsObject);
-	// }
+	private DataTypeId firstId(List<DocumentInfo> list) {
+		return list.get(0)
+			.getId();
+	}
 
-	private static final String SOME_SIMPLE_REP = "some simple rep";
-	private static final String SOME_UID = "AABB0011";
-	private static final String SOME_TYPE = "Some type";
-	private static final DataTypeId SOME_ID = new DataTypeId(SOME_TYPE, SOME_UID);
-	private static final Collection<String> DATA_TYPES = asList("Localname", "DisplayedName", "Domain", "EmailAddress", "EmailEndpoint", "Email");
-	private static final Collection<String> DOCUMENT_TYPES = asList("Email");
-	private static final Collection<String> SELECTOR_TYPES = asList("Localname", "DisplayedName", "Domain", "EmailAddress");
-
-	private static HbaseIndexModelAdaptor buildHbaseAdaptorMock() {
-		final HbaseIndexModelAdaptor adaptor = mock(HbaseIndexModelAdaptorImpl.class);
-		when(adaptor.getDataTypes()).thenReturn(DATA_TYPES);
-		when(adaptor.getDocumentTypes()).thenReturn(DOCUMENT_TYPES);
-		when(adaptor.getSelectorTypes()).thenReturn(SELECTOR_TYPES);
-		for (final String type : DOCUMENT_TYPES) {
-			when(adaptor.isDocument(type)).thenReturn(true);
-		}
-		for (final String type : SELECTOR_TYPES) {
-			when(adaptor.isSelector(type)).thenReturn(true);
-			when(adaptor.isSimpleRepresentable(type)).thenReturn(true);
-		}
-		when(adaptor.getFieldsForDataType(any())).thenReturn(new Fields());
-		when(adaptor.getIdFromSimpleRep(any(), eq(SOME_SIMPLE_REP))).thenReturn(SOME_ID);
-		return adaptor;
+	private void assertIsEmpty(List<?> list) {
+		assertTrue(list.isEmpty());
 	}
 }

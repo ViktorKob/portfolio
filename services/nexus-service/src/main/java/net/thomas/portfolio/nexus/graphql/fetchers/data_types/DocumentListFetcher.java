@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
@@ -47,14 +46,12 @@ public class DocumentListFetcher extends ModelDataFetcher<List<DocumentProxy<?>>
 		final InvertedIndexLookupRequest request = convertToSearch(environment);
 		final DataTypeId selectorId = proxy.getId();
 		if (isIllegal(selectorId, request)) {
-			throw new GraphQLException("Search for selector " + selectorId.type + "-" + selectorId.uid + " must be justified by a specific user");
-		} else {
-			if (adaptors.auditLogInvertedIndexLookup(selectorId, request.legalInfo)) {
-				return lookupDocumentType(proxy, request);
-			} else {
-				return emptyList();
-			}
+			final String message = "Search for selector " + selectorId.type + "-" + selectorId.uid + " must be justified by a specific user";
+			throw new IllegalLookupException(message);
+		} else if (adaptors.auditLogInvertedIndexLookup(selectorId, request.legalInfo)) {
+			return lookupDocumentType(proxy, request);
 		}
+		return emptyList();
 	}
 
 	private InvertedIndexLookupRequest convertToSearch(DataFetchingEnvironment environment) {
