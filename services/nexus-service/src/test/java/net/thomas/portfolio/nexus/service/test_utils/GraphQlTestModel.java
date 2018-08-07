@@ -1,6 +1,12 @@
 package net.thomas.portfolio.nexus.service.test_utils;
 
 import static java.util.Arrays.asList;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.decimal;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.geoLocation;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.integer;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.strings;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.timestamp;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataTypeArray;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,35 +28,44 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 public class GraphQlTestModel {
+	public static final String SOME_STRING = "some string";
+	public static final Integer SOME_INTEGER = 1;
+	public static final Long SOME_LONG_INTEGER = Long.MAX_VALUE;
+	public static final Double SOME_DECIMAL = 3.14;
+	public static final GeoLocation SOME_GEO_LOCATION = new GeoLocation(1.2, -1.2);
+	public static final Timestamp SOME_TIMESTAMP = new Timestamp(3l);
+	public static final String SOME_SIMPLE_REP = "some simple rep";
 	public static final String SIMPLE_TYPE = "SimpleType";
 	public static final String RECURSIVE_TYPE = "RecursiveType";
 	public static final String COMPLEX_TYPE = "ComplexType";
 	public static final String NON_SIMPLE_REP_TYPE = "NonSimpleRepType";
-	public static final String CONTAINER_TYPE = "ContainerType";
+	public static final String RAW_DATA_TYPE = "ContainerType";
 	public static final String DOCUMENT_TYPE = "DocumentType";
-	public static final String SOME_SIMPLE_REP = "some simple rep";
-	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE, CONTAINER_TYPE, DOCUMENT_TYPE);
+	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE, RAW_DATA_TYPE, DOCUMENT_TYPE);
 	public static final Collection<String> DOCUMENT_TYPES = asList(DOCUMENT_TYPE);
 	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE);
 	public static final DocumentInfos SOME_DOCUMENT_INFOS = new DocumentInfos(asList());
-	private static int idSeed = 0;
 	public static Map<String, DataTypeId> EXAMPLE_IDS = new HashMap<>();
 	public static Map<String, Fields> TYPE_FIELDS = new HashMap<>();
+	private static int idSeed = 0;
 
 	public static void setUpHbaseAdaptorMock(HbaseIndexModelAdaptor adaptor) {
 		when(adaptor.getDataTypes()).thenReturn(DATA_TYPES);
 		setUpFields(adaptor);
 		setUpDocuments(adaptor);
-		EXAMPLE_IDS.put(CONTAINER_TYPE, EXAMPLE_ID(CONTAINER_TYPE));
+		EXAMPLE_IDS.put(RAW_DATA_TYPE, EXAMPLE_ID(RAW_DATA_TYPE));
 		setUpSelectors(adaptor);
 		setUpEntities(adaptor);
 	}
 
 	private static void setUpFields(HbaseIndexModelAdaptor adaptor) {
+		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"), decimal("decimal"), timestamp("timestamp"),
+				geoLocation("geoLocation"));
 		setFieldsForType(COMPLEX_TYPE, dataType("simpleType", SIMPLE_TYPE), dataType("missingSimpleType", SIMPLE_TYPE),
 				dataTypeArray("arraySimpleType", SIMPLE_TYPE), dataTypeArray("missingArrayType", SIMPLE_TYPE));
 		for (final String dataType : DATA_TYPES) {
@@ -105,10 +120,29 @@ public class GraphQlTestModel {
 	}
 
 	private static void setUpEntities(HbaseIndexModelAdaptor adaptor) {
+		final DataType simpleTypeEntity = setUpSimpleEntity(adaptor);
+		setUpComplexEntity(adaptor, simpleTypeEntity);
+	}
+
+	private static DataType setUpSimpleEntity(HbaseIndexModelAdaptor adaptor) {
+		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		final DataType simpleTypeEntity = new Selector(simpleTypeId);
+		simpleTypeEntity.put("string", SOME_STRING);
+		simpleTypeEntity.put("strings", asList(SOME_STRING));
+		simpleTypeEntity.put("integer", SOME_INTEGER);
+		simpleTypeEntity.put("long", SOME_LONG_INTEGER);
+		simpleTypeEntity.put("decimal", SOME_DECIMAL);
+		simpleTypeEntity.put("geoLocation", SOME_GEO_LOCATION);
+		simpleTypeEntity.put("timestamp", SOME_TIMESTAMP);
+		when(adaptor.getDataType(simpleTypeId)).thenReturn(simpleTypeEntity);
+		return simpleTypeEntity;
+	}
+
+	private static void setUpComplexEntity(HbaseIndexModelAdaptor adaptor, DataType simpleTypeEntity) {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		final DataType complexTypeEntity = new Selector(complexTypeId);
-		complexTypeEntity.put("simpleType", new Selector(EXAMPLE_IDS.get(SIMPLE_TYPE)));
-		complexTypeEntity.put("arraySimpleType", asList(new Selector(EXAMPLE_IDS.get(SIMPLE_TYPE))));
+		complexTypeEntity.put("simpleType", simpleTypeEntity);
+		complexTypeEntity.put("arraySimpleType", asList(simpleTypeEntity));
 		when(adaptor.getDataType(complexTypeId)).thenReturn(complexTypeEntity);
 	}
 }
