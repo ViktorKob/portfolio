@@ -3,6 +3,7 @@ package net.thomas.portfolio.nexus.service;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.COMPLEX_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.CONTAINER_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.DOCUMENT_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.EXAMPLE_IDS;
@@ -17,6 +18,7 @@ import static net.thomas.portfolio.services.configuration.NexusServiceProperties
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -143,7 +145,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// *** SelectorSuggestionsFetcher
 	// ***************************************
 	@Test
-	public void shouldReturnSuggestionsBasedOnSimpleRep() {
+	public void shouldReturnSuggestionBasedOnSimpleRep() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		when(hbaseAdaptor.getSelectorSuggestions(eq(SOME_SIMPLE_REP))).thenReturn(singletonList(someId));
 		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
@@ -205,6 +207,46 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
 		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
 		assertEquals(firstId(SOME_DOCUMENT_INFOS.getInfos()).uid, result);
+	}
+
+	// ***************************************
+	// *** SubTypeFetcher
+	// ***************************************
+	@Test
+	public void shouldLookupSelectorUidAndFetchSimpleSubType() {
+		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
+		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		queryBuilder.addVariable("uid", complexTypeId.uid);
+		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "simpleType{uid}");
+		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "simpleType", "uid"));
+	}
+
+	@Test
+	public void shouldLookupSelectorUidAndReturnNullWhenSubTypeIsMissing() {
+		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
+		queryBuilder.addVariable("uid", complexTypeId.uid);
+		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingSimpleType{uid}");
+		assertNull(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingSimpleType"));
+	}
+
+	// ***************************************
+	// *** SubTypeArrayFetcher
+	// ***************************************
+	@Test
+	public void shouldLookupSelectorUidAndFetchSimpleSubTypes() {
+		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
+		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		queryBuilder.addVariable("uid", complexTypeId.uid);
+		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "arraySimpleType{uid}");
+		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "arraySimpleType", "uid"));
+	}
+
+	@Test
+	public void shouldLookupSelectorUidAndReturnEmptyListForMissingField() {
+		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
+		queryBuilder.addVariable("uid", complexTypeId.uid);
+		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingArrayType{uid}");
+		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
 	}
 
 	@SuppressWarnings("unchecked")
