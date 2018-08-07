@@ -62,6 +62,10 @@ public class PrimitiveField implements Field {
 		return new PrimitiveField(name, STRING, false, true);
 	}
 
+	public static PrimitiveField strings(String name) {
+		return new PrimitiveField(name, STRING, true, true);
+	}
+
 	public static PrimitiveField integer(String name) {
 		return new PrimitiveField(name, INTEGER, false, true);
 	}
