@@ -23,12 +23,13 @@ public class GraphQlTestModel {
 	public static final String SIMPLE_TYPE = "SimpleType";
 	public static final String RECURSIVE_TYPE = "RecursiveType";
 	public static final String COMPLEX_TYPE = "ComplexType";
+	public static final String NON_SIMPLE_REP_TYPE = "NonSimpleRepType";
 	public static final String CONTAINER_TYPE = "ContainerType";
 	public static final String DOCUMENT_TYPE = "DocumentType";
 	public static final String SOME_SIMPLE_REP = "some simple rep";
-	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, CONTAINER_TYPE, DOCUMENT_TYPE);
+	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE, CONTAINER_TYPE, DOCUMENT_TYPE);
 	public static final Collection<String> DOCUMENT_TYPES = asList(DOCUMENT_TYPE);
-	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE);
+	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE);
 	public static final DocumentInfos SOME_DOCUMENT_INFOS = new DocumentInfos(asList());
 	private static int idSeed = 0;
 	public static Map<String, DataTypeId> EXAMPLE_IDS = new HashMap<>();
@@ -44,9 +45,14 @@ public class GraphQlTestModel {
 			documentInfos.add(new DocumentInfo(EXAMPLE_IDS.get(type), new Timestamp(2l), new Timestamp(4l)));
 		}
 		SOME_DOCUMENT_INFOS.setInfos(documentInfos);
+		EXAMPLE_IDS.put(CONTAINER_TYPE, EXAMPLE_ID(CONTAINER_TYPE));
 		for (final String type : SELECTOR_TYPES) {
 			when(adaptor.isSelector(type)).thenReturn(true);
-			when(adaptor.isSimpleRepresentable(type)).thenReturn(true);
+			if (!NON_SIMPLE_REP_TYPE.equals(type)) {
+				when(adaptor.isSimpleRepresentable(type)).thenReturn(true);
+			} else {
+				when(adaptor.isSimpleRepresentable(type)).thenReturn(false);
+			}
 			EXAMPLE_IDS.put(type, EXAMPLE_ID(type));
 			when(adaptor.getIdFromSimpleRep(eq(type), eq(SOME_SIMPLE_REP))).thenReturn(EXAMPLE_IDS.get(type));
 			when(adaptor.lookupSelectorInInvertedIndex(any())).thenReturn(new DocumentInfos());
