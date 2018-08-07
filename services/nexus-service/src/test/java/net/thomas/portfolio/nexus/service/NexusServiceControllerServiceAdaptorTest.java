@@ -1,7 +1,10 @@
 package net.thomas.portfolio.nexus.service;
 
 import static java.util.Arrays.stream;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.CONTAINER_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.DOCUMENT_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.EXAMPLE_IDS;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SIMPLE_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DOCUMENT_INFOS;
@@ -110,8 +113,11 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder = new GraphQlQueryBuilder();
 	}
 
+	// ***************************************
+	// *** SelectorFetcher
+	// ***************************************
 	@Test
-	public void shouldLookupUidAndFetchUid() {
+	public void shouldLookupSelectorUidAndFetchUid() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "uid");
@@ -119,25 +125,68 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	public void shouldLookupSimpleRepAndFetchUid() {
+	public void shouldReturnErrorWhenSelectorNotPresent() {
+		queryBuilder.setNothingToFieldValueQuery(SIMPLE_TYPE, "uid");
+		assertContainsExpectedText("uid or simple representation must be specified",
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+	}
+
+	@Test
+	public void shouldLookupSelectorSimpleRepAndFetchUid() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
 		queryBuilder.setSimpleRepToFieldValueQuery(SIMPLE_TYPE, "uid");
 		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
 	}
 
+	// ***************************************
+	// *** SelectorSuggestionsFetcher
+	// ***************************************
 	@Test
-	public void shouldThrowExceptionWhenSearchIsIllegal() {
+	public void shouldReturnSuggestionsBasedOnSimpleRep() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(hbaseAdaptor.getSelectorSuggestions(eq(SOME_SIMPLE_REP))).thenReturn(singletonList(someId));
+		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
+		queryBuilder.setSuggestionsToSelectorsQuery();
+		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "suggest", "uid"));
+	}
+
+	// ***************************************
+	// *** DataTypeFetcher
+	// ***************************************
+	@Test
+	public void shouldLookupRawTypeUidAndFetchUid() {
+		final DataTypeId someId = EXAMPLE_IDS.get(CONTAINER_TYPE);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(CONTAINER_TYPE, "uid");
+		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", CONTAINER_TYPE, "uid"));
+	}
+
+	// ***************************************
+	// *** DocumentFetcher
+	// ***************************************
+	@Test
+	public void shouldLookupDocumentUidAndFetchUid() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "uid");
+		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "uid"));
+	}
+
+	// ***************************************
+	// *** DocumentListFetcher
+	// ***************************************
+	@Test
+	public void shouldReturnErrorWhenInvertedIndexLookupIsIllegal() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		final String response = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message");
-		assertTrue(response.contains("must be justified"));
+		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
-	public void shouldReturnEmptyListWhenAuditLoggingFails() {
+	public void shouldReturnEmptyListWhenInvertedIndexLookupAuditLoggingFails() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
 		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(false);
@@ -147,7 +196,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	public void shouldFetchDocumentsForSelector() {
+	public void shouldFetchDocumentInfosForSelector() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
 		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(true);
@@ -180,7 +229,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 			}
 			return result;
 		} catch (final Exception e) {
-			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response", e);
+			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
 		}
 	}
 
@@ -191,5 +240,9 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	private void assertIsEmpty(List<?> list) {
 		assertTrue(list.isEmpty());
+	}
+
+	private void assertContainsExpectedText(String expectedText, final String response) {
+		assertTrue("Unable to find text '" + expectedText + "' in " + response, response.contains(expectedText));
 	}
 }

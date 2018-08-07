@@ -42,7 +42,7 @@ public class SelectorFetcher extends ModelDataFetcher<SelectorProxy<?>> {
 			decorateWithSelectorParameters(proxy, environment);
 			return proxy;
 		} else {
-			return null;
+			throw new UnableToDetermineIdException("Either uid or simple representation must be specified");
 		}
 	}
 

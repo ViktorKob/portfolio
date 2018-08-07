@@ -18,6 +18,11 @@ public class GraphQlQueryBuilder {
 		variables = new HashMap<>();
 	}
 
+	public GraphQlQueryBuilder setNothingToFieldValueQuery(String dataType, String fieldName) {
+		query = "query test{" + dataType + "{" + fieldName + "}}";
+		return this;
+	}
+
 	public GraphQlQueryBuilder setUidToFieldValueQuery(String dataType, String fieldName) {
 		query = "query test($uid:String){" + dataType + "(uid:$uid) {" + fieldName + "}}";
 		return this;
@@ -25,6 +30,11 @@ public class GraphQlQueryBuilder {
 
 	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldName) {
 		query = "query test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldName + "}}";
+		return this;
+	}
+
+	public GraphQlQueryBuilder setSuggestionsToSelectorsQuery() {
+		query = "query test($simpleRepresentation:String!){suggest(simpleRep:$simpleRepresentation){uid}}";
 		return this;
 	}
 

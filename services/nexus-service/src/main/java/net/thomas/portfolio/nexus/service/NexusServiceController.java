@@ -1,8 +1,6 @@
 package net.thomas.portfolio.nexus.service;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -16,12 +14,11 @@ import com.netflix.discovery.EurekaClient;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
-import graphql.GraphQLException;
 import graphql.servlet.DefaultGraphQLErrorHandler;
 import graphql.servlet.SimpleGraphQLServlet;
 import graphql.servlet.SimpleGraphQLServlet.Builder;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
-import net.thomas.portfolio.nexus.graphql.fetchers.data_types.IllegalLookupException;
+import net.thomas.portfolio.nexus.graphql.fetchers.ClientException;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
@@ -123,18 +120,23 @@ public class NexusServiceController {
 	}
 
 	private static class CustomErrorHandler extends DefaultGraphQLErrorHandler {
-		private final Set<Class<? extends GraphQLException>> customClientErrorClasses;
-
-		public CustomErrorHandler() {
-			customClientErrorClasses = new HashSet<>();
-			customClientErrorClasses.add(IllegalLookupException.class);
-		}
-
 		@Override
 		protected boolean isClientError(GraphQLError error) {
-			final Throwable exception = ((ExceptionWhileDataFetching) error).getException();
-			return customClientErrorClasses.contains(exception.getClass()) || super.isClientError(error);
+			return isClientException(error) || super.isClientError(error);
 		}
 
+		private boolean isClientException(GraphQLError error) {
+			if (error instanceof ExceptionWhileDataFetching) {
+				return isClientException((ExceptionWhileDataFetching) error);
+			} else {
+				return false;
+			}
+		}
+
+		private boolean isClientException(ExceptionWhileDataFetching error) {
+			final Throwable exception = error.getException();
+			final Class<? extends Throwable> exceptionClass = exception.getClass();
+			return exceptionClass.isAnnotationPresent(ClientException.class);
+		}
 	}
 }
