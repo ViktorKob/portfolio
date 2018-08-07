@@ -1,7 +1,6 @@
-package net.thomas.portfolio.nexus.graphql.fetchers.data_types;
+package net.thomas.portfolio.nexus.graphql.fetchers;
 
 import graphql.GraphQLException;
-import net.thomas.portfolio.nexus.graphql.fetchers.ClientException;
 
 @ClientException
 public class IllegalLookupException extends GraphQLException {

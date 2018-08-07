@@ -236,7 +236,7 @@ public class Adaptors {
 	}
 
 	/***
-	 * Using {@link LegalAdaptor#checkLegalityOfSelectorQuery}<BR>
+	 * Using {@link LegalAdaptor#checkLegalityOfInvertedIndexLookup}<BR>
 	 *
 	 * @param selectorId
 	 *            The ID of the selector is being queried
@@ -244,8 +244,8 @@ public class Adaptors {
 	 *            The legal parameters supporting the lookup
 	 * @return An assessment of whether the lookup would be legal to complete
 	 */
-	public Legality checkLegalityOfSelectorQuery(DataTypeId selectorId, LegalInformation legalInfo) {
-		return legalAdaptor.checkLegalityOfInvertedIndexQuery(selectorId, legalInfo);
+	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return legalAdaptor.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
 	}
 
 	/***

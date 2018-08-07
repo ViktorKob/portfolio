@@ -82,7 +82,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 	public void shouldVerifyLegalityOfInvertedIndexLookupForValidUserWithJustification() {
 		legalInfoBuilder.setValidJustification();
 		setupAnalyticsServiceToRespondSelectorIsRestricted();
-		final Legality legality = adaptors.checkLegalityOfSelectorQuery(SOME_SELECTOR_ID, legalInfoBuilder.build());
+		final Legality legality = adaptors.checkLegalityOfInvertedIndexLookup(SOME_SELECTOR_ID, legalInfoBuilder.build());
 		assertEquals(LEGAL, legality);
 	}
 

@@ -2,6 +2,7 @@ package net.thomas.portfolio.nexus.service;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.joining;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.COMPLEX_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.CONTAINER_TYPE;
@@ -15,6 +16,7 @@ import static net.thomas.portfolio.services.Service.NEXUS_SERVICE;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
 import static org.junit.Assert.assertEquals;
@@ -60,6 +62,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 
@@ -108,7 +111,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Before
 	public void setupController() {
-		reset(hbaseAdaptor);
+		reset(hbaseAdaptor, legalAdaptor);
 		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
@@ -181,7 +184,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldReturnErrorWhenInvertedIndexLookupIsIllegal() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
-		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(ILLEGAL);
+		when(legalAdaptor.checkLegalityOfInvertedIndexLookup(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
 		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
@@ -190,23 +193,57 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldReturnEmptyListWhenInvertedIndexLookupAuditLoggingFails() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
-		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.checkLegalityOfInvertedIndexLookup(eq(someId), any())).thenReturn(LEGAL);
 		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(false);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events"));
+		assertListIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events"));
 	}
 
 	@Test
 	public void shouldFetchDocumentInfosForSelector() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
-		when(legalAdaptor.checkLegalityOfInvertedIndexQuery(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.checkLegalityOfInvertedIndexLookup(eq(someId), any())).thenReturn(LEGAL);
 		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(true);
 		when(hbaseAdaptor.lookupSelectorInInvertedIndex(any())).thenReturn(SOME_DOCUMENT_INFOS);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
 		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
 		assertEquals(firstId(SOME_DOCUMENT_INFOS.getInfos()).uid, result);
+	}
+
+	// ***************************************
+	// *** SelectorStatisticsFetcher
+	// ***************************************
+	@Test
+	public void shouldReturnErrorWhenSelectorStatisticsLookupIsIllegal() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfStatisticsLookup(eq(someId), any())).thenReturn(ILLEGAL);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
+		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+	}
+
+	@Test
+	public void shouldReturn0CountsWhenSelectorStatisticsLookupAuditLoggingFails() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfStatisticsLookup(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.auditLogStatisticsLookup(eq(someId), any())).thenReturn(false);
+		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
+		assertEquals(0, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
+	}
+
+	@Test
+	public void shouldFetchStatisticsForSelector() {
+		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
+		when(legalAdaptor.checkLegalityOfStatisticsLookup(eq(someId), any())).thenReturn(LEGAL);
+		when(legalAdaptor.auditLogStatisticsLookup(eq(someId), any())).thenReturn(true);
+		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
+		assertEquals(1, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
 	}
 
 	// ***************************************
@@ -246,7 +283,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingArrayType{uid}");
-		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
+		assertListIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -280,8 +317,12 @@ public class NexusServiceControllerServiceAdaptorTest {
 			.getId();
 	}
 
-	private void assertIsEmpty(List<?> list) {
+	private void assertListIsEmpty(List<?> list) {
 		assertTrue(list.isEmpty());
+	}
+
+	private void assertMapIsEmpty(Map<?, ?> map) {
+		assertTrue(map.isEmpty());
 	}
 
 	private void assertContainsExpectedText(String expectedText, final String response) {
