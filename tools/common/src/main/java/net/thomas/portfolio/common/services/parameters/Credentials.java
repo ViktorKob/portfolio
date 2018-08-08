@@ -2,6 +2,9 @@ package net.thomas.portfolio.common.services.parameters;
 
 import java.util.Base64;
 
+/***
+ * This is not secure and not intended for production use
+ */
 public class Credentials {
 	private String user;
 	private String password;

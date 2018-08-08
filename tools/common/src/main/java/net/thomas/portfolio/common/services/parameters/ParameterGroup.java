@@ -7,14 +7,18 @@ import java.util.Collection;
 public interface ParameterGroup {
 	Parameter[] getParameters();
 
+	public static ParameterGroup asGroup(Parameter... parameters) {
+		return new SimpleParameterGroup(parameters);
+	}
+
+	public static ParameterGroup asGroup(String parameterName, Collection<?> values) {
+		return new CollectionParameterGroup(parameterName, values);
+	}
+
 	public static class SimpleParameterGroup implements ParameterGroup {
 		private final Parameter[] parameters;
 
-		public static ParameterGroup asGroup(Parameter... parameters) {
-			return new SimpleParameterGroup(parameters);
-		}
-
-		public SimpleParameterGroup(Parameter... parameters) {
+		private SimpleParameterGroup(Parameter... parameters) {
 			this.parameters = parameters;
 		}
 
@@ -28,7 +32,7 @@ public interface ParameterGroup {
 		private final String name;
 		private final Collection<? extends Object> values;
 
-		public CollectionParameterGroup(String name, Collection<? extends Object> values) {
+		private CollectionParameterGroup(String name, Collection<? extends Object> values) {
 			this.name = name;
 			this.values = values;
 		}
