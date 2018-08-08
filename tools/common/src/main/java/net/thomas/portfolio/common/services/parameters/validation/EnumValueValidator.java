@@ -19,13 +19,13 @@ public class EnumValueValidator<ENUM_TYPE extends Enum<ENUM_TYPE>> extends Param
 
 	@Override
 	public boolean isValid(ENUM_TYPE value) {
-		return value != null;
+		return value != null || !required;
 	}
 
 	@Override
 	public String getReason(ENUM_TYPE value) {
 		if (value == null) {
-			return parameterName + " is missing" + (required ? " and required" : ", but not required") + ". It should belong to " + values;
+			return parameterName + " is missing" + (required ? " and is required" : ", but not required") + ". It should belong to " + values;
 		} else {
 			return parameterName + " ( was " + value + " ) is valid";
 		}
