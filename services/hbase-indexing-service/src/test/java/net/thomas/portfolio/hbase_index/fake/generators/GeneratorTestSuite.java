@@ -8,5 +8,4 @@ import net.thomas.portfolio.hbase_index.fake.generators.selectors.SelectorGenera
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ EntityGeneratorUnitTest.class, SelectorGeneratorTestSuite.class })
 public class GeneratorTestSuite {
-
 }
