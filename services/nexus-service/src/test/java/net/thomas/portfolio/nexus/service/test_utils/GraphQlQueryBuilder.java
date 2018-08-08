@@ -1,12 +1,13 @@
 package net.thomas.portfolio.nexus.service.test_utils;
 
+import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
@@ -44,13 +45,7 @@ public class GraphQlQueryBuilder {
 	}
 
 	public ParameterGroup build() {
-		return new ParameterGroup() {
-			@Override
-			public Parameter[] getParameters() {
-				return new Parameter[] { new PreSerializedParameter("query", query), new PreSerializedParameter("operationName", "test"),
-						jsonParameter("variables", variables) };
-			}
-		};
+		return asGroup(new PreSerializedParameter("query", query), new PreSerializedParameter("operationName", "test"), jsonParameter("variables", variables));
 	}
 
 	private PreSerializedParameter jsonParameter(String variable, Map<String, String> value) {

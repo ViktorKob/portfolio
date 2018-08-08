@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -109,7 +111,6 @@ public class InvertedIndexLookupRequest {
 
 	@JsonIgnore
 	public ParameterGroup[] getGroups() {
-		return new ParameterGroup[] { legalInfo, bounds, new ParameterGroup.CollectionParameterGroup("documentType", documentTypes),
-				new ParameterGroup.CollectionParameterGroup("relation", relations) };
+		return new ParameterGroup[] { legalInfo, bounds, asGroup("documentType", documentTypes), asGroup("relation", relations) };
 	}
 }
