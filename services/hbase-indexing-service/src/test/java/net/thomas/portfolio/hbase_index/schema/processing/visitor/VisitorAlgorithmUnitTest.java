@@ -55,5 +55,4 @@ public class VisitorAlgorithmUnitTest {
 	public static final String INVOKED_FIELD_PRE_ACTION_ON = "preFieldAction";
 	public static final String INVOKED_FIELD_POST_ACTION_ON = "postFieldAction";
 	public static final String INVOKED_FIELD_SIMPLE_ACTION_ON = "simpleFieldAction";
-
 }
