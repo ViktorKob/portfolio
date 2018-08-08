@@ -17,9 +17,9 @@ public class StringPresenceValidator extends ParameterValidator<String> {
 	@Override
 	public String getReason(String value) {
 		if (value == null) {
-			return parameterName + " is missing" + (required ? " and required" : ", but not required");
+			return parameterName + " is missing" + (required ? " and is required" : ", but not required");
 		} else if (value.isEmpty()) {
-			return parameterName + " is empty" + (required ? " and required" : ", but not required");
+			return parameterName + " is empty" + (required ? " and is required" : ", but not required");
 		} else {
 			return parameterName + " ( was " + value + " ) is valid";
 		}

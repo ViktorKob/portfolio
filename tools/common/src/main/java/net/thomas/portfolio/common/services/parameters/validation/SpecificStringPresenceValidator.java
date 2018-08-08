@@ -23,16 +23,16 @@ public class SpecificStringPresenceValidator extends StringPresenceValidator {
 	}
 
 	@Override
-	public boolean isValid(String dataType) {
-		return super.isValid(dataType) && (dataType == null || validStrings.contains(dataType));
+	public boolean isValid(String value) {
+		return super.isValid(value) && validStrings.contains(value);
 	}
 
 	@Override
 	public String getReason(String value) {
 		if (value == null) {
-			return parameterName + " is missing" + (required ? " and required" : ", but not required") + ". It should belong to " + validStringsAsString;
+			return parameterName + " is missing" + (required ? " and is required" : ", but not required") + ". It should belong to " + validStringsAsString;
 		} else if (value.isEmpty()) {
-			return parameterName + " is empty" + (required ? " and required" : ", but not required") + ". It should belong to " + validStringsAsString;
+			return parameterName + " is empty" + (required ? " and is required" : ", but not required") + ". It should belong to " + validStringsAsString;
 		} else if (!validStrings.contains(value)) {
 			return parameterName + " ( was " + value + " ) should belong to " + validStringsAsString;
 		} else {

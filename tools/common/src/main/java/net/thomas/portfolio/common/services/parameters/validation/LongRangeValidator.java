@@ -21,7 +21,7 @@ public class LongRangeValidator extends ParameterValidator<Long> {
 	@Override
 	public String getReason(Long value) {
 		if (value == null) {
-			return parameterName + " is missing" + (required ? " and required" : ", but not required");
+			return parameterName + " is missing" + (required ? " and is required" : ", but not required");
 		} else if (value < min) {
 			return parameterName + " ( was " + value + " ) < " + min;
 		} else if (value > max) {
