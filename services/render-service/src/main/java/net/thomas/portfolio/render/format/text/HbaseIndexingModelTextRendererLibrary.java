@@ -1,9 +1,9 @@
 package net.thomas.portfolio.render.format.text;
 
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.render.common.Renderer;
 import net.thomas.portfolio.render.common.context.TextRenderContext;
@@ -139,7 +139,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final int duration = element.get("durationIsSeconds");
+			final int duration = element.get("durationInSeconds");
 			final String headline = library.render(element.get("primary"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
 				.getTimestamp()) + ": conversation duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
@@ -152,6 +152,6 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

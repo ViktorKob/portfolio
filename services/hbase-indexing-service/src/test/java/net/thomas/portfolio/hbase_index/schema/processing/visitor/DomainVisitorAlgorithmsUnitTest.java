@@ -1,7 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_DOMAIN;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_TOP_LEVEL_DOMAIN;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_DOMAIN;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_TOP_LEVEL_DOMAIN;
 
 import org.junit.Before;
 import org.junit.Test;

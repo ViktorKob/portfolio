@@ -1,11 +1,11 @@
 package net.thomas.portfolio.hbase_index.schema;
 
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getComponentType;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getFieldsExceptUid;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getFirstConstructor;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.isArray;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEntityTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getComponentType;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getFieldsExceptUid;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getFirstConstructor;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isArray;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllEntityTypes;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;

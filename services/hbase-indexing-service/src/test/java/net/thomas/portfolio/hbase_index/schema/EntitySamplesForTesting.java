@@ -24,7 +24,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
-public class TestSampleData {
+public class EntitySamplesForTesting {
 	public static final String SOME_SUBJECT = "subject";
 	public static final String SOME_MESSAGE = "message";
 	public static final int SOME_DURATION = 1;

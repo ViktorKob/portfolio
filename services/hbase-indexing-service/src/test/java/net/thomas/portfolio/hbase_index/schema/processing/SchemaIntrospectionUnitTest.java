@@ -1,11 +1,11 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.INSTANCE_OF_EACH_EVENT_TYPE;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getClassSimpleName;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEntityTypes;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEventTypes;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllSelectorTypes;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllSimpleRepresentableSelectorTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.INSTANCE_OF_EACH_EVENT_TYPE;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getClassSimpleName;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllEntityTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllEventTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllSelectorTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllSimpleRepresentableSelectorTypes;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
