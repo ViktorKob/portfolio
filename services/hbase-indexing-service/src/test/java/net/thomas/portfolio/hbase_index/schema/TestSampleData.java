@@ -20,6 +20,7 @@ import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
 import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
@@ -37,21 +38,30 @@ public class TestSampleData {
 	public static final Domain SOME_DOMAIN = new Domain("part", SOME_TOP_LEVEL_DOMAIN);
 	public static final EmailAddress SOME_EMAIL_ADDRESS = new EmailAddress(SOME_LOCALNAME, SOME_DOMAIN);
 	public static final EmailEndpoint SOME_EMAIL_ENDPOINT = new EmailEndpoint(SOME_DISPLAYED_NAME, SOME_EMAIL_ADDRESS);
-	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME = new EmailEndpoint(null, SOME_EMAIL_ADDRESS);
+	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME = new EmailEndpoint(null,
+			SOME_EMAIL_ADDRESS);
 	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_ADDRESS = new EmailEndpoint(SOME_DISPLAYED_NAME, null);
-	public static final CommunicationEndpoint SOME_COMMUNICATION_ENDPOINT = new CommunicationEndpoint(SOME_PUBLIC_ID, SOME_PRIVATE_ID);
-	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME = new CommunicationEndpoint(null, SOME_PRIVATE_ID);
-	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_ADDRESS = new CommunicationEndpoint(SOME_PUBLIC_ID, null);
-	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT, asArray(SOME_EMAIL_ENDPOINT),
-			asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME), asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION,
-			SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
-			SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
-			SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
-	public static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
-			SOME_EMAIL_ADDRESS };
+	public static final CommunicationEndpoint SOME_COMMUNICATION_ENDPOINT = new CommunicationEndpoint(SOME_PUBLIC_ID,
+			SOME_PRIVATE_ID);
+	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME = new CommunicationEndpoint(
+			null, SOME_PRIVATE_ID);
+	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_ADDRESS = new CommunicationEndpoint(
+			SOME_PUBLIC_ID, null);
+	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT,
+			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME),
+			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Email SOME_OTHER_EMAIL = new Email("abc", "def", SOME_EMAIL_ENDPOINT,
+			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT),
+			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT,
+			SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT,
+			SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID,
+			SOME_PRIVATE_ID, SOME_DOMAIN, SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
+			SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
+	public static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME,
+			SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN, SOME_EMAIL_ADDRESS };
 	public static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
 	public static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
 
@@ -72,6 +82,7 @@ public class TestSampleData {
 		SOME_EMAIL.uid = "09";
 		SOME_TEXT_MESSAGE.uid = "10";
 		SOME_CONVERSATION.uid = "11";
+		SOME_OTHER_EMAIL.uid = "12";
 	}
 
 	public static void runTestOnAllEntityTypes(TestRunner<Entity> runner) {
@@ -116,8 +127,7 @@ public class TestSampleData {
 
 	public static void runTestOnAllSimpleRepresentableSelectorTypes(TestRunner<SelectorEntity> runner) {
 		for (final SelectorEntity selector : INSTANCE_OF_EACH_SELECTOR_TYPE) {
-			if (selector.getClass()
-				.isAnnotationPresent(SimpleRepresentable.class)) {
+			if (selector.getClass().isAnnotationPresent(SimpleRepresentable.class)) {
 				try {
 					runner.executeOn(selector);
 				} catch (final Exception t) {
@@ -149,34 +159,32 @@ public class TestSampleData {
 	}
 
 	public static String getClassSimpleName(Entity entity) {
-		return entity.getClass()
-			.getSimpleName();
+		return entity.getClass().getSimpleName();
 	}
 
 	public static Field[] getFieldsExceptUid(Entity entity) {
-		return stream(entity.getClass()
-			.getFields()).filter(field -> !"uid".equals(field.getName()))
+		return stream(entity.getClass().getFields()).filter(field -> !"uid".equals(field.getName()))
 				.toArray(Field[]::new);
 	}
 
 	public static Field[] getDeclaredFields(Entity entity) {
-		return stream(entity.getClass()
-			.getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
+		return stream(entity.getClass().getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
 				.toArray(Field[]::new);
 	}
 
 	public static Class<?> getComponentType(Field field) {
-		return field.getType()
-			.getComponentType();
+		return field.getType().getComponentType();
 	}
 
 	public static Constructor<?> getFirstConstructor(Entity entity) {
-		return entity.getClass()
-			.getDeclaredConstructors()[0];
+		return entity.getClass().getDeclaredConstructors()[0];
 	}
 
 	public static boolean isArray(Field field) {
-		return field.getType()
-			.isArray();
+		return field.getType().isArray();
+	}
+
+	public static DataTypeId idFor(Entity entity) {
+		return new DataTypeId(getClassSimpleName(entity), entity.uid);
 	}
 }
