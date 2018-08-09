@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_PUBLIC_ID;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_PUBLIC_ID;
 
 import org.junit.Before;
 import org.junit.Test;

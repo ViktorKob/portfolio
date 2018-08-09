@@ -1,6 +1,6 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_LOCALNAME;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_LOCALNAME;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;

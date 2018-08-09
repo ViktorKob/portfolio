@@ -1,8 +1,8 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.COMMUNICATION_ENDPOINT_MISSING_ADDRESS;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_COMMUNICATION_ENDPOINT;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.COMMUNICATION_ENDPOINT_MISSING_ADDRESS;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_COMMUNICATION_ENDPOINT;
 
 import org.junit.Before;
 import org.junit.Test;

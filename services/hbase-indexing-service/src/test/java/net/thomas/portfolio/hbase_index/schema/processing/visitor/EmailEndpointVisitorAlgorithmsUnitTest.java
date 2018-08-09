@@ -1,8 +1,8 @@
 package net.thomas.portfolio.hbase_index.schema.processing.visitor;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.EMAIL_ENDPOINT_MISSING_ADDRESS;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.SOME_EMAIL_ENDPOINT;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.EMAIL_ENDPOINT_MISSING_ADDRESS;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_EMAIL_ENDPOINT;
 
 import org.junit.Before;
 import org.junit.Test;

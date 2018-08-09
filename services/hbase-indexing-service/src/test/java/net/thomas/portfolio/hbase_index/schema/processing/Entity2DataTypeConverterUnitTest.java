@@ -1,13 +1,13 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getClassSimpleName;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.getDeclaredFields;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.isArray;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.isEntityField;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.isSingleEntity;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEntityTypes;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllEventTypes;
-import static net.thomas.portfolio.hbase_index.schema.TestSampleData.runTestOnAllSelectorTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getClassSimpleName;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getDeclaredFields;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isArray;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isEntityField;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isSingleEntity;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllEntityTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllEventTypes;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.runTestOnAllSelectorTypes;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.hbase_index.schema.Entity;
-import net.thomas.portfolio.hbase_index.schema.TestSampleData;
+import net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
@@ -58,7 +58,7 @@ public class Entity2DataTypeConverterUnitTest {
 
 	@Test
 	public void shouldConvertToRawDataTypeForEvent() {
-		TestSampleData.runTestOnAllMetaTypes((metaEntity) -> {
+		EntitySamplesForTesting.runTestOnAllMetaTypes((metaEntity) -> {
 			final DataType convertedEntity = converter.convert(metaEntity);
 			assertTrue(convertedEntity instanceof RawDataType);
 		});
