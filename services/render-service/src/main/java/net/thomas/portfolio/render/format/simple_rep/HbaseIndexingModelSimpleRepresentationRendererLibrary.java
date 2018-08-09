@@ -1,9 +1,9 @@
 package net.thomas.portfolio.render.format.simple_rep;
 
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.render.common.Renderer;
 import net.thomas.portfolio.render.common.context.SimpleRepresentationRenderContext;
@@ -69,6 +69,6 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibrary implements Re
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }
