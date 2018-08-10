@@ -1,6 +1,7 @@
 package net.thomas.portfolio.usage_data.sql;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -65,7 +66,7 @@ public class UsageDataSqlProxyBuildServerTest {
 	}
 
 	private static final String USER_NAME = "root";
-	private static final String PASSWORD = "computer";
+	private static final String PASSWORD = "";
 	private static final String DOCUMENT_TYPE = "TEST_TYPE";
 	private static final String UID = "00000000";
 	private static final String USER = "TEST_USER";
@@ -77,7 +78,7 @@ public class UsageDataSqlProxyBuildServerTest {
 	private static final Database DATABASE_CONFIG = createTestDatabaseConfig();
 
 	private static long nowInMillisecondsWithSecondsPrecision() {
-		return System.currentTimeMillis() / 1000 * 1000;
+		return currentTimeMillis() / 1000 * 1000;
 	}
 
 	private static Database createTestDatabaseConfig() {
