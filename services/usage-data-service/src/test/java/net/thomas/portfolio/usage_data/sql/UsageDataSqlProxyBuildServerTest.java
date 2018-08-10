@@ -86,7 +86,7 @@ public class UsageDataSqlProxyBuildServerTest {
 		databaseConfig.setPort(3306);
 		databaseConfig.setUser(USER_NAME);
 		databaseConfig.setPassword(PASSWORD);
-		databaseConfig.setSchema("usage_data_test");
+		databaseConfig.setSchema("usage_data");
 		return databaseConfig;
 	}
 }
