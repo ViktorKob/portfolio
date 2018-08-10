@@ -52,38 +52,39 @@ public class FakeHbaseIndexUnitTest {
 		DataType email = index.getDataType(idFor(SOME_EMAIL));
 		assertEquals(SOME_EMAIL.uid, email.getId().uid);
 	}
-	
+
 	@Test
 	public void shouldContainChildOfEntityAsDataType() {
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
 		DataType fromEndpoint = index.getDataType(idFor(SOME_EMAIL.from));
 		assertEquals(SOME_EMAIL.from.uid, fromEndpoint.getId().uid);
 	}
-	
+
 	@Test
 	public void shouldReturnEntityAsSample() {
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
 		Entities entities = index.getSamples(getClassSimpleName(SOME_EMAIL), 1);
 		assertEquals(SOME_EMAIL.uid, getFirst(entities).getId().uid);
 	}
-	
+
 	@Test
 	public void shouldPickSampleAtRandomWhenPossible() {
 		index.addEntitiesAndChildren(asList(SOME_EMAIL, SOME_OTHER_EMAIL));
 		Entities entities = index.getSamples(getClassSimpleName(SOME_EMAIL), 1);
 		String sampleUid = getFirst(entities).getId().uid;
-		assertTrue(SOME_EMAIL.uid.equals(sampleUid)||SOME_OTHER_EMAIL.uid.equals(sampleUid));
+		assertTrue(SOME_EMAIL.uid.equals(sampleUid) || SOME_OTHER_EMAIL.uid.equals(sampleUid));
 	}
-	
+
 	@Test
 	public void shouldReturnEmptyEntitiesWhenNoSamplesPresent() {
 		Entities entities = index.getSamples(getClassSimpleName(SOME_EMAIL), 1);
 		assertTrue(entities.getEntities().isEmpty());
 	}
-	
+
 	@Test
 	public void shouldLookupSelectorInInvertedIndex() {
-		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any())).thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
+		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
+				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
 		DocumentInfos infos = index.invertedIndexLookup(idFor(SOME_LOCALNAME), new StubbedIndexable());
 		assertEquals(SOME_EMAIL.uid, getFirst(infos).getId().uid);
@@ -94,7 +95,7 @@ public class FakeHbaseIndexUnitTest {
 		when(statistics.get(eq(SOME_LOCALNAME.uid))).thenReturn(singletonMap(INFINITY, 1l));
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
 		Statistics statistics = index.getStatistics(idFor(SOME_LOCALNAME));
-		assertEquals(SOME_COUNT, (long)statistics.get(INFINITY));
+		assertEquals(SOME_COUNT, (long) statistics.get(INFINITY));
 	}
 
 	@Test
@@ -103,7 +104,7 @@ public class FakeHbaseIndexUnitTest {
 		FakeHbaseIndex indexAfterSerialization = new FakeHbaseIndex(index.getSerializable());
 		assertEquals(SOME_EMAIL.uid, indexAfterSerialization.getDataType(idFor(SOME_EMAIL)).getId().uid);
 	}
-	
+
 	private EntityId entityIdFor(Entity entity) {
 		return new EntityId(entity.getClass(), entity.uid);
 	}
@@ -115,8 +116,8 @@ public class FakeHbaseIndexUnitTest {
 	private DocumentInfo getFirst(DocumentInfos infos) {
 		return infos.getInfos().iterator().next();
 	}
-	
-	class StubbedIndexable extends Indexable{
+
+	class StubbedIndexable extends Indexable {
 		@Override
 		public String getPath() {
 			return "";
