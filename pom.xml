@@ -194,14 +194,16 @@
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.8.1</version>
 						<configuration>
-							<exclude>**/*Tester.*</exclude>
-					        <exclude>net/thomas/portfolio/usage_data/schema</exclude>
+							<excludes>
+								<exclude>**/*Tester.*</exclude>
+								<exclude>net/thomas/portfolio/usage_data/schema/**/*</exclude>
+							</excludes>
 						</configuration>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
 								<goals>
-									<goal>prepare-agent</goal>
+									<goal>prepare-agent</goal> 
 								</goals>
 							</execution>
 						</executions>
