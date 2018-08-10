@@ -28,7 +28,8 @@ public class UsageDataSqlProxyIntegrationTest {
 	private static final Long TIME_OF_ACTIVITY = nowInMillisecondsWithSecondsPrecision();
 	private static final long AROUND_A_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
 	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
-	private static final Bounds EVERYTHING = new Bounds(0, MAX_VALUE, AROUND_A_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW);
+	private static final Bounds EVERYTHING = new Bounds(0, MAX_VALUE, AROUND_A_THOUSAND_YEARS_AGO,
+			AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW);
 
 	private static long nowInMillisecondsWithSecondsPrecision() {
 		return System.currentTimeMillis() / 1000 * 1000;
@@ -64,7 +65,8 @@ public class UsageDataSqlProxyIntegrationTest {
 
 	@After
 	public void teardownDatabase() {
-		// The tear-down happens before initialization, to enable debugging on fail and allow the next run to succeed regardless.
+		// The tear-down happens before initialization, to enable debugging on fail and
+		// allow the next run to succeed regardless.
 	}
 
 	private Database createTestDatabaseConfig() {
@@ -78,10 +80,11 @@ public class UsageDataSqlProxyIntegrationTest {
 	}
 
 	private void wipeOldTests(Database databaseConfig) throws SQLException {
-		try (final Connection connection = DriverManager.getConnection(databaseConfig.getConnectionString(false), databaseConfig.getUser(),
-				databaseConfig.getPassword())) {
+		try (final Connection connection = DriverManager.getConnection(databaseConfig.getConnectionString(false),
+				databaseConfig.getUser(), databaseConfig.getPassword())) {
 			try (Statement statement = connection.createStatement()) {
-				statement.execute("DELETE FROM usage_data.user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
+				statement.execute(
+						"DELETE FROM usage_data.user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
 				statement.execute("DELETE FROM usage_data.user WHERE name ='" + USER + "'");
 			}
 		}
