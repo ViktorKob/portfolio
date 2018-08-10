@@ -195,6 +195,7 @@
 						<version>0.8.1</version>
 						<configuration>
 							<exclude>**/*Tester.*</exclude>
+					        <exclude>net/thomas/portfolio/usage_data/schema</exclude>
 						</configuration>
 						<executions>
 							<execution>
