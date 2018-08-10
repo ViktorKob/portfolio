@@ -1,6 +1,8 @@
 package net.thomas.portfolio.usage_data.sql;
 
+import static java.lang.System.out;
 import static java.nio.file.StandardOpenOption.READ;
+import static java.sql.DriverManager.getConnection;
 import static net.thomas.portfolio.usage_data.schema.tables.AccessType.ACCESS_TYPE;
 import static net.thomas.portfolio.usage_data.schema.tables.User.USER;
 import static net.thomas.portfolio.usage_data.schema.tables.UserAccessedDocument.USER_ACCESSED_DOCUMENT;
@@ -12,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -72,7 +73,7 @@ public class SqlProxy {
 		try (Statement statement = connection.createStatement()) {
 			statement.execute("CREATE DATABASE " + databaseConfig.getSchema());
 			statement.execute("USE " + databaseConfig.getSchema());
-			final Path schemaPath = Paths.get("schema", databaseConfig.getSchema() + "_schema.sql");
+			final Path schemaPath = determineSchemaPath();
 			try (final BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(schemaPath, READ)))) {
 				final String sql = reader.lines()
 					.collect(Collectors.joining(" "));
@@ -83,6 +84,16 @@ public class SqlProxy {
 				throw new RuntimeException("Unable to read sql schema from disk", e);
 			}
 		}
+	}
+
+	private Path determineSchemaPath() {
+		Path schemaPath = Paths.get("schema", databaseConfig.getSchema() + "_schema.sql");
+		if (!schemaPath.toFile()
+			.exists()) {
+			schemaPath = Paths.get(".", "src", "main", "resources", "schema", "usage_data_schema.sql");
+		}
+		out.println("Using schema path " + schemaPath);
+		return schemaPath;
 	}
 
 	public void storeUsageActivity(DataTypeId id, UsageActivity activity) {
@@ -164,6 +175,6 @@ public class SqlProxy {
 	}
 
 	private Connection createConnection(boolean withSchema) throws SQLException {
-		return DriverManager.getConnection(databaseConfig.getConnectionString(withSchema), databaseConfig.getUser(), databaseConfig.getPassword());
+		return getConnection(databaseConfig.getConnectionString(withSchema), databaseConfig.getUser(), databaseConfig.getPassword());
 	}
 }
