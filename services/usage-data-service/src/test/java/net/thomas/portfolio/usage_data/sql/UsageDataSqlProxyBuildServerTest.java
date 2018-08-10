@@ -13,6 +13,7 @@ import java.sql.Statement;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -22,14 +23,18 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
 
 public class UsageDataSqlProxyBuildServerTest {
-	private SqlProxy sqlProxy;
+	private static SqlProxy sqlProxy;
+
+	@BeforeClass
+	public static void setUpDatabase() {
+		sqlProxy = new SqlProxy();
+		sqlProxy.setDatabase(DATABASE_CONFIG);
+		sqlProxy.ensurePresenceOfSchema();
+	}
 
 	@Before
 	public void setup() throws SQLException {
 		wipeOldTests(DATABASE_CONFIG);
-		sqlProxy = new SqlProxy();
-		sqlProxy.setDatabase(DATABASE_CONFIG);
-		sqlProxy.ensurePresenceOfSchema();
 	}
 
 	@Test
