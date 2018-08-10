@@ -138,6 +138,7 @@
 							<excludes>
 								<exclude>**/*ServiceAdaptorTest*</exclude>
 								<exclude>**/*UsageDataSqlProxyIntegrationTest*</exclude>
+								<exclude>**/*UsageDataSqlProxyBuildServerTest*</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
