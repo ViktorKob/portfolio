@@ -55,17 +55,17 @@ public class UsageDataSqlProxyBuildServerTest {
 	}
 
 	private void wipeOldTests(Database databaseConfig) throws SQLException {
-		try (final Connection connection = DriverManager.getConnection(databaseConfig.getConnectionString(false), databaseConfig.getUser(),
+		try (final Connection connection = DriverManager.getConnection(databaseConfig.getConnectionString(true), databaseConfig.getUser(),
 				databaseConfig.getPassword())) {
 			try (Statement statement = connection.createStatement()) {
-				statement.execute("DELETE FROM usage_data.user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
-				statement.execute("DELETE FROM usage_data.user WHERE name ='" + USER + "'");
+				statement.execute("DELETE FROM user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
+				statement.execute("DELETE FROM user WHERE name ='" + USER + "'");
 			}
 		}
 	}
 
 	private static final String USER_NAME = "root";
-	private static final String PASSWORD = "";
+	private static final String PASSWORD = "computer";
 	private static final String DOCUMENT_TYPE = "TEST_TYPE";
 	private static final String UID = "00000000";
 	private static final String USER = "TEST_USER";
