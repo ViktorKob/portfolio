@@ -32,6 +32,16 @@ public class EmailAddressSimpleRepParser extends SimpleRepresentationParser {
 	}
 
 	@Override
+	public int hashCode() {
+		return 1;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof EmailAddressSimpleRepParser;
+	}
+
+	@Override
 	public String toString() {
 		return asString(this);
 	}

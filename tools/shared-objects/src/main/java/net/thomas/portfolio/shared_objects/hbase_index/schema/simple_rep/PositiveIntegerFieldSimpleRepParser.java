@@ -14,7 +14,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationParser {
 	private final String field;
-	private final Pattern invalidCharactersPattern;
+	private final Pattern removableCharactersPattern;
 
 	public static PositiveIntegerFieldSimpleRepParser newPositiveIntegerFieldParser(String type, String field, IdCalculator idCalculator) {
 		return new PositiveIntegerFieldSimpleRepParser(type, field, "[\\d\\s]+$", idCalculator);
@@ -27,12 +27,12 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 	private PositiveIntegerFieldSimpleRepParser(String type, String field, String pattern, IdCalculator idCalculator) {
 		super(type, pattern, idCalculator);
 		this.field = field;
-		invalidCharactersPattern = compile("^\\D");
+		removableCharactersPattern = compile("^\\D");
 	}
 
 	@Override
 	protected void populateValues(DataType entity, String source) {
-		source = invalidCharactersPattern.matcher(source)
+		source = removableCharactersPattern.matcher(source)
 			.replaceAll("");
 		entity.put(field, source);
 	}
@@ -44,6 +44,45 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 
 	public String getField() {
 		return field;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (field == null ? 0 : field.hashCode());
+		result = prime * result + (removableCharactersPattern == null ? 0 : removableCharactersPattern.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof PositiveIntegerFieldSimpleRepParser)) {
+			return false;
+		}
+		final PositiveIntegerFieldSimpleRepParser other = (PositiveIntegerFieldSimpleRepParser) obj;
+		if (field == null) {
+			if (other.field != null) {
+				return false;
+			}
+		} else if (!field.equals(other.field)) {
+			return false;
+		}
+		if (removableCharactersPattern == null) {
+			if (other.removableCharactersPattern != null) {
+				return false;
+			}
+		} else if (!removableCharactersPattern.pattern()
+			.equals(other.removableCharactersPattern.pattern())) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

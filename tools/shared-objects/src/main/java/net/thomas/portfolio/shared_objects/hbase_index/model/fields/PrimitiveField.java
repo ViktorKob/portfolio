@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
 
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldType.PRIMITIVE;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.DECIMAL;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.GEO_LOCATION;
@@ -9,9 +10,6 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.StandardToStringStyle;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -132,11 +130,11 @@ public class PrimitiveField implements Field {
 		}
 	}
 
-	private PrimitiveField(String name, PrimitiveType type, boolean isArray, boolean isKeyComponent) {
+	public PrimitiveField(String name, PrimitiveType type, Boolean isArray, Boolean isKeyComponent) {
 		this.name = name;
 		this.type = type;
-		this.isArray = isArray;
-		this.isKeyComponent = isKeyComponent;
+		this.isArray = isArray != null ? isArray : false;
+		this.isKeyComponent = isKeyComponent != null ? isKeyComponent : false;
 	}
 
 	public void setName(String name) {
@@ -181,29 +179,48 @@ public class PrimitiveField implements Field {
 
 	@Override
 	public int hashCode() {
-		int hash = name.hashCode();
-		hash = 37 * hash + type.ordinal();
-		hash = 37 * hash + (isArray ? 1 : 0);
-		hash = 37 * hash + (isKeyComponent ? 1 : 0);
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (isArray ? 1231 : 1237);
+		result = prime * result + (isKeyComponent ? 1231 : 1237);
+		result = prime * result + (name == null ? 0 : name.hashCode());
+		result = prime * result + (type == null ? 0 : type.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof PrimitiveField) {
-			final PrimitiveField other = (PrimitiveField) obj;
-			return name.equals(other.name) && type == other.type && isArray == other.isArray && isKeyComponent == other.isKeyComponent;
-		} else {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
 			return false;
 		}
+		if (!(obj instanceof PrimitiveField)) {
+			return false;
+		}
+		final PrimitiveField other = (PrimitiveField) obj;
+		if (isArray != other.isArray) {
+			return false;
+		}
+		if (isKeyComponent != other.isKeyComponent) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (type != other.type) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		final StandardToStringStyle style = new StandardToStringStyle();
-		style.setFieldSeparator(", ");
-		style.setUseClassName(false);
-		style.setUseIdentityHashCode(false);
-		return ReflectionToStringBuilder.toString(this, style);
+		return asString(this);
 	}
 }

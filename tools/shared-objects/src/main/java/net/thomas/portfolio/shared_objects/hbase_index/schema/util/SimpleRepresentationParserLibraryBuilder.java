@@ -13,13 +13,13 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 
 public class SimpleRepresentationParserLibraryBuilder {
 	private final Map<String, SimpleRepresentationParser> parsers;
-	private HashMap<String, Fields> dataTypeFields;
+	private Map<String, Fields> dataTypeFields;
 
 	public SimpleRepresentationParserLibraryBuilder() {
 		parsers = new HashMap<>();
 	}
 
-	public SimpleRepresentationParserLibraryBuilder setDataTypeFields(HashMap<String, Fields> dataTypeFields) {
+	public SimpleRepresentationParserLibraryBuilder setDataTypeFields(Map<String, Fields> dataTypeFields) {
 		this.dataTypeFields = dataTypeFields;
 		return this;
 	}

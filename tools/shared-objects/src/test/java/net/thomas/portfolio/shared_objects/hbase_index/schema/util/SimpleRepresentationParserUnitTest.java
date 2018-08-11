@@ -16,6 +16,7 @@ import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil;
 
 public class SimpleRepresentationParserUnitTest {
 
@@ -66,6 +67,20 @@ public class SimpleRepresentationParserUnitTest {
 		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
 		final Selector entity = parser.parse(TYPE, VALUE);
 		assertEquals(VALUE, entity.get(FIELD));
+	}
+
+	@Test
+	public void shouldContainLibrary() {
+		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
+		final SimpleRepresentationParserLibrary library = mock(SimpleRepresentationParserLibrary.class);
+		parser.setLibrary(library);
+		assertSame(library, parser.getLibrary());
+	}
+
+	@Test
+	public void shouldHaveToString() {
+		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
+		ProtocolTestUtil.assertToStringIsValid(parser);
 	}
 
 	private static final String ANY_PATTERN = ".+$";

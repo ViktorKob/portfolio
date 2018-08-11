@@ -2,6 +2,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser.newDomainParser;
 import static net.thomas.portfolio.shared_objects.test_utils.DataTypeFieldMatcher.matchesField;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -42,6 +43,11 @@ public class DomainSimpleRepParserUnitTest {
 		setupLibraryMockWithTopLevelDomainStub(DOMAIN_SIMPLE_REP);
 		final Selector selector = parser.parse(DOMAIN_TYPE, DOMAIN_SIMPLE_REP);
 		assertEquals(ID, selector.getId());
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		assertToStringIsValid(parser);
 	}
 
 	private static final String DOMAIN_TYPE = "Domain";
