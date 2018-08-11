@@ -1,10 +1,9 @@
 package net.thomas.portfolio.hbase_index.schema;
 
 import static java.lang.String.valueOf;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.List;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
@@ -80,7 +79,41 @@ public class IdCalculator {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (fields == null ? 0 : fields.hashCode());
+		result = prime * result + (keyShouldBeUnique ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof IdCalculator)) {
+			return false;
+		}
+		final IdCalculator other = (IdCalculator) obj;
+		if (fields == null) {
+			if (other.fields != null) {
+				return false;
+			}
+		} else if (!fields.equals(other.fields)) {
+			return false;
+		}
+		if (keyShouldBeUnique != other.keyShouldBeUnique) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

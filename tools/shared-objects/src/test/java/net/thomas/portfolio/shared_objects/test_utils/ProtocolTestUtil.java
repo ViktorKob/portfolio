@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.test_utils;
 
+import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
 import static org.junit.Assert.assertEquals;
@@ -10,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,7 +113,9 @@ public class ProtocolTestUtil {
 	public static void assertEqualsIsValidIncludingNullChecks(Object object) {
 		assertEqualsIsValid(object);
 		for (final Field field : getRelevantFields(object)) {
-			assertNewInstanceWithFieldAsNullIsNotEqualToOriginal(object, field);
+			if (Object.class.isAssignableFrom(field.getType())) {
+				assertNewInstanceWithFieldAsNullIsNotEqualToOriginal(object, field);
+			}
 		}
 	}
 
@@ -135,9 +139,12 @@ public class ProtocolTestUtil {
 			final Constructor<?> constructor = getFirstMatchingConstructor(object);
 			final Object newInstance1 = constructor.newInstance(arguments);
 			final Object newInstance2 = constructor.newInstance(arguments);
-			assertFalse("Comparisson of entity to different object type had unexpected outcome for " + object, object.equals(newInstance1));
-			assertFalse("Comparisson of entity to different object type had unexpected outcome for " + object, newInstance1.equals(object));
-			assertTrue("Comparisson of entity to different object type had unexpected outcome for " + object, newInstance1.equals(newInstance2));
+			assertFalse("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance1,
+					object.equals(newInstance1));
+			assertFalse("Comparisson of object to different object type had unexpected outcome for " + newInstance1 + " against " + object,
+					newInstance1.equals(object));
+			assertTrue("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance2,
+					newInstance1.equals(newInstance2));
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to compare equality for object " + object, e);
 		}
@@ -154,10 +161,31 @@ public class ProtocolTestUtil {
 			if (entityField.equals(field)) {
 				arguments[argument++] = null;
 			} else {
-				arguments[argument++] = entityField.get(object);
+				arguments[argument++] = getValue(entityField, object);
 			}
 		}
 		return arguments;
+	}
+
+	private static Object getValue(Field entityField, Object object) {
+		try {
+			if (isPublic(entityField.getModifiers())) {
+				return entityField.get(object);
+			} else {
+				for (final Method method : object.getClass()
+					.getDeclaredMethods()) {
+					if (method.getName()
+						.equalsIgnoreCase("get" + entityField.getName())
+							|| method.getName()
+								.equalsIgnoreCase(entityField.getName())) {
+						return method.invoke(object);
+					}
+				}
+				return null;
+			}
+		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
+			throw new RuntimeException("Unable to get value " + entityField + " from object " + object, e);
+		}
 	}
 
 	public static Field[] getRelevantFields(Object object) {
@@ -171,10 +199,10 @@ public class ProtocolTestUtil {
 		try {
 			final String asString = object.toString();
 			for (final Field field : getRelevantFields(object)) {
-				final Object value = field.get(object);
+				final Object value = getValue(field, object);
 				assertTrue(asString.contains(value.toString()));
 			}
-		} catch (final IllegalAccessException | IllegalArgumentException e) {
+		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException("Unable to compare equality for object " + object, e);
 		}
 	}
@@ -187,7 +215,7 @@ public class ProtocolTestUtil {
 			if (constructor.getParameterCount() == fields.length) {
 				final java.lang.reflect.Parameter[] parameters = constructor.getParameters();
 				for (int i = 0; i < fields.length; i++) {
-					if (fields[i].getType() != parameters[i].getType()) {
+					if (fields[i].getType() != parameters[i].getType() && !isSameAsPrimitive(fields[i], parameters[i])) {
 						continue constructorLoop;
 					}
 				}
@@ -195,5 +223,21 @@ public class ProtocolTestUtil {
 			}
 		}
 		return null;
+	}
+
+	private static boolean isSameAsPrimitive(final Field field, final java.lang.reflect.Parameter parameter) {
+		if (field.getType() == boolean.class && parameter.getType() == Boolean.class) {
+			return true;
+		} else if (field.getType() == float.class && parameter.getType() == Float.class) {
+			return true;
+		} else if (field.getType() == double.class && parameter.getType() == Double.class) {
+			return true;
+		} else if (field.getType() == long.class && parameter.getType() == Long.class) {
+			return true;
+		} else if (field.getType() == int.class && parameter.getType() == Integer.class) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
