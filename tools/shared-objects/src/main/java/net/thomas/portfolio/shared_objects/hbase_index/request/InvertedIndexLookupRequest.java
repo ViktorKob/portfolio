@@ -1,12 +1,11 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
 import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -82,35 +81,75 @@ public class InvertedIndexLookupRequest {
 		this.relations = relations;
 	}
 
+	@JsonIgnore
+	public ParameterGroup[] getGroups() {
+		return new ParameterGroup[] { legalInfo, bounds, asGroup("documentType", documentTypes), asGroup("relation", relations) };
+	}
+
 	@Override
 	public int hashCode() {
-		int hash = selectorId.hashCode();
-		hash = 37 * hash + legalInfo.hashCode();
-		hash = 37 * hash + bounds.hashCode();
-		hash = 37 * hash + documentTypes.hashCode();
-		hash = 37 * hash + relations.hashCode();
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (bounds == null ? 0 : bounds.hashCode());
+		result = prime * result + (documentTypes == null ? 0 : documentTypes.hashCode());
+		result = prime * result + (legalInfo == null ? 0 : legalInfo.hashCode());
+		result = prime * result + (relations == null ? 0 : relations.hashCode());
+		result = prime * result + (selectorId == null ? 0 : selectorId.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof InvertedIndexLookupRequest) {
-			final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
-			final boolean documentTypesAreEqual = documentTypes.equals(other.documentTypes);
-			final boolean relationsAreEqual = relations.equals(other.relations);
-			return selectorId.equals(other.selectorId) && legalInfo.equals(other.legalInfo) && bounds.equals(other.bounds) && documentTypesAreEqual
-					&& relationsAreEqual;
+		if (this == obj) {
+			return true;
 		}
-		return false;
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof InvertedIndexLookupRequest)) {
+			return false;
+		}
+		final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
+		if (bounds == null) {
+			if (other.bounds != null) {
+				return false;
+			}
+		} else if (!bounds.equals(other.bounds)) {
+			return false;
+		}
+		if (documentTypes == null) {
+			if (other.documentTypes != null) {
+				return false;
+			}
+		} else if (!documentTypes.equals(other.documentTypes)) {
+			return false;
+		}
+		if (legalInfo == null) {
+			if (other.legalInfo != null) {
+				return false;
+			}
+		} else if (!legalInfo.equals(other.legalInfo)) {
+			return false;
+		}
+		if (relations == null) {
+			if (other.relations != null) {
+				return false;
+			}
+		} else if (!relations.equals(other.relations)) {
+			return false;
+		}
+		if (selectorId == null) {
+			if (other.selectorId != null) {
+				return false;
+			}
+		} else if (!selectorId.equals(other.selectorId)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	@JsonIgnore
-	public ParameterGroup[] getGroups() {
-		return new ParameterGroup[] { legalInfo, bounds, asGroup("documentType", documentTypes), asGroup("relation", relations) };
+		return asString(this);
 	}
 }

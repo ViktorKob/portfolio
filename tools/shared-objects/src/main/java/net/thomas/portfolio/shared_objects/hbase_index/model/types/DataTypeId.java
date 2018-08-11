@@ -57,19 +57,40 @@ public class DataTypeId implements ParameterGroup {
 
 	@Override
 	public int hashCode() {
-		int hash = type.hashCode();
-		hash = 37 * hash + uid.hashCode();
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (type == null ? 0 : type.hashCode());
+		result = prime * result + (uid == null ? 0 : uid.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof DataTypeId) {
-			final DataTypeId other = (DataTypeId) obj;
-			return type.equals(other.type) && uid != null && uid.equals(other.uid);
-		} else {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
 			return false;
 		}
+		if (!(obj instanceof DataTypeId)) {
+			return false;
+		}
+		final DataTypeId other = (DataTypeId) obj;
+		if (type == null) {
+			if (other.type != null) {
+				return false;
+			}
+		} else if (!type.equals(other.type)) {
+			return false;
+		}
+		if (uid == null) {
+			if (other.uid != null) {
+				return false;
+			}
+		} else if (!uid.equals(other.uid)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override

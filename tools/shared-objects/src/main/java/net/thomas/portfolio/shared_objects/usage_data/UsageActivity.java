@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.usage_data;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -60,25 +60,48 @@ public class UsageActivity implements ParameterGroup {
 
 	@Override
 	public int hashCode() {
-		int hash = user.hashCode();
-		hash = 37 * hash + type.ordinal();
-		hash = 37 * hash + (int) (timeOfActivity ^ timeOfActivity >>> 32);
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (timeOfActivity == null ? 0 : timeOfActivity.hashCode());
+		result = prime * result + (type == null ? 0 : type.hashCode());
+		result = prime * result + (user == null ? 0 : user.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof UsageActivity) {
-			final UsageActivity other = (UsageActivity) obj;
-			return user.equals(other.user) && type == other.type
-					&& (timeOfActivity == other.timeOfActivity || timeOfActivity != null && timeOfActivity.equals(other.timeOfActivity));
-		} else {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
 			return false;
 		}
+		if (!(obj instanceof UsageActivity)) {
+			return false;
+		}
+		final UsageActivity other = (UsageActivity) obj;
+		if (timeOfActivity == null) {
+			if (other.timeOfActivity != null) {
+				return false;
+			}
+		} else if (!timeOfActivity.equals(other.timeOfActivity)) {
+			return false;
+		}
+		if (type != other.type) {
+			return false;
+		}
+		if (user == null) {
+			if (other.user != null) {
+				return false;
+			}
+		} else if (!user.equals(other.user)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

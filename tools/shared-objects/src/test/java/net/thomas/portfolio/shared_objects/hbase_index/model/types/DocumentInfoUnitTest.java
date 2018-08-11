@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,21 +25,20 @@ public class DocumentInfoUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserializeDocumentInfo() {
-		final DocumentInfo deserializedInstance = serializeDeserialize(SOME_DOCUMENT_INFO, DocumentInfo.class);
-		assertEquals(SOME_DOCUMENT_INFO, deserializedInstance);
-	}
-
-	@Test
 	public void shouldContainCorrectTimeOfEvent() {
-		final DocumentInfo deserializedInstance = serializeDeserialize(SOME_DOCUMENT_INFO, DocumentInfo.class);
+		final DocumentInfo deserializedInstance = serializeDeserialize(SOME_DOCUMENT_INFO);
 		assertEquals(SOME_DOCUMENT_INFO.getTimeOfEvent(), deserializedInstance.getTimeOfEvent());
 	}
 
 	@Test
 	public void shouldContainCorrectTimeOfInterception() {
-		final DocumentInfo deserializedInstance = serializeDeserialize(SOME_DOCUMENT_INFO, DocumentInfo.class);
+		final DocumentInfo deserializedInstance = serializeDeserialize(SOME_DOCUMENT_INFO);
 		assertEquals(SOME_DOCUMENT_INFO.getTimeOfInterception(), deserializedInstance.getTimeOfInterception());
+	}
+
+	@Test
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(SOME_DOCUMENT_INFO);
 	}
 
 	private static final Timestamp TIME_OF_EVENT = new Timestamp(1l);

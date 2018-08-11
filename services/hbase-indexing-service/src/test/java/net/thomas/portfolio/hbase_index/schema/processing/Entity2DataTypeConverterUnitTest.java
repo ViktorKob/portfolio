@@ -1,7 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getClassSimpleName;
-import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getDeclaredFields;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.getRelevantFields;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isArray;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isEntityField;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.isSingleEntity;
@@ -92,7 +92,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertNonEntityFieldsCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);
-			for (final Field field : getDeclaredFields(entity)) {
+			for (final Field field : getRelevantFields(entity)) {
 				if (!isEntityField(field)) {
 					assertEquals(field.get(entity), convertedEntity.get(field.getName()));
 				}
@@ -104,7 +104,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertEntityFieldsCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);
-			for (final Field field : getDeclaredFields(entity)) {
+			for (final Field field : getRelevantFields(entity)) {
 				if (isArray(field)) {
 					assertSubEntitiesHavePairwiseIdenticalUids((Entity[]) field.get(entity), convertedEntity.get(field.getName()));
 				} else if (isSingleEntity(field)) {

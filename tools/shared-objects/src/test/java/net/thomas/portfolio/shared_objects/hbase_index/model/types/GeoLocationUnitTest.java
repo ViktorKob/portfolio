@@ -1,7 +1,9 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import static java.lang.String.valueOf;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValid;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValid;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -46,23 +48,23 @@ public class GeoLocationUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeAndDeserializeGeoLocationCorrectly() {
-		final GeoLocation deserializedInstance = serializeDeserialize(SOME_LOCATION, GeoLocation.class);
-		assertEquals(SOME_LOCATION, deserializedInstance);
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(SOME_LOCATION);
 	}
 
 	@Test
-	public void shouldContainLongitude() {
-		final String longitude = valueOf(SOME_LOCATION.longitude);
-		final String asString = SOME_LOCATION.toString();
-		assertTrue(asString.contains(longitude));
+	public void shouldHaveValidHashCodeFunction() {
+		assertHashCodeIsValid(SOME_LOCATION);
 	}
 
 	@Test
-	public void shouldContainLatitude() {
-		final String latitude = valueOf(SOME_LOCATION.latitude);
-		final String asString = SOME_LOCATION.toString();
-		assertTrue(asString.contains(latitude));
+	public void shouldHaveValidEqualsFunction() {
+		assertEqualsIsValid(SOME_LOCATION);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		assertToStringIsValid(SOME_LOCATION);
 	}
 
 	private static final double SOME_LONGITUDE = 1.0d;

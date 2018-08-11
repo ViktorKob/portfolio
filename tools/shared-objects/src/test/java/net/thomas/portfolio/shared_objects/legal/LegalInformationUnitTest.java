@@ -1,58 +1,76 @@
 package net.thomas.portfolio.shared_objects.legal;
 
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertParametersMatchParameterGroups;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class LegalInformationUnitTest {
-	private static final String USER = "USER";
-	private static final String JUSTIFICATION = "JUSTIFICATION";
-	private static final Long LOWER_BOUND = 3l;
-	private static final Long UPPER_BOUND = 4l;
-
 	private LegalInformation info;
-	private ObjectMapper mapper;
 
 	@Before
 	public void setup() {
 		info = new LegalInformation(USER, JUSTIFICATION, LOWER_BOUND, UPPER_BOUND);
-		mapper = new ObjectMapper();
 	}
 
 	@Test
-	public void shouldSerializeAndDeserialize() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(info);
-		final LegalInformation deserializedObject = mapper.readValue(serializedForm, LegalInformation.class);
-		assertEquals(info, deserializedObject);
+	public void shouldTrimUser() throws IOException {
+		final LegalInformation info = new LegalInformation(" " + USER + " \n", JUSTIFICATION, LOWER_BOUND, UPPER_BOUND);
+		assertEquals(USER, info.user);
 	}
 
 	@Test
-	public void shouldSerializeAsLi_user() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(info);
-		assertTrue(serializedForm.contains("\"li_user\":\"" + USER + "\""));
+	public void shouldTrimJustification() throws IOException {
+		final LegalInformation info = new LegalInformation(USER, " " + JUSTIFICATION + " \n", LOWER_BOUND, UPPER_BOUND);
+		assertEquals(JUSTIFICATION, info.justification);
 	}
 
 	@Test
-	public void shouldSerializeAsLi_justification() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(info);
-		assertTrue(serializedForm.contains("\"li_justification\":\"" + JUSTIFICATION + "\""));
+	public void shouldMakeIdenticalCopyUsingConstructor() throws IOException {
+		final LegalInformation copy = new LegalInformation(info);
+		assertEquals(info, copy);
 	}
 
 	@Test
-	public void shouldSerializeAsLi_lowerBound() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(info);
-		assertTrue(serializedForm.contains("\"li_lowerBound\":" + LOWER_BOUND));
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(info);
 	}
 
 	@Test
-	public void shouldSerializeAsLi_upperBound() throws IOException {
-		final String serializedForm = mapper.writeValueAsString(info);
-		assertTrue(serializedForm.contains("\"li_upperBound\":" + UPPER_BOUND));
+	public void shouldSurviveNullParameters() {
+		assertCanSerializeAndDeserializeWithNullValues(info);
 	}
+
+	@Test
+	public void shouldMatchParameterGroup() {
+		assertParametersMatchParameterGroups(info);
+	}
+
+	@Test
+	public void shouldHaveValidHashCodeFunction() {
+		assertHashCodeIsValidIncludingNullChecks(info);
+	}
+
+	@Test
+	public void shouldHaveValidEqualsFunction() {
+		assertEqualsIsValidIncludingNullChecks(info);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		assertToStringIsValid(info);
+	}
+
+	private static final String USER = "USER";
+	private static final String JUSTIFICATION = "JUSTIFICATION";
+	private static final Long LOWER_BOUND = 3l;
+	private static final Long UPPER_BOUND = 4l;
 }

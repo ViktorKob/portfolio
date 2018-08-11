@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -44,9 +44,8 @@ public class TimestampUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeAndDeserializeCorrectly() {
-		final Timestamp deserializedInstance = serializeDeserialize(SOME_TIMESTAMP, Timestamp.class);
-		assertEquals(SOME_TIMESTAMP, deserializedInstance);
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(SOME_TIMESTAMP);
 	}
 
 	@Test

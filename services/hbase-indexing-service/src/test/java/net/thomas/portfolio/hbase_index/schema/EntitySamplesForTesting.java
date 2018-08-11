@@ -167,7 +167,7 @@ public class EntitySamplesForTesting {
 				.toArray(Field[]::new);
 	}
 
-	public static Field[] getDeclaredFields(Entity entity) {
+	public static Field[] getRelevantFields(Entity entity) {
 		return stream(entity.getClass().getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
 				.toArray(Field[]::new);
 	}

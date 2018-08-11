@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -108,28 +108,60 @@ public class Bounds implements ParameterGroup {
 
 	@Override
 	public int hashCode() {
-		int hash = offset;
-		hash = 37 * hash + limit;
-		hash = (int) (37 * hash + after);
-		hash = (int) (37 * hash + before);
-		return hash;
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (after == null ? 0 : after.hashCode());
+		result = prime * result + (before == null ? 0 : before.hashCode());
+		result = prime * result + (limit == null ? 0 : limit.hashCode());
+		result = prime * result + (offset == null ? 0 : offset.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Bounds) {
-			final Bounds other = (Bounds) obj;
-			return equals(offset, other.offset) && equals(limit, other.limit) && equals(after, other.after) && equals(before, other.before);
+		if (this == obj) {
+			return true;
 		}
-		return false;
-	}
-
-	private boolean equals(Object left, Object right) {
-		return left == right || left != null && left.equals(right);
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Bounds)) {
+			return false;
+		}
+		final Bounds other = (Bounds) obj;
+		if (after == null) {
+			if (other.after != null) {
+				return false;
+			}
+		} else if (!after.equals(other.after)) {
+			return false;
+		}
+		if (before == null) {
+			if (other.before != null) {
+				return false;
+			}
+		} else if (!before.equals(other.before)) {
+			return false;
+		}
+		if (limit == null) {
+			if (other.limit != null) {
+				return false;
+			}
+		} else if (!limit.equals(other.limit)) {
+			return false;
+		}
+		if (offset == null) {
+			if (other.offset != null) {
+				return false;
+			}
+		} else if (!offset.equals(other.offset)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

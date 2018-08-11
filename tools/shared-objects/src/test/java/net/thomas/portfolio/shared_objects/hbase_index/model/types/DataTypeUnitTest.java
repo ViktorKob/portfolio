@@ -1,44 +1,42 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+@RunWith(Parameterized.class)
 public class DataTypeUnitTest {
-	@Test
-	public void shouldBeEqual() {
-		assertTrue(SIMPLE_ENTITY.equals(SIMPLE_ENTITY));
+	private final DataType entityUnderTest;
+
+	@Parameters
+	public static List<DataType> entities() {
+		return asList(SIMPLE_ENTITY, RECURSIVE_ENTITY, COMPLEX_ENTITY);
 	}
 
-	@Test
-	public void shouldNotBeEqualWithDifferentValues() {
-		assertFalse(SIMPLE_ENTITY.equals(COMPLEX_ENTITY));
+	public DataTypeUnitTest(DataType entityUnderTest) {
+		this.entityUnderTest = entityUnderTest;
 	}
 
-	@Test
-	public void shouldNotBeEqualWithDifferentObject() {
-		assertFalse(SIMPLE_ENTITY.equals(ANOTHER_OBJECT));
-	}
-
-	@Test
-	public void shouldHaveSameHashCode() {
-		assertEquals(SIMPLE_ENTITY.hashCode(), SIMPLE_ENTITY.hashCode());
-	}
-
-	@Test
-	public void shouldNotHaveSameHashCode() {
-		assertNotEquals(SIMPLE_ENTITY.hashCode(), COMPLEX_ENTITY.hashCode());
-	}
-
+	/***
+	 * Non-parametized, but kept here for simplicity
+	 */
 	@Test
 	public void shouldContainIdAfterUsingExplicitConstructor() {
 		final DataType entity = new RawDataType(SIMPLE_ENTITY_ID, emptyMap());
@@ -73,22 +71,47 @@ public class DataTypeUnitTest {
 		assertTrue(rawForm.contains(SOME_VALUE));
 	}
 
+	/***
+	 * Parametized
+	 */
 	@Test
-	public void shouldSerializeAndDeserializeSimpleDataTypeCorrectly() {
-		final DataType deserializedInstance = serializeDeserialize(SIMPLE_ENTITY, DataType.class);
-		assertEquals(SIMPLE_ENTITY, deserializedInstance);
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(entityUnderTest);
 	}
 
 	@Test
-	public void shouldSerializeAndDeserializeRecursiveDataTypeCorrectly() {
-		final DataType deserializedInstance = serializeDeserialize(RECURSIVE_ENTITY, DataType.class);
-		assertEquals(RECURSIVE_ENTITY, deserializedInstance);
+	public void shouldSurviveNullParameters() {
+		assertCanSerializeAndDeserializeWithNullValues(entityUnderTest);
 	}
 
 	@Test
-	public void shouldSerializeAndDeserializeComplexDataTypeCorrectly() {
-		final DataType deserializedInstance = serializeDeserialize(COMPLEX_ENTITY, DataType.class);
-		assertEquals(COMPLEX_ENTITY, deserializedInstance);
+	public void shouldHaveValidToStringFunction() {
+		assertToStringIsValid(entityUnderTest);
+	}
+
+	@Test
+	public void shouldBeEqual() {
+		assertTrue(SIMPLE_ENTITY.equals(SIMPLE_ENTITY));
+	}
+
+	@Test
+	public void shouldNotBeEqualWithDifferentValues() {
+		assertFalse(SIMPLE_ENTITY.equals(COMPLEX_ENTITY));
+	}
+
+	@Test
+	public void shouldNotBeEqualWithDifferentObject() {
+		assertFalse(SIMPLE_ENTITY.equals(ANOTHER_OBJECT));
+	}
+
+	@Test
+	public void shouldHaveSameHashCode() {
+		assertEquals(SIMPLE_ENTITY.hashCode(), SIMPLE_ENTITY.hashCode());
+	}
+
+	@Test
+	public void shouldNotHaveSameHashCode() {
+		assertNotEquals(SIMPLE_ENTITY.hashCode(), COMPLEX_ENTITY.hashCode());
 	}
 
 	private static final String SOME_FIELD = "field";
