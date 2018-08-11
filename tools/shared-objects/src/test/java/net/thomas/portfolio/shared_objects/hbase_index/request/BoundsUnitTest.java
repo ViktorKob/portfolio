@@ -29,6 +29,90 @@ public class BoundsUnitTest {
 	}
 
 	@Test
+	public void shouldOverwriteOffset() {
+		final Bounds bounds = new Bounds();
+		bounds.update(new Bounds(SOME_OFFSET, null, null, null));
+		assertEquals(SOME_OFFSET, bounds.offset);
+	}
+
+	@Test
+	public void shouldOverwriteLimit() {
+		final Bounds bounds = new Bounds();
+		bounds.update(new Bounds(null, SOME_LIMIT, null, null));
+		assertEquals(SOME_LIMIT, bounds.limit);
+	}
+
+	@Test
+	public void shouldOverwriteAfter() {
+		final Bounds bounds = new Bounds();
+		bounds.update(new Bounds(null, null, SOME_AFTER, null));
+		assertEquals(SOME_AFTER, bounds.after);
+	}
+
+	@Test
+	public void shouldOverwriteBefore() {
+		final Bounds bounds = new Bounds();
+		bounds.update(new Bounds(null, null, null, SOME_BEFORE));
+		assertEquals(SOME_BEFORE, bounds.before);
+	}
+
+	@Test
+	public void shouldReplaceOffset() {
+		final Bounds bounds = new Bounds(null, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(SOME_OFFSET, null, null, null);
+		assertEquals(SOME_OFFSET, bounds.offset);
+	}
+
+	@Test
+	public void shouldReplaceLimit() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, null, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(null, SOME_LIMIT, null, null);
+		assertEquals(SOME_LIMIT, bounds.limit);
+	}
+
+	@Test
+	public void shouldReplaceAfter() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, null, SOME_BEFORE);
+		bounds.replaceMissing(null, null, SOME_AFTER, null);
+		assertEquals(SOME_AFTER, bounds.after);
+	}
+
+	@Test
+	public void shouldReplaceAfterWithNewerAfter() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(null, null, SOME_AFTER + 1, null);
+		assertEquals((Long) (SOME_AFTER + 1), bounds.after);
+	}
+
+	@Test
+	public void shouldNotReplaceAfterWithOlderAfter() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(null, null, SOME_AFTER - 1, null);
+		assertEquals(SOME_AFTER, bounds.after);
+	}
+
+	@Test
+	public void shouldReplaceBefore() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, null);
+		bounds.replaceMissing(null, null, null, SOME_BEFORE);
+		assertEquals(SOME_BEFORE, bounds.before);
+	}
+
+	@Test
+	public void shouldReplaceBeforeWithOlderBefore() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(null, null, null, SOME_BEFORE - 1);
+		assertEquals((Long) (SOME_BEFORE - 1), bounds.before);
+	}
+
+	@Test
+	public void shouldNotReplaceBeforeWithNewerBefore() {
+		final Bounds bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
+		bounds.replaceMissing(null, null, null, SOME_BEFORE + 1);
+		assertEquals(SOME_BEFORE, bounds.before);
+	}
+
+	@Test
 	public void shouldHaveSymmetricProtocol() {
 		assertCanSerializeAndDeserialize(bounds);
 	}

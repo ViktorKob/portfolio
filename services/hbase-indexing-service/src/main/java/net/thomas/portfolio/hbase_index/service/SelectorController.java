@@ -67,7 +67,7 @@ public class SelectorController {
 	public ResponseEntity<?> getStatistics(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final Statistics statistics = index.getStatistics(id);
-		if (statistics.size() > 0) {
+		if (statistics.hasValues()) {
 			return ok(statistics);
 		} else {
 			return notFound().build();

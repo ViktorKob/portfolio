@@ -34,8 +34,8 @@ public class Statistics {
 		}
 	}
 
-	public int size() {
-		return statistics.size();
+	public boolean hasValues() {
+		return !statistics.isEmpty();
 	}
 
 	@Override
