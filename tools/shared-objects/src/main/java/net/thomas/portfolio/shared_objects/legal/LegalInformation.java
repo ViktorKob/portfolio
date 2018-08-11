@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.legal;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -78,11 +78,6 @@ public class LegalInformation implements ParameterGroup {
 	}
 
 	@Override
-	public int hashCode() {
-		return (int) (justification.hashCode() * lowerBound * upperBound * 1009);
-	}
-
-	@Override
 	@JsonIgnore
 	public Parameter[] getParameters() {
 		return new Parameter[] { new PreSerializedParameter("li_user", user), new PreSerializedParameter("li_justification", justification),
@@ -90,17 +85,61 @@ public class LegalInformation implements ParameterGroup {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (justification == null ? 0 : justification.hashCode());
+		result = prime * result + (lowerBound == null ? 0 : lowerBound.hashCode());
+		result = prime * result + (upperBound == null ? 0 : upperBound.hashCode());
+		result = prime * result + (user == null ? 0 : user.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof LegalInformation) {
-			final LegalInformation other = (LegalInformation) obj;
-			return justification.equals(other.justification) && lowerBound.equals(other.lowerBound) && upperBound.equals(other.upperBound);
-		} else {
-			return super.equals(obj);
+		if (this == obj) {
+			return true;
 		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof LegalInformation)) {
+			return false;
+		}
+		final LegalInformation other = (LegalInformation) obj;
+		if (justification == null) {
+			if (other.justification != null) {
+				return false;
+			}
+		} else if (!justification.equals(other.justification)) {
+			return false;
+		}
+		if (lowerBound == null) {
+			if (other.lowerBound != null) {
+				return false;
+			}
+		} else if (!lowerBound.equals(other.lowerBound)) {
+			return false;
+		}
+		if (upperBound == null) {
+			if (other.upperBound != null) {
+				return false;
+			}
+		} else if (!upperBound.equals(other.upperBound)) {
+			return false;
+		}
+		if (user == null) {
+			if (other.user != null) {
+				return false;
+			}
+		} else if (!user.equals(other.user)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.request;
+package net.thomas.portfolio.shared_objects.usage_data;
 
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
@@ -6,60 +6,49 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertParametersMatchParameterGroups;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
+import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.ANALYSED_DOCUMENT;
 
 import org.junit.Before;
 import org.junit.Test;
 
-public class BoundsUnitTest {
-
-	private Bounds bounds;
+public class UsageActivityUnitTest {
+	private UsageActivity activity;
 
 	@Before
 	public void setup() {
-		bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
-	}
-
-	@Test
-	public void shouldMakeIdenticalCopyUsingConstructor() throws IOException {
-		final Bounds copy = new Bounds(bounds);
-		assertEquals(bounds, copy);
+		activity = new UsageActivity(USER, ANALYSED_DOCUMENT, TIME_OF_ACTIVITY);
 	}
 
 	@Test
 	public void shouldHaveSymmetricProtocol() {
-		assertCanSerializeAndDeserialize(bounds);
+		assertCanSerializeAndDeserialize(activity);
 	}
 
 	@Test
 	public void shouldSurviveNullParameters() {
-		assertCanSerializeAndDeserializeWithNullValues(bounds);
+		assertCanSerializeAndDeserializeWithNullValues(activity);
 	}
 
 	@Test
 	public void shouldMatchParameterGroup() {
-		assertParametersMatchParameterGroups(bounds);
+		assertParametersMatchParameterGroups(activity);
 	}
 
 	@Test
 	public void shouldHaveValidHashCodeFunction() {
-		assertHashCodeIsValidIncludingNullChecks(bounds);
+		assertHashCodeIsValidIncludingNullChecks(activity);
 	}
 
 	@Test
 	public void shouldHaveValidEqualsFunction() {
-		assertEqualsIsValidIncludingNullChecks(bounds);
+		assertEqualsIsValidIncludingNullChecks(activity);
 	}
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(bounds);
+		assertToStringIsValid(activity);
 	}
 
-	private static final Integer SOME_OFFSET = 1;
-	private static final Integer SOME_LIMIT = 2;
-	private static final Long SOME_AFTER = 3l;
-	private static final Long SOME_BEFORE = 4l;
+	private static final String USER = "USER";
+	private static final Long TIME_OF_ACTIVITY = 1000l;
 }
