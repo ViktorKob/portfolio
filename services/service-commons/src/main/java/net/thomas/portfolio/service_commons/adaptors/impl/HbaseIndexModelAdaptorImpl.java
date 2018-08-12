@@ -2,10 +2,12 @@ package net.thomas.portfolio.service_commons.adaptors.impl;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.ENTITIES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SAMPLES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
@@ -30,6 +32,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
@@ -39,6 +42,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
@@ -144,6 +148,12 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
 		};
 		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, selectorString), GET, responseType, EMPTY_GROUP_LIST);
+	}
+
+	@Override
+	public Entities getSamples(String dataType, int amount) {
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, dataType, SAMPLES), GET, Entities.class,
+				asGroup(new PreSerializedParameter("amount", amount)));
 	}
 
 	@Override

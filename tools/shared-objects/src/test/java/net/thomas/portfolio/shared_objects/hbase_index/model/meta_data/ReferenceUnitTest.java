@@ -4,6 +4,10 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Classification.BLUE;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source.LEMON;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,7 +61,31 @@ public class ReferenceUnitTest {
 	}
 
 	@Test
-	public void shouldHaveValidToString() {
+	public void shouldHaveSymmetricProtocol() {
+		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
+		assertCanSerializeAndDeserialize(reference);
+	}
+
+	@Test
+	public void shouldSurviveNullParameters() {
+		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
+		assertCanSerializeAndDeserializeWithNullValues(reference);
+	}
+
+	@Test
+	public void shouldHaveValidHashCodeFunction() {
+		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
+		assertHashCodeIsValidIncludingNullChecks(reference);
+	}
+
+	@Test
+	public void shouldHaveValidEqualsFunction() {
+		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
+		assertEqualsIsValidIncludingNullChecks(reference);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
 		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
 		assertToStringIsValid(reference);
 	}

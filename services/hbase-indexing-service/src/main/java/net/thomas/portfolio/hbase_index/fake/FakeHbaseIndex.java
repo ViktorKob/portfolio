@@ -42,8 +42,8 @@ public class FakeHbaseIndex implements HbaseIndex {
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
-		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>()
-				.setEntityPostActionFactory(createActionFactory()).build();
+		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>().setEntityPostActionFactory(createActionFactory())
+			.build();
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
@@ -68,8 +68,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private VisitorEntityPostActionFactory<BlankVisitingContext> createActionFactory() {
 		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = new VisitorEntityPostActionFactory<BlankVisitingContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(
-					Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(Class<T> entityClass) {
 				return (entity, context) -> {
 					addEntity(entity);
 				};
@@ -79,11 +78,13 @@ public class FakeHbaseIndex implements HbaseIndex {
 	}
 
 	private void addEntity(Entity entity) {
-		final String type = entity.getClass().getSimpleName();
+		final String type = entity.getClass()
+			.getSimpleName();
 		if (!storage.containsKey(type)) {
 			storage.put(type, new HashMap<>());
 		}
-		storage.get(type).put(entity.uid, entity);
+		storage.get(type)
+			.put(entity.uid, entity);
 	}
 
 	public void setInvertedIndex(InvertedIndex invertedIndex) {
@@ -116,14 +117,16 @@ public class FakeHbaseIndex implements HbaseIndex {
 	@Override
 	public DocumentInfos invertedIndexLookup(DataTypeId selectorId, Indexable indexable) {
 		final List<EntityId> eventIds = invertedIndex.getEventUids(selectorId.uid, indexable.path);
-		return new DocumentInfos(
-				eventIds.stream().map(eventId -> (Event) storage.get(eventId.type.getSimpleName()).get(eventId.uid))
-						.map(entity -> extractInfo(entity)).collect(toList()));
+		return new DocumentInfos(eventIds.stream()
+			.map(eventId -> (Event) storage.get(eventId.type.getSimpleName())
+				.get(eventId.uid))
+			.map(entity -> extractInfo(entity))
+			.collect(toList()));
 	}
 
 	private DocumentInfo extractInfo(Event event) {
-		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent,
-				event.timeOfInterception);
+		return new DocumentInfo(new DataTypeId(event.getClass()
+			.getSimpleName(), event.uid), event.timeOfEvent, event.timeOfInterception);
 	}
 
 	@Override
@@ -143,10 +146,13 @@ public class FakeHbaseIndex implements HbaseIndex {
 	@Override
 	public Entities getSamples(String type, int amount) {
 		if (storage.containsKey(type)) {
-			if (amount >= storage.get(type).size()) {
-				return convert(storage.get(type).values());
+			if (amount >= storage.get(type)
+				.size()) {
+				return convert(storage.get(type)
+					.values());
 			} else {
-				final List<Entity> instances = new ArrayList<>(storage.get(type).values());
+				final List<Entity> instances = new ArrayList<>(storage.get(type)
+					.values());
 				final Set<Entity> samples = new HashSet<>();
 				while (samples.size() < amount) {
 					samples.add(getRandomInstance(instances));
@@ -159,7 +165,9 @@ public class FakeHbaseIndex implements HbaseIndex {
 	}
 
 	private Entities convert(Collection<Entity> values) {
-		return new Entities(values.stream().map(entity -> convert(entity)).collect(toList()));
+		return new Entities(values.stream()
+			.map(entity -> convert(entity))
+			.collect(toList()));
 	}
 
 	private <T> T getRandomInstance(final List<T> instances) {

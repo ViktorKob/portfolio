@@ -16,6 +16,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.ModelUtilities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -182,6 +183,19 @@ public class Adaptors {
 	 */
 	public Fields getFieldsForDataType(String dataType) {
 		return hbaseModelAdaptor.getFieldsForDataType(dataType);
+	}
+
+	/***
+	 * Using {@link HbaseIndexModelAdaptor#getSamples}<BR>
+	 *
+	 * @param dataType
+	 *            The type to fetch samples for
+	 * @param amount
+	 *            Maximum number of samples to return
+	 * @return A collection of amount samples of dataType if possible, otherwise all matching samples of dataType
+	 */
+	public Entities getSamples(String dataType, int amount) {
+		return hbaseModelAdaptor.getSamples(dataType, amount);
 	}
 
 	/***
