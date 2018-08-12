@@ -23,7 +23,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
@@ -36,6 +38,7 @@ public class IdCalculatorUnitTest {
 	private IdCalculator recursiveTypeIdGenerator;
 	private IdCalculator complexTypeIdGenerator;
 	private IdCalculator uniqueKeyIdGenerator;
+	private IdCalculator documentIdGenerator;
 
 	@Before
 	public void setupDataTypes() {
@@ -46,6 +49,7 @@ public class IdCalculatorUnitTest {
 		recursiveTypeIdGenerator = new IdCalculator(RECURSIVE_TYPE_FIELDS, KEYS_SHOULD_BE_CONSISTENT);
 		complexTypeIdGenerator = new IdCalculator(COMPLEX_TYPE_FIELDS, KEYS_SHOULD_BE_CONSISTENT);
 		uniqueKeyIdGenerator = new IdCalculator(SIMPLE_TYPE_FIELDS, KEYS_SHOULD_BE_UNIQUE);
+		documentIdGenerator = new IdCalculator(DOCUMENT_FIELDS, KEYS_SHOULD_BE_CONSISTENT);
 	}
 
 	@Test
@@ -111,6 +115,13 @@ public class IdCalculatorUnitTest {
 	}
 
 	@Test
+	public void shouldHandleDocumentEntityCorrectly() {
+		final String expectedUid = DOCUMENT_ENTITY.getId().uid;
+		final DataTypeId actualId = documentIdGenerator.calculate(DOCUMENT_TYPE, DOCUMENT_ENTITY);
+		assertEquals(expectedUid, actualId.uid);
+	}
+
+	@Test
 	public void shouldHaveValidHashCodeFunction() {
 		assertEquals(simpleTypeIdGenerator.hashCode(), new IdCalculator(SIMPLE_TYPE_FIELDS, KEYS_SHOULD_BE_CONSISTENT).hashCode());
 		assertNotEquals(simpleTypeIdGenerator.hashCode(), complexTypeIdGenerator.hashCode());
@@ -147,6 +158,7 @@ public class IdCalculatorUnitTest {
 	private static final String NULL_REFERENCE_TYPE = "NullReferenceType";
 	private static final String RECURSIVE_TYPE = "RecursiveType";
 	private static final String COMPLEX_TYPE = "ComplexType";
+	private static final String DOCUMENT_TYPE = "DocumentType";
 
 	private static final String RECURSIVE_SUBTYPE_UID = "ABCD1234";
 	private static final boolean KEYS_SHOULD_BE_CONSISTENT = false;
@@ -158,12 +170,14 @@ public class IdCalculatorUnitTest {
 	private static final Fields NULL_REFERENCE_TYPE_FIELDS;
 	private static final Fields RECURSIVE_TYPE_FIELDS;
 	private static final Fields COMPLEX_TYPE_FIELDS;
+	private static final Fields DOCUMENT_FIELDS;
 	private static final Selector SIMPLE_ENTITY;
 	private static final Selector SIMPLE_ENTITY_WITH_TIMESTAMP;
 	private static final Selector SIMPLE_ENTITY_WITH_ARRAY;
 	private static final Selector NULL_REFERENCE_ENTITY;
 	private static final Selector RECURSIVE_ENTITY;
 	private static final Selector COMPLEX_ENTITY;
+	private static final Document DOCUMENT_ENTITY;
 
 	static {
 		SIMPLE_TYPE_FIELDS = fields(string(VALUE_FIELD), nonKeyString(NON_KEY_VALUE_FIELD));
@@ -172,6 +186,7 @@ public class IdCalculatorUnitTest {
 		NULL_REFERENCE_TYPE_FIELDS = fields(dataType(REFERENCE_FIELD, SIMPLE_TYPE));
 		RECURSIVE_TYPE_FIELDS = fields(string(VALUE_FIELD), dataType(RECURSIVE_SUB_TYPE_FIELD, RECURSIVE_TYPE));
 		COMPLEX_TYPE_FIELDS = fields(dataType(COMPLEX_ENTITY_FIELD_1, SIMPLE_TYPE), dataType(COMPLEX_ENTITY_FIELD_2, RECURSIVE_TYPE));
+		DOCUMENT_FIELDS = fields(string(VALUE_FIELD));
 
 		SIMPLE_ENTITY = setupSimpleEntity();
 		SIMPLE_ENTITY_WITH_TIMESTAMP = setupSimpleEntityWithTimestamp();
@@ -179,6 +194,7 @@ public class IdCalculatorUnitTest {
 		NULL_REFERENCE_ENTITY = setupNullEntity();
 		RECURSIVE_ENTITY = setupRecursiveEntity();
 		COMPLEX_ENTITY = setupComplexEntity();
+		DOCUMENT_ENTITY = setupDocumentEntity();
 		loadCorrectEntityIdsIntoEntities();
 	}
 
@@ -221,6 +237,13 @@ public class IdCalculatorUnitTest {
 		return entity;
 	}
 
+	private static Document setupDocumentEntity() {
+		final Document entity = new Document();
+		entity.put(VALUE_FIELD, "simpleValue");
+		entity.setTimeOfEvent(new Timestamp(1000L));
+		return entity;
+	}
+
 	private static void loadCorrectEntityIdsIntoEntities() {
 		final UidConverter keyConverter = new UidConverter();
 		SIMPLE_ENTITY.setId(new DataTypeId(SIMPLE_TYPE, hashSimpleEntity(keyConverter)));
@@ -229,6 +252,7 @@ public class IdCalculatorUnitTest {
 		NULL_REFERENCE_ENTITY.setId(new DataTypeId(NULL_REFERENCE_TYPE, hashNullReferenceEntity(keyConverter)));
 		RECURSIVE_ENTITY.setId(new DataTypeId(RECURSIVE_TYPE, hashRecursiveEntity(keyConverter)));
 		COMPLEX_ENTITY.setId(new DataTypeId(COMPLEX_TYPE, hashComplexEntity(keyConverter)));
+		DOCUMENT_ENTITY.setId(new DataTypeId(DOCUMENT_TYPE, hashDocumentEntity(keyConverter)));
 	}
 
 	private static String hashSimpleEntity(UidConverter keyConverter) {
@@ -281,6 +305,16 @@ public class IdCalculatorUnitTest {
 		return keyConverter.convert(hasher.digest());
 	}
 
+	private static String hashDocumentEntity(UidConverter keyConverter) {
+		final MessageDigest hasher = hasher();
+		hasher.update(DOCUMENT_TYPE.getBytes());
+		final String value = (String) getField(DOCUMENT_ENTITY, VALUE_FIELD);
+		hasher.update(value.getBytes());
+		hasher.update(valueOf(DOCUMENT_ENTITY.getTimeOfEvent()
+			.getTimestamp()).getBytes());
+		return keyConverter.convert(hasher.digest());
+	}
+
 	private static MessageDigest hasher() {
 		try {
 			return MessageDigest.getInstance("MD5");
@@ -289,7 +323,7 @@ public class IdCalculatorUnitTest {
 		}
 	}
 
-	private static <T> T getField(Selector selector, String field) {
-		return selector.get(field);
+	private static <T> T getField(DataType entity, String field) {
+		return entity.get(field);
 	}
 }

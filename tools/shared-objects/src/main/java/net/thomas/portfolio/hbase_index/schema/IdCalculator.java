@@ -47,8 +47,8 @@ public class IdCalculator {
 		}
 
 		if (entity instanceof Document) {
-			hasher.add(String.valueOf(((Document) entity).getTimeOfEvent())
-				.getBytes());
+			hasher.add(valueOf(((Document) entity).getTimeOfEvent()
+				.getTimestamp()).getBytes());
 		}
 		final String uid = hasher.digest();
 		return new DataTypeId(type, uid);
