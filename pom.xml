@@ -152,13 +152,13 @@
 						<configuration>
 							<excludes>
 								<exclude>**/*Tester.*</exclude>
-								<exclude>net/thomas/portfolio/analytics/AnalyticsServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/hbase_index/HbaseIndexingServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/legal/LegalServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/nexus/NexusServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/render/RenderServiceApplication.class</exclude>
+								<exclude>net/thomas/portfolio/analytics/AnalyticsServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/hbase_index/HbaseIndexingServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/legal/LegalServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/nexus/NexusServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/render/RenderServiceApplication*</exclude>
 								<exclude>net/thomas/portfolio/usage_data/schema/**/*</exclude>
-								<exclude>net/thomas/portfolio/usage_data/UsageDataServiceApplication.class</exclude>
+								<exclude>net/thomas/portfolio/usage_data/UsageDataServiceApplication*</exclude>
 							</excludes>
 						</configuration>
 						<executions>
@@ -216,13 +216,13 @@
 						<configuration>
 							<excludes>
 								<exclude>**/*Tester.*</exclude>
-								<exclude>net/thomas/portfolio/analytics/AnalyticsServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/hbase_index/HbaseIndexingServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/legal/LegalServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/nexus/NexusServiceApplication.class</exclude>
-								<exclude>net/thomas/portfolio/render/RenderServiceApplication.class</exclude>
+								<exclude>net/thomas/portfolio/analytics/AnalyticsServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/hbase_index/HbaseIndexingServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/legal/LegalServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/nexus/NexusServiceApplication*</exclude>
+								<exclude>net/thomas/portfolio/render/RenderServiceApplication*</exclude>
 								<exclude>net/thomas/portfolio/usage_data/schema/**/*</exclude>
-								<exclude>net/thomas/portfolio/usage_data/UsageDataServiceApplication.class</exclude>
+								<exclude>net/thomas/portfolio/usage_data/UsageDataServiceApplication*</exclude>
 							</excludes>
 						</configuration>
 						<executions>
