@@ -34,10 +34,16 @@ public class FakeIndexControl implements IndexControl {
 	private List<ProcessingStep> indexSteps;
 	private boolean initialized;
 	private final long randomSeed;
+	private final int populationCount;
+	private final int averageRelationCount;
+	private final int averageCommunicationCount;
 
 	@Autowired
 	public FakeIndexControl(HbaseIndexingServiceConfiguration config) {
 		randomSeed = config.getRandomSeed();
+		populationCount = config.getPopulationCount();
+		averageRelationCount = config.getAverageRelationCount();
+		averageCommunicationCount = config.getAverageCommunicationCount();
 		initialized = false;
 	}
 
@@ -73,13 +79,8 @@ public class FakeIndexControl implements IndexControl {
 	}
 
 	private void buildAndExportWorld(final WorldIoControl worldControl, long randomSeed) {
-		final World world = new FakeWorld(randomSeed, 80, 10, 800);
+		final World world = new FakeWorld(randomSeed, populationCount, averageRelationCount, averageCommunicationCount);
 		worldControl.exportWorld(world);
-	}
-
-	@Override
-	public void setSchema(HbaseIndexSchema schema) {
-		this.schema = schema;
 	}
 
 	public void setIndexSteps(List<ProcessingStep> indexSteps) {

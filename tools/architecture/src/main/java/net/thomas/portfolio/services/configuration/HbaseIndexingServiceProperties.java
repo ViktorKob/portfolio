@@ -29,6 +29,9 @@ public class HbaseIndexingServiceProperties {
 
 		put("http.mappers.jsonPrettyPrint", "true");
 		put("hbase-indexing-service.randomSeed", "1234");
+		put("hbase-indexing-service.populationCount", "80");
+		put("hbase-indexing-service.averageRelationCount", "10");
+		put("hbase-indexing-service.averageCommunicationCount", "800");
 
 		// ####################
 	}
