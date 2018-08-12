@@ -1,5 +1,6 @@
 package net.thomas.portfolio.usage_data.sql;
 
+import static java.lang.System.currentTimeMillis;
 import static java.lang.System.out;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.sql.DriverManager.getConnection;
@@ -98,7 +99,7 @@ public class SqlProxy {
 
 	public void storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		if (activity.timeOfActivity == null) {
-			activity.timeOfActivity = System.currentTimeMillis();
+			activity.timeOfActivity = currentTimeMillis();
 		}
 		try (Connection connection = createConnection(WITH_SCHEMA)) {
 			final DSLContext create = DSL.using(connection);
