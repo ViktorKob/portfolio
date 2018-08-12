@@ -19,6 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 
+/***
+ * TODO[Thomas]: This class should be refactored to a common test project from where the DataType types can be accessed.
+ */
 public class ProtocolTestUtil {
 	private static final ThreadLocal<ObjectMapper> MAPPER = new ThreadLocal<ObjectMapper>() {
 		@Override
