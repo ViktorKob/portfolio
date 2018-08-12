@@ -2,13 +2,13 @@ package net.thomas.portfolio.usage_data.sql;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.System.currentTimeMillis;
+import static java.sql.DriverManager.getConnection;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -28,9 +28,19 @@ public class UsageDataSqlProxyBuildServerTest {
 
 	@BeforeClass
 	public static void setUpDatabase() {
+		removeSchemaIfPresent();
 		sqlProxy = new SqlProxy();
 		sqlProxy.setDatabase(DATABASE_CONFIG);
 		sqlProxy.ensurePresenceOfSchema();
+	}
+
+	private static void removeSchemaIfPresent() {
+		try (Connection connection = getConnection("jdbc:mysql://" + HOST + ":" + MYSQL_PORT, USER_NAME, PASSWORD);
+				Statement statement = connection.createStatement()) {
+			statement.execute("DROP DATABASE " + SCHEMA);
+		} catch (final SQLException e) {
+			// Ignored
+		}
 	}
 
 	@Before
@@ -62,8 +72,7 @@ public class UsageDataSqlProxyBuildServerTest {
 	}
 
 	private void wipeOldTests(Database databaseConfig) throws SQLException {
-		try (final Connection connection = DriverManager.getConnection(databaseConfig.getConnectionString(true), databaseConfig.getUser(),
-				databaseConfig.getPassword())) {
+		try (final Connection connection = getConnection(databaseConfig.getConnectionString(true), databaseConfig.getUser(), databaseConfig.getPassword())) {
 			try (Statement statement = connection.createStatement()) {
 				statement.execute("DELETE FROM user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
 				statement.execute("DELETE FROM user WHERE name ='" + USER + "'");
@@ -71,6 +80,9 @@ public class UsageDataSqlProxyBuildServerTest {
 		}
 	}
 
+	private static final String HOST = "localhost";
+	private static final int MYSQL_PORT = 3306;
+	private static final String SCHEMA = "usage_data";
 	private static final String USER_NAME = "root";
 	private static final String PASSWORD = "";
 	private static final String DOCUMENT_TYPE = "TEST_TYPE";
@@ -89,11 +101,11 @@ public class UsageDataSqlProxyBuildServerTest {
 
 	private static Database createTestDatabaseConfig() {
 		final Database databaseConfig = new Database();
-		databaseConfig.setHost("localhost");
+		databaseConfig.setHost(HOST);
 		databaseConfig.setPort(3306);
 		databaseConfig.setUser(USER_NAME);
 		databaseConfig.setPassword(PASSWORD);
-		databaseConfig.setSchema("usage_data");
+		databaseConfig.setSchema(SCHEMA);
 		return databaseConfig;
 	}
 }
