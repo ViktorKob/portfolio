@@ -17,6 +17,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrarySerializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -174,7 +175,11 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 	@Override
 	@JsonIgnore
 	public String parseToUid(String type, String simpleRep) {
-		return simpleRepParsers.parse(type, simpleRep)
-			.getId().uid;
+		final Selector parsedType = simpleRepParsers.parse(type, simpleRep);
+		if (parsedType != null) {
+			return parsedType.getId().uid;
+		} else {
+			return null;
+		}
 	}
 }

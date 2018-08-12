@@ -54,7 +54,10 @@ public class InvertedIndexLookup {
 		final Collection<DocumentInfos> resultSets = synchronizedCollection(new LinkedList<>());
 		for (final Indexable indexable : indexables) {
 			executor.execute(() -> {
-				resultSets.add(index.invertedIndexLookup(selectorId, indexable));
+				final DocumentInfos result = index.invertedIndexLookup(selectorId, indexable);
+				if (result != null) {
+					resultSets.add(result);
+				}
 				latch.countDown();
 			});
 		}

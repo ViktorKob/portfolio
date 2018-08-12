@@ -43,6 +43,48 @@ public class Reference {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (classifications == null ? 0 : classifications.hashCode());
+		result = prime * result + (originalId == null ? 0 : originalId.hashCode());
+		result = prime * result + (source == null ? 0 : source.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Reference)) {
+			return false;
+		}
+		final Reference other = (Reference) obj;
+		if (classifications == null) {
+			if (other.classifications != null) {
+				return false;
+			}
+		} else if (!classifications.equals(other.classifications)) {
+			return false;
+		}
+		if (originalId == null) {
+			if (other.originalId != null) {
+				return false;
+			}
+		} else if (!originalId.equals(other.originalId)) {
+			return false;
+		}
+		if (source != other.source) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return asString(this);
 	}

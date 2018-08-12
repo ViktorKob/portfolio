@@ -53,7 +53,7 @@ public class HbaseIndexingServiceController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = ENTITIES_PATH + "/{dti_type}" + SAMPLES_PATH, method = GET)
-	public ResponseEntity<?> getDatatype(@PathVariable String dti_type, Integer amount) {
+	public ResponseEntity<?> getSamples(@PathVariable String dti_type, Integer amount) {
 		if (amount == null) {
 			amount = 10;
 		}

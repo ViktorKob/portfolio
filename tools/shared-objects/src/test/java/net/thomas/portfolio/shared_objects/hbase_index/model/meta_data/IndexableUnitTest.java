@@ -1,5 +1,9 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
 
@@ -48,7 +52,31 @@ public class IndexableUnitTest {
 	}
 
 	@Test
-	public void shouldHaveValidToString() {
+	public void shouldHaveSymmetricProtocol() {
+		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
+		assertCanSerializeAndDeserialize(indexable);
+	}
+
+	@Test
+	public void shouldSurviveNullParameters() {
+		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
+		assertCanSerializeAndDeserializeWithNullValues(indexable);
+	}
+
+	@Test
+	public void shouldHaveValidHashCodeFunction() {
+		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
+		assertHashCodeIsValidIncludingNullChecks(indexable);
+	}
+
+	@Test
+	public void shouldHaveValidEqualsFunction() {
+		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
+		assertEqualsIsValidIncludingNullChecks(indexable);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
 		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
 		assertToStringIsValid(indexable);
 	}

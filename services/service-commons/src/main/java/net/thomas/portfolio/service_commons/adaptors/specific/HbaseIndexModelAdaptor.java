@@ -10,6 +10,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 
 /***
@@ -100,6 +101,16 @@ public interface HbaseIndexModelAdaptor {
 	Fields getFieldsForDataType(String dataType);
 
 	/*** Data ***/
+
+	/***
+	 * @param dataType
+	 *            The type to fetch samples for
+	 * @param amount
+	 *            Maximum number of samples to return
+	 * @return A collection of amount samples of dataType if possible, otherwise all matching samples of dataType
+	 */
+	Entities getSamples(String dataType, int amount);
+
 	/***
 	 * @param id
 	 *            Id of the data type to load
