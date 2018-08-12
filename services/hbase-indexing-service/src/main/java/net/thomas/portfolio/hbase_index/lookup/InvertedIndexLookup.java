@@ -22,7 +22,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class InvertedIndexLookup {
-	public static final long MAX_TIMEOUT_IN_SECONDS = 10;
+	public static final long MAX_TIMEOUT_IN_SECONDS = 10000;
 
 	private final HbaseIndex index;
 	private final DataTypeId selectorId;
