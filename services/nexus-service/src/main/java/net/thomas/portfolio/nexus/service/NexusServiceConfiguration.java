@@ -14,7 +14,6 @@ public class NexusServiceConfiguration {
 	private ServiceDependency legal;
 	private ServiceDependency rendering;
 	private ServiceDependency usage;
-	private Kerberos kerberos;
 
 	public ServiceDependency getAnalytics() {
 		return analytics;
@@ -54,35 +53,5 @@ public class NexusServiceConfiguration {
 
 	public void setUsage(ServiceDependency usage) {
 		this.usage = usage;
-	}
-
-	public Kerberos getKerberos() {
-		return kerberos;
-	}
-
-	public void setKerberos(Kerberos kerberos) {
-		this.kerberos = kerberos;
-	}
-
-	public static class Kerberos {
-
-		private String user;
-		private String keytabFilePath;
-
-		public String getUser() {
-			return user;
-		}
-
-		public void setUser(String user) {
-			this.user = user;
-		}
-
-		public String getKeytabFilePath() {
-			return keytabFilePath;
-		}
-
-		public void setKeytabFilePath(String keytabFilePath) {
-			this.keytabFilePath = keytabFilePath;
-		}
 	}
 }
