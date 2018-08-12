@@ -24,7 +24,7 @@ public interface HbaseIndexSchema {
 
 	Fields getFieldsForDataType(String dataType);
 
-	String calculateUid(String type, String simpleRep);
+	String parseToUid(String type, String simpleRep);
 
 	List<DataTypeId> getSelectorSuggestions(String selectorString);
 

@@ -34,7 +34,7 @@ public class DocumentController {
 			amount = 10;
 		}
 		final Entities samples = index.getSamples(dti_type, amount);
-		if (samples != null && samples.size() > 0) {
+		if (samples != null && samples.hasData()) {
 			return ok(samples);
 		} else {
 			return notFound().build();

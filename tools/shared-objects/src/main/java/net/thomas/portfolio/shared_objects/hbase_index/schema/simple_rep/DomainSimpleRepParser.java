@@ -45,7 +45,7 @@ public class DomainSimpleRepParser extends SimpleRepresentationParser {
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj instanceof DomainSimpleRepParser;
+		return obj != null && obj instanceof DomainSimpleRepParser;
 	}
 
 	@Override

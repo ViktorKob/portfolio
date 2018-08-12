@@ -26,8 +26,8 @@ public class Entities {
 		this.entities = entities;
 	}
 
-	public int size() {
-		return entities.size();
+	public boolean hasData() {
+		return !entities.isEmpty();
 	}
 
 	@Override

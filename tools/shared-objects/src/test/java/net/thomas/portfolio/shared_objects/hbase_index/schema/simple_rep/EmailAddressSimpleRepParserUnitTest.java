@@ -2,7 +2,9 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser.newEmailAddressParser;
 import static net.thomas.portfolio.shared_objects.test_utils.DataTypeFieldMatcher.matchesFields;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -22,10 +24,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 public class EmailAddressSimpleRepParserUnitTest {
 
 	private EmailAddressSimpleRepParser parser;
+	private IdCalculator idCalculatorMock;
 
 	@Before
 	public void setUpForTest() {
-		final IdCalculator idCalculatorMock = mock(IdCalculator.class);
+		idCalculatorMock = mock(IdCalculator.class);
 		final Map<String, Object> expectedFields = createExpectedEmailAddressFields();
 		when(idCalculatorMock.calculate(eq(EMAIL_ADDRESS_TYPE), argThat(matchesFields(expectedFields)))).thenReturn(ID);
 		parser = newEmailAddressParser(idCalculatorMock);
@@ -36,6 +39,31 @@ public class EmailAddressSimpleRepParserUnitTest {
 	public void shouldParseEmailAddress() {
 		final Selector selector = parser.parse(EMAIL_ADDRESS_TYPE, EMAIL_ADDRESS_SIMPLE_REP);
 		assertEquals(ID, selector.getId());
+	}
+
+	@Test
+	public void shouldAlwaysReturnSameHashCode() {
+		assertEquals(parser.hashCode(), newEmailAddressParser(idCalculatorMock).hashCode());
+	}
+
+	@Test
+	public void shouldBeEqualIfSameTypeAndNotNull() {
+		assertEquals(parser, newEmailAddressParser(idCalculatorMock));
+	}
+
+	@Test
+	public void shouldNotBeEqualIfDifferentType() {
+		assertNotEquals(parser, "");
+	}
+
+	@Test
+	public void shouldNotBeEqualIfNull() {
+		assertNotEquals(parser, (DomainSimpleRepParser) null);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		assertToStringIsValid(parser);
 	}
 
 	private static final String LOCALNAME_TYPE = "Localname";

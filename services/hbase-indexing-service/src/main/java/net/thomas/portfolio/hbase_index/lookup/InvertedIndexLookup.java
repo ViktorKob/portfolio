@@ -97,7 +97,7 @@ public class InvertedIndexLookup {
 	private void skipUntilDate(final PriorityQueue<DocumentInfo> allDocuments, Long before) {
 		while (!allDocuments.isEmpty() && allDocuments.peek()
 			.getTimeOfEvent()
-			.after(before)) {
+			.isAfter(before)) {
 			allDocuments.poll();
 		}
 	}

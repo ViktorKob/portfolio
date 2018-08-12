@@ -83,10 +83,6 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		this.simpleRepParsers = simpleRepParsers;
 	}
 
-	public Map<String, Set<String>> getIndexableDocumentTypes() {
-		return indexableDocumentTypes;
-	}
-
 	public Map<String, Fields> getDataTypeFields() {
 		return dataTypeFields;
 	}
@@ -164,7 +160,7 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		final LinkedList<DataTypeId> selectorIds = new LinkedList<>();
 		for (final String selectorType : getSelectorTypes()) {
 			try {
-				final DataTypeId selectorId = new DataTypeId(selectorType, calculateUid(selectorType, selectorString));
+				final DataTypeId selectorId = new DataTypeId(selectorType, parseToUid(selectorType, selectorString));
 				if (selectorId != null) {
 					selectorIds.add(selectorId);
 				}
@@ -177,7 +173,7 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 
 	@Override
 	@JsonIgnore
-	public String calculateUid(String type, String simpleRep) {
+	public String parseToUid(String type, String simpleRep) {
 		return simpleRepParsers.parse(type, simpleRep)
 			.getId().uid;
 	}

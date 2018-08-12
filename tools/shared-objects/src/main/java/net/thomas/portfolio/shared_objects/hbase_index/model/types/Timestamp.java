@@ -66,11 +66,11 @@ public class Timestamp {
 		return timestampInUtc < timestamp;
 	}
 
-	public boolean after(Timestamp timestamp) {
+	public boolean isAfter(Timestamp timestamp) {
 		return timestampInUtc > timestamp.getTimestamp();
 	}
 
-	public boolean after(Long timestamp) {
+	public boolean isAfter(Long timestamp) {
 		return timestampInUtc > timestamp;
 	}
 

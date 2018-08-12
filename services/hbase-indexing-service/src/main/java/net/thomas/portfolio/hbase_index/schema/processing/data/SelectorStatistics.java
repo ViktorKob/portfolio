@@ -56,11 +56,11 @@ public class SelectorStatistics {
 	private void updateCounts(final Map<StatisticsPeriod, Long> statistics, SelectorEntity selector, Event event) {
 		final Timestamp timeOfEvent = event.timeOfEvent;
 		statistics.put(INFINITY, statistics.get(INFINITY) + 1);
-		if (timeOfEvent.after(threeMonthsAgo)) {
+		if (timeOfEvent.isAfter(threeMonthsAgo)) {
 			statistics.put(QUARTER, statistics.get(QUARTER) + 1);
-			if (timeOfEvent.after(oneWeekAgo)) {
+			if (timeOfEvent.isAfter(oneWeekAgo)) {
 				statistics.put(WEEK, statistics.get(WEEK) + 1);
-				if (timeOfEvent.after(yesterday)) {
+				if (timeOfEvent.isAfter(yesterday)) {
 					statistics.put(DAY, statistics.get(DAY) + 1);
 				}
 			}

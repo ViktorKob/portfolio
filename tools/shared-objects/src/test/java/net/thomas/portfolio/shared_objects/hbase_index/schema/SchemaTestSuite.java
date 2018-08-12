@@ -14,6 +14,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ StringFieldSimpleRepParserUnitTest.class, PositiveIntegerFieldSimpleRepParserUnitTest.class, DomainSimpleRepParserUnitTest.class,
 		EmailAddressSimpleRepParserUnitTest.class, SimpleRepresentationParserLibrarySerializableUnitTest.class,
-		SimpleRepresentationParserLibraryBuilderUnitTest.class, SimpleRepresentationParserUnitTest.class })
+		SimpleRepresentationParserLibraryBuilderUnitTest.class, SimpleRepresentationParserUnitTest.class, HbaseIndexSchemaAndSchemaBuilderUnitTest.class })
 public class SchemaTestSuite {
 }

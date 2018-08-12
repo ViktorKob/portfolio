@@ -4,6 +4,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.
 import static net.thomas.portfolio.shared_objects.test_utils.DataTypeFieldMatcher.matchesField;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -38,11 +39,38 @@ public class DomainSimpleRepParserUnitTest {
 	}
 
 	@Test
+	public void shouldParseTopLevelSimpleRepWithInitialPeriodAndBuildDomain() {
+		when(idCalculatorMock.calculate(eq(DOMAIN_TYPE), argThat(matchesField(VALUE_FIELD, TOP_LEVEL_DOMAIN_SIMPLE_REP)))).thenReturn(ID);
+		final Selector selector = parser.parse(DOMAIN_TYPE, "." + TOP_LEVEL_DOMAIN_SIMPLE_REP);
+		assertEquals(ID, selector.getId());
+	}
+
+	@Test
 	public void shouldParseSimpleRepAndBuildDomain() {
 		when(idCalculatorMock.calculate(eq(DOMAIN_TYPE), argThat(matchesDomainFields(DOMAIN_SIMPLE_REP)))).thenReturn(ID);
 		setupLibraryMockWithTopLevelDomainStub(DOMAIN_SIMPLE_REP);
 		final Selector selector = parser.parse(DOMAIN_TYPE, DOMAIN_SIMPLE_REP);
 		assertEquals(ID, selector.getId());
+	}
+
+	@Test
+	public void shouldAlwaysReturnSameHashCode() {
+		assertEquals(parser.hashCode(), newDomainParser(idCalculatorMock).hashCode());
+	}
+
+	@Test
+	public void shouldBeEqualIfSameTypeAndNotNull() {
+		assertEquals(parser, newDomainParser(idCalculatorMock));
+	}
+
+	@Test
+	public void shouldNotBeEqualIfDifferentType() {
+		assertNotEquals(parser, "");
+	}
+
+	@Test
+	public void shouldNotBeEqualIfNull() {
+		assertNotEquals(parser, (DomainSimpleRepParser) null);
 	}
 
 	@Test
