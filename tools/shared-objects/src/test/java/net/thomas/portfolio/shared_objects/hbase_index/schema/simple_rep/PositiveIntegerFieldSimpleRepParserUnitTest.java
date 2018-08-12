@@ -3,6 +3,8 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep;
 import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
 import static net.thomas.portfolio.shared_objects.test_utils.DataTypeFieldMatcher.matchesField;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -18,10 +20,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 public class PositiveIntegerFieldSimpleRepParserUnitTest {
 
 	private PositiveIntegerFieldSimpleRepParser parser;
+	private IdCalculator idCalculatorMock;
 
 	@Before
 	public void setupForTest() {
-		final IdCalculator idCalculatorMock = mock(IdCalculator.class);
+		idCalculatorMock = mock(IdCalculator.class);
 		onlyAcceptCorrectSimpleRepFieldValue(idCalculatorMock);
 		parser = newPositiveIntegerFieldParser(TYPE, FIELD, idCalculatorMock);
 	}
@@ -36,6 +39,33 @@ public class PositiveIntegerFieldSimpleRepParserUnitTest {
 	public void shouldParseSimpleRepWithSpacesAndBuildSelector() {
 		final Selector selector = parser.parse(TYPE, SIMPLE_REP_WITH_SPACES);
 		assertEquals(ID, selector.getId());
+	}
+
+	@Test
+	public void shouldReturnSameHashCode() {
+		assertEquals(parser.hashCode(), newPositiveIntegerFieldParser(TYPE, FIELD, idCalculatorMock).hashCode());
+	}
+
+	@Test
+	public void shouldBeEqualIfSameTypeAndNotNull() {
+		assertEquals(parser, newPositiveIntegerFieldParser(TYPE, FIELD, idCalculatorMock));
+	}
+
+	@Test
+	public void shouldNotBeEqualIfDifferentType() {
+		assertNotEquals(parser, "");
+	}
+
+	@Test
+	public void shouldNotBeEqualIfNull() {
+		assertNotEquals(parser, (DomainSimpleRepParser) null);
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		final String asString = parser.toString();
+		assertTrue(asString.contains(TYPE));
+		assertTrue(asString.contains(FIELD));
 	}
 
 	private static final String TYPE = "TYPE";

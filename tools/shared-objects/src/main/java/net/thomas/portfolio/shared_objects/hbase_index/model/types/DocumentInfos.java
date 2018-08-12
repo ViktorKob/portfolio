@@ -26,6 +26,10 @@ public class DocumentInfos {
 		this.infos = infos;
 	}
 
+	public boolean hasData() {
+		return !infos.isEmpty();
+	}
+
 	@Override
 	public int hashCode() {
 		return infos.hashCode();

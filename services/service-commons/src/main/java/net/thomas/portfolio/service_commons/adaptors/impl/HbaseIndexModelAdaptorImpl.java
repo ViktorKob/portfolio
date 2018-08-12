@@ -83,7 +83,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	@Override
 	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
-		final String uid = schema.calculateUid(type, simpleRep);
+		final String uid = schema.parseToUid(type, simpleRep);
 		if (uid != null) {
 			return new DataTypeId(type, uid);
 		} else {

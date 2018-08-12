@@ -51,7 +51,6 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (field == null ? 0 : field.hashCode());
-		result = prime * result + (removableCharactersPattern == null ? 0 : removableCharactersPattern.hashCode());
 		return result;
 	}
 
@@ -72,14 +71,6 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 				return false;
 			}
 		} else if (!field.equals(other.field)) {
-			return false;
-		}
-		if (removableCharactersPattern == null) {
-			if (other.removableCharactersPattern != null) {
-				return false;
-			}
-		} else if (!removableCharactersPattern.pattern()
-			.equals(other.removableCharactersPattern.pattern())) {
 			return false;
 		}
 		return true;

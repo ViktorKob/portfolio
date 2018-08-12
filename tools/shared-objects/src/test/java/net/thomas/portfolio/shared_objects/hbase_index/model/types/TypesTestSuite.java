@@ -5,6 +5,6 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({ DataTypeUnitTest.class, DataTypeIdUnitTest.class, DocumentUnitTest.class, DocumentInfoUnitTest.class, GeoLocationUnitTest.class,
-		RawDataTypeUnitTest.class, SelectorUnitTest.class, TimestampUnitTest.class })
+		RawDataTypeUnitTest.class, SelectorUnitTest.class, TimestampUnitTest.class, EntitiesUnitTest.class, DocumentInfosUnitTest.class })
 public class TypesTestSuite {
 }

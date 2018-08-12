@@ -75,7 +75,7 @@ public class HbaseIndexSchemaBuilder {
 		} else if (parser == EmailAddressSimpleRepParser.class) {
 			parserBuilder.addEmailAddressParser();
 		} else {
-			throw new RuntimeException("Unknown simple representation parser of type " + parser.getSimpleName());
+			throw new UnknownParserException("Unknown simple representation parser of type " + parser.getSimpleName());
 		}
 		return this;
 	}
