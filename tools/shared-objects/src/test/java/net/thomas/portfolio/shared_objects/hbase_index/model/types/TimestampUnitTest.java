@@ -115,5 +115,4 @@ public class TimestampUnitTest {
 	private static final Timestamp SOME_TIMESTAMP = new Timestamp(SOME_TIME, SOME_TIME_ZONE);
 	private static final ZoneId SOME_OTHER_TIME_ZONE = ZoneId.of("+1");
 	private static final Timestamp SOME_OTHER_TIMESTAMP = new Timestamp(SOME_OTHER_TIME, SOME_OTHER_TIME_ZONE);
-	private static final Object ANOTHER_OBJECT = "object";
 }

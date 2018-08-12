@@ -5,6 +5,7 @@ import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,7 +43,7 @@ public class UsageDataSqlProxyBuildServerTest {
 		final UsageActivity activity = new UsageActivity(USER, READ_DOCUMENT, TIME_OF_ACTIVITY);
 		sqlProxy.storeUsageActivity(DOCUMENT_ID, activity);
 		final UsageActivities activities = sqlProxy.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
-		assertEquals(1, activities.size());
+		assertTrue(activities.hasData());
 		assertEquals(activity, activities.get(0));
 	}
 

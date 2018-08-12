@@ -27,8 +27,8 @@ public class UsageActivities {
 		this.activities = activities;
 	}
 
-	public int size() {
-		return activities.size();
+	public boolean hasData() {
+		return !activities.isEmpty();
 	}
 
 	@JsonIgnore

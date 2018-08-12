@@ -30,11 +30,11 @@ public class Statistics {
 		if (statistics.containsKey(period)) {
 			return statistics.get(period);
 		} else {
-			return 0l;
+			return 0L;
 		}
 	}
 
-	public boolean hasValues() {
+	public boolean hasData() {
 		return !statistics.isEmpty();
 	}
 
