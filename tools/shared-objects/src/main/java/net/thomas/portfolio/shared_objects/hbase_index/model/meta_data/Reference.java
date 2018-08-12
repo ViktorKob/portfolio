@@ -1,8 +1,8 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
-import java.util.Set;
+import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import java.util.Set;
 
 public class Reference {
 	private Source source;
@@ -44,6 +44,6 @@ public class Reference {
 
 	@Override
 	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
+		return asString(this);
 	}
 }

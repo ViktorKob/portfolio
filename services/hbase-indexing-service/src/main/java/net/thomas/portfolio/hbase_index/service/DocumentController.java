@@ -46,7 +46,7 @@ public class DocumentController {
 	public ResponseEntity<?> getDocumentReferences(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final References references = index.getReferences(id);
-		if (references.size() > 0) {
+		if (references.hasData()) {
 			return ok(references);
 		} else {
 			return notFound().build();

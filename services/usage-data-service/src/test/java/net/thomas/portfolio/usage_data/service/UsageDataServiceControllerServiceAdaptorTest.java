@@ -9,6 +9,7 @@ import static net.thomas.portfolio.services.configuration.DefaultServiceParamete
 import static net.thomas.portfolio.services.configuration.UsageDataServiceProperties.loadUsageDataConfigurationIntoProperties;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -99,7 +100,7 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 	public void shouldFetchActivitiesUsingSqlProxy() {
 		when(sqlProxy.fetchUsageActivities(eq(DOCUMENT_ID), eq(EVERYTHING))).thenReturn(new UsageActivities(singletonList(DEFAULT_ACTIVITY)));
 		final UsageActivities activities = adaptors.fetchUsageActivities(DOCUMENT_ID, EVERYTHING);
-		assertEquals(1, activities.size());
+		assertTrue(activities.hasData());
 		assertEquals(DEFAULT_ACTIVITY, activities.get(0));
 	}
 

@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.schema;
 
 import static java.lang.String.valueOf;
+import static java.security.MessageDigest.getInstance;
 import static javax.xml.bind.DatatypeConverter.printHexBinary;
 
 import java.security.MessageDigest;
@@ -12,7 +13,7 @@ public class Hasher {
 
 	public Hasher() {
 		try {
-			hasher = MessageDigest.getInstance("MD5");
+			hasher = getInstance("MD5");
 		} catch (final NoSuchAlgorithmException e) {
 			throw new RuntimeException("Unable to calculate hash", e);
 		}

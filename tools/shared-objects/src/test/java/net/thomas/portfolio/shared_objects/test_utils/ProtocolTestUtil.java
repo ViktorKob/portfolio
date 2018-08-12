@@ -200,7 +200,9 @@ public class ProtocolTestUtil {
 			final String asString = object.toString();
 			for (final Field field : getRelevantFields(object)) {
 				final Object value = getValue(field, object);
-				assertTrue(asString.contains(value.toString()));
+				if (value != null) {
+					assertTrue(asString.contains(value.toString()));
+				}
 			}
 		} catch (final IllegalArgumentException e) {
 			throw new RuntimeException("Unable to compare equality for object " + object, e);

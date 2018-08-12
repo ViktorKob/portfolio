@@ -253,8 +253,6 @@ public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
 	private static final Fields SOME_FIELDS = new Fields();
 	private static final String SOME_SIMPLE_REPRESENTATION = "someSimpleRepresentation";
 	private static final String SOME_NUMBER = "1234";
-	private static final String SOME_DOMAIN = "abc.de";
-	private static final String SOME_EMAIL_ADDRESS = "abc@def.gh";
 	private static final int TWO_SELECTOR_TYPES = 2;
 	private static final int ONE_DOCUMENT_TYPE = 1;
 }

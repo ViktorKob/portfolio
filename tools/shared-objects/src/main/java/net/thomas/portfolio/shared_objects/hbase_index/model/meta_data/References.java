@@ -26,8 +26,8 @@ public class References {
 		this.references = references;
 	}
 
-	public int size() {
-		return references.size();
+	public boolean hasData() {
+		return !references.isEmpty();
 	}
 
 	@Override
