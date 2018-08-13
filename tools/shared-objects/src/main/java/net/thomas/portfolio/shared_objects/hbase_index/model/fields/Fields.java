@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -17,17 +18,17 @@ public class Fields extends LinkedHashMap<String, Field> implements Iterable<Fie
 		super();
 	}
 
-	private Fields(LinkedHashMap<String, Field> fields) {
+	private Fields(Map<String, Field> fields) {
 		super();
 		putAll(fields);
 	}
 
-	public static Fields fields(LinkedHashMap<String, Field> fields) {
+	public static Fields fields(Map<String, Field> fields) {
 		return new Fields(fields);
 	}
 
 	public static Fields fields(Field... fields) {
-		return new Fields(stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new)));
+		return fields(stream(fields).collect(toMap(Field::getName, identity(), (oldKey, newKey) -> oldKey, LinkedHashMap::new)));
 	}
 
 	@Override

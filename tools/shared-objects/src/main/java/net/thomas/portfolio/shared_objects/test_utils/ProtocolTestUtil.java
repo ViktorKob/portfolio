@@ -231,15 +231,15 @@ public class ProtocolTestUtil {
 	}
 
 	private static boolean isSameAsPrimitive(final Field field, final java.lang.reflect.Parameter parameter) {
-		if (field.getType() == boolean.class && parameter.getType() == Boolean.class) {
-			return true;
-		} else if (field.getType() == float.class && parameter.getType() == Float.class) {
+		if (field.getType() == float.class && parameter.getType() == Float.class) {
 			return true;
 		} else if (field.getType() == double.class && parameter.getType() == Double.class) {
 			return true;
 		} else if (field.getType() == long.class && parameter.getType() == Long.class) {
 			return true;
 		} else if (field.getType() == int.class && parameter.getType() == Integer.class) {
+			return true;
+		} else if (field.getType() == boolean.class && parameter.getType() == Boolean.class) {
 			return true;
 		} else {
 			return false;

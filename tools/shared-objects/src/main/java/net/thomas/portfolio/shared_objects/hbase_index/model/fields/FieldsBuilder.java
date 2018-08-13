@@ -1,5 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.fields;
 
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
+
 import java.util.LinkedHashMap;
 
 public class FieldsBuilder {
@@ -15,6 +17,6 @@ public class FieldsBuilder {
 	}
 
 	public Fields build() {
-		return Fields.fields(fields);
+		return fields(fields);
 	}
 }
