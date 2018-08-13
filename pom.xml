@@ -197,6 +197,7 @@
 							<excludes>
 								<exclude>**/*Tester.*</exclude>
 								<exclude>net/thomas/portfolio/testing_tools/**/*</exclude>
+								<exclude>net/thomas/portfolio/shared_objects/test_utils/ProtocolTestUtil*</exclude>
 								<exclude>net/thomas/portfolio/analytics/AnalyticsServiceApplication*</exclude>
 								<exclude>net/thomas/portfolio/hbase_index/HbaseIndexingServiceApplication*</exclude>
 								<exclude>net/thomas/portfolio/legal/LegalServiceApplication*</exclude>
