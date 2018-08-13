@@ -10,8 +10,7 @@ import net.thomas.portfolio.hbase_index.service.FakeIndexControlUnitTest;
 import net.thomas.portfolio.hbase_index.service.HbaseIndexingServiceControllerServiceAdaptorTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ FakeComponentsTestSuite.class, SchemaTestSuite.class, FakeIndexControlUnitTest.class, InvertedIndexLookupAndBuilderUnitTest.class,
-		HbaseIndexingServiceControllerServiceAdaptorTest.class })
-
+@Suite.SuiteClasses({ FakeComponentsTestSuite.class, SchemaTestSuite.class, FakeIndexControlUnitTest.class,
+		InvertedIndexLookupAndBuilderUnitTest.class, HbaseIndexingServiceControllerServiceAdaptorTest.class })
 public class HbaseIndexingServiceTestSuite {
 }
