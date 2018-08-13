@@ -19,6 +19,7 @@ import static net.thomas.portfolio.render.format.DataTypeMockingUtil.mockPublicI
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.mockTextMessage;
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.repeatString;
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.setupDomain;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -250,5 +251,10 @@ public class HbaseIndexingModelTextRendererLibraryUnitTest {
 		final Document document = mockConversation(SOME_DURATION, SOME_TIMESTAMP, fromEndpoint);
 		final String renderedEntity = library.render(document, contextBuilder.build());
 		assertEquals(250, renderedEntity.length());
+	}
+
+	@Test
+	public void shouldHaveFunctioningToStringMethod() {
+		assertToStringContainsAllFieldsFromObject(library);
 	}
 }

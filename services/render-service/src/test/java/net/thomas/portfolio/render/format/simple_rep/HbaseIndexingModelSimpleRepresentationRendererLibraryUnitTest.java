@@ -10,6 +10,7 @@ import static net.thomas.portfolio.render.format.DataTypeMockingUtil.mockLocalna
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.mockPrivateId;
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.mockPublicId;
 import static net.thomas.portfolio.render.format.DataTypeMockingUtil.setupDomain;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,5 +88,10 @@ public class HbaseIndexingModelSimpleRepresentationRendererLibraryUnitTest {
 		final Selector selector = mockEmailAddress(mockLocalname(SOME_STRING), setupDomain(SOME_STRING));
 		final String renderedEntity = library.render(selector, contextBuilder.build());
 		assertTrue(renderedEntity, renderedEntity.contains(SOME_STRING + "@" + SOME_STRING));
+	}
+
+	@Test
+	public void shouldHaveFunctioningToStringMethod() {
+		assertToStringContainsAllFieldsFromObject(library);
 	}
 }
