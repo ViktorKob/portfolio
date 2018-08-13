@@ -33,6 +33,7 @@ import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.UsageAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.service_commons.network.BadRequestException;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -116,9 +117,51 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 		verify(sqlProxy, times(1)).fetchUsageActivities(eq(DOCUMENT_ID), eq(DEFAULT_BOUNDS));
 	}
 
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenStoringUsageActivityUsingInvalidType() {
+		adaptors.storeUsageActivity(DOCUMENT_ID_WITH_INVALID_TYPE, DEFAULT_ACTIVITY);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenStoringUsageActivityUsingInvalidUid() {
+		adaptors.storeUsageActivity(DOCUMENT_ID_WITH_INVALID_UID, DEFAULT_ACTIVITY);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenStoringUsageActivityUsingInvalidUsername() {
+		adaptors.storeUsageActivity(DOCUMENT_ID, new UsageActivity(null, READ_DOCUMENT, TIME_OF_ACTIVITY));
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenStoringUsageActivityUsingInvalidActivityType() {
+		adaptors.storeUsageActivity(DOCUMENT_ID, new UsageActivity(USER, null, TIME_OF_ACTIVITY));
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenFetchingUsageActivitiesUsingInvalidType() {
+		adaptors.fetchUsageActivities(DOCUMENT_ID_WITH_INVALID_TYPE, DEFAULT_BOUNDS);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenFetchingUsageActivitiesUsingInvalidUid() {
+		adaptors.fetchUsageActivities(DOCUMENT_ID_WITH_INVALID_UID, DEFAULT_BOUNDS);
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenFetchingUsageActivitiesUsingInvalidOffset() {
+		adaptors.fetchUsageActivities(DOCUMENT_ID, new Bounds(-1, 20, AROUND_A_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW));
+	}
+
+	@Test(expected = BadRequestException.class)
+	public void shouldThrowExceptionWhenFetchingUsageActivitiesUsingInvalidLimit() {
+		adaptors.fetchUsageActivities(DOCUMENT_ID, new Bounds(0, -1, AROUND_A_THOUSAND_YEARS_AGO, AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW));
+	}
+
 	private static final String DOCUMENT_TYPE = "TYPE";
 	private static final String DOCUMENT_UID = "FFABCD";
 	private static final DataTypeId DOCUMENT_ID = new DataTypeId(DOCUMENT_TYPE, DOCUMENT_UID);
+	private static final DataTypeId DOCUMENT_ID_WITH_INVALID_TYPE = new DataTypeId("INVALID_TYPE", DOCUMENT_UID);
+	private static final DataTypeId DOCUMENT_ID_WITH_INVALID_UID = new DataTypeId(DOCUMENT_TYPE, "F");
 	private static final String USER = "TEST_USER";
 	private static final Long TIME_OF_ACTIVITY = nowInMillisecondsWithSecondsPrecision();
 	private static final UsageActivity DEFAULT_ACTIVITY = new UsageActivity(USER, READ_DOCUMENT, TIME_OF_ACTIVITY);
