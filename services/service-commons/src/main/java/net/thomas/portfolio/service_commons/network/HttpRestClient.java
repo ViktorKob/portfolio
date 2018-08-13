@@ -4,6 +4,7 @@ import static java.lang.System.nanoTime;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -73,8 +74,10 @@ public class HttpRestClient {
 			if (NOT_FOUND == e.getStatusCode()) {
 				return null;
 			} else if (UNAUTHORIZED == e.getStatusCode()) {
-				throw new RuntimeException("Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.",
-						e);
+				throw new UnauthorizedAccessException(
+						"Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.", e);
+			} else if (BAD_REQUEST == e.getStatusCode()) {
+				throw new BadRequestException("Request '" + request + "' is malformed. Please fix it before trying again.", e);
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
 						e);
