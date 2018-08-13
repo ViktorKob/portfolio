@@ -2,7 +2,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep;
 
 import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser.newEmailAddressParser;
 import static net.thomas.portfolio.shared_objects.test_utils.DataTypeFieldMatcher.matchesFields;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -63,7 +63,7 @@ public class EmailAddressSimpleRepParserUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(parser);
+		assertToStringContainsAllFieldsFromObject(parser);
 	}
 
 	private static final String LOCALNAME_TYPE = "Localname";

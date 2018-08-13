@@ -2,8 +2,8 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import static java.util.Collections.singletonMap;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.mock;
@@ -70,8 +70,7 @@ public class SimpleRepresentationParserLibrarySerializableUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		final SimpleRepresentationParserLibrarySerializable library = builder.build();
-		assertToStringIsValid(library);
+		assertToStringContainsAllFieldsFromObject(builder.build());
 	}
 
 	private SimpleRepresentationParserLibrary copy(SimpleRepresentationParserLibrary library) {

@@ -1,6 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -80,7 +80,7 @@ public class SimpleRepresentationParserUnitTest {
 	@Test
 	public void shouldHaveToString() {
 		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
-		assertToStringIsValid(parser);
+		assertToStringContainsAllFieldsFromObject(parser);
 	}
 
 	private static final String ANY_PATTERN = ".+$";

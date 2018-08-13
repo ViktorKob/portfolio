@@ -4,7 +4,7 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
@@ -78,7 +78,7 @@ public class IndexableUnitTest {
 	@Test
 	public void shouldHaveValidToStringFunction() {
 		indexable = new Indexable(SOME_SELECTOR_TYPE, SOME_PATH, SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELD);
-		assertToStringIsValid(indexable);
+		assertToStringContainsAllFieldsFromObject(indexable);
 	}
 
 	private static final String SOME_SELECTOR_TYPE = "SomeSelectorType";

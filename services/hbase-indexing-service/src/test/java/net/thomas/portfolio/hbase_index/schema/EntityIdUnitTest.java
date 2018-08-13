@@ -2,7 +2,7 @@ package net.thomas.portfolio.hbase_index.schema;
 
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class EntityIdUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(ENTITY_ID);
+		assertToStringContainsAllFieldsFromObject(ENTITY_ID);
 	}
 
 	private static final String SOME_UID = "A0";
