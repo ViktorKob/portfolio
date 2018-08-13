@@ -1,6 +1,7 @@
 package net.thomas.portfolio.common.utils;
 
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.getDeclaredFields;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
@@ -12,7 +13,7 @@ public class ToStringUtilUnitTest {
 	public void shouldContainValuesInToString() throws IllegalArgumentException, IllegalAccessException {
 		final SomeObject object = new SomeObject();
 		final String asString = asString(object);
-		for (final Field field : SomeObject.class.getDeclaredFields()) {
+		for (final Field field : getDeclaredFields(object)) {
 			assertTrue(asString.contains(field.getName() + "=" + field.get(object)));
 		}
 	}
