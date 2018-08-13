@@ -20,7 +20,7 @@ The **arrows** represent the flow of data in the system.
 
 When running the example queries below, login using **service-user** and **password**.
 
-***Not that this cluster is experimental and may be down at times***
+***Note that this cluster is experimental and may be down at times***
 
 | Examples | |
 |---|---|
