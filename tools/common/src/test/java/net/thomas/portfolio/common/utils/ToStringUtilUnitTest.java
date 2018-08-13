@@ -17,7 +17,7 @@ public class ToStringUtilUnitTest {
 		}
 	}
 
-	static class SomeObject {
+	public static class SomeObject {
 		public boolean toggleValue = true;
 		public int smallNumber = 1;
 		public long largeNumber = Long.MAX_VALUE;
