@@ -8,6 +8,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.nonKeyDecimal;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.nonKeyInteger;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.nonKeyString;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.string;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.strings;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.timestamp;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.DECIMAL;
@@ -206,7 +207,11 @@ public class PrimitiveFieldUnitTest {
 
 	@Test
 	public void shouldHaveSymmetricProtocol() {
-		assertCanSerializeAndDeserialize(field);
+		assertCanSerializeAndDeserialize(string(SOME_NAME));
+		assertCanSerializeAndDeserialize(strings(SOME_NAME));
+		assertCanSerializeAndDeserialize(decimal(SOME_NAME));
+		assertCanSerializeAndDeserialize(geoLocation(SOME_NAME));
+		assertCanSerializeAndDeserialize(timestamp(SOME_NAME));
 	}
 
 	@Test

@@ -73,7 +73,10 @@ public class ReferenceFieldUnitTest {
 
 	@Test
 	public void shouldHaveSymmetricProtocol() {
-		assertCanSerializeAndDeserialize(field);
+		assertCanSerializeAndDeserialize(dataType(SOME_NAME, SOME_TYPE));
+		assertCanSerializeAndDeserialize(dataTypeArray(SOME_NAME, SOME_TYPE));
+		assertCanSerializeAndDeserialize(nonKeyDataType(SOME_NAME, SOME_TYPE));
+		assertCanSerializeAndDeserialize(nonKeyDataTypeArray(SOME_NAME, SOME_TYPE));
 	}
 
 	@Test
