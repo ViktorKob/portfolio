@@ -151,4 +151,21 @@ public class ReflectionUtil {
 		}
 		return values;
 	}
+
+	/***
+	 * @return A new instance with identical values
+	 */
+	public static Object copyInstance(Object object) {
+		try {
+			final Object[] arguments = buildValueArrayForObject(object);
+			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
+			if (constructor != null) {
+				return constructor.newInstance(arguments);
+			} else {
+				throw new RuntimeException("Unable to copy instance " + object);
+			}
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			throw new RuntimeException("Unable to copy instance " + object, e);
+		}
+	}
 }

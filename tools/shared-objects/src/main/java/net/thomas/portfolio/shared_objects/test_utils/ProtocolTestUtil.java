@@ -1,18 +1,12 @@
 package net.thomas.portfolio.shared_objects.test_utils;
 
 import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildAllPossibleInstancesWithOneFieldSetToNull;
-import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildValueArrayForObject;
-import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildValueArrayWithSpecifiedValueAsNull;
-import static net.thomas.portfolio.testing_tools.ReflectionUtil.getDeclaredFields;
-import static net.thomas.portfolio.testing_tools.ReflectionUtil.getFirstConstructorMatchingObjectFields;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.copyInstance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,9 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 
-/***
- * TODO[Thomas]: This class should be refactored to a common test project from where the DataType types can be accessed.
- */
 public class ProtocolTestUtil {
 	private static final ThreadLocal<ObjectMapper> MAPPER = new ThreadLocal<ObjectMapper>() {
 		@Override
@@ -32,31 +23,25 @@ public class ProtocolTestUtil {
 		}
 	};
 
-	public static <T> void assertCanSerializeAndDeserialize(T object) {
-		final T deserializedObject = serializeDeserialize(object);
+	public static void assertCanSerializeAndDeserialize(Object object) {
+		final Object deserializedObject = serializeDeserialize(object);
 		assertEquals(object, deserializedObject);
 	}
 
-	public static final <T> T serializeDeserialize(T object) {
+	@SuppressWarnings("unchecked")
+	public static <T> T serializeDeserialize(T object) {
 		try {
-			return rawSerializeDeserialize(object);
+			final ObjectMapper mapper = MAPPER.get();
+			final String serializedInstance = mapper.writeValueAsString(object);
+			return (T) mapper.readValue(serializedInstance, object.getClass());
 		} catch (final Throwable e) {
 			throw new RuntimeException("Unable to serialize / deserialize object for test: " + object, e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> T rawSerializeDeserialize(T object) throws Exception {
-		final ObjectMapper mapper = MAPPER.get();
-		final String serializedInstance = mapper.writeValueAsString(object);
-		return (T) mapper.readValue(serializedInstance, object.getClass());
-	}
-
-	public static <T> void assertCanSerializeAndDeserializeWithNullValues(T object) {
-		for (final Field field : getDeclaredFields(object)) {
-			final T newInstance = createNewInstanceWithFieldSetToNull(object, field);
-			final T deserializedObject = serializeDeserialize(newInstance);
-			assertEquals(newInstance, deserializedObject);
+	public static void assertCanSerializeAndDeserializeWithNullValues(Object object) {
+		for (final Object instance : buildAllPossibleInstancesWithOneFieldSetToNull(object)) {
+			assertEquals(instance, serializeDeserialize(instance));
 		}
 	}
 
@@ -82,41 +67,34 @@ public class ProtocolTestUtil {
 	}
 
 	public static void assertHashCodeIsValid(Object object) {
-		assertEquals(object.hashCode(), copy(object).hashCode());
+		assertEquals(object.hashCode(), copyInstance(object).hashCode());
 	}
 
 	public static void assertHashCodeIsValidIncludingNullChecks(Object object) {
 		assertHashCodeIsValid(object);
-		for (final Field field : getDeclaredFields(object)) {
-			assertInstanceWithFieldAsNullCanCalculateHashCode(object, field);
+		final List<Object> firstInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
+		final List<Object> secondInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
+		for (int i = 0; i < firstInstances.size(); i++) {
+			assertHashCodeCombinationsWorkAsExpected(object, firstInstances.get(i), secondInstances.get(i));
 		}
 	}
 
-	private static void assertInstanceWithFieldAsNullCanCalculateHashCode(Object object, Field field) {
-		final Object newInstance = createNewInstanceWithFieldSetToNull(object, field);
-		assertNotEquals("Calculation of hashcode for entity returned zero for " + object, 0, newInstance.hashCode());
+	private static void assertHashCodeCombinationsWorkAsExpected(Object object, final Object newInstance1, final Object newInstance2) {
+		assertNotEquals("Comparisson of hash codes for objects had unexpected outcome for " + object + " against " + newInstance1,
+				object.hashCode() == newInstance1.hashCode());
+		assertEquals("Comparisson of hash codes for objects had unexpected outcome for " + object + " against " + newInstance2, newInstance1.hashCode(),
+				newInstance2.hashCode());
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> T createNewInstanceWithFieldSetToNull(T object, Field field) {
-		try {
-			final Object[] arguments = buildValueArrayWithSpecifiedValueAsNull(object, field);
-			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
-			return (T) constructor.newInstance(arguments);
-		} catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-			throw new RuntimeException("Unable to create object with null field " + field.getName() + " for " + object, e);
-		}
-	}
-
-	public static void assertEqualsIsValid(Object object) {
+	public static void assertBasicEqualsIsValid(Object object) {
 		assertEquals(object, object);
 		assertNotEquals(object, null);
 		assertNotEquals(object, "");
-		assertEquals(object, copy(object));
+		assertEquals(object, copyInstance(object));
 	}
 
 	public static void assertEqualsIsValidIncludingNullChecks(Object object) {
-		assertEqualsIsValid(object);
+		assertBasicEqualsIsValid(object);
 		final List<Object> firstInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
 		final List<Object> secondInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
 		for (int i = 0; i < firstInstances.size(); i++) {
@@ -131,19 +109,5 @@ public class ProtocolTestUtil {
 				newInstance1.equals(object));
 		assertTrue("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance2,
 				newInstance1.equals(newInstance2));
-	}
-
-	private static Object copy(Object object) {
-		try {
-			final Object[] arguments = buildValueArrayForObject(object);
-			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
-			if (constructor != null) {
-				return constructor.newInstance(arguments);
-			} else {
-				throw new RuntimeException("Unable to copy instance " + object);
-			}
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Unable to copy instance " + object, e);
-		}
 	}
 }

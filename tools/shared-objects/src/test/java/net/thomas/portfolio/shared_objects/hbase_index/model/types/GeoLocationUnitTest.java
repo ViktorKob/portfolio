@@ -1,7 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserialize;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValid;
+import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertBasicEqualsIsValid;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValid;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
@@ -59,7 +59,7 @@ public class GeoLocationUnitTest {
 
 	@Test
 	public void shouldHaveValidEqualsFunction() {
-		assertEqualsIsValid(SOME_LOCATION);
+		assertBasicEqualsIsValid(SOME_LOCATION);
 	}
 
 	@Test
