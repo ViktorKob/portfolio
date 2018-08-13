@@ -20,7 +20,7 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -231,7 +231,7 @@ public class PrimitiveFieldUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(field);
+		assertToStringContainsAllFieldsFromObject(field);
 	}
 
 	private static final String SOME_NAME = "Some name";

@@ -1,8 +1,10 @@
 package net.thomas.portfolio.shared_objects.test_utils;
 
-import static java.lang.reflect.Modifier.isPublic;
-import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Arrays.stream;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildAllPossibleInstancesWithOneFieldSetToNull;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildValueArrayForObject;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.buildValueArrayWithSpecifiedValueAsNull;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.getDeclaredFields;
+import static net.thomas.portfolio.testing_tools.ReflectionUtil.getFirstConstructorMatchingObjectFields;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -11,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +53,7 @@ public class ProtocolTestUtil {
 	}
 
 	public static <T> void assertCanSerializeAndDeserializeWithNullValues(T object) {
-		for (final Field field : getRelevantFields(object)) {
+		for (final Field field : getDeclaredFields(object)) {
 			final T newInstance = createNewInstanceWithFieldSetToNull(object, field);
 			final T deserializedObject = serializeDeserialize(newInstance);
 			assertEquals(newInstance, deserializedObject);
@@ -85,7 +87,7 @@ public class ProtocolTestUtil {
 
 	public static void assertHashCodeIsValidIncludingNullChecks(Object object) {
 		assertHashCodeIsValid(object);
-		for (final Field field : getRelevantFields(object)) {
+		for (final Field field : getDeclaredFields(object)) {
 			assertInstanceWithFieldAsNullCanCalculateHashCode(object, field);
 		}
 	}
@@ -98,8 +100,8 @@ public class ProtocolTestUtil {
 	@SuppressWarnings("unchecked")
 	private static <T> T createNewInstanceWithFieldSetToNull(T object, Field field) {
 		try {
-			final Object[] arguments = buildArgumentListWithSpecifiedFieldAsNull(object, field);
-			final Constructor<?> constructor = getFirstMatchingConstructor(object);
+			final Object[] arguments = buildValueArrayWithSpecifiedValueAsNull(object, field);
+			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
 			return (T) constructor.newInstance(arguments);
 		} catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to create object with null field " + field.getName() + " for " + object, e);
@@ -115,17 +117,26 @@ public class ProtocolTestUtil {
 
 	public static void assertEqualsIsValidIncludingNullChecks(Object object) {
 		assertEqualsIsValid(object);
-		for (final Field field : getRelevantFields(object)) {
-			if (Object.class.isAssignableFrom(field.getType())) {
-				assertNewInstanceWithFieldAsNullIsNotEqualToOriginal(object, field);
-			}
+		final List<Object> firstInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
+		final List<Object> secondInstances = buildAllPossibleInstancesWithOneFieldSetToNull(object);
+		for (int i = 0; i < firstInstances.size(); i++) {
+			assertComparisonCombinationsWorkAsExpected(object, firstInstances.get(i), secondInstances.get(i));
 		}
+	}
+
+	private static void assertComparisonCombinationsWorkAsExpected(Object object, final Object newInstance1, final Object newInstance2) {
+		assertFalse("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance1,
+				object.equals(newInstance1));
+		assertFalse("Comparisson of object to different object type had unexpected outcome for " + newInstance1 + " against " + object,
+				newInstance1.equals(object));
+		assertTrue("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance2,
+				newInstance1.equals(newInstance2));
 	}
 
 	private static Object copy(Object object) {
 		try {
-			final Object[] arguments = buildArgumentListForObject(object);
-			final Constructor<?> constructor = getFirstMatchingConstructor(object);
+			final Object[] arguments = buildValueArrayForObject(object);
+			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
 			if (constructor != null) {
 				return constructor.newInstance(arguments);
 			} else {
@@ -133,116 +144,6 @@ public class ProtocolTestUtil {
 			}
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to copy instance " + object, e);
-		}
-	}
-
-	private static void assertNewInstanceWithFieldAsNullIsNotEqualToOriginal(Object object, Field field) {
-		try {
-			final Object[] arguments = buildArgumentListWithSpecifiedFieldAsNull(object, field);
-			final Constructor<?> constructor = getFirstMatchingConstructor(object);
-			final Object newInstance1 = constructor.newInstance(arguments);
-			final Object newInstance2 = constructor.newInstance(arguments);
-			assertFalse("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance1,
-					object.equals(newInstance1));
-			assertFalse("Comparisson of object to different object type had unexpected outcome for " + newInstance1 + " against " + object,
-					newInstance1.equals(object));
-			assertTrue("Comparisson of object to different object type had unexpected outcome for " + object + " against " + newInstance2,
-					newInstance1.equals(newInstance2));
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Unable to compare equality for object " + object, e);
-		}
-	}
-
-	private static Object[] buildArgumentListForObject(Object object) throws IllegalAccessException {
-		return buildArgumentListWithSpecifiedFieldAsNull(object, null);
-	}
-
-	private static Object[] buildArgumentListWithSpecifiedFieldAsNull(Object object, Field field) throws IllegalAccessException {
-		final Object[] arguments = new Object[getRelevantFields(object).length];
-		int argument = 0;
-		for (final Field entityField : getRelevantFields(object)) {
-			if (entityField.equals(field)) {
-				arguments[argument++] = null;
-			} else {
-				arguments[argument++] = getValue(entityField, object);
-			}
-		}
-		return arguments;
-	}
-
-	private static Object getValue(Field entityField, Object object) {
-		try {
-			if (isPublic(entityField.getModifiers())) {
-				return entityField.get(object);
-			} else {
-				for (final Method method : object.getClass()
-					.getDeclaredMethods()) {
-					if (method.getName()
-						.equalsIgnoreCase("get" + entityField.getName())
-							|| method.getName()
-								.equalsIgnoreCase(entityField.getName())) {
-						return method.invoke(object);
-					}
-				}
-				return null;
-			}
-		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to get value " + entityField + " from object " + object, e);
-		}
-	}
-
-	public static Field[] getRelevantFields(Object object) {
-		return stream(object.getClass()
-			.getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
-				.filter(field -> !isStatic(field.getModifiers()))
-				.toArray(Field[]::new);
-	}
-
-	public static void assertToStringIsValid(Object object) {
-		try {
-			final String asString = object.toString();
-			for (final Field field : getRelevantFields(object)) {
-				final Object value = getValue(field, object);
-				if (value != null) {
-					assertTrue(asString.contains(value.toString()));
-				}
-			}
-		} catch (final IllegalArgumentException e) {
-			throw new RuntimeException("Unable to compare equality for object " + object, e);
-		}
-	}
-
-	private static Constructor<?> getFirstMatchingConstructor(Object object) {
-		final Constructor<?>[] constructors = object.getClass()
-			.getDeclaredConstructors();
-		final Field[] fields = getRelevantFields(object);
-		constructorLoop: for (final Constructor<?> constructor : constructors) {
-			if (constructor.getParameterCount() == fields.length) {
-				final java.lang.reflect.Parameter[] parameters = constructor.getParameters();
-				for (int i = 0; i < fields.length; i++) {
-					if (fields[i].getType() != parameters[i].getType() && !isSameAsPrimitive(fields[i], parameters[i])) {
-						continue constructorLoop;
-					}
-				}
-				return constructor;
-			}
-		}
-		return null;
-	}
-
-	private static boolean isSameAsPrimitive(final Field field, final java.lang.reflect.Parameter parameter) {
-		if (field.getType() == float.class && parameter.getType() == Float.class) {
-			return true;
-		} else if (field.getType() == double.class && parameter.getType() == Double.class) {
-			return true;
-		} else if (field.getType() == long.class && parameter.getType() == Long.class) {
-			return true;
-		} else if (field.getType() == int.class && parameter.getType() == Integer.class) {
-			return true;
-		} else if (field.getType() == boolean.class && parameter.getType() == Boolean.class) {
-			return true;
-		} else {
-			return false;
 		}
 	}
 }

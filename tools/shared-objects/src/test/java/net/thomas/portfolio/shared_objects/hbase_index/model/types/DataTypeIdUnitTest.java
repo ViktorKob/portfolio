@@ -5,10 +5,10 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertParametersMatchParameterGroups;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.serializeDeserialize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -64,7 +64,9 @@ public class DataTypeIdUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(SOME_ID);
+		final String asString = SOME_ID.toString();
+		assertTrue(asString.contains(SOME_ID.type));
+		assertTrue(asString.contains(SOME_ID.uid));
 	}
 
 	private static final String TYPE = "TYPE";

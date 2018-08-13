@@ -10,7 +10,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.timestamp;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.STRING;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -143,7 +143,7 @@ public class IdCalculatorUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(simpleTypeIdGenerator);
+		assertToStringContainsAllFieldsFromObject(simpleTypeIdGenerator);
 	}
 
 	private static final String VALUE_FIELD = "value";

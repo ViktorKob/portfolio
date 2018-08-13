@@ -8,7 +8,7 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -87,7 +87,7 @@ public class ReferenceUnitTest {
 	@Test
 	public void shouldHaveValidToStringFunction() {
 		reference = new Reference(LEMON, SOME_ID, singleton(BLUE));
-		assertToStringIsValid(reference);
+		assertToStringContainsAllFieldsFromObject(reference);
 	}
 
 	private static final String SOME_ID = "SomeId";

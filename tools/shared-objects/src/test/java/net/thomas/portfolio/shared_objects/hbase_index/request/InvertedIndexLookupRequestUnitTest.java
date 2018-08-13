@@ -5,7 +5,7 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class InvertedIndexLookupRequestUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(lookup);
+		assertToStringContainsAllFieldsFromObject(lookup);
 	}
 
 	private static final DataTypeId ID = new DataTypeId("TYPE", "ABCD");

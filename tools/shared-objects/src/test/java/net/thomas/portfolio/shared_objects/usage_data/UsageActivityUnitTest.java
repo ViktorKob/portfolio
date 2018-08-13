@@ -5,8 +5,8 @@ import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.as
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertHashCodeIsValidIncludingNullChecks;
 import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertParametersMatchParameterGroups;
-import static net.thomas.portfolio.shared_objects.test_utils.ProtocolTestUtil.assertToStringIsValid;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.ANALYSED_DOCUMENT;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class UsageActivityUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringFunction() {
-		assertToStringIsValid(activity);
+		assertToStringContainsAllFieldsFromObject(activity);
 	}
 
 	private static final String USER = "USER";
