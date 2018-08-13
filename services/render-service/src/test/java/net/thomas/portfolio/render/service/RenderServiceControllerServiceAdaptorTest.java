@@ -133,7 +133,7 @@ public class RenderServiceControllerServiceAdaptorTest {
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void shouldThrowExceptionWhenRenderingTextForMissingType() {
+	public void shouldThrowExceptionWhenRenderingTextForInvalidType() {
 		adaptors.renderAsText(DATA_TYPE_ID_WITH_NON_TYPE);
 	}
 
@@ -143,7 +143,7 @@ public class RenderServiceControllerServiceAdaptorTest {
 	}
 
 	@Test(expected = BadRequestException.class)
-	public void shouldThrowExceptionWhenRenderingHtmlForMissingType() {
+	public void shouldThrowExceptionWhenRenderingHtmlForInvalidType() {
 		adaptors.renderAsHtml(DATA_TYPE_ID_WITH_NON_TYPE);
 	}
 
