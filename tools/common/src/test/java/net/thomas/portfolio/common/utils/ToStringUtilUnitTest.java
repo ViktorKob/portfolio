@@ -6,9 +6,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class ToStringUtilUnitTest {
+	@Before
+	public void shouldAddCoverageForClassInitialization() {
+		new ToStringUtil();
+	}
+
 	@Test
 	public void shouldContainValuesInToString() throws IllegalArgumentException, IllegalAccessException {
 		final SomeObject object = new SomeObject();

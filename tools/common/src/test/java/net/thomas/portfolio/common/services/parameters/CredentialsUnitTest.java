@@ -27,6 +27,20 @@ public class CredentialsUnitTest {
 	}
 
 	@Test
+	public void shouldContainNameFromSetter() {
+		credentials = new Credentials();
+		credentials.setUser(SOME_NAME);
+		assertEquals(SOME_NAME, credentials.getUser());
+	}
+
+	@Test
+	public void shouldContainPasswordFromSetter() {
+		credentials = new Credentials();
+		credentials.setPassword(SOME_PASSWORD);
+		assertEquals(SOME_PASSWORD, credentials.getPassword());
+	}
+
+	@Test
 	public void shouldCorrectlyBase64EncodeCredentials() {
 		final String expectedCredentials = new String(getEncoder().encode((SOME_NAME + ":" + SOME_PASSWORD).getBytes()));
 		assertEquals(expectedCredentials, credentials.getEncoded());
