@@ -56,6 +56,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.thomas.portfolio.tools</groupId>
+			<artifactId>testing-tools</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.thomas.portfolio.services</groupId>
 			<artifactId>service-testing</artifactId>
 			<scope>test</scope>

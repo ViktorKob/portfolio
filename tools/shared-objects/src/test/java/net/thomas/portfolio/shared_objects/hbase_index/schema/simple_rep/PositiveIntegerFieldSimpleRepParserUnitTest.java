@@ -48,6 +48,7 @@ public class PositiveIntegerFieldSimpleRepParserUnitTest {
 
 	@Test
 	public void shouldBeEqualIfSameTypeAndNotNull() {
+
 		assertEquals(parser, newPositiveIntegerFieldParser(TYPE, FIELD, idCalculatorMock));
 	}
 
