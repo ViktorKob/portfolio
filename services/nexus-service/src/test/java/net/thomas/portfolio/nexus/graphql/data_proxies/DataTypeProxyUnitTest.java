@@ -15,12 +15,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 public class DataTypeProxyUnitTest {
 
 	private StubbedDataTypeProxy proxy;
-	private Adaptors adaptors;
 
 	@Before
 	public void setUpForTest() {
-		adaptors = new Adaptors.Builder().build();
-		proxy = new StubbedDataTypeProxy(SOME_CONTENTS, adaptors);
+		proxy = new StubbedDataTypeProxy(SOME_CONTENTS, ADAPTORS_ARE_IGNORED);
 		proxy.put(USER_ID, SOME_USER_ID);
 		proxy.put(JUSTIFICATION, SOME_JUSTIFICATION);
 	}
@@ -38,7 +36,7 @@ public class DataTypeProxyUnitTest {
 
 	@Test
 	public void shouldReturnIdFromImplementation() {
-		assertEquals(SOME_DATA_TYPE_ID, proxy.getId());
+		assertEquals(SOME_ID, proxy.getId());
 	}
 
 	@Test
@@ -65,7 +63,7 @@ public class DataTypeProxyUnitTest {
 
 	@Test
 	public void shouldPreserveGlobalArgumentWhenCreatingChild() {
-		final StubbedDataTypeProxy childProxy = new StubbedDataTypeProxy(proxy, SOME_CONTENTS, adaptors);
+		final StubbedDataTypeProxy childProxy = new StubbedDataTypeProxy(proxy, SOME_CONTENTS, ADAPTORS_ARE_IGNORED);
 		assertEquals(SOME_USER_ID, childProxy.get(USER_ID));
 	}
 
@@ -103,8 +101,9 @@ public class DataTypeProxyUnitTest {
 	private static final String SOME_USER_ID = "UserId";
 	private static final String SOME_JUSTIFICATION = "Justification";
 	private static final String SOME_CONTENTS = "SOME_CONTENTS";
-	private static final DataTypeId SOME_DATA_TYPE_ID = new DataTypeId("SomeType", "AA01");
-	private static final DataType SOME_ENTITY = new DataType(SOME_DATA_TYPE_ID);
+	private static final DataTypeId SOME_ID = new DataTypeId("SomeType", "AA01");
+	private static final DataType SOME_ENTITY = new DataType(SOME_ID);
+	private static final Adaptors ADAPTORS_ARE_IGNORED = null;
 
 	class StubbedDataTypeProxy extends DataTypeProxy<Object, DataType> {
 		private boolean getEntityHasBeenCalled;
@@ -121,7 +120,7 @@ public class DataTypeProxyUnitTest {
 
 		@Override
 		public DataTypeId getId() {
-			return SOME_DATA_TYPE_ID;
+			return SOME_ID;
 		}
 
 		@Override
