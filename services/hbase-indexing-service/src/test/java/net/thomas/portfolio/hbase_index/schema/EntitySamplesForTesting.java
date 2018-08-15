@@ -1,6 +1,9 @@
 package net.thomas.portfolio.hbase_index.schema;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptySet;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source.APPLE;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -20,6 +23,8 @@ import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
 import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
@@ -51,8 +56,8 @@ public class EntitySamplesForTesting {
 			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME),
 			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
 	public static final Email SOME_OTHER_EMAIL = new Email("abc", "def", SOME_EMAIL_ENDPOINT,
-			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT),
-			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
+			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP,
+			SOME_TIMESTAMP);
 	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT,
 			SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
 	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT,
@@ -64,6 +69,8 @@ public class EntitySamplesForTesting {
 			SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN, SOME_EMAIL_ADDRESS };
 	public static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
 	public static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
+	public static final References REFERENCES_FOR_SOME_EMAIL = new References(
+			asList(new Reference(APPLE, "SomeOriginalId", emptySet())));
 
 	static {
 		SOME_DISPLAYED_NAME.uid = "00";

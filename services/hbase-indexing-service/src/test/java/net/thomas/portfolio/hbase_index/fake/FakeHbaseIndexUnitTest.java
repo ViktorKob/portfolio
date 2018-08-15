@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.REFERENCES_FOR_SOME_EMAIL;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_EMAIL;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_LOCALNAME;
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_OTHER_EMAIL;
@@ -11,6 +12,8 @@ import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.ge
 import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.idFor;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,6 +28,7 @@ import net.thomas.portfolio.hbase_index.schema.EntityId;
 import net.thomas.portfolio.hbase_index.schema.processing.data.InvertedIndex;
 import net.thomas.portfolio.hbase_index.schema.processing.data.SelectorStatistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
@@ -32,7 +36,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 
 public class FakeHbaseIndexUnitTest {
-	private static final long SOME_COUNT = 1l;
 	private FakeHbaseIndex index;
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics statistics;
@@ -51,6 +54,17 @@ public class FakeHbaseIndexUnitTest {
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
 		DataType email = index.getDataType(idFor(SOME_EMAIL));
 		assertEquals(SOME_EMAIL.uid, email.getId().uid);
+	}
+
+	@Test
+	public void shouldReturnNullWhenDataTypeNotPresent() {
+		assertNull(index.getDataType(idFor(SOME_OTHER_EMAIL)));
+	}
+
+	@Test
+	public void shouldReturnNullWhenIdNotPresent() {
+		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
+		assertNull(index.getDataType(idFor(SOME_OTHER_EMAIL)));
 	}
 
 	@Test
@@ -82,6 +96,13 @@ public class FakeHbaseIndexUnitTest {
 	}
 
 	@Test
+	public void shouldContainReferencesWhenAdded() {
+		index.setReferences(singletonMap(SOME_EMAIL.uid, REFERENCES_FOR_SOME_EMAIL));
+		References references = index.getReferences(idFor(SOME_EMAIL));
+		assertSame(REFERENCES_FOR_SOME_EMAIL, references);
+	}
+
+	@Test
 	public void shouldLookupSelectorInInvertedIndex() {
 		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
 				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
@@ -99,11 +120,56 @@ public class FakeHbaseIndexUnitTest {
 	}
 
 	@Test
-	public void shouldCloneIndexOnDemand() {
+	public void shouldContainIndexEntitiesInSerializable() {
 		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
-		FakeHbaseIndex indexAfterSerialization = new FakeHbaseIndex(index.getSerializable());
-		assertEquals(SOME_EMAIL.uid, indexAfterSerialization.getDataType(idFor(SOME_EMAIL)).getId().uid);
+		index = serializeDeserialize(index);
+		assertEquals(SOME_EMAIL.uid, index.getDataType(idFor(SOME_EMAIL)).getId().uid);
 	}
+
+	@Test
+	public void shouldContainReferencesAfterSerialization() {
+		index.setReferences(singletonMap(SOME_EMAIL.uid, REFERENCES_FOR_SOME_EMAIL));
+		References references = serializeDeserialize(index).getReferences(idFor(SOME_EMAIL));
+		assertEquals(REFERENCES_FOR_SOME_EMAIL, references);
+	}
+
+	@Test
+	public void shouldLookupSelectorInInvertedIndexAfterSerialization() {
+		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
+				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
+		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
+		DocumentInfos infos = serializeDeserialize(index).invertedIndexLookup(idFor(SOME_LOCALNAME),
+				new StubbedIndexable());
+		assertEquals(SOME_EMAIL.uid, getFirst(infos).getId().uid);
+	}
+
+	@Test
+	public void shouldLookupSelectorStatisticsAfterSerialization() {
+		when(statistics.get(eq(SOME_LOCALNAME.uid))).thenReturn(singletonMap(INFINITY, 1l));
+		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
+		Statistics statistics = serializeDeserialize(index).getStatistics(idFor(SOME_LOCALNAME));
+		assertEquals(SOME_COUNT, (long) statistics.get(INFINITY));
+	}
+
+	private FakeHbaseIndex serializeDeserialize(FakeHbaseIndex index) {
+		return new FakeHbaseIndex(index.getSerializable());
+//		ObjectMapper mapper = new ObjectMapper();
+//		mapper.configure(FAIL_ON_EMPTY_BEANS, false);
+//		try {
+//			String serialized = mapper.writeValueAsString(index.getSerializable());
+//			return new FakeHbaseIndex(mapper.readValue(serialized, FakeHbaseIndexSerializable.class));
+//		} catch (IOException e) {
+//			throw new RuntimeException("Unable to serialize / deserialize index", e);
+//		}
+	}
+
+	// TODO[Thomas]: Consider overriding System.out and check contents
+	@Test
+	public void shouldPrintSamplesWhenAsked() {
+		index.printSamples(10);
+	}
+
+	private static final long SOME_COUNT = 1l;
 
 	private EntityId entityIdFor(Entity entity) {
 		return new EntityId(entity.getClass(), entity.uid);

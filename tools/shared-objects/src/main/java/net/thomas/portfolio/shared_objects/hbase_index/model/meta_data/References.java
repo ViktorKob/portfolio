@@ -37,7 +37,10 @@ public class References {
 
 	@Override
 	public boolean equals(Object obj) {
-		return references.equals(obj);
+		if (obj instanceof References) {
+			return references.equals(((References) obj).getReferences());
+		}
+		return false;
 	}
 
 	@Override
