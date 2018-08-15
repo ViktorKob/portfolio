@@ -2,6 +2,7 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
 import static java.util.Collections.emptySet;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source.APPLE;
+import static net.thomas.portfolio.testing_tools.EqualsTestUtil.assertBasicEqualsIsValid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -48,9 +49,8 @@ public class ReferencesUnitTest {
 	}
 
 	@Test
-	@SuppressWarnings("unlikely-arg-type")
-	public void shouldForwardEqualsCallToInnerContainer() {
-		assertTrue(references.equals(actualContainer));
+	public void shouldHaveValidEqualsFunction() {
+		assertBasicEqualsIsValid(references);
 	}
 
 	@Test
