@@ -119,50 +119,6 @@ public class FakeHbaseIndexUnitTest {
 		assertEquals(SOME_COUNT, (long) statistics.get(INFINITY));
 	}
 
-	@Test
-	public void shouldContainIndexEntitiesInSerializable() {
-		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
-		index = serializeDeserialize(index);
-		assertEquals(SOME_EMAIL.uid, index.getDataType(idFor(SOME_EMAIL)).getId().uid);
-	}
-
-	@Test
-	public void shouldContainReferencesAfterSerialization() {
-		index.setReferences(singletonMap(SOME_EMAIL.uid, REFERENCES_FOR_SOME_EMAIL));
-		References references = serializeDeserialize(index).getReferences(idFor(SOME_EMAIL));
-		assertEquals(REFERENCES_FOR_SOME_EMAIL, references);
-	}
-
-	@Test
-	public void shouldLookupSelectorInInvertedIndexAfterSerialization() {
-		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
-				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
-		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
-		DocumentInfos infos = serializeDeserialize(index).invertedIndexLookup(idFor(SOME_LOCALNAME),
-				new StubbedIndexable());
-		assertEquals(SOME_EMAIL.uid, getFirst(infos).getId().uid);
-	}
-
-	@Test
-	public void shouldLookupSelectorStatisticsAfterSerialization() {
-		when(statistics.get(eq(SOME_LOCALNAME.uid))).thenReturn(singletonMap(INFINITY, 1l));
-		index.addEntitiesAndChildren(singleton(SOME_EMAIL));
-		Statistics statistics = serializeDeserialize(index).getStatistics(idFor(SOME_LOCALNAME));
-		assertEquals(SOME_COUNT, (long) statistics.get(INFINITY));
-	}
-
-	private FakeHbaseIndex serializeDeserialize(FakeHbaseIndex index) {
-		return new FakeHbaseIndex(index.getSerializable());
-//		ObjectMapper mapper = new ObjectMapper();
-//		mapper.configure(FAIL_ON_EMPTY_BEANS, false);
-//		try {
-//			String serialized = mapper.writeValueAsString(index.getSerializable());
-//			return new FakeHbaseIndex(mapper.readValue(serialized, FakeHbaseIndexSerializable.class));
-//		} catch (IOException e) {
-//			throw new RuntimeException("Unable to serialize / deserialize index", e);
-//		}
-	}
-
 	// TODO[Thomas]: Consider overriding System.out and check contents
 	@Test
 	public void shouldPrintSamplesWhenAsked() {

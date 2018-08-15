@@ -47,18 +47,6 @@ public class FakeHbaseIndex implements HbaseIndex {
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
-	public FakeHbaseIndex(FakeHbaseIndexSerializable serializable) {
-		storage = serializable.storage;
-		selectorStatistics = serializable.selectorStatistics;
-		invertedIndex = serializable.invertedIndex;
-		sourceReferences = serializable.sourceReferences;
-		entity2DataTypeConverter = new Entity2DataTypeConverter();
-	}
-
-	public FakeHbaseIndexSerializable getSerializable() {
-		return new FakeHbaseIndexSerializable(this);
-	}
-
 	public void addEntitiesAndChildren(Collection<Event> entities) {
 		for (final Event entity : entities) {
 			entityExtractor.visit(entity, new BlankVisitingContext());
@@ -171,55 +159,6 @@ public class FakeHbaseIndex implements HbaseIndex {
 			for (final DataType sample : getSamples(type, amount).getEntities()) {
 				System.out.println(sample);
 			}
-		}
-	}
-
-	public static class FakeHbaseIndexSerializable {
-		private Map<String, Map<String, Entity>> storage;
-		private InvertedIndex invertedIndex;
-		private SelectorStatistics selectorStatistics;
-		private Map<String, References> sourceReferences;
-
-		public FakeHbaseIndexSerializable() {
-		}
-
-		public FakeHbaseIndexSerializable(FakeHbaseIndex index) {
-			storage = index.storage;
-			selectorStatistics = index.selectorStatistics;
-			invertedIndex = index.invertedIndex;
-			sourceReferences = index.sourceReferences;
-		}
-
-		public Map<String, Map<String, Entity>> getStorage() {
-			return storage;
-		}
-
-		public void setStorage(Map<String, Map<String, Entity>> storage) {
-			this.storage = storage;
-		}
-
-		public InvertedIndex getInvertedIndex() {
-			return invertedIndex;
-		}
-
-		public void setInvertedIndex(InvertedIndex invertedIndex) {
-			this.invertedIndex = invertedIndex;
-		}
-
-		public SelectorStatistics getSelectorStatistics() {
-			return selectorStatistics;
-		}
-
-		public void setSelectorStatistics(SelectorStatistics selectorStatistics) {
-			this.selectorStatistics = selectorStatistics;
-		}
-
-		public Map<String, References> getSourceReferences() {
-			return sourceReferences;
-		}
-
-		public void setSourceReferences(Map<String, References> sourceReferences) {
-			this.sourceReferences = sourceReferences;
 		}
 	}
 }
