@@ -3,13 +3,21 @@ package net.thomas.portfolio.testing_tools;
 import static java.lang.reflect.Modifier.isPublic;
 import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyMap;
+import static java.util.stream.Collectors.toSet;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ReflectionUtil {
 
@@ -157,15 +165,161 @@ public class ReflectionUtil {
 	 */
 	public static Object copyInstance(Object object) {
 		try {
-			final Object[] arguments = buildValueArrayForObject(object);
-			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
-			if (constructor != null) {
-				return constructor.newInstance(arguments);
-			} else {
-				throw new RuntimeException("Unable to copy instance " + object);
+			try {
+				return NameBasedConstructorMatcher.copyInstance(object);
+			} catch (final RuntimeException e) {
+				final Object[] arguments = buildValueArrayForObject(object);
+				final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
+				if (constructor != null) {
+					return constructor.newInstance(arguments);
+				} else {
+					throw new RuntimeException("Unable to copy instance " + object);
+				}
 			}
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new RuntimeException("Unable to copy instance " + object, e);
+		}
+	}
+
+	public static class NameBasedConstructorMatcher {
+		/***
+		 * @return A new instance with identical values
+		 */
+		public static Object copyInstance(Object object) {
+			final ConstructorAndAccessors constructor = getBestMatchingConstructor(object);
+			if (constructor != null) {
+				return constructor.createInstance(object);
+			} else {
+				throw new RuntimeException("Unable to copy instance " + object);
+			}
+		}
+
+		/***
+		 * @return A new instance with identical values
+		 */
+		public static Object createCollectionOfInstancesEachWithOneArgumentsAsNull(Object object) {
+			final ConstructorAndAccessors constructor = getBestMatchingConstructor(object);
+			if (constructor != null) {
+				return constructor.createCollectionOfInstancesEachWithOneParameterSetToNull(object);
+			} else {
+				throw new RuntimeException("Unable to copy instance " + object);
+			}
+		}
+
+		private static ConstructorAndAccessors getBestMatchingConstructor(Object object) {
+			final Constructor<?>[] constructors = object.getClass()
+				.getDeclaredConstructors();
+			ConstructorAndAccessors bestConstructor = null;
+			for (final Constructor<?> constructor : constructors) {
+				final Map<Parameter, AccessibleObject> parameters = canBeUsedWithObject(constructor, object);
+				if (!parameters.isEmpty()) {
+					if (bestConstructor == null || bestConstructor.constructor.getParameterCount() < constructor.getParameterCount()) {
+						bestConstructor = new ConstructorAndAccessors(constructor, parameters);
+					}
+				}
+			}
+			return bestConstructor;
+		}
+
+		private static Map<Parameter, AccessibleObject> canBeUsedWithObject(Constructor<?> constructor, Object object) {
+			final Class<? extends Object> objectClass = object.getClass();
+			final Map<Parameter, AccessibleObject> accessors = new LinkedHashMap<>();
+			for (final Parameter parameter : constructor.getParameters()) {
+				AccessibleObject accessor = getMatchingField(parameter, objectClass);
+				if (accessor == null) {
+					accessor = getMatchingRetrievalMethod(parameter, objectClass);
+				}
+				if (accessor != null) {
+					accessors.put(parameter, accessor);
+				} else {
+					return emptyMap();
+				}
+			}
+			return accessors;
+		}
+
+		private static Field getMatchingField(final Parameter parameter, final Class<?> objectClass) {
+			final Set<Field> matchingFields = stream(objectClass.getFields()).filter(field -> isPublic(field.getModifiers()))
+				.filter(field -> field.getName()
+					.equalsIgnoreCase(parameter.getName()))
+				.collect(toSet());
+			if (matchingFields.size() != 1) {
+				throw new RuntimeException("Wrong number of matching fields: " + matchingFields);
+			}
+			return first(matchingFields);
+		}
+
+		private static Method getMatchingRetrievalMethod(final Parameter parameter, final Class<?> objectClass) {
+			final String parameterName = parameter.getName();
+			final Set<Method> matchingMethods = stream(objectClass.getMethods()).filter(method -> method.getName()
+				.endsWith(parameterName))
+				.collect(toSet());
+			if (matchingMethods.size() != 1) {
+				throw new RuntimeException("Wrong number of matching fields: " + matchingMethods);
+			}
+			return first(matchingMethods);
+		}
+
+		private static <T> T first(final Set<T> elements) {
+			return elements.iterator()
+				.next();
+		}
+
+	}
+
+	public static class ConstructorAndAccessors {
+		public final Constructor<?> constructor;
+		public final Map<Parameter, AccessibleObject> accessors;
+
+		public ConstructorAndAccessors(Constructor<?> constructor, Map<Parameter, AccessibleObject> accessors) {
+			this.constructor = constructor;
+			this.accessors = accessors;
+		}
+
+		public Object createInstance(Object object) {
+			try {
+				final Object[] arguments = buildValueArrayWithSpecifiedValueAsNull(object, null);
+				return constructor.newInstance(arguments);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new RuntimeException("Unable to construct new instance og " + object);
+			}
+		}
+
+		public List<Object> createCollectionOfInstancesEachWithOneParameterSetToNull(Object object) {
+			try {
+				final List<Object> instances = new LinkedList<>();
+				for (final Parameter parameterToSetToNull : constructor.getParameters()) {
+					final Object[] arguments = buildValueArrayWithSpecifiedValueAsNull(object, parameterToSetToNull);
+					constructor.newInstance(arguments);
+				}
+				return instances;
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				throw new RuntimeException("Unable to construct new instance og " + object);
+			}
+		}
+
+		private Object[] buildValueArrayWithSpecifiedValueAsNull(Object object, Parameter parameterToSetToNull)
+				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+			final Object[] values = new Object[accessors.size()];
+			int value = 0;
+			for (final AccessibleObject accessor : accessors.values()) {
+				if (accessor instanceof Field) {
+					final Field field = (Field) accessor;
+					if (!field.getName()
+						.equalsIgnoreCase(parameterToSetToNull.getName())) {
+						values[value++] = field.get(object);
+					}
+				} else if (accessor instanceof Method) {
+					final Method method = (Method) accessor;
+					if (!method.getName()
+						.toLowerCase()
+						.endsWith(parameterToSetToNull.getName()
+							.toLowerCase())) {
+						values[value++] = method.invoke(object);
+					}
+				}
+			}
+			return values;
 		}
 	}
 }
