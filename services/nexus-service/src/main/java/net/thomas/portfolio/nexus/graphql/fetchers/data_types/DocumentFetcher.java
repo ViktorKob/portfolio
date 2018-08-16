@@ -22,8 +22,13 @@ public class DocumentFetcher extends ModelDataFetcher<DocumentProxy<?>> {
 
 	@Override
 	public DocumentProxy<?> get(DataFetchingEnvironment environment) {
-		final DocumentIdProxy proxy = new DocumentIdProxy(new DataTypeId(type, UID.extractFrom(environment)), adaptors);
-		proxy.put(USER_ID, USER.extractFrom(environment));
-		return proxy;
+		if (UID.canBeExtractedFrom(environment)) {
+			final DocumentIdProxy proxy = new DocumentIdProxy(new DataTypeId(type, UID.extractFrom(environment)),
+					adaptors);
+			proxy.put(USER_ID, USER.extractFrom(environment));
+			return proxy;
+		} else {
+			return null;
+		}
 	}
 }

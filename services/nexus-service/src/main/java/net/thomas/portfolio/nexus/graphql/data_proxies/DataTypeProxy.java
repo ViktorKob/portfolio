@@ -66,6 +66,7 @@ public abstract class DataTypeProxy<CONTENTS, DATA_TYPE_TYPE extends DataType> {
 
 	@Override
 	public String toString() {
-		return "GlobalArgs: " + globalArguments + ", LocalArgs: " + localArguments + ", entity loaded: " + (entity != null) + ", " + contents;
+		return "GlobalArgs: " + globalArguments + ", LocalArgs: " + localArguments + ", entity loaded: "
+				+ (entity != null) + ", " + contents;
 	}
 }
