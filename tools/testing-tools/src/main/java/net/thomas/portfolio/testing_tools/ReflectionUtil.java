@@ -168,6 +168,7 @@ public class ReflectionUtil {
 			try {
 				return NameBasedConstructorMatcher.copyInstance(object);
 			} catch (final RuntimeException e) {
+				e.printStackTrace();
 				final Object[] arguments = buildValueArrayForObject(object);
 				final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
 				if (constructor != null) {
@@ -244,7 +245,7 @@ public class ReflectionUtil {
 					.equalsIgnoreCase(parameter.getName()))
 				.collect(toSet());
 			if (matchingFields.size() != 1) {
-				throw new RuntimeException("Wrong number of matching fields: " + matchingFields);
+				return null;
 			}
 			return first(matchingFields);
 		}
@@ -255,7 +256,7 @@ public class ReflectionUtil {
 				.endsWith(parameterName))
 				.collect(toSet());
 			if (matchingMethods.size() != 1) {
-				throw new RuntimeException("Wrong number of matching fields: " + matchingMethods);
+				return null;
 			}
 			return first(matchingMethods);
 		}
@@ -300,21 +301,22 @@ public class ReflectionUtil {
 
 		private Object[] buildValueArrayWithSpecifiedValueAsNull(Object object, Parameter parameterToSetToNull)
 				throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+			final String nullParameterName = parameterToSetToNull.getName()
+				.toLowerCase();
 			final Object[] values = new Object[accessors.size()];
 			int value = 0;
 			for (final AccessibleObject accessor : accessors.values()) {
 				if (accessor instanceof Field) {
 					final Field field = (Field) accessor;
 					if (!field.getName()
-						.equalsIgnoreCase(parameterToSetToNull.getName())) {
+						.equalsIgnoreCase(nullParameterName)) {
 						values[value++] = field.get(object);
 					}
 				} else if (accessor instanceof Method) {
 					final Method method = (Method) accessor;
 					if (!method.getName()
 						.toLowerCase()
-						.endsWith(parameterToSetToNull.getName()
-							.toLowerCase())) {
+						.endsWith(nullParameterName)) {
 						values[value++] = method.invoke(object);
 					}
 				}
