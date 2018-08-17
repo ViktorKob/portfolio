@@ -49,6 +49,8 @@ public class GraphQlTestModel {
 	public static final Iec8601DateConverter DATE_CONVERTER = new DateConverter.Iec8601DateConverter();
 	public static final String SOME_FORMATTED_TIMESTAMP = DATE_CONVERTER.formatTimestamp(SOME_TIMESTAMP.getTimestamp());
 	public static final String SOME_FORMATTED_DATE_ONLY_TIMESTAMP = DATE_CONVERTER.formatDateTimestamp(SOME_TIMESTAMP.getTimestamp());
+	public static final String SOME_HEADLINE = "headline";
+	public static final String SOME_HTML = "html";
 	public static final String SOME_USER = "SomeUser";
 	public static final String SOME_SIMPLE_REP = "some simple rep";
 	public static final String SOME_MISSING_UID = "AABBCC0011";

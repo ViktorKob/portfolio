@@ -1,5 +1,6 @@
 package net.thomas.portfolio.nexus.graphql.fetchers.conversion;
 
+import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId.USER_ID;
 import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 
@@ -23,7 +24,7 @@ public class HeadlineDataFetcher extends ModelDataFetcher<String> {
 			if (user == null) {
 				user = "Unspecified user";
 			}
-			adaptors.storeUsageActivity(id, new UsageActivity(user, READ_DOCUMENT, System.currentTimeMillis()));
+			adaptors.storeUsageActivity(id, new UsageActivity(user, READ_DOCUMENT, currentTimeMillis()));
 		}
 		return adaptors.renderAsText(id);
 	}
