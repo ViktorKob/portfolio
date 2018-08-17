@@ -1,6 +1,8 @@
 package net.thomas.portfolio.nexus.service;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.Collections.reverse;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.joining;
@@ -11,6 +13,8 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.RAW
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SIMPLE_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DECIMAL;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DOCUMENT_INFOS;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_DATE_ONLY_TIMESTAMP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_TIMESTAMP;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_GEO_LOCATION;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_INTEGER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_LONG_INTEGER;
@@ -80,20 +84,17 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 
 /***
- * These tests are currently all being kept in the same class to encourage
- * running them before checking in. The class has a startup time of around 7
- * seconds while each test takes less than 10 ms. Splitting it up would slow
- * down the test suite considerably so I chose speed over separation here.
+ * These tests are currently all being kept in the same class to encourage running them before checking in. The class has a startup time of around 7 seconds
+ * while each test takes less than 10 ms. Splitting it up would slow down the test suite considerably so I chose speed over separation here.
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100",
-		"eureka.client.registerWithEureka:false", "eureka.client.fetchRegistry:false" })
+@SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
+		"eureka.client.fetchRegistry:false" })
 public class NexusServiceControllerServiceAdaptorTest {
 	private static final ServiceEndpoint GRAPHQL = () -> {
 		return "/graphql";
 	};
-	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool(
-			"nexus-service", 18100);
+	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("nexus-service", 18100);
 	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {
 	};
 
@@ -143,10 +144,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	@Test
 	public void shouldLookupSelectorByUidAndFetchUid() {
-		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "uid");
-		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
+		assertUidInSomeEntityOfTypeEqualsUid(SIMPLE_TYPE);
 	}
 
 	@Test
@@ -169,9 +167,8 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "rawData");
-		String expectedAnswer = new ObjectMapper().writeValueAsString(hbaseAdaptor.getDataType(someId));
-		assertEquals(expectedAnswer,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
+		final String expectedAnswer = new ObjectMapper().writeValueAsString(hbaseAdaptor.getDataType(someId));
+		assertEquals(expectedAnswer, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
 	}
 
 	@Test
@@ -189,8 +186,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "string");
-		assertEquals(SOME_STRING,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "string"));
+		assertEquals(SOME_STRING, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "string"));
 	}
 
 	@Test
@@ -198,8 +194,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "strings");
-		final List<Object> strings = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE,
-				"strings");
+		final List<Object> strings = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "strings");
 		assertEquals(SOME_STRING, strings.get(0));
 	}
 
@@ -208,8 +203,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "integer");
-		assertEquals(SOME_INTEGER,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "integer"));
+		assertEquals(SOME_INTEGER, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "integer"));
 	}
 
 	@Test
@@ -217,8 +211,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "long");
-		assertEquals(SOME_LONG_INTEGER,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "long"));
+		assertEquals(SOME_LONG_INTEGER, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "long"));
 	}
 
 	@Test
@@ -226,8 +219,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "decimal");
-		assertEquals(SOME_DECIMAL,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "decimal"));
+		assertEquals(SOME_DECIMAL, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "decimal"));
 	}
 
 	@Test
@@ -235,21 +227,18 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "geoLocation{longitude latitude}");
-		final Map<String, Object> response = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data",
-				SIMPLE_TYPE, "geoLocation");
+		final Map<String, Object> response = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "geoLocation");
 		assertEquals(SOME_GEO_LOCATION.longitude, response.get("longitude"));
 		assertEquals(SOME_GEO_LOCATION.latitude, response.get("latitude"));
 	}
 
 	@Test
 	public void shouldLookupSelectorUidAndFetchTimestampField() {
-		final String expectedTimestamp = new DateConverter.Iec8601DateConverter()
-				.formatTimestamp(SOME_TIMESTAMP.getTimestamp());
+		final String expectedTimestamp = new DateConverter.Iec8601DateConverter().formatTimestamp(SOME_TIMESTAMP.getTimestamp());
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "timestamp");
-		assertEquals(expectedTimestamp,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "timestamp"));
+		assertEquals(expectedTimestamp, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "timestamp"));
 	}
 
 	// ***************************************
@@ -269,11 +258,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	@Test
 	public void shouldLookupRawTypeUidAndFetchUid() {
-		final DataTypeId someId = EXAMPLE_IDS.get(RAW_DATA_TYPE);
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(RAW_DATA_TYPE, "uid");
-		assertEquals(someId.uid,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", RAW_DATA_TYPE, "uid"));
+		assertUidInSomeEntityOfTypeEqualsUid(RAW_DATA_TYPE);
 	}
 
 	// ***************************************
@@ -281,11 +266,45 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	@Test
 	public void shouldLookupDocumentUidAndFetchUid() {
+		assertUidInSomeEntityOfTypeEqualsUid(DOCUMENT_TYPE);
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchTimeOfEvent() {
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP.getTimestamp(), "timeOfEvent", "timestamp");
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchTimeOfInterception() {
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP.getTimestamp(), "timeOfInterception", "timestamp");
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchFormattedTimeOfEvent() {
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_FORMATTED_TIMESTAMP, "formattedTimeOfEvent");
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchFormattedTimeOfInterception() {
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_FORMATTED_TIMESTAMP, "formattedTimeOfInterception");
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchFormattedDateOfEvent() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "uid");
-		assertEquals(someId.uid,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "uid"));
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "formattedTimeOfEvent(detailLevel:\"dateOnly\")");
+		assertEquals(SOME_FORMATTED_DATE_ONLY_TIMESTAMP,
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfEvent")));
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchFormattedDateOfInterception() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "formattedTimeOfInterception(detailLevel:\"dateOnly\")");
+		assertEquals(SOME_FORMATTED_DATE_ONLY_TIMESTAMP,
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfInterception")));
 	}
 
 	// ***************************************
@@ -297,8 +316,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(legalAdaptor.checkLegalityOfInvertedIndexLookup(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		assertContainsExpectedText("must be justified",
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
@@ -319,8 +337,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.lookupSelectorInInvertedIndex(any())).thenReturn(SOME_DOCUMENT_INFOS);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events",
-				"uid");
+		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
 		assertEquals(firstId(SOME_DOCUMENT_INFOS.getInfos()).uid, result);
 	}
 
@@ -333,8 +350,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(legalAdaptor.checkLegalityOfStatisticsLookup(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertContainsExpectedText("must be justified",
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
@@ -345,8 +361,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertEquals(0, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE,
-				"statistics", "infinityTotal"));
+		assertEquals(0, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
 	}
 
 	@Test
@@ -357,8 +372,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertEquals(1, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE,
-				"statistics", "infinityTotal"));
+		assertEquals(1, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
 	}
 
 	// ***************************************
@@ -370,8 +384,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "simpleType{uid}");
-		assertEquals(simpleTypeId.uid,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "simpleType", "uid"));
+		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "simpleType", "uid"));
 	}
 
 	@Test
@@ -379,8 +392,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingSimpleType{uid}");
-		assertNull(
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingSimpleType"));
+		assertNull(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingSimpleType"));
 	}
 
 	// ***************************************
@@ -392,8 +404,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "arraySimpleType{uid}");
-		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE,
-				"arraySimpleType", "uid"));
+		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "arraySimpleType", "uid"));
 	}
 
 	@Test
@@ -401,8 +412,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingArrayType{uid}");
-		assertIsEmpty(
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
+		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
 	}
 
 	// ***************************************
@@ -415,23 +425,60 @@ public class NexusServiceControllerServiceAdaptorTest {
 		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY.type.name(), executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data",
-				DOCUMENT_TYPE, "usageActivities", "activityType"));
+		assertEquals(SOME_USAGE_ACTIVITY.type.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
 	}
 
 	// ***************************************
 	// *** UsageActivitiesMutator
 	// ***************************************
-//	@Test
-//	public void shouldStoreUsageActivity() {
-//		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-//		when(usageAdaptor.storeUsageActivity(eq(someId), eq(SOME_USAGE_ACTIVITY))).thenReturn(SOME_USAGE_ACTIVITY);
-//		queryBuilder.addVariable("uid", someId.uid);
-//		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
-//		
-//		assertEquals(SOME_USAGE_ACTIVITY.type.name(), executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data",
-//				DOCUMENT_TYPE, "usageActivities", "activityType"));
-//	}
+	// @Test
+	// public void shouldStoreUsageActivity() {
+	// final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+	// when(usageAdaptor.storeUsageActivity(eq(someId), eq(SOME_USAGE_ACTIVITY))).thenReturn(SOME_USAGE_ACTIVITY);
+	// queryBuilder.addVariable("uid", someId.uid);
+	// queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
+	//
+	// assertEquals(SOME_USAGE_ACTIVITY.type.name(), executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data",
+	// DOCUMENT_TYPE, "usageActivities", "activityType"));
+	// }
+
+	private void assertUidInSomeEntityOfTypeEqualsUid(final String dataTypeType) {
+		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
+		assertFieldInSomeEntityOfTypeEqualsValue(dataTypeType, someId.uid, "uid");
+	}
+
+	private <T> void assertFieldInSomeEntityOfTypeEqualsValue(final String dataTypeType, T value, final String... fields) {
+		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(dataTypeType, packFieldPath(asList(fields)));
+		assertEquals(value, executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields)));
+	}
+
+	private String packFieldPath(List<String> fields) {
+		reverse(fields);
+		String queryString = null;
+		for (final String field : fields) {
+			if (queryString != null) {
+				queryString = "{" + queryString + "}";
+				queryString = field + queryString;
+			} else {
+				queryString = field;
+			}
+		}
+		reverse(fields);
+		return queryString;
+	}
+
+	private String[] queryPath(String dataTypeType, String... fields) {
+		final String[] path = new String[fields.length + 2];
+		path[0] = "data";
+		path[1] = dataTypeType;
+		for (int i = 0; i < fields.length; i++) {
+			path[i + 2] = fields[i];
+		}
+		return path;
+	}
 
 	@SuppressWarnings("unchecked")
 	private <T> T executeQueryAndLookupResponseAtPath(final ParameterGroup query, String... path) {
@@ -455,13 +502,13 @@ public class NexusServiceControllerServiceAdaptorTest {
 			}
 			return result;
 		} catch (final Exception e) {
-			throw new RuntimeException(
-					"Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
+			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
 		}
 	}
 
 	private DataTypeId firstId(List<DocumentInfo> list) {
-		return list.get(0).getId();
+		return list.get(0)
+			.getId();
 	}
 
 	private void assertIsEmpty(List<?> list) {

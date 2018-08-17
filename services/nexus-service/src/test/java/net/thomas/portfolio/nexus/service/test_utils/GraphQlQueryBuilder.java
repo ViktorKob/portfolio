@@ -19,18 +19,18 @@ public class GraphQlQueryBuilder {
 		variables = new HashMap<>();
 	}
 
-	public GraphQlQueryBuilder setNothingToFieldValueQuery(String dataType, String fieldName) {
-		query = "query test{" + dataType + "{" + fieldName + "}}";
+	public GraphQlQueryBuilder setNothingToFieldValueQuery(String dataType, String fieldPath) {
+		query = "query test{" + dataType + "{" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setUidToFieldValueQuery(String dataType, String fieldName) {
-		query = "query test($uid:String){" + dataType + "(uid:$uid) {" + fieldName + "}}";
+	public GraphQlQueryBuilder setUidToFieldValueQuery(String dataType, String fieldPath) {
+		query = "query test($uid:String){" + dataType + "(uid:$uid) {" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldName) {
-		query = "query test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldName + "}}";
+	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldPath) {
+		query = "query test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
 		return this;
 	}
 
