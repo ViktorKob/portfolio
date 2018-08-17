@@ -7,7 +7,6 @@ import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE_DATE;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.DATE_FORMAT_DETAIL_LEVEL;
-import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.DOCUMENT_TYPE;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.DOCUMENT_TYPES;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.FORMATTED_TIME_OF_ACTIVITY;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.JUSTIFICATION;
@@ -37,12 +36,6 @@ public class ArgumentsBuilder {
 		arguments = new LinkedList<>();
 	}
 
-	public ArgumentsBuilder addDocumentType(Collection<String> documentTypes) {
-		final String description = "Document type from the model (from the set " + buildPresentationListFromCollection(documentTypes) + " )";
-		arguments.add(buildArgument(DOCUMENT_TYPE, description));
-		return this;
-	}
-
 	public ArgumentsBuilder addUid(boolean optional) {
 		final String description = "Unique id for entity";
 		arguments.add(buildArgument(optional ? OPTIONAL_UID : UID, description));
@@ -50,7 +43,8 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder addSimpleRep(boolean optional) {
-		arguments.add(buildArgument(optional ? OPTIONAL_SIMPLE_REP : SIMPLE_REP, "Simple representation for the selector"));
+		arguments.add(
+				buildArgument(optional ? OPTIONAL_SIMPLE_REP : SIMPLE_REP, "Simple representation for the selector"));
 		return this;
 	}
 
@@ -71,14 +65,16 @@ public class ArgumentsBuilder {
 	}
 
 	public ArgumentsBuilder addDocumentTypes(Collection<String> documentTypes) {
-		arguments.add(buildArgument(DOCUMENT_TYPES,
-				"Document types that should be included in the response (from the set " + buildPresentationListFromCollection(documentTypes) + " )"));
+		arguments.add(
+				buildArgument(DOCUMENT_TYPES, "Document types that should be included in the response (from the set "
+						+ buildPresentationListFromCollection(documentTypes) + " )"));
 		return this;
 	}
 
 	public ArgumentsBuilder addRelations(Collection<String> relationTypes) {
 		final String relationTypeList = buildPresentationListFromCollection(relationTypes);
-		arguments.add(buildArgument(RELATIONS, "Relation types that should be included in the response (from the set " + relationTypeList + " )"));
+		arguments.add(buildArgument(RELATIONS,
+				"Relation types that should be included in the response (from the set " + relationTypeList + " )"));
 		return this;
 	}
 
@@ -91,19 +87,23 @@ public class ArgumentsBuilder {
 	public ArgumentsBuilder addDateBounds() {
 		arguments.add(buildArgument(AFTER, "Lower bound in milliseconds since the epoch"));
 		arguments.add(buildArgument(BEFORE, "Upper bound in milliseconds since the epoch"));
-		arguments.add(buildArgument(AFTER_DATE, "Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
-		arguments.add(buildArgument(BEFORE_DATE, "Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
+		arguments.add(buildArgument(AFTER_DATE,
+				"Lower bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
+		arguments.add(buildArgument(BEFORE_DATE,
+				"Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
 		return this;
 	}
 
 	public ArgumentsBuilder addTimeOfActivity() {
 		arguments.add(buildArgument(TIME_OF_ACTIVITY, "Upper bound in milliseconds since the epoch"));
-		arguments.add(buildArgument(FORMATTED_TIME_OF_ACTIVITY, "Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
+		arguments.add(buildArgument(FORMATTED_TIME_OF_ACTIVITY,
+				"Upper bound formatted date in IEC 8601, e.g. '2017-11-23' or '2017-11-23T12:34:56+0200'"));
 		return this;
 	}
 
 	public ArgumentsBuilder addUsageActivityType() {
-		final String description = "What activity the user performed (from the set " + buildPresentationListFromArray(UsageActivityType.values()) + " )";
+		final String description = "What activity the user performed (from the set "
+				+ buildPresentationListFromArray(UsageActivityType.values()) + " )";
 		arguments.add(buildArgument(USAGE_ACTIVITY_TYPE, description));
 		return this;
 	}
@@ -113,32 +113,22 @@ public class ArgumentsBuilder {
 	}
 
 	private GraphQLArgument buildArgument(GraphQlArgument argument, String description) {
-		return newArgument().name(argument.getName())
-			.description(description)
-			.type(argument.getType())
-			.build();
+		return newArgument().name(argument.getName()).description(description).type(argument.getType()).build();
 	}
 
 	private <T> GraphQLArgument buildArgument(GraphQlArgument argument, String description, T defaultValue) {
-		return newArgument().name(argument.getName())
-			.description(description)
-			.type(argument.getType())
-			.defaultValue(defaultValue)
-			.build();
+		return newArgument().name(argument.getName()).description(description).type(argument.getType())
+				.defaultValue(defaultValue).build();
 	}
 
 	private String buildPresentationListFromCollection(Collection<String> values) {
-		final String listOfValues = "[ " + values.stream()
-			.sorted()
-			.collect(joining(", ")) + " ]";
+		final String listOfValues = "[ " + values.stream().sorted().collect(joining(", ")) + " ]";
 		return listOfValues;
 	}
 
 	private String buildPresentationListFromArray(Object[] values) {
-		final String listOfValues = "[ " + Arrays.stream(values)
-			.sorted()
-			.map(Object::toString)
-			.collect(joining(", ")) + " ]";
+		final String listOfValues = "[ " + Arrays.stream(values).sorted().map(Object::toString).collect(joining(", "))
+				+ " ]";
 		return listOfValues;
 	}
 }

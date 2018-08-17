@@ -9,6 +9,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.timestamp;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataTypeArray;
+import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.ANALYSED_DOCUMENT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -31,6 +32,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public class GraphQlTestModel {
 	public static final String SOME_STRING = "some string";
@@ -39,17 +42,24 @@ public class GraphQlTestModel {
 	public static final Double SOME_DECIMAL = 3.14;
 	public static final GeoLocation SOME_GEO_LOCATION = new GeoLocation(1.2, -1.2);
 	public static final Timestamp SOME_TIMESTAMP = new Timestamp(3l);
+	public static final String SOME_USER = "SomeUser";
 	public static final String SOME_SIMPLE_REP = "some simple rep";
+	public static final String SOME_MISSING_UID = "AABBCC0011";
 	public static final String SIMPLE_TYPE = "SimpleType";
 	public static final String RECURSIVE_TYPE = "RecursiveType";
 	public static final String COMPLEX_TYPE = "ComplexType";
 	public static final String NON_SIMPLE_REP_TYPE = "NonSimpleRepType";
 	public static final String RAW_DATA_TYPE = "ContainerType";
 	public static final String DOCUMENT_TYPE = "DocumentType";
-	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE, RAW_DATA_TYPE, DOCUMENT_TYPE);
+	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE,
+			NON_SIMPLE_REP_TYPE, RAW_DATA_TYPE, DOCUMENT_TYPE);
 	public static final Collection<String> DOCUMENT_TYPES = asList(DOCUMENT_TYPE);
-	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE);
+	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE,
+			NON_SIMPLE_REP_TYPE);
 	public static final DocumentInfos SOME_DOCUMENT_INFOS = new DocumentInfos(asList());
+	public static final UsageActivity SOME_USAGE_ACTIVITY = new UsageActivity(SOME_USER, ANALYSED_DOCUMENT,
+			SOME_TIMESTAMP.getTimestamp());
+	public static final UsageActivities SOME_USAGE_ACTIVITIES = new UsageActivities();
 	public static Map<String, DataTypeId> EXAMPLE_IDS = new HashMap<>();
 	public static Map<String, Fields> TYPE_FIELDS = new HashMap<>();
 	private static int idSeed = 0;
@@ -64,8 +74,8 @@ public class GraphQlTestModel {
 	}
 
 	private static void setUpFields(HbaseIndexModelAdaptor adaptor) {
-		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"), decimal("decimal"), timestamp("timestamp"),
-				geoLocation("geoLocation"));
+		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"),
+				decimal("decimal"), timestamp("timestamp"), geoLocation("geoLocation"));
 		setFieldsForType(COMPLEX_TYPE, dataType("simpleType", SIMPLE_TYPE), dataType("missingSimpleType", SIMPLE_TYPE),
 				dataTypeArray("arraySimpleType", SIMPLE_TYPE), dataTypeArray("missingArrayType", SIMPLE_TYPE));
 		for (final String dataType : DATA_TYPES) {
@@ -112,10 +122,7 @@ public class GraphQlTestModel {
 	}
 
 	public static final DataTypeId EXAMPLE_ID(String type) {
-		final String uid = new Hasher().add(type.getBytes())
-			.add(String.valueOf(idSeed++)
-				.getBytes())
-			.digest();
+		final String uid = new Hasher().add(type.getBytes()).add(String.valueOf(idSeed++).getBytes()).digest();
 		return new DataTypeId(type, uid);
 	}
 
