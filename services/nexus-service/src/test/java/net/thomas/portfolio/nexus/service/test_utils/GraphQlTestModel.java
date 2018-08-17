@@ -1,5 +1,6 @@
 package net.thomas.portfolio.nexus.service.test_utils;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.decimal;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.geoLocation;
@@ -27,11 +28,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iec8601DateConverter;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
@@ -41,7 +45,10 @@ public class GraphQlTestModel {
 	public static final Long SOME_LONG_INTEGER = Long.MAX_VALUE;
 	public static final Double SOME_DECIMAL = 3.14;
 	public static final GeoLocation SOME_GEO_LOCATION = new GeoLocation(1.2, -1.2);
-	public static final Timestamp SOME_TIMESTAMP = new Timestamp(3l);
+	public static final Timestamp SOME_TIMESTAMP = new Timestamp(currentTimeMillis());
+	public static final Iec8601DateConverter DATE_CONVERTER = new DateConverter.Iec8601DateConverter();
+	public static final String SOME_FORMATTED_TIMESTAMP = DATE_CONVERTER.formatTimestamp(SOME_TIMESTAMP.getTimestamp());
+	public static final String SOME_FORMATTED_DATE_ONLY_TIMESTAMP = DATE_CONVERTER.formatDateTimestamp(SOME_TIMESTAMP.getTimestamp());
 	public static final String SOME_USER = "SomeUser";
 	public static final String SOME_SIMPLE_REP = "some simple rep";
 	public static final String SOME_MISSING_UID = "AABBCC0011";
@@ -51,14 +58,11 @@ public class GraphQlTestModel {
 	public static final String NON_SIMPLE_REP_TYPE = "NonSimpleRepType";
 	public static final String RAW_DATA_TYPE = "ContainerType";
 	public static final String DOCUMENT_TYPE = "DocumentType";
-	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE,
-			NON_SIMPLE_REP_TYPE, RAW_DATA_TYPE, DOCUMENT_TYPE);
+	public static final Collection<String> DATA_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE, RAW_DATA_TYPE, DOCUMENT_TYPE);
 	public static final Collection<String> DOCUMENT_TYPES = asList(DOCUMENT_TYPE);
-	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE,
-			NON_SIMPLE_REP_TYPE);
+	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE);
 	public static final DocumentInfos SOME_DOCUMENT_INFOS = new DocumentInfos(asList());
-	public static final UsageActivity SOME_USAGE_ACTIVITY = new UsageActivity(SOME_USER, ANALYSED_DOCUMENT,
-			SOME_TIMESTAMP.getTimestamp());
+	public static final UsageActivity SOME_USAGE_ACTIVITY = new UsageActivity(SOME_USER, ANALYSED_DOCUMENT, SOME_TIMESTAMP.getTimestamp());
 	public static final UsageActivities SOME_USAGE_ACTIVITIES = new UsageActivities();
 	public static Map<String, DataTypeId> EXAMPLE_IDS = new HashMap<>();
 	public static Map<String, Fields> TYPE_FIELDS = new HashMap<>();
@@ -74,8 +78,9 @@ public class GraphQlTestModel {
 	}
 
 	private static void setUpFields(HbaseIndexModelAdaptor adaptor) {
-		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"),
-				decimal("decimal"), timestamp("timestamp"), geoLocation("geoLocation"));
+		setFieldsForType(DOCUMENT_TYPE, timestamp("timestamp"));
+		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"), decimal("decimal"), timestamp("timestamp"),
+				geoLocation("geoLocation"));
 		setFieldsForType(COMPLEX_TYPE, dataType("simpleType", SIMPLE_TYPE), dataType("missingSimpleType", SIMPLE_TYPE),
 				dataTypeArray("arraySimpleType", SIMPLE_TYPE), dataTypeArray("missingArrayType", SIMPLE_TYPE));
 		for (final String dataType : DATA_TYPES) {
@@ -122,13 +127,26 @@ public class GraphQlTestModel {
 	}
 
 	public static final DataTypeId EXAMPLE_ID(String type) {
-		final String uid = new Hasher().add(type.getBytes()).add(String.valueOf(idSeed++).getBytes()).digest();
+		final String uid = new Hasher().add(type.getBytes())
+			.add(String.valueOf(idSeed++)
+				.getBytes())
+			.digest();
 		return new DataTypeId(type, uid);
 	}
 
 	private static void setUpEntities(HbaseIndexModelAdaptor adaptor) {
+		setUpDocument(adaptor);
 		final DataType simpleTypeEntity = setUpSimpleEntity(adaptor);
 		setUpComplexEntity(adaptor, simpleTypeEntity);
+	}
+
+	private static void setUpDocument(HbaseIndexModelAdaptor adaptor) {
+		final DataTypeId id = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		final Document entity = new Document(id);
+		entity.setTimeOfEvent(SOME_TIMESTAMP);
+		entity.setTimeOfInterception(SOME_TIMESTAMP);
+		entity.put("timestamp", 0L);
+		when(adaptor.getDataType(id)).thenReturn(entity);
 	}
 
 	private static DataType setUpSimpleEntity(HbaseIndexModelAdaptor adaptor) {
