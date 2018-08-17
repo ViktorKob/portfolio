@@ -29,6 +29,11 @@ public class GraphQlQueryBuilder {
 		return this;
 	}
 
+	public GraphQlQueryBuilder setUidAndUserToFieldValueQuery(String dataType, String fieldPath) {
+		query = "query test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user) {" + fieldPath + "}}";
+		return this;
+	}
+
 	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldPath) {
 		query = "query test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
 		return this;

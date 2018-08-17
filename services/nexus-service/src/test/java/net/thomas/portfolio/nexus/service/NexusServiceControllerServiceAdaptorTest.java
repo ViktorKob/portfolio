@@ -6,6 +6,8 @@ import static java.util.Collections.reverse;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.joining;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.USER;
+import static net.thomas.portfolio.nexus.service.UsageActivityMatcher.matchesActivity;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.COMPLEX_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.DOCUMENT_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.EXAMPLE_IDS;
@@ -16,6 +18,8 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOM
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_DATE_ONLY_TIMESTAMP;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_TIMESTAMP;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_GEO_LOCATION;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_HEADLINE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_HTML;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_INTEGER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_LONG_INTEGER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_MISSING_UID;
@@ -24,6 +28,7 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOM
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_TIMESTAMP;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USAGE_ACTIVITIES;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USAGE_ACTIVITY;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.setUpHbaseAdaptorMock;
 import static net.thomas.portfolio.services.Service.NEXUS_SERVICE;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
@@ -32,13 +37,17 @@ import static net.thomas.portfolio.services.configuration.NexusServiceProperties
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
 import static net.thomas.portfolio.shared_objects.legal.Legality.LEGAL;
+import static net.thomas.portfolio.shared_objects.usage_data.UsageActivityType.READ_DOCUMENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.http.HttpMethod.GET;
@@ -132,7 +141,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Before
 	public void setupController() {
-		reset(hbaseAdaptor, legalAdaptor);
+		reset(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
@@ -307,6 +316,48 @@ public class NexusServiceControllerServiceAdaptorTest {
 				executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfInterception")));
 	}
 
+	@Test
+	public void shouldLookupDocumentUidAndStoreReadDocumentActivityBeforeRenderingText() {
+		queryBuilder.addVariable(USER.getName(), SOME_USER);
+		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
+		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "headline");
+		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "headline"));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity(SOME_USER, READ_DOCUMENT)));
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndStoreReadDocumentActivityWithUnspecifiedUserBeforeRenderingText() {
+		executeGraphQlLookupAndIgnoreResponse(DOCUMENT_TYPE, "headline");
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity("Unspecified user", READ_DOCUMENT)));
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchHeadline() {
+		when(renderingAdaptor.renderAsText(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)))).thenReturn(SOME_HEADLINE);
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_HEADLINE, "headline");
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndStoreReadDocumentActivityBeforeRenderingHtml() {
+		queryBuilder.addVariable(USER.getName(), SOME_USER);
+		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
+		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "html");
+		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "html"));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity(SOME_USER, READ_DOCUMENT)));
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndStoreReadDocumentActivityWithUnspecifiedUserBeforeRenderingHtml() {
+		executeGraphQlLookupAndIgnoreResponse(DOCUMENT_TYPE, "html");
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity("Unspecified user", READ_DOCUMENT)));
+	}
+
+	@Test
+	public void shouldLookupDocumentUidAndFetchHtml() {
+		when(renderingAdaptor.renderAsHtml(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)))).thenReturn(SOME_HTML);
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_HTML, "html");
+	}
+
 	// ***************************************
 	// *** DocumentListFetcher
 	// ***************************************
@@ -446,6 +497,13 @@ public class NexusServiceControllerServiceAdaptorTest {
 	private void assertUidInSomeEntityOfTypeEqualsUid(final String dataTypeType) {
 		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
 		assertFieldInSomeEntityOfTypeEqualsValue(dataTypeType, someId.uid, "uid");
+	}
+
+	private <T> void executeGraphQlLookupAndIgnoreResponse(final String dataTypeType, final String... fields) {
+		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(dataTypeType, packFieldPath(asList(fields)));
+		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields));
 	}
 
 	private <T> void assertFieldInSomeEntityOfTypeEqualsValue(final String dataTypeType, T value, final String... fields) {
