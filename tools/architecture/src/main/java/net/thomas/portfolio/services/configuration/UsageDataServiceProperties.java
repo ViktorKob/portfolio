@@ -35,7 +35,7 @@ public class UsageDataServiceProperties {
 		put("usage-data-service.database.port", "3306");
 		put("usage-data-service.database.schema", "usage_data");
 		put("usage-data-service.database.user", "root");
-		put("usage-data-service.database.password", "computer");
+//		put("usage-data-service.database.password", "computer");
 
 		// ####################
 	}

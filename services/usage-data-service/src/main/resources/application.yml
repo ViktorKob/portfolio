@@ -8,3 +8,9 @@ external-service-address: localhost:80
 external-protocol: http://
 
 ####################
+For development:
+####################
+
+usage-data-service.database.password: ""
+
+####################
