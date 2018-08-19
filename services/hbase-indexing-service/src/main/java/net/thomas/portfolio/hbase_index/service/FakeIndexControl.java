@@ -16,6 +16,7 @@ import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeSelectorStatis
 import net.thomas.portfolio.hbase_index.fake.world.IndexControl;
 import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
 import net.thomas.portfolio.hbase_index.fake.world.World;
+import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
 import net.thomas.portfolio.hbase_index.fake.world.WorldIoControl;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
@@ -39,7 +40,7 @@ public class FakeIndexControl implements IndexControl {
 	private final int averageCommunicationCount;
 
 	@Autowired
-	public FakeIndexControl(HbaseIndexingServiceConfiguration config) {
+	public FakeIndexControl(final HbaseIndexingServiceConfiguration config) {
 		randomSeed = config.getRandomSeed();
 		populationCount = config.getPopulationCount();
 		averageRelationCount = config.getAverageRelationCount();
@@ -68,30 +69,26 @@ public class FakeIndexControl implements IndexControl {
 				buildAndExportWorld(worldControl, randomSeed);
 			}
 			setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
-			final World world = worldControl.importWorld();
+			final WorldAccess world = worldControl.getWorldAccess();
 			index(world);
-			schema = new SchemaIntrospection().examine(Email.class)
-				.examine(TextMessage.class)
-				.examine(Conversation.class)
-				.describeSchema();
+			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
 			initialized = true;
 		}
 	}
 
-	private void buildAndExportWorld(final WorldIoControl worldControl, long randomSeed) {
+	private void buildAndExportWorld(final WorldIoControl worldControl, final long randomSeed) {
 		final World world = new FakeWorld(randomSeed, populationCount, averageRelationCount, averageCommunicationCount);
 		worldControl.exportWorld(world);
 	}
 
-	public void setIndexSteps(List<ProcessingStep> indexSteps) {
+	public void setIndexSteps(final List<ProcessingStep> indexSteps) {
 		this.indexSteps = indexSteps;
 	}
 
 	@Override
-	public synchronized void index(World world) {
+	public synchronized void index(final WorldAccess world) {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
-		index.addEntitiesAndChildren(world.getEvents());
-		index.setReferences(world.getSourceReferences());
+		index.setWorldAccess(world);
 		for (final ProcessingStep step : indexSteps) {
 			step.executeAndUpdateIndex(world, index);
 		}

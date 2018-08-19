@@ -31,16 +31,19 @@ public class SchemaIntrospection {
 		handledSimpleRepresentationTypes = new HashSet<>();
 	}
 
-	public SchemaIntrospection examine(Class<? extends Event> entityClass) {
-		handledFieldTypes.add(entityClass.getSimpleName());
-		examineEntityTypes(entityClass);
-		examineFields(entityClass);
-		examineSubTypes(entityClass);
-		examineIndexableRelations(entityClass);
+	@SafeVarargs
+	public final SchemaIntrospection examine(final Class<? extends Event>... entityClasses) {
+		for (final Class<? extends Event> entityClass : entityClasses) {
+			handledFieldTypes.add(entityClass.getSimpleName());
+			examineEntityTypes(entityClass);
+			examineFields(entityClass);
+			examineSubTypes(entityClass);
+			examineIndexableRelations(entityClass);
+		}
 		return this;
 	}
 
-	private SchemaIntrospection examineSubElement(Class<?> entityClass) {
+	private SchemaIntrospection examineSubElement(final Class<?> entityClass) {
 		handledFieldTypes.add(entityClass.getSimpleName());
 		examineSubTypes(entityClass);
 		examineFields(entityClass);
@@ -103,7 +106,7 @@ public class SchemaIntrospection {
 		return fieldType.getSimpleName();
 	}
 
-	private void examineSubTypes(Class<?> entityClass) {
+	private void examineSubTypes(final Class<?> entityClass) {
 		for (final Field field : entityClass.getFields()) {
 			final Class<?> fieldType = field.getType();
 			final String subTypeName = getSubTypeName(fieldType);
@@ -117,7 +120,7 @@ public class SchemaIntrospection {
 		}
 	}
 
-	private void examineIndexableRelations(Class<? extends Event> document) {
+	private void examineIndexableRelations(final Class<? extends Event> document) {
 		for (final Field field : document.getFields()) {
 			final IndexablePath indexableDescription = field.getAnnotation(IndexablePath.class);
 			if (indexableDescription != null) {
@@ -130,7 +133,7 @@ public class SchemaIntrospection {
 	}
 
 	@SuppressWarnings("unchecked") // Not true, we check it just before setting it
-	private Set<Class<? extends Selector>> extractSelectors(Class<?> type, Set<Class<?>> handledTypes) {
+	private Set<Class<? extends Selector>> extractSelectors(Class<?> type, final Set<Class<?>> handledTypes) {
 		if (type.isArray()) {
 			type = type.getComponentType();
 		}
@@ -152,16 +155,15 @@ public class SchemaIntrospection {
 		return field.isAnnotationPresent(SchemaIgnore.class);
 	}
 
-	private boolean isSelector(Class<?> entityClass) {
+	private boolean isSelector(final Class<?> entityClass) {
 		return SelectorEntity.class.isAssignableFrom(entityClass);
 	}
 
 	private boolean isArray(final Field field) {
-		return field.getType()
-			.isArray();
+		return field.getType().isArray();
 	}
 
-	private boolean isKeyField(Field field) {
+	private boolean isKeyField(final Field field) {
 		return field.getAnnotation(PartOfKey.class) != null;
 	}
 

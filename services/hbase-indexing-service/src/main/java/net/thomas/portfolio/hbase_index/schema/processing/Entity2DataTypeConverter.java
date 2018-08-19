@@ -36,22 +36,26 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 @ThreadSafe
 public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<ConversionContext>, VisitorEntityPostActionFactory<ConversionContext>,
-		VisitorFieldPreActionFactory<ConversionContext>, VisitorFieldPostActionFactory<ConversionContext> {
+		VisitorFieldPreActionFactory<ConversionContext>, VisitorFieldPostActionFactory<ConversionContext>
+{
 	private final StrictEntityHierarchyVisitor<ConversionContext> converter;
 
 	public Entity2DataTypeConverter() {
 		converter = new StrictEntityHierarchyVisitorBuilder<ConversionContext>().setEntityPreActionFactory(this)
-			.setEntityPostActionFactory(this)
-			.setFieldPreActionFactory(this)
-			.setFieldPostActionFactory(this)
-			.build();
+				.setEntityPostActionFactory(this)
+				.setFieldPreActionFactory(this)
+				.setFieldPostActionFactory(this)
+				.build();
 	}
 
-	public DataType convert(Entity entity) {
-		final ConversionContext context = new ConversionContext();
-		converter.visit(entity, context);
-		return context.buildStack.peek()
-			.getDataType();
+	public DataType convert(final Entity entity) {
+		if (entity != null) {
+			final ConversionContext context = new ConversionContext();
+			converter.visit(entity, context);
+			return context.buildStack.peek().getDataType();
+		} else {
+			return null;
+		}
 	}
 
 	class ConversionContext implements VisitingContext {
@@ -75,12 +79,12 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		public DataType entity;
 
 		@Override
-		public void addDataType(DataType entity) {
+		public void addDataType(final DataType entity) {
 			this.entity = entity;
 		}
 
 		@Override
-		public void put(String field, Object value) {
+		public void put(final String field, final Object value) {
 			entity.put(field, value);
 		}
 
@@ -99,13 +103,13 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		}
 
 		@Override
-		public void addDataType(DataType entity) {
+		public void addDataType(final DataType entity) {
 			entities.add(entity);
 			latestEntity = entity;
 		}
 
 		@Override
-		public void put(String field, Object value) {
+		public void put(final String field, final Object value) {
 			latestEntity.put(field, value);
 		}
 
@@ -116,10 +120,10 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 	}
 
 	@Override
-	public <T extends Entity> VisitorEntityPreAction<T, ConversionContext> getEntityPreAction(Class<T> entityClass) {
+	public <T extends Entity> VisitorEntityPreAction<T, ConversionContext> getEntityPreAction(final Class<T> entityClass) {
 		final Set<Field> relevantFields = stream(entityClass.getFields())
-			.filter(field -> !Entity.class.isAssignableFrom(field.getType()) || "uid".equals(field.getName()))
-			.collect(toSet());
+				.filter(field -> !Entity.class.isAssignableFrom(field.getType()) || "uid".equals(field.getName()))
+				.collect(toSet());
 		if (Event.class.isAssignableFrom(entityClass)) {
 			final Field timeOfEvent = getField(entityClass, "timeOfEvent");
 			final Field timeOfInterception = getField(entityClass, "timeOfInterception");
@@ -151,7 +155,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		}
 	}
 
-	private <T extends Entity> Field getField(Class<T> entityClass, String fieldName) {
+	private <T extends Entity> Field getField(final Class<T> entityClass, final String fieldName) {
 		try {
 			return entityClass.getField(fieldName);
 		} catch (NoSuchFieldException | SecurityException e) {
@@ -159,7 +163,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		}
 	}
 
-	private <T extends Entity> void updateDocumentWithTimeFieldsFromEntity(final Document dataTypeEntity, Entity entity, final Field timeOfEvent,
+	private <T extends Entity> void updateDocumentWithTimeFieldsFromEntity(final Document dataTypeEntity, final Entity entity, final Field timeOfEvent,
 			final Field timeOfInterception) {
 		try {
 			dataTypeEntity.setTimeOfEvent((Timestamp) timeOfEvent.get(entity));
@@ -169,7 +173,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		}
 	}
 
-	private <T extends Entity> void updateWithRelevantFieldsFromEntity(final DataType dataTypeEntity, Entity entity, final Set<Field> relevantFields) {
+	private <T extends Entity> void updateWithRelevantFieldsFromEntity(final DataType dataTypeEntity, final Entity entity, final Set<Field> relevantFields) {
 		for (final Field entityField : relevantFields) {
 			try {
 				dataTypeEntity.put(entityField.getName(), entityField.get(entity));
@@ -180,17 +184,15 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 	}
 
 	@Override
-	public <T extends Entity> VisitorEntityPostAction<T, ConversionContext> getEntityPostAction(Class<T> entityClass) {
+	public <T extends Entity> VisitorEntityPostAction<T, ConversionContext> getEntityPostAction(final Class<T> entityClass) {
 		return (entity, context) -> {
 		};
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldPreAction<T, ConversionContext> getFieldPreAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPreAction<T, ConversionContext> getFieldPreAction(final Class<T> entityClass, final String field) {
 		try {
-			final boolean isArray = entityClass.getField(field)
-				.getType()
-				.isArray();
+			final boolean isArray = entityClass.getField(field).getType().isArray();
 			if (isArray) {
 				return (entity, context) -> {
 					context.buildStack.push(new ListStackLevel());
@@ -206,11 +208,9 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldPostAction<T, ConversionContext> getFieldPostAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPostAction<T, ConversionContext> getFieldPostAction(final Class<T> entityClass, final String field) {
 		try {
-			final boolean isArray = entityClass.getField(field)
-				.getType()
-				.isArray();
+			final boolean isArray = entityClass.getField(field).getType().isArray();
 			if (isArray) {
 				return (entity, context) -> {
 					final ListStackLevel subLevel = (ListStackLevel) context.buildStack.pop();
@@ -229,8 +229,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		}
 	}
 
-	private <T extends Entity> String getType(T entity) {
-		return entity.getClass()
-			.getSimpleName();
+	private <T extends Entity> String getType(final T entity) {
+		return entity.getClass().getSimpleName();
 	}
 }

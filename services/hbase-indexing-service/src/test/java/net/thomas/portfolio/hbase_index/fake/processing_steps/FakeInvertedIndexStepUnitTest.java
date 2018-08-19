@@ -32,16 +32,13 @@ public class FakeInvertedIndexStepUnitTest {
 
 	@Before
 	public void setUpForTest() {
-		schema = new SchemaIntrospection().examine(Email.class)
-			.examine(TextMessage.class)
-			.examine(Conversation.class)
-			.describeSchema();
+		schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
 		selectorExtractor = new SelectorExtractor();
 		world = new FakeWorld(1234L, 5, 10, 10);
 		index = new FakeHbaseIndex();
-		index.addEntitiesAndChildren(world.getEvents());
+		index.setWorldAccess(new FakeWorldAccess(world));
 		invertedIndexStep = new FakeInvertedIndexStep();
-		invertedIndexStep.executeAndUpdateIndex(world, index);
+		invertedIndexStep.executeAndUpdateIndex(new FakeWorldAccess(world), index);
 	}
 
 	@Test
@@ -77,8 +74,7 @@ public class FakeInvertedIndexStepUnitTest {
 		return false;
 	}
 
-	private String simpleName(SelectorEntity entity) {
-		return entity.getClass()
-			.getSimpleName();
+	private String simpleName(final SelectorEntity entity) {
+		return entity.getClass().getSimpleName();
 	}
 }
