@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.EntityId;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
@@ -36,18 +37,30 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private final Map<String, Map<String, Entity>> storage;
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics selectorStatistics;
-	private Map<String, References> sourceReferences;
+	private WorldAccess world;
 	private final Entity2DataTypeConverter entity2DataTypeConverter;
-	private EntityVisitor<BlankVisitingContext> entityExtractor;
+	private final EntityVisitor<BlankVisitingContext> entityExtractor;
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
-		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>()
-				.setEntityPostActionFactory(createActionFactory()).build();
+		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>().setEntityPostActionFactory(createActionFactory()).build();
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
-	public void addEntitiesAndChildren(Collection<Event> entities) {
+	public void setInvertedIndex(final InvertedIndex invertedIndex) {
+		this.invertedIndex = invertedIndex;
+	}
+
+	public void setSelectorStatistics(final SelectorStatistics selectorStatistics) {
+		this.selectorStatistics = selectorStatistics;
+	}
+
+	public void setWorldAccess(final WorldAccess world) {
+		this.world = world;
+		addEntitiesAndChildren(world);
+	}
+
+	public void addEntitiesAndChildren(final Iterable<Event> entities) {
 		for (final Event entity : entities) {
 			entityExtractor.visit(entity, new BlankVisitingContext());
 		}
@@ -56,17 +69,21 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private VisitorEntityPostActionFactory<BlankVisitingContext> createActionFactory() {
 		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = new VisitorEntityPostActionFactory<BlankVisitingContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(
-					Class<T> entityClass) {
-				return (entity, context) -> {
-					addEntity(entity);
-				};
+			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(final Class<T> entityClass) {
+				if (!Event.class.isAssignableFrom(entityClass)) {
+					return (entity, context) -> {
+						addEntity(entity);
+					};
+				} else {
+					return (entity, context) -> {
+					};
+				}
 			}
 		};
 		return actionFactory;
 	}
 
-	private void addEntity(Entity entity) {
+	private void addEntity(final Entity entity) {
 		final String type = entity.getClass().getSimpleName();
 		if (!storage.containsKey(type)) {
 			storage.put(type, new HashMap<>());
@@ -74,62 +91,56 @@ public class FakeHbaseIndex implements HbaseIndex {
 		storage.get(type).put(entity.uid, entity);
 	}
 
-	public void setInvertedIndex(InvertedIndex invertedIndex) {
-		this.invertedIndex = invertedIndex;
-	}
-
-	public void setSelectorStatistics(SelectorStatistics selectorStatistics) {
-		this.selectorStatistics = selectorStatistics;
-	}
-
-	public void setReferences(Map<String, References> sourceReferences) {
-		this.sourceReferences = sourceReferences;
-	}
-
 	@Override
-	public DataType getDataType(DataTypeId id) {
-		if (storage.containsKey(id.type)) {
-			final Map<String, Entity> typeStorage = storage.get(id.type);
-			if (typeStorage.containsKey(id.uid)) {
-				return convert(typeStorage.get(id.uid));
+	public DataType getDataType(final DataTypeId id) {
+		return convert(getDataType(id.type, id.uid));
+	}
+
+	public Entity getEntity(final EntityId id) {
+		return getDataType(id.type.getSimpleName(), id.uid);
+	}
+
+	public Entity getDataType(final String type, final String uid) {
+		if (storage.containsKey(type)) {
+			final Map<String, Entity> typeStorage = storage.get(type);
+			if (typeStorage.containsKey(uid)) {
+				return typeStorage.get(uid);
+			}
+		} else {
+			final Event event = world.getEvent(uid);
+			if (event != null) {
+				return event;
 			}
 		}
 		return null;
 	}
 
-	private DataType convert(Entity entity) {
+	private DataType convert(final Entity entity) {
 		return entity2DataTypeConverter.convert(entity);
 	}
 
 	@Override
-	public DocumentInfos invertedIndexLookup(DataTypeId selectorId, Indexable indexable) {
+	public DocumentInfos invertedIndexLookup(final DataTypeId selectorId, final Indexable indexable) {
 		final List<EntityId> eventIds = invertedIndex.getEventUids(selectorId.uid, indexable.path);
-		return new DocumentInfos(
-				eventIds.stream().map(eventId -> (Event) storage.get(eventId.type.getSimpleName()).get(eventId.uid))
-						.map(entity -> extractInfo(entity)).collect(toList()));
+		return new DocumentInfos(eventIds.stream().map(eventId -> (Event) getEntity(eventId)).map(entity -> extractInfo(entity)).collect(toList()));
 	}
 
-	private DocumentInfo extractInfo(Event event) {
-		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent,
-				event.timeOfInterception);
+	private DocumentInfo extractInfo(final Event event) {
+		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent, event.timeOfInterception);
 	}
 
 	@Override
-	public Statistics getStatistics(DataTypeId selectorId) {
+	public Statistics getStatistics(final DataTypeId selectorId) {
 		return new Statistics(selectorStatistics.get(selectorId.uid));
 	}
 
 	@Override
-	public References getReferences(DataTypeId documentId) {
-		if (sourceReferences.containsKey(documentId.uid)) {
-			return sourceReferences.get(documentId.uid);
-		} else {
-			return new References();
-		}
+	public References getReferences(final DataTypeId documentId) {
+		return world.getReferences(documentId.uid);
 	}
 
 	@Override
-	public Entities getSamples(String type, int amount) {
+	public Entities getSamples(final String type, final int amount) {
 		if (storage.containsKey(type)) {
 			if (amount >= storage.get(type).size()) {
 				return convert(storage.get(type).values());
@@ -146,7 +157,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 		}
 	}
 
-	private Entities convert(Collection<Entity> values) {
+	private Entities convert(final Collection<Entity> values) {
 		return new Entities(values.stream().map(entity -> convert(entity)).collect(toList()));
 	}
 
@@ -154,7 +165,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 		return instances.get((int) (random() * instances.size()));
 	}
 
-	public void printSamples(int amount) {
+	public void printSamples(final int amount) {
 		for (final String type : storage.keySet()) {
 			for (final DataType sample : getSamples(type, amount).getEntities()) {
 				System.out.println(sample);

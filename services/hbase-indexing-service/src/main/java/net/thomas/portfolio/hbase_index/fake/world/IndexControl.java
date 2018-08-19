@@ -5,7 +5,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public interface IndexControl {
 
-	void index(World world);
+	void index(WorldAccess world);
 
 	HbaseIndexSchema getSchema();
 

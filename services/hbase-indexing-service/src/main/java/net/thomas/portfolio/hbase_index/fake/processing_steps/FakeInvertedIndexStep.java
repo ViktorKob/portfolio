@@ -3,7 +3,6 @@ package net.thomas.portfolio.hbase_index.fake.processing_steps;
 import static java.util.Arrays.asList;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
-import net.thomas.portfolio.hbase_index.fake.world.World;
+import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.annotations.IndexablePath;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
@@ -33,11 +32,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeInvertedIndexStep implements ProcessingStep {
 	@Override
-	public void executeAndUpdateIndex(World world, HbaseIndex partiallyConstructedIndex) {
-		((FakeHbaseIndex) partiallyConstructedIndex).setInvertedIndex(generateInvertedIndex(world.getEvents()));
+	public void executeAndUpdateIndex(final WorldAccess world, final HbaseIndex partiallyConstructedIndex) {
+		((FakeHbaseIndex) partiallyConstructedIndex).setInvertedIndex(generateInvertedIndex(world));
 	}
 
-	private InvertedIndex generateInvertedIndex(Collection<? extends Event> events) {
+	private InvertedIndex generateInvertedIndex(final Iterable<Event> events) {
 		final InvertedIndex invertedIndex = new InvertedIndex();
 		final StrictEntityHierarchyVisitor<PathContext> traversal = buildIndexer(invertedIndex);
 		indexEvents(events, traversal);
@@ -46,8 +45,8 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 
 	private StrictEntityHierarchyVisitor<PathContext> buildIndexer(final InvertedIndex invertedIndex) {
 		return new StrictEntityHierarchyVisitorBuilder<PathContext>().setEntityPostActionFactory(createEntityPostActionFactory(invertedIndex))
-			.setFieldPreActionFactory(createFieldPreActionFactory(invertedIndex))
-			.build();
+				.setFieldPreActionFactory(createFieldPreActionFactory(invertedIndex))
+				.build();
 	}
 
 	private VisitorEntityPostActionFactory<PathContext> createEntityPostActionFactory(final InvertedIndex invertedIndex) {
@@ -56,7 +55,7 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 
 		final VisitorEntityPostActionFactory<PathContext> actionFactory = new VisitorEntityPostActionFactory<PathContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, PathContext> getEntityPostAction(Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, PathContext> getEntityPostAction(final Class<T> entityClass) {
 				if (blankActionEntities.contains(entityClass)) {
 					return (entity, context) -> {
 					};
@@ -70,7 +69,7 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 		return actionFactory;
 	}
 
-	private void indexEvents(Collection<? extends Event> events, final StrictEntityHierarchyVisitor<PathContext> traversal) {
+	private void indexEvents(final Iterable<Event> events, final StrictEntityHierarchyVisitor<PathContext> traversal) {
 		for (final Event event : events) {
 			traversal.visit(event, new PathContext(event));
 		}
@@ -82,10 +81,8 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 			pathMappings.put(entityClass, new HashMap<>());
 			for (final Field field : entityClass.getFields()) {
 				if (field.getAnnotation(IndexablePath.class) != null) {
-					final String annotatedPath = field.getAnnotation(IndexablePath.class)
-						.value();
-					pathMappings.get(entityClass)
-						.put(field.getName(), annotatedPath);
+					final String annotatedPath = field.getAnnotation(IndexablePath.class).value();
+					pathMappings.get(entityClass).put(field.getName(), annotatedPath);
 				}
 			}
 		}
@@ -93,11 +90,9 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 		return new VisitorFieldPreActionFactory<PathContext>() {
 			// TODO[Thomas]: Consider a path stack solution instead
 			@Override
-			public <T extends Entity> VisitorFieldPreAction<T, PathContext> getFieldPreAction(Class<T> entityClass, String field) {
-				if (pathMappings.containsKey(entityClass) && pathMappings.get(entityClass)
-					.containsKey(field)) {
-					final String path = pathMappings.get(entityClass)
-						.get(field);
+			public <T extends Entity> VisitorFieldPreAction<T, PathContext> getFieldPreAction(final Class<T> entityClass, final String field) {
+				if (pathMappings.containsKey(entityClass) && pathMappings.get(entityClass).containsKey(field)) {
+					final String path = pathMappings.get(entityClass).get(field);
 					return (entity, context) -> {
 						context.path = path;
 					};

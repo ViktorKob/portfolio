@@ -2,13 +2,12 @@ package net.thomas.portfolio.hbase_index.fake.processing_steps;
 
 import static java.util.Arrays.asList;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
-import net.thomas.portfolio.hbase_index.fake.world.World;
+import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
@@ -27,11 +26,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeSelectorStatisticsStep implements ProcessingStep {
 	@Override
-	public void executeAndUpdateIndex(World world, HbaseIndex partiallyConstructedIndex) {
-		((FakeHbaseIndex) partiallyConstructedIndex).setSelectorStatistics(generateSelectorStatistics(world.getEvents()));
+	public void executeAndUpdateIndex(final WorldAccess world, final HbaseIndex partiallyConstructedIndex) {
+		((FakeHbaseIndex) partiallyConstructedIndex).setSelectorStatistics(generateSelectorStatistics(world));
 	}
 
-	private SelectorStatistics generateSelectorStatistics(Collection<? extends Event> events) {
+	private SelectorStatistics generateSelectorStatistics(final Iterable<Event> events) {
 		final SelectorStatistics statistics = new SelectorStatistics();
 		final StrictEntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
 		for (final Event event : events) {
@@ -41,8 +40,7 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 	}
 
 	private StrictEntityHierarchyVisitor<EventContext> buildCounter(final SelectorStatistics statistics) {
-		return new StrictEntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics))
-			.build();
+		return new StrictEntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics)).build();
 	}
 
 	private VisitorEntityPostActionFactory<EventContext> createActionFactory(final SelectorStatistics statistics) {
@@ -51,7 +49,7 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 
 		final VisitorEntityPostActionFactory<EventContext> actionFactory = new VisitorEntityPostActionFactory<EventContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(final Class<T> entityClass) {
 				if (blankActionEntities.contains(entityClass)) {
 					return (entity, context) -> {
 					};

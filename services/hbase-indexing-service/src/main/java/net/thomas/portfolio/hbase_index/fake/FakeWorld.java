@@ -41,7 +41,7 @@ public class FakeWorld extends World {
 	private final List<Person> people;
 	private final Map<Integer, List<Person>> relations;
 
-	public FakeWorld(long randomSeed, int populationCount, int averageRelationCount, int averageCommunicationCount) {
+	public FakeWorld(long randomSeed, final int populationCount, final int averageRelationCount, final int averageCommunicationCount) {
 		domains = registerDomains(randomSeed);
 		people = populateWorld(populationCount, randomSeed++);
 		relations = buildRelations(people, averageRelationCount, randomSeed++);
@@ -63,7 +63,7 @@ public class FakeWorld extends World {
 		return domains;
 	}
 
-	private List<Person> populateWorld(int populationCount, long randomSeed) {
+	private List<Person> populateWorld(final int populationCount, long randomSeed) {
 		final List<Person> people = new ArrayList<>();
 		for (int i = 0; i < populationCount; i++) {
 			people.add(new Person(randomSeed++));
@@ -71,7 +71,7 @@ public class FakeWorld extends World {
 		return people;
 	}
 
-	private Map<Integer, List<Person>> buildRelations(List<Person> people, int averageRelationCount, long randomSeed) {
+	private Map<Integer, List<Person>> buildRelations(final List<Person> people, final int averageRelationCount, final long randomSeed) {
 		final Random random = new Random(randomSeed);
 		final Map<Integer, List<Person>> relations = new HashMap<>();
 		for (int personIndex = 0; personIndex < people.size(); personIndex++) {
@@ -89,16 +89,14 @@ public class FakeWorld extends World {
 					tries++;
 				} while (tries < 10 && (nextPersonIndex == personIndex || personalRelations.contains(people.get(nextPersonIndex))));
 				personalRelations.add(people.get(nextPersonIndex));
-				relations.get(nextPersonIndex)
-					.add(thisPerson);
+				relations.get(nextPersonIndex).add(thisPerson);
 			}
-			relations.get(personIndex)
-				.addAll(personalRelations);
+			relations.get(personIndex).addAll(personalRelations);
 		}
 		return relations;
 	}
 
-	private Collection<Event> communicate(Map<Integer, List<Person>> relations, int averageCommunicationCount, long randomSeed) {
+	private Collection<Event> communicate(final Map<Integer, List<Person>> relations, final int averageCommunicationCount, long randomSeed) {
 		final Random random = new Random(randomSeed);
 		final Collection<Event> events = new LinkedList<>();
 		for (final Entry<Integer, List<Person>> entry : relations.entrySet()) {
@@ -115,7 +113,7 @@ public class FakeWorld extends World {
 		return events;
 	}
 
-	private Map<String, References> generateSourceReferences(Collection<Event> events, long randomSeed) {
+	private Map<String, References> generateSourceReferences(final Collection<Event> events, final long randomSeed) {
 		final Random random = new Random(randomSeed);
 		final ReferenceGenerator generator = new ReferenceGenerator(random.nextLong());
 		final Map<String, References> allReferences = new HashMap<>();
@@ -130,7 +128,7 @@ public class FakeWorld extends World {
 		return allReferences;
 	}
 
-	protected <T> T randomSample(List<T> values, Random random) {
+	protected <T> T randomSample(final List<T> values, final Random random) {
 		return values.get(random.nextInt(values.size()));
 	}
 
@@ -151,7 +149,7 @@ public class FakeWorld extends World {
 		}
 	}
 
-	private <T> List<T> generateSamples(final int minSampleCount, final int maxSampleCount, Random random, final Iterable<T> generator) {
+	private <T> List<T> generateSamples(final int minSampleCount, final int maxSampleCount, final Random random, final Iterable<T> generator) {
 		final int sampleCount = minSampleCount + random.nextInt(maxSampleCount - minSampleCount);
 		final List<T> values = new ArrayList<>();
 		for (final T sample : generator) {

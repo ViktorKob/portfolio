@@ -27,9 +27,9 @@ public class FakeSelectorStatisticsStepUnitTest {
 		selectorExtractor = new SelectorExtractor();
 		world = new FakeWorld(1234L, 5, 10, 10);
 		index = new FakeHbaseIndex();
-		index.addEntitiesAndChildren(world.getEvents());
+		index.setWorldAccess(new FakeWorldAccess(world));
 		selectorStatisticsStep = new FakeSelectorStatisticsStep();
-		selectorStatisticsStep.executeAndUpdateIndex(world, index);
+		selectorStatisticsStep.executeAndUpdateIndex(new FakeWorldAccess(world), index);
 	}
 
 	@Test
@@ -45,12 +45,10 @@ public class FakeSelectorStatisticsStepUnitTest {
 	private long getStatisticsCount(final SelectorEntity selector) {
 		final String selectorType = simpleName(selector);
 		final Statistics statistics = index.getStatistics(new DataTypeId(selectorType, selector.uid));
-		return statistics.getStatistics()
-			.get(INFINITY);
+		return statistics.getStatistics().get(INFINITY);
 	}
 
-	private String simpleName(SelectorEntity entity) {
-		return entity.getClass()
-			.getSimpleName();
+	private String simpleName(final SelectorEntity entity) {
+		return entity.getClass().getSimpleName();
 	}
 }
