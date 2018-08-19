@@ -1,5 +1,6 @@
 package net.thomas.portfolio.hbase_index.fake.processing_steps;
 
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 
 import java.util.HashSet;
@@ -33,9 +34,13 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 	private SelectorStatistics generateSelectorStatistics(final Iterable<Event> events) {
 		final SelectorStatistics statistics = new SelectorStatistics();
 		final StrictEntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
+		final long stamp = currentTimeMillis();
+		long eventCount = 0;
 		for (final Event event : events) {
 			counter.visit(event, new EventContext(event));
+			eventCount++;
 		}
+		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 		return statistics;
 	}
 

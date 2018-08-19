@@ -106,7 +106,7 @@ public class WorldIoControl {
 
 		@Override
 		public Event getEvent(final String uid) {
-			final Path pathToDataType = createPathToDataType(uid);
+			final Path pathToDataType = createEventPath(uid);
 			if (exists(pathToDataType)) {
 				return read(pathToDataType.toFile(), Event.class);
 			} else {
@@ -131,7 +131,6 @@ public class WorldIoControl {
 	}
 
 	public class WorldIterator implements Iterator<Event> {
-
 		private final Queue<Path> rootFolderQueue;
 		private Queue<Path> subFolderQueue;
 		private Queue<Path> fileQueue;
@@ -174,9 +173,11 @@ public class WorldIoControl {
 		}
 
 		private File determineNextFile() {
-			while (subFolderQueue.peek() == null && rootFolderQueue.peek() != null) {
-				subFolderQueue = readFolderList(rootFolderQueue.poll());
-				while (fileQueue.peek() == null && subFolderQueue.peek() != null) {
+			while (fileQueue.isEmpty() && !rootFolderQueue.isEmpty()) {
+				while (subFolderQueue.isEmpty() && !rootFolderQueue.isEmpty()) {
+					subFolderQueue = readFolderList(rootFolderQueue.poll());
+				}
+				while (fileQueue.isEmpty() && !subFolderQueue.isEmpty()) {
 					fileQueue = readFileList(subFolderQueue.poll());
 				}
 			}

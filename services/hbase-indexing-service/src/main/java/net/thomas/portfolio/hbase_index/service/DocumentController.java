@@ -29,7 +29,7 @@ public class DocumentController {
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = SAMPLES_PATH, method = GET)
-	public ResponseEntity<?> getDatatype(@PathVariable String dti_type, Integer amount) {
+	public ResponseEntity<?> getSamples(@PathVariable String dti_type, Integer amount) {
 		if (amount == null) {
 			amount = 10;
 		}
