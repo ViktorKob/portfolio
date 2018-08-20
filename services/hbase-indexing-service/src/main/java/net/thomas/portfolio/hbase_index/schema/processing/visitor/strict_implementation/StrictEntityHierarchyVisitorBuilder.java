@@ -63,7 +63,7 @@ public class StrictEntityHierarchyVisitorBuilder<CONTEXT_TYPE extends VisitingCo
 		};
 		simpleFieldActionFactory = new VisitorFieldSimpleActionFactory<CONTEXT_TYPE>() {
 			@Override
-			public <T extends Entity> VisitorFieldSimpleAction<T, CONTEXT_TYPE> getSimpleFieldAction(Class<T> entityClass, String field) {
+			public <T extends Entity> VisitorFieldSimpleAction<T, CONTEXT_TYPE> getFieldSimpleAction(Class<T> entityClass, String field) {
 				return (entity, context) -> {
 				};
 			}

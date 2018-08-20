@@ -6,5 +6,5 @@ import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.Visit
 @FunctionalInterface
 public interface VisitorFieldSimpleAction<ENTITY_TYPE extends Entity, CONTEXT_TYPE extends VisitingContext>
 		extends VisitorFieldAction<ENTITY_TYPE, CONTEXT_TYPE> {
-	void performSimpleFieldAction(ENTITY_TYPE entity, CONTEXT_TYPE context);
+	void performFieldSimpleAction(ENTITY_TYPE entity, CONTEXT_TYPE context);
 }

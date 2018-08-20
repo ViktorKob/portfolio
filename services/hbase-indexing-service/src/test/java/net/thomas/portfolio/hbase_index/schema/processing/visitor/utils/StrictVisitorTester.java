@@ -66,7 +66,7 @@ public class StrictVisitorTester implements VisitorTester, VisitorFieldSimpleAct
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldSimpleAction<T, InvocationCountingContext> getSimpleFieldAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldSimpleAction<T, InvocationCountingContext> getFieldSimpleAction(Class<T> entityClass, String field) {
 		return (entity, context) -> {
 			context.addFieldAction(entity, INVOKED_FIELD_SIMPLE_ACTION_ON, field);
 		};

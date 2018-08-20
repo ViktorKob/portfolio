@@ -21,14 +21,14 @@ public class DomainVisitor<CONTEXT_TYPE extends VisitingContext> extends StrictE
 			VisitorEntityPostActionFactory<CONTEXT_TYPE> postEntityActionFactory, VisitorFieldSimpleActionFactory<CONTEXT_TYPE> simpleFieldActionFactory,
 			VisitorFieldPreActionFactory<CONTEXT_TYPE> preFieldActionFactory, VisitorFieldPostActionFactory<CONTEXT_TYPE> postFieldActionFactory) {
 		super(preEntityActionFactory.getEntityPreAction(Domain.class), postEntityActionFactory.getEntityPostAction(Domain.class));
-		domainPartFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Domain.class, "domainPart");
+		domainPartFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Domain.class, "domainPart");
 		domainFieldPreAction = preFieldActionFactory.getFieldPreAction(Domain.class, "domain");
 		domainFieldPostAction = postFieldActionFactory.getFieldPostAction(Domain.class, "domain");
 	}
 
 	@Override
 	public void visitEntity(Domain entity, CONTEXT_TYPE context) {
-		domainPartFieldAction.performSimpleFieldAction(entity, context);
+		domainPartFieldAction.performFieldSimpleAction(entity, context);
 		if (entity.domain != null) {
 			domainFieldPreAction.performFieldPreAction(entity, context);
 			visit(entity.domain, context);

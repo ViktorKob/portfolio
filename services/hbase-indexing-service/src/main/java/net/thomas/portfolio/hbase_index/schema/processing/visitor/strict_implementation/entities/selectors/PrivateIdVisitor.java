@@ -14,11 +14,11 @@ public class PrivateIdVisitor<CONTEXT_TYPE extends VisitingContext> extends Stri
 	public PrivateIdVisitor(VisitorEntityPreActionFactory<CONTEXT_TYPE> preEntityActionFactory,
 			VisitorEntityPostActionFactory<CONTEXT_TYPE> postEntityActionFactory, VisitorFieldSimpleActionFactory<CONTEXT_TYPE> fieldActionFactory) {
 		super(preEntityActionFactory.getEntityPreAction(PrivateId.class), postEntityActionFactory.getEntityPostAction(PrivateId.class));
-		numberFieldAction = fieldActionFactory.getSimpleFieldAction(PrivateId.class, "number");
+		numberFieldAction = fieldActionFactory.getFieldSimpleAction(PrivateId.class, "number");
 	}
 
 	@Override
 	protected void visitEntity(PrivateId entity, CONTEXT_TYPE context) {
-		numberFieldAction.performSimpleFieldAction(entity, context);
+		numberFieldAction.performFieldSimpleAction(entity, context);
 	}
 }

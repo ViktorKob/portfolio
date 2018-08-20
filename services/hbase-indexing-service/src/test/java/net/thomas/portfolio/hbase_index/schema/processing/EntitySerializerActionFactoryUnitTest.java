@@ -1,35 +1,49 @@
 package net.thomas.portfolio.hbase_index.schema.processing;
 
-import static net.thomas.portfolio.hbase_index.schema.EntitySamplesForTesting.SOME_LOCALNAME;
-import static org.mockito.Mockito.mock;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-
+import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.processing.EntitySerializerActionFactory.SerializerContext;
-import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorEntityPreAction;
-import net.thomas.portfolio.hbase_index.schema.selectors.Localname;
 
 public class EntitySerializerActionFactoryUnitTest {
-	private JsonGenerator generator;
-	private SerializerProvider serializers;
 	private SerializerContext context;
 	private EntitySerializerActionFactory actionFactory;
 
 	@Before
 	public void setUpForTest() {
-		generator = mock(JsonGenerator.class);
-		serializers = mock(SerializerProvider.class);
-		context = new SerializerContext(generator, serializers);
+		context = new SerializerContext(null, null);
 		actionFactory = new EntitySerializerActionFactory();
 	}
 
-	@Test
+	@Test(expected = RuntimeException.class)
 	public void shouldThrowExceptionWhenEntityPreActionNotInitialized() {
-		final VisitorEntityPreAction<Localname, SerializerContext> postAction = actionFactory.getEntityPreAction(Localname.class);
-		postAction.performEntityPreAction(SOME_LOCALNAME, context);
+		actionFactory.getEntityPreAction(NonExistantEntity.class).performEntityPreAction(SOME_NON_EXISTANT_ENTITY, context);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void shouldThrowExceptionWhenEntityPostActionNotInitialized() {
+		actionFactory.getEntityPostAction(NonExistantEntity.class).performEntityPostAction(SOME_NON_EXISTANT_ENTITY, context);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void shouldThrowExceptionWhenFieldPreActionNotInitialized() {
+		actionFactory.getFieldPreAction(NonExistantEntity.class, SOME_FIELD).performFieldPreAction(SOME_NON_EXISTANT_ENTITY, context);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void shouldThrowExceptionWhenFieldPostActionNotInitialized() {
+		actionFactory.getFieldPostAction(NonExistantEntity.class, SOME_FIELD).performFieldPostAction(SOME_NON_EXISTANT_ENTITY, context);
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void shouldThrowExceptionWhenFieldSimpleActionNotInitialized() {
+		actionFactory.getFieldSimpleAction(NonExistantEntity.class, SOME_FIELD).performFieldSimpleAction(SOME_NON_EXISTANT_ENTITY, context);
+	}
+
+	private static final NonExistantEntity SOME_NON_EXISTANT_ENTITY = new NonExistantEntity();
+	private static final String SOME_FIELD = "SomeField";
+
+	private static class NonExistantEntity extends Entity {
 	}
 }

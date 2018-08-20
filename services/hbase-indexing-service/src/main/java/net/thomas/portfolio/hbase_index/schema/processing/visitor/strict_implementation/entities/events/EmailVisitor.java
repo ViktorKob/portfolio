@@ -43,18 +43,18 @@ public class EmailVisitor<CONTEXT_TYPE extends VisitingContext> extends StrictEn
 		ccFieldPostAction = postFieldActionFactory.getFieldPostAction(Email.class, "cc");
 		bccFieldPreAction = preFieldActionFactory.getFieldPreAction(Email.class, "bcc");
 		bccFieldPostAction = postFieldActionFactory.getFieldPostAction(Email.class, "bcc");
-		timeOfEventFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Email.class, "timeOfEvent");
-		timeOfInterceptionFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Email.class, "timeOfInterception");
-		subjectFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Email.class, "subject");
-		messageFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Email.class, "message");
+		timeOfEventFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "timeOfEvent");
+		timeOfInterceptionFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "timeOfInterception");
+		subjectFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "subject");
+		messageFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "message");
 
 	}
 
 	@Override
 	public void visitEntity(Email entity, CONTEXT_TYPE context) {
-		timeOfEventFieldAction.performSimpleFieldAction(entity, context);
-		timeOfInterceptionFieldAction.performSimpleFieldAction(entity, context);
-		subjectFieldAction.performSimpleFieldAction(entity, context);
+		timeOfEventFieldAction.performFieldSimpleAction(entity, context);
+		timeOfInterceptionFieldAction.performFieldSimpleAction(entity, context);
+		subjectFieldAction.performFieldSimpleAction(entity, context);
 		fromFieldPreAction.performFieldPreAction(entity, context);
 		endpointVisitor.visit(entity.from, context);
 		fromFieldPostAction.performFieldPostAction(entity, context);
@@ -73,6 +73,6 @@ public class EmailVisitor<CONTEXT_TYPE extends VisitingContext> extends StrictEn
 			endpointVisitor.visit(endpoint, context);
 		}
 		bccFieldPostAction.performFieldPostAction(entity, context);
-		messageFieldAction.performSimpleFieldAction(entity, context);
+		messageFieldAction.performFieldSimpleAction(entity, context);
 	}
 }
