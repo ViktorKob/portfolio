@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 import static net.thomas.portfolio.testing_tools.EqualsTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.testing_tools.HashCodeTestUtil.assertHashCodeIsValidIncludingNullChecks;
@@ -7,13 +8,16 @@ import static net.thomas.portfolio.testing_tools.SerializationDeserializationUti
 import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
@@ -27,8 +31,19 @@ public class InvertedIndexLookupRequestUnitTest {
 
 	@Test
 	public void shouldMakeIdenticalCopyUsingConstructor() throws IOException {
-		final InvertedIndexLookupRequest copy = new InvertedIndexLookupRequest(lookup);
-		assertEquals(lookup, copy);
+		assertEquals(lookup, new InvertedIndexLookupRequest(lookup));
+	}
+
+	@Test
+	public void shouldAddLegalInfoToGroups() throws IOException {
+		final Set<ParameterGroup> groups = new HashSet<>(asList(lookup.getGroups()));
+		assertTrue(groups.contains(LEGAL_INFO));
+	}
+
+	@Test
+	public void shouldAddBoundsToGroups() throws IOException {
+		final Set<ParameterGroup> groups = new HashSet<>(asList(lookup.getGroups()));
+		assertTrue(groups.contains(BOUNDS));
 	}
 
 	@Test

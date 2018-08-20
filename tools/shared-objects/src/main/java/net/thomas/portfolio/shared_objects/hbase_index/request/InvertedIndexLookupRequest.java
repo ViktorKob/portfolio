@@ -25,7 +25,8 @@ public class InvertedIndexLookupRequest {
 	public InvertedIndexLookupRequest() {
 	}
 
-	public InvertedIndexLookupRequest(DataTypeId selectorId, LegalInformation legalInfo, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
+	public InvertedIndexLookupRequest(final DataTypeId selectorId, final LegalInformation legalInfo, final Bounds bounds, final Set<String> documentTypes,
+			final Set<String> relations) {
 		this.selectorId = selectorId;
 		this.legalInfo = legalInfo;
 		this.bounds = bounds;
@@ -33,7 +34,7 @@ public class InvertedIndexLookupRequest {
 		this.relations = relations;
 	}
 
-	public InvertedIndexLookupRequest(InvertedIndexLookupRequest source) {
+	public InvertedIndexLookupRequest(final InvertedIndexLookupRequest source) {
 		selectorId = new DataTypeId(source.selectorId);
 		legalInfo = new LegalInformation(source.legalInfo);
 		bounds = new Bounds(source.bounds);
@@ -45,7 +46,7 @@ public class InvertedIndexLookupRequest {
 		return selectorId;
 	}
 
-	public void setSelectorId(DataTypeId selectorId) {
+	public void setSelectorId(final DataTypeId selectorId) {
 		this.selectorId = selectorId;
 	}
 
@@ -53,7 +54,7 @@ public class InvertedIndexLookupRequest {
 		return legalInfo;
 	}
 
-	public void setLegalInfo(LegalInformation legalInfo) {
+	public void setLegalInfo(final LegalInformation legalInfo) {
 		this.legalInfo = legalInfo;
 	}
 
@@ -61,7 +62,7 @@ public class InvertedIndexLookupRequest {
 		return bounds;
 	}
 
-	public void setBounds(Bounds bounds) {
+	public void setBounds(final Bounds bounds) {
 		this.bounds = bounds;
 	}
 
@@ -69,7 +70,7 @@ public class InvertedIndexLookupRequest {
 		return documentTypes;
 	}
 
-	public void setDocumentTypes(Set<String> documentTypes) {
+	public void setDocumentTypes(final Set<String> documentTypes) {
 		this.documentTypes = documentTypes;
 	}
 
@@ -77,7 +78,7 @@ public class InvertedIndexLookupRequest {
 		return relations;
 	}
 
-	public void setRelations(Set<String> relations) {
+	public void setRelations(final Set<String> relations) {
 		this.relations = relations;
 	}
 
@@ -99,7 +100,7 @@ public class InvertedIndexLookupRequest {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
