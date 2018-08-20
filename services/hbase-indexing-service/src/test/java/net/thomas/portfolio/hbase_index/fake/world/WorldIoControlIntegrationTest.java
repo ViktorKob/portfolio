@@ -27,8 +27,8 @@ public class WorldIoControlIntegrationTest {
 	private static final int POPULATION = 5;
 	private static final int AVG_SOCIAL_CONNECTIONS = 2;
 	private static final int AVG_COMMUNICATION = 5;
-	private static final String STORAGE_ROOT = "testData";
-	private static final String STORAGE_ROOT_THAT_DOES_NOT_EXIST = "fakeTestData";
+	private static final String STORAGE_ROOT = "test_data";
+	private static final String STORAGE_ROOT_THAT_DOES_NOT_EXIST = "fake_test_data";
 	private static final String UID_THAT_DOES_NOT_EXIST = "AAAAAAAA0000";
 	private static FakeWorld WORLD;
 	private static WorldIoControl ioControl;

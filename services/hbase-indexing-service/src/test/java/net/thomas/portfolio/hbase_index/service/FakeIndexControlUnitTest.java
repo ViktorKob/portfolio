@@ -54,5 +54,6 @@ public class FakeIndexControlUnitTest {
 		CONFIG.setPopulationCount(10);
 		CONFIG.setAverageRelationCount(5);
 		CONFIG.setAverageCommunicationCount(20);
+		CONFIG.setStorageRootPath("fake_index_contron_test");
 	}
 }
