@@ -14,14 +14,14 @@ public class HbaseIndexingServiceProperties {
 	public static final Map<String, String> SERVICE_PROPERTIES;
 	static {
 		SERVICE_PROPERTIES = new HashMap<>();
-
 		// ####################
 		// Service settings:
 		// ####################
 
 		put("service-context-path", "${hbase-indexing-context-path}");
 		put("service-name", "${hbase-indexing-service-name}");
-		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/swagger-ui.html");
+		put("service-status-page",
+				"${external-protocol}service-user:password@${external-service-address}${service-context-path}/swagger-ui.html");
 
 		// ####################
 		// Unique settings:
@@ -32,6 +32,7 @@ public class HbaseIndexingServiceProperties {
 		put("hbase-indexing-service.populationCount", "80");
 		put("hbase-indexing-service.averageRelationCount", "10");
 		put("hbase-indexing-service.averageCommunicationCount", "800");
+		put("hbase-indexing-service.storageRootPath", "data");
 
 		// ####################
 	}

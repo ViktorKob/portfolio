@@ -30,15 +30,14 @@ import net.thomas.portfolio.hbase_index.schema.processing.EventSerializer;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 
 public class WorldIoControl {
-
-	private static final Path ROOT_PATH = get("data");
-	private static final Path EVENT_ROOT_PATH = get(ROOT_PATH.toString(), "events");
 	private static final int SEGMENT_SIZE = 2;
 	private static final String EVENT_FILE_SUFFIX = ".json.gzip";
 	private static final String REFERENCE_FILE_SUFFIX = ".references.json.gzip";
 	private final ObjectMapper visitorBasedMapper;
+	private Path eventRootPath;
 
-	public WorldIoControl() {
+	public WorldIoControl(String storageRoot) {
+		eventRootPath = get(storageRoot.toString(), "events");
 		visitorBasedMapper = new ObjectMapper();
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(Event.class, new EventSerializer());
@@ -47,7 +46,7 @@ public class WorldIoControl {
 	}
 
 	public boolean canImportWorld() {
-		return exists(EVENT_ROOT_PATH);
+		return exists(eventRootPath);
 	}
 
 	public WorldAccess getWorldAccess() {
@@ -59,7 +58,7 @@ public class WorldIoControl {
 	}
 
 	private void writeToDisk(final Collection<Event> events, final Map<String, References> references) {
-		EVENT_ROOT_PATH.toFile().mkdirs();
+		eventRootPath.toFile().mkdirs();
 		for (final Event event : events) {
 			writeToDisk(event);
 			writeToDisk(event.uid, references.get(event.uid));
@@ -85,16 +84,27 @@ public class WorldIoControl {
 	}
 
 	private Path createEventPath(final String uid) {
-		return get(createPathToDataType(uid).toString(), uid + EVENT_FILE_SUFFIX);
+		Path pathToFolder = getPathToEntity(uid);
+		pathToFolder.toFile().mkdirs();
+		return get(pathToFolder.toString(), uid + EVENT_FILE_SUFFIX);
 	}
 
 	private Path createEventReferencesPath(final String uid) {
-		return get(createPathToDataType(uid).toString(), uid + REFERENCE_FILE_SUFFIX);
+		Path pathToFolder = getPathToEntity(uid);
+		pathToFolder.toFile().mkdirs();
+		return get(pathToFolder.toString(), uid + REFERENCE_FILE_SUFFIX);
 	}
 
-	private Path createPathToDataType(final String uid) {
-		final Path path = get(EVENT_ROOT_PATH.toString(), getPathSegment(uid, 0), getPathSegment(uid, 1));
-		path.toFile().mkdirs();
+	private Path getEventPath(final String uid) {
+		return get(getPathToEntity(uid).toString(), uid + EVENT_FILE_SUFFIX);
+	}
+
+	private Path getEventReferencesPath(final String uid) {
+		return get(getPathToEntity(uid).toString(), uid + REFERENCE_FILE_SUFFIX);
+	}
+
+	private Path getPathToEntity(final String uid) {
+		final Path path = get(eventRootPath.toString(), getPathSegment(uid, 0), getPathSegment(uid, 1));
 		return path;
 	}
 
@@ -106,7 +116,7 @@ public class WorldIoControl {
 
 		@Override
 		public Event getEvent(final String uid) {
-			final Path pathToDataType = createEventPath(uid);
+			final Path pathToDataType = getEventPath(uid);
 			if (exists(pathToDataType)) {
 				return read(pathToDataType.toFile(), Event.class);
 			} else {
@@ -116,7 +126,7 @@ public class WorldIoControl {
 
 		@Override
 		public References getReferences(final String uid) {
-			final Path pathToDataType = createPathToDataType(uid);
+			final Path pathToDataType = getEventReferencesPath(uid);
 			if (exists(pathToDataType)) {
 				return read(pathToDataType.toFile(), References.class);
 			} else {
@@ -137,7 +147,7 @@ public class WorldIoControl {
 		private File next;
 
 		public WorldIterator() {
-			rootFolderQueue = readFolderList(EVENT_ROOT_PATH);
+			rootFolderQueue = readFolderList(eventRootPath);
 			subFolderQueue = readFolderList(rootFolderQueue.poll());
 			fileQueue = readFileList(subFolderQueue.poll());
 			next = determineNextFile();
@@ -158,7 +168,8 @@ public class WorldIoControl {
 		private Queue<Path> readFileList(final Path path) {
 			if (path != null) {
 				try {
-					return list(path).filter(file -> matchesEventFile(file)).map(file -> file.toAbsolutePath()).collect(toCollection(LinkedList::new));
+					return list(path).filter(file -> matchesEventFile(file)).map(file -> file.toAbsolutePath())
+							.collect(toCollection(LinkedList::new));
 				} catch (final IOException e) {
 					throw new RuntimeException("Unable to access data on disk", e);
 				}

@@ -11,6 +11,7 @@ public class HbaseIndexingServiceConfiguration {
 	private int populationCount;
 	private int averageRelationCount;
 	private int averageCommunicationCount;
+	private String storageRootPath;
 
 	public long getRandomSeed() {
 		return randomSeed;
@@ -42,5 +43,13 @@ public class HbaseIndexingServiceConfiguration {
 
 	public void setAverageCommunicationCount(int averageCommunicationCount) {
 		this.averageCommunicationCount = averageCommunicationCount;
+	}
+
+	public String getStorageRootPath() {
+		return storageRootPath;
+	}
+
+	public void setStorageRootPath(String storageRootPath) {
+		this.storageRootPath = storageRootPath;
 	}
 }
