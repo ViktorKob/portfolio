@@ -202,8 +202,8 @@ public class SchemaTraversalPerformanceTester
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldSimpleAction<T, TestContext> getSimpleFieldAction(Class<T> entityClass, String field) {
-		return this::performSimpleFieldAction;
+	public <T extends Entity> VisitorFieldSimpleAction<T, TestContext> getFieldSimpleAction(Class<T> entityClass, String field) {
+		return this::performFieldSimpleAction;
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class SchemaTraversalPerformanceTester
 	}
 
 	@Override
-	public void performSimpleFieldAction(Entity entity, TestContext context) {
+	public void performFieldSimpleAction(Entity entity, TestContext context) {
 		context.fieldSimpleInvocationCount++;
 	}
 
@@ -262,7 +262,7 @@ public class SchemaTraversalPerformanceTester
 
 	@Override
 	public VisitorGenericFieldSimpleAction<TestContext> getGenericSimpleFieldAction(Class<? extends Entity> entityClass, String field) {
-		return this::performSimpleFieldAction;
+		return this::performFieldSimpleAction;
 	}
 
 	@Override
@@ -277,6 +277,6 @@ public class SchemaTraversalPerformanceTester
 
 	@Override
 	public void performNaiveSimpleFieldAction(Entity entity, TestContext context, String field) {
-		performSimpleFieldAction(entity, context);
+		performFieldSimpleAction(entity, context);
 	}
 }

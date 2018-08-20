@@ -14,11 +14,11 @@ public class LocalnameVisitor<CONTEXT_TYPE extends VisitingContext> extends Stri
 	public LocalnameVisitor(VisitorEntityPreActionFactory<CONTEXT_TYPE> preEntityActionFactory,
 			VisitorEntityPostActionFactory<CONTEXT_TYPE> postEntityActionFactory, VisitorFieldSimpleActionFactory<CONTEXT_TYPE> fieldActionFactory) {
 		super(preEntityActionFactory.getEntityPreAction(Localname.class), postEntityActionFactory.getEntityPostAction(Localname.class));
-		nameFieldAction = fieldActionFactory.getSimpleFieldAction(Localname.class, "name");
+		nameFieldAction = fieldActionFactory.getFieldSimpleAction(Localname.class, "name");
 	}
 
 	@Override
 	protected void visitEntity(Localname entity, CONTEXT_TYPE context) {
-		nameFieldAction.performSimpleFieldAction(entity, context);
+		nameFieldAction.performFieldSimpleAction(entity, context);
 	}
 }

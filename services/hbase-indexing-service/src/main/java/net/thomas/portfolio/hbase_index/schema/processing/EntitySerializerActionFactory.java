@@ -35,13 +35,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.GeoLocation;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 
 public class EntitySerializerActionFactory implements VisitorEntityPreActionFactory<SerializerContext>, VisitorEntityPostActionFactory<SerializerContext>,
-		VisitorFieldSimpleActionFactory<SerializerContext>, VisitorFieldPreActionFactory<SerializerContext>, VisitorFieldPostActionFactory<SerializerContext> {
+		VisitorFieldSimpleActionFactory<SerializerContext>, VisitorFieldPreActionFactory<SerializerContext>, VisitorFieldPostActionFactory<SerializerContext>
+{
 
 	public static class SerializerContext implements VisitingContext {
 		public final JsonGenerator generator;
 		public final SerializerProvider serializers;
 
-		public SerializerContext(JsonGenerator generator, SerializerProvider serializers) {
+		public SerializerContext(final JsonGenerator generator, final SerializerProvider serializers) {
 			this.generator = generator;
 			this.serializers = serializers;
 		}
@@ -66,7 +67,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorEntityPreAction<T, SerializerContext> getEntityPreAction(Class<T> entityClass) {
+	public <T extends Entity> VisitorEntityPreAction<T, SerializerContext> getEntityPreAction(final Class<T> entityClass) {
 		if (actions.containsKey(entityClass)) {
 			return (VisitorEntityPreAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
@@ -78,7 +79,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorEntityPostAction<T, SerializerContext> getEntityPostAction(Class<T> entityClass) {
+	public <T extends Entity> VisitorEntityPostAction<T, SerializerContext> getEntityPostAction(final Class<T> entityClass) {
 		if (actions.containsKey(entityClass)) {
 			return (VisitorEntityPostAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
@@ -90,10 +91,9 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorFieldPreAction<T, SerializerContext> getFieldPreAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPreAction<T, SerializerContext> getFieldPreAction(final Class<T> entityClass, final String field) {
 		if (actions.containsKey(entityClass)) {
-			return (VisitorFieldPreAction<T, SerializerContext>) actions.get(entityClass)
-				.getFieldPreAction(field);
+			return (VisitorFieldPreAction<T, SerializerContext>) actions.get(entityClass).getFieldPreAction(field);
 		} else {
 			return (entity, context) -> {
 				throw new RuntimeException("Unable to serialize " + entity);
@@ -103,10 +103,9 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorFieldPostAction<T, SerializerContext> getFieldPostAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPostAction<T, SerializerContext> getFieldPostAction(final Class<T> entityClass, final String field) {
 		if (actions.containsKey(entityClass)) {
-			return (VisitorFieldPostAction<T, SerializerContext>) actions.get(entityClass)
-				.getFieldPostAction(field);
+			return (VisitorFieldPostAction<T, SerializerContext>) actions.get(entityClass).getFieldPostAction(field);
 		} else {
 			return (entity, context) -> {
 				throw new RuntimeException("Unable to serialize " + entity);
@@ -116,10 +115,9 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T extends Entity> VisitorFieldSimpleAction<T, SerializerContext> getSimpleFieldAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldSimpleAction<T, SerializerContext> getFieldSimpleAction(final Class<T> entityClass, final String field) {
 		if (actions.containsKey(entityClass)) {
-			return (VisitorFieldSimpleAction<T, SerializerContext>) actions.get(entityClass)
-				.getFieldSimpleAction(field);
+			return (VisitorFieldSimpleAction<T, SerializerContext>) actions.get(entityClass).getFieldSimpleAction(field);
 		} else {
 			return (entity, context) -> {
 				throw new RuntimeException("Unable to serialize " + entity);
@@ -128,17 +126,18 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	}
 
 	abstract class SerializerVisitorActions<ENTITY_TYPE extends Entity>
-			implements VisitorEntityPreAction<ENTITY_TYPE, SerializerContext>, VisitorEntityPostAction<ENTITY_TYPE, SerializerContext> {
+			implements VisitorEntityPreAction<ENTITY_TYPE, SerializerContext>, VisitorEntityPostAction<ENTITY_TYPE, SerializerContext>
+	{
 		protected final VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> NO_SIMPLE_ACTION = (entity, context) -> {
 		};
-		protected final VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> DEFAULT_PRE_ACTION = (entity, context) -> {
+		protected final VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> NO_FIELD_PRE_ACTION = (entity, context) -> {
 		};
-		protected final VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> DEFAULT_POST_ACTION = (entity, context) -> {
+		protected final VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> NO_FIELD_POST_ACTION = (entity, context) -> {
 		};
 
 		// TODO[Thomas]: Replace with annotated aspect instead
 		@Override
-		public void performEntityPreAction(ENTITY_TYPE entity, SerializerContext context) {
+		public void performEntityPreAction(final ENTITY_TYPE entity, final SerializerContext context) {
 			try {
 				final JsonGenerator generator = getContext(context).generator;
 				generator.writeStartObject();
@@ -149,12 +148,12 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			}
 		}
 
-		protected void _performPreEntityAction(ENTITY_TYPE entity, SerializerContext context) throws IOException {
+		protected void _performPreEntityAction(final ENTITY_TYPE entity, final SerializerContext context) throws IOException {
 		}
 
 		// TODO[Thomas]: Replace with annotated aspect instead
 		@Override
-		public void performEntityPostAction(ENTITY_TYPE entity, SerializerContext context) {
+		public void performEntityPostAction(final ENTITY_TYPE entity, final SerializerContext context) {
 			try {
 				_performPostEntityAction(entity, getContext(context));
 				final JsonGenerator generator = getContext(context).generator;
@@ -164,59 +163,58 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			}
 		}
 
-		protected SerializerContext getContext(SerializerContext context) {
+		protected SerializerContext getContext(final SerializerContext context) {
 			return context;
 		}
 
-		protected void _performPostEntityAction(ENTITY_TYPE entity, SerializerContext context) throws IOException {
+		protected void _performPostEntityAction(final ENTITY_TYPE entity, final SerializerContext context) throws IOException {
 		}
 
-		public VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> getFieldPreAction(String field) {
-			return DEFAULT_PRE_ACTION;
+		public VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> getFieldPreAction(final String field) {
+			return NO_FIELD_PRE_ACTION;
 		}
 
-		public VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> getFieldPostAction(String field) {
-			return DEFAULT_POST_ACTION;
+		public VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> getFieldPostAction(final String field) {
+			return NO_FIELD_POST_ACTION;
 		}
 
-		public VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> getFieldSimpleAction(final String field) {
 			return NO_SIMPLE_ACTION;
 		}
 
-		protected String typeOf(Entity entity) {
-			return entity.getClass()
-				.getSimpleName();
+		protected String typeOf(final Entity entity) {
+			return entity.getClass().getSimpleName();
 		}
 
-		protected void writeTimestamp(JsonGenerator generator, Timestamp timestamp) throws IOException {
+		protected void writeTimestamp(final JsonGenerator generator, final Timestamp timestamp) throws IOException {
 			generator.writeStartObject();
 			generator.writeNumberField("t", timestamp.getTimestamp());
 			generator.writeStringField("z", timestamp.getOriginalTimeZoneId());
 			generator.writeEndObject();
 		}
 
-		protected void writeLocation(JsonGenerator generator, GeoLocation location) throws IOException {
+		protected void writeLocation(final JsonGenerator generator, final GeoLocation location) throws IOException {
 			generator.writeStartObject();
 			generator.writeNumberField("x", location.getLongitude());
 			generator.writeNumberField("y", location.getLatitude());
 			generator.writeEndObject();
 		}
 
-		protected VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> wrapPreWithSerializerAction(Action<ENTITY_TYPE> innerAction) {
+		protected VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> wrapPreWithSerializerAction(final Action<ENTITY_TYPE> innerAction) {
 			final SerializerAction<ENTITY_TYPE> action = new SerializerAction<>(innerAction);
 			return (entity, context) -> {
 				action.perform(entity, context);
 			};
 		}
 
-		protected VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> wrapPostWithSerializerAction(Action<ENTITY_TYPE> innerAction) {
+		protected VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> wrapPostWithSerializerAction(final Action<ENTITY_TYPE> innerAction) {
 			final SerializerAction<ENTITY_TYPE> action = new SerializerAction<>(innerAction);
 			return (entity, context) -> {
 				action.perform(entity, context);
 			};
 		}
 
-		protected VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> wrapSimpleWithSerializerAction(Action<ENTITY_TYPE> innerAction) {
+		protected VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> wrapSimpleWithSerializerAction(final Action<ENTITY_TYPE> innerAction) {
 			final SerializerAction<ENTITY_TYPE> action = new SerializerAction<>(innerAction);
 			return (entity, context) -> {
 				action.perform(entity, context);
@@ -226,7 +224,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class EmailVisitorActions extends SerializerVisitorActions<Email> {
 		@Override
-		public VisitorFieldSimpleAction<Email, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<Email, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("subject")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("s", entity.subject);
@@ -251,7 +249,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		@Override
-		public VisitorFieldPreAction<Email, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<Email, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("from")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
@@ -272,12 +270,12 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeStartArray();
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 
 		@Override
-		public VisitorFieldPostAction<Email, SerializerContext> getFieldPostAction(String field) {
+		public VisitorFieldPostAction<Email, SerializerContext> getFieldPostAction(final String field) {
 			if (field.equals("to")) {
 				return wrapPostWithSerializerAction((entity, generator) -> {
 					generator.writeEndArray();
@@ -291,12 +289,12 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeEndArray();
 				});
 			} else {
-				return DEFAULT_POST_ACTION;
+				return NO_FIELD_POST_ACTION;
 			}
 		}
 
 		@Override
-		protected void _performPreEntityAction(Email entity, SerializerContext context) throws IOException {
+		protected void _performPreEntityAction(final Email entity, final SerializerContext context) throws IOException {
 			context.generator.writeFieldName("t");
 			context.generator.writeObject(typeOf(entity));
 		}
@@ -304,7 +302,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class TextMessageVisitorActions extends SerializerVisitorActions<TextMessage> {
 		@Override
-		public VisitorFieldSimpleAction<TextMessage, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<TextMessage, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("message")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("m", entity.message);
@@ -335,7 +333,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		@Override
-		public VisitorFieldPreAction<TextMessage, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<TextMessage, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("sender")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
@@ -345,12 +343,12 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeFieldName("b");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 
 		@Override
-		protected void _performPreEntityAction(TextMessage entity, SerializerContext context) throws IOException {
+		protected void _performPreEntityAction(final TextMessage entity, final SerializerContext context) throws IOException {
 			context.generator.writeFieldName("t");
 			context.generator.writeObject(typeOf(entity));
 		}
@@ -358,7 +356,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class ConversationVisitorActions extends SerializerVisitorActions<Conversation> {
 		@Override
-		public VisitorFieldSimpleAction<Conversation, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<Conversation, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("durationInSeconds")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeNumberField("d", entity.durationInSeconds);
@@ -389,7 +387,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		@Override
-		public VisitorFieldPreAction<Conversation, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<Conversation, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("primary")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
@@ -399,12 +397,12 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeFieldName("b");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 
 		@Override
-		protected void _performPreEntityAction(Conversation entity, SerializerContext context) throws IOException {
+		protected void _performPreEntityAction(final Conversation entity, final SerializerContext context) throws IOException {
 			context.generator.writeFieldName("t");
 			context.generator.writeObject(typeOf(entity));
 		}
@@ -412,7 +410,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class LocalnameVisitorActions extends SerializerVisitorActions<Localname> {
 		@Override
-		public VisitorFieldSimpleAction<Localname, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<Localname, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("name")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.name);
@@ -425,7 +423,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class DisplayedNameVisitorActions extends SerializerVisitorActions<DisplayedName> {
 		@Override
-		public VisitorFieldSimpleAction<DisplayedName, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<DisplayedName, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("name")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.name);
@@ -438,7 +436,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class PublicIdVisitorActions extends SerializerVisitorActions<PublicId> {
 		@Override
-		public VisitorFieldSimpleAction<PublicId, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<PublicId, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("number")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.number);
@@ -451,7 +449,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class PrivateIdVisitorActions extends SerializerVisitorActions<PrivateId> {
 		@Override
-		public VisitorFieldSimpleAction<PrivateId, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<PrivateId, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("number")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.number);
@@ -464,7 +462,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 	class DomainVisitorActions extends SerializerVisitorActions<Domain> {
 		@Override
-		public VisitorFieldSimpleAction<Domain, SerializerContext> getFieldSimpleAction(String field) {
+		public VisitorFieldSimpleAction<Domain, SerializerContext> getFieldSimpleAction(final String field) {
 			if (field.equals("domainPart")) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("dP", entity.domainPart);
@@ -475,20 +473,20 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		@Override
-		public VisitorFieldPreAction<Domain, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<Domain, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("domain")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 	}
 
 	class EmailAddressVisitorActions extends SerializerVisitorActions<EmailAddress> {
 		@Override
-		public VisitorFieldPreAction<EmailAddress, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<EmailAddress, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("localname")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("l");
@@ -498,14 +496,14 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeFieldName("d");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 	}
 
 	class EmailEndpointVisitorActions extends SerializerVisitorActions<EmailEndpoint> {
 		@Override
-		public VisitorFieldPreAction<EmailEndpoint, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<EmailEndpoint, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("displayedName")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
@@ -515,14 +513,14 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeFieldName("a");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 	}
 
 	class CommunicationEndpointVisitorActions extends SerializerVisitorActions<CommunicationEndpoint> {
 		@Override
-		public VisitorFieldPreAction<CommunicationEndpoint, SerializerContext> getFieldPreAction(String field) {
+		public VisitorFieldPreAction<CommunicationEndpoint, SerializerContext> getFieldPreAction(final String field) {
 			if (field.equals("publicId")) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
@@ -532,7 +530,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 					generator.writeFieldName("b");
 				});
 			} else {
-				return DEFAULT_PRE_ACTION;
+				return NO_FIELD_PRE_ACTION;
 			}
 		}
 	}
@@ -540,11 +538,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	static class SerializerAction<ENTITY_TYPE extends Entity> {
 		private final Action<ENTITY_TYPE> action;
 
-		public SerializerAction(Action<ENTITY_TYPE> action) {
+		public SerializerAction(final Action<ENTITY_TYPE> action) {
 			this.action = action;
 		}
 
-		void perform(ENTITY_TYPE entity, SerializerContext context) {
+		void perform(final ENTITY_TYPE entity, final SerializerContext context) {
 			final JsonGenerator generator = context.generator;
 			try {
 				action.perform(entity, generator);
@@ -555,7 +553,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	}
 
 	@FunctionalInterface
-	static interface Action<ENTITY_TYPE extends Entity> {
+	interface Action<ENTITY_TYPE extends Entity> {
 		void perform(ENTITY_TYPE entity, JsonGenerator generator) throws IOException;
 	}
 }

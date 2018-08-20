@@ -35,24 +35,24 @@ public class TextMessageVisitor<CONTEXT_TYPE extends VisitingContext> extends St
 		senderFieldPostAction = postFieldActionFactory.getFieldPostAction(TextMessage.class, "sender");
 		receiverFieldPreAction = preFieldActionFactory.getFieldPreAction(TextMessage.class, "receiver");
 		receiverFieldPostAction = postFieldActionFactory.getFieldPostAction(TextMessage.class, "receiver");
-		timeOfEventFieldAction = simpleFieldActionFactory.getSimpleFieldAction(TextMessage.class, "timeOfEvent");
-		timeOfInterceptionFieldAction = simpleFieldActionFactory.getSimpleFieldAction(TextMessage.class, "timeOfInterception");
-		messageFieldAction = simpleFieldActionFactory.getSimpleFieldAction(TextMessage.class, "message");
-		senderLocationFieldAction = simpleFieldActionFactory.getSimpleFieldAction(TextMessage.class, "senderLocation");
-		receiverLocationFieldAction = simpleFieldActionFactory.getSimpleFieldAction(TextMessage.class, "receiverLocation");
+		timeOfEventFieldAction = simpleFieldActionFactory.getFieldSimpleAction(TextMessage.class, "timeOfEvent");
+		timeOfInterceptionFieldAction = simpleFieldActionFactory.getFieldSimpleAction(TextMessage.class, "timeOfInterception");
+		messageFieldAction = simpleFieldActionFactory.getFieldSimpleAction(TextMessage.class, "message");
+		senderLocationFieldAction = simpleFieldActionFactory.getFieldSimpleAction(TextMessage.class, "senderLocation");
+		receiverLocationFieldAction = simpleFieldActionFactory.getFieldSimpleAction(TextMessage.class, "receiverLocation");
 
 	}
 
 	@Override
 	public void visitEntity(TextMessage entity, CONTEXT_TYPE context) {
-		timeOfEventFieldAction.performSimpleFieldAction(entity, context);
-		timeOfInterceptionFieldAction.performSimpleFieldAction(entity, context);
-		messageFieldAction.performSimpleFieldAction(entity, context);
+		timeOfEventFieldAction.performFieldSimpleAction(entity, context);
+		timeOfInterceptionFieldAction.performFieldSimpleAction(entity, context);
+		messageFieldAction.performFieldSimpleAction(entity, context);
 		if (entity.senderLocation != null) {
-			senderLocationFieldAction.performSimpleFieldAction(entity, context);
+			senderLocationFieldAction.performFieldSimpleAction(entity, context);
 		}
 		if (entity.receiverLocation != null) {
-			receiverLocationFieldAction.performSimpleFieldAction(entity, context);
+			receiverLocationFieldAction.performFieldSimpleAction(entity, context);
 		}
 		if (entity.sender != null) {
 			senderFieldPreAction.performFieldPreAction(entity, context);

@@ -31,11 +31,11 @@ public class ConversationVisitor<CONTEXT_TYPE extends VisitingContext> extends S
 			CommunicationEndpointVisitor<CONTEXT_TYPE> endpointVisitor) {
 		super(preEntityActionFactory.getEntityPreAction(Conversation.class), postEntityActionFactory.getEntityPostAction(Conversation.class));
 		this.endpointVisitor = endpointVisitor;
-		timeOfEventFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Conversation.class, "timeOfEvent");
-		timeOfInterceptionFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Conversation.class, "timeOfInterception");
-		durationInSecondsFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Conversation.class, "durationInSeconds");
-		primaryLocationFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Conversation.class, "primaryLocation");
-		secondaryLocationFieldAction = simpleFieldActionFactory.getSimpleFieldAction(Conversation.class, "secondaryLocation");
+		timeOfEventFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Conversation.class, "timeOfEvent");
+		timeOfInterceptionFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Conversation.class, "timeOfInterception");
+		durationInSecondsFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Conversation.class, "durationInSeconds");
+		primaryLocationFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Conversation.class, "primaryLocation");
+		secondaryLocationFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Conversation.class, "secondaryLocation");
 		primaryFieldPreAction = preFieldActionFactory.getFieldPreAction(Conversation.class, "primary");
 		primaryFieldPostAction = postFieldActionFactory.getFieldPostAction(Conversation.class, "primary");
 		secondaryFieldPreAction = preFieldActionFactory.getFieldPreAction(Conversation.class, "secondary");
@@ -44,14 +44,14 @@ public class ConversationVisitor<CONTEXT_TYPE extends VisitingContext> extends S
 
 	@Override
 	public void visitEntity(Conversation entity, CONTEXT_TYPE context) {
-		timeOfEventFieldAction.performSimpleFieldAction(entity, context);
-		timeOfInterceptionFieldAction.performSimpleFieldAction(entity, context);
-		durationInSecondsFieldAction.performSimpleFieldAction(entity, context);
+		timeOfEventFieldAction.performFieldSimpleAction(entity, context);
+		timeOfInterceptionFieldAction.performFieldSimpleAction(entity, context);
+		durationInSecondsFieldAction.performFieldSimpleAction(entity, context);
 		if (entity.primaryLocation != null) {
-			primaryLocationFieldAction.performSimpleFieldAction(entity, context);
+			primaryLocationFieldAction.performFieldSimpleAction(entity, context);
 		}
 		if (entity.secondaryLocation != null) {
-			secondaryLocationFieldAction.performSimpleFieldAction(entity, context);
+			secondaryLocationFieldAction.performFieldSimpleAction(entity, context);
 		}
 		if (entity.primary != null) {
 			primaryFieldPreAction.performFieldPreAction(entity, context);

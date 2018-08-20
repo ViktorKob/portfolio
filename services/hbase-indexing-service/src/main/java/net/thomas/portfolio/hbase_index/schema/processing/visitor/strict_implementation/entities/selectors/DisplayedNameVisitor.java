@@ -14,11 +14,11 @@ public class DisplayedNameVisitor<CONTEXT_TYPE extends VisitingContext> extends 
 	public DisplayedNameVisitor(VisitorEntityPreActionFactory<CONTEXT_TYPE> preEntityActionFactory,
 			VisitorEntityPostActionFactory<CONTEXT_TYPE> postEntityActionFactory, VisitorFieldSimpleActionFactory<CONTEXT_TYPE> fieldActionFactory) {
 		super(preEntityActionFactory.getEntityPreAction(DisplayedName.class), postEntityActionFactory.getEntityPostAction(DisplayedName.class));
-		nameFieldAction = fieldActionFactory.getSimpleFieldAction(DisplayedName.class, "name");
+		nameFieldAction = fieldActionFactory.getFieldSimpleAction(DisplayedName.class, "name");
 	}
 
 	@Override
 	protected void visitEntity(DisplayedName entity, CONTEXT_TYPE context) {
-		nameFieldAction.performSimpleFieldAction(entity, context);
+		nameFieldAction.performFieldSimpleAction(entity, context);
 	}
 }
