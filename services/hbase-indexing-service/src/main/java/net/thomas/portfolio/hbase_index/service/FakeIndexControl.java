@@ -38,6 +38,7 @@ public class FakeIndexControl implements IndexControl {
 	private final int populationCount;
 	private final int averageRelationCount;
 	private final int averageCommunicationCount;
+	private final String storageRootPath;
 
 	@Autowired
 	public FakeIndexControl(final HbaseIndexingServiceConfiguration config) {
@@ -45,6 +46,7 @@ public class FakeIndexControl implements IndexControl {
 		populationCount = config.getPopulationCount();
 		averageRelationCount = config.getAverageRelationCount();
 		averageCommunicationCount = config.getAverageCommunicationCount();
+		storageRootPath = config.getStorageRootPath();
 		initialized = false;
 	}
 
@@ -64,14 +66,15 @@ public class FakeIndexControl implements IndexControl {
 
 	private synchronized void initialize() {
 		if (!initialized) {
-			final WorldIoControl worldControl = new WorldIoControl();
+			final WorldIoControl worldControl = new WorldIoControl(storageRootPath);
 			if (!worldControl.canImportWorld()) {
 				buildAndExportWorld(worldControl, randomSeed);
 			}
 			setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
 			final WorldAccess world = worldControl.getWorldAccess();
 			index(world);
-			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
+			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class)
+					.describeSchema();
 			initialized = true;
 		}
 	}
