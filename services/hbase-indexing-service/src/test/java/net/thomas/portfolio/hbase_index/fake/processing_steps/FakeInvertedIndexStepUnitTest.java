@@ -41,6 +41,7 @@ public class FakeInvertedIndexStepUnitTest {
 		new FakeWorldGenerator(1234L, 5, 10, 10).generateAndWrite((EventWriter) events);
 		index = new FakeHbaseIndex();
 		index.setEventReader(events);
+		index.addEntitiesAndChildren(events);
 		invertedIndexStep = new FakeInvertedIndexStep();
 		invertedIndexStep.executeAndUpdateIndex(events, index);
 	}
@@ -50,8 +51,7 @@ public class FakeInvertedIndexStepUnitTest {
 		for (final Event event : events) {
 			final Set<SelectorEntity> selectors = selectorExtractor.extract(event);
 			for (final SelectorEntity selector : selectors) {
-				assertTrue("Could not find matching event using " + selector + " with " + event,
-						hasMatchingEvent(event, selector));
+				assertTrue("Could not find matching event using " + selector + " with " + event, hasMatchingEvent(event, selector));
 			}
 		}
 	}

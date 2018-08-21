@@ -43,8 +43,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
-		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>()
-				.setEntityPostActionFactory(createActionFactory()).build();
+		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>().setEntityPostActionFactory(createActionFactory()).build();
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
@@ -58,7 +57,6 @@ public class FakeHbaseIndex implements HbaseIndex {
 
 	public void setEventReader(final EventReader events) {
 		this.events = events;
-		addEntitiesAndChildren(events);
 	}
 
 	public void addEntitiesAndChildren(final Iterable<Event> entities) {
@@ -70,8 +68,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private VisitorEntityPostActionFactory<BlankVisitingContext> createActionFactory() {
 		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = new VisitorEntityPostActionFactory<BlankVisitingContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(
-					final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(final Class<T> entityClass) {
 				if (!Event.class.isAssignableFrom(entityClass)) {
 					return (entity, context) -> {
 						addEntity(entity);
@@ -124,13 +121,11 @@ public class FakeHbaseIndex implements HbaseIndex {
 	@Override
 	public DocumentInfos invertedIndexLookup(final DataTypeId selectorId, final Indexable indexable) {
 		final List<EntityId> eventIds = invertedIndex.getEventUids(selectorId.uid, indexable.path);
-		return new DocumentInfos(eventIds.stream().map(eventId -> (Event) getEntity(eventId))
-				.map(entity -> extractInfo(entity)).collect(toList()));
+		return new DocumentInfos(eventIds.stream().map(eventId -> (Event) getEntity(eventId)).map(entity -> extractInfo(entity)).collect(toList()));
 	}
 
 	private DocumentInfo extractInfo(final Event event) {
-		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent,
-				event.timeOfInterception);
+		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent, event.timeOfInterception);
 	}
 
 	@Override

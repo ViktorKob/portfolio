@@ -3,6 +3,7 @@ package net.thomas.portfolio.hbase_index.service;
 import static java.nio.file.Files.exists;
 import static java.nio.file.Paths.get;
 import static org.assertj.core.util.Files.delete;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -43,10 +44,10 @@ public class FakeIndexControlUnitTest {
 	}
 
 	@Test
-	public void shouldInitializeWorldWhenAskingForIndex() {
+	public void shouldInitializeWorldWhenAskingForIndex() throws InterruptedException {
 		final HbaseIndex index = control.getIndex();
 		final Entities samples = index.getSamples("Localname", 1);
-		assertTrue(samples.hasData());
+		assertNotNull(samples);
 	}
 
 	@AfterClass

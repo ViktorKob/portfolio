@@ -34,30 +34,28 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 	private SelectorStatistics generateSelectorStatistics(final Iterable<Event> events) {
 		final SelectorStatistics statistics = new SelectorStatistics();
 		final StrictEntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
+		System.out.println("Starting selector statistics step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event event : events) {
 			counter.visit(event, new EventContext(event));
 			eventCount++;
 		}
-		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: "
-				+ (currentTimeMillis() - stamp) / 1000);
+		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 		return statistics;
 	}
 
 	private StrictEntityHierarchyVisitor<EventContext> buildCounter(final SelectorStatistics statistics) {
-		return new StrictEntityHierarchyVisitorBuilder<EventContext>()
-				.setEntityPostActionFactory(createActionFactory(statistics)).build();
+		return new StrictEntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics)).build();
 	}
 
 	private VisitorEntityPostActionFactory<EventContext> createActionFactory(final SelectorStatistics statistics) {
-		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(asList(EmailEndpoint.class,
-				CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
+		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(
+				asList(EmailEndpoint.class, CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
 
 		final VisitorEntityPostActionFactory<EventContext> actionFactory = new VisitorEntityPostActionFactory<EventContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(
-					final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(final Class<T> entityClass) {
 				if (blankActionEntities.contains(entityClass)) {
 					return (entity, context) -> {
 					};

@@ -45,20 +45,18 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 	}
 
 	private StrictEntityHierarchyVisitor<PathContext> buildIndexer(final InvertedIndex invertedIndex) {
-		return new StrictEntityHierarchyVisitorBuilder<PathContext>()
-				.setEntityPostActionFactory(createEntityPostActionFactory(invertedIndex))
-				.setFieldPreActionFactory(createFieldPreActionFactory(invertedIndex)).build();
+		return new StrictEntityHierarchyVisitorBuilder<PathContext>().setEntityPostActionFactory(createEntityPostActionFactory(invertedIndex))
+				.setFieldPreActionFactory(createFieldPreActionFactory(invertedIndex))
+				.build();
 	}
 
-	private VisitorEntityPostActionFactory<PathContext> createEntityPostActionFactory(
-			final InvertedIndex invertedIndex) {
-		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(asList(EmailEndpoint.class,
-				CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
+	private VisitorEntityPostActionFactory<PathContext> createEntityPostActionFactory(final InvertedIndex invertedIndex) {
+		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(
+				asList(EmailEndpoint.class, CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
 
 		final VisitorEntityPostActionFactory<PathContext> actionFactory = new VisitorEntityPostActionFactory<PathContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, PathContext> getEntityPostAction(
-					final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, PathContext> getEntityPostAction(final Class<T> entityClass) {
 				if (blankActionEntities.contains(entityClass)) {
 					return (entity, context) -> {
 					};
@@ -73,20 +71,19 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 	}
 
 	private void indexEvents(final Iterable<Event> events, final StrictEntityHierarchyVisitor<PathContext> traversal) {
+		System.out.println("Starting inverted index step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event event : events) {
 			traversal.visit(event, new PathContext(event));
 			eventCount++;
 		}
-		System.out.println("Seconds spend building inverted index for " + eventCount + " events: "
-				+ (currentTimeMillis() - stamp) / 1000);
+		System.out.println("Seconds spend building inverted index for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 	}
 
 	private VisitorFieldPreActionFactory<PathContext> createFieldPreActionFactory(final InvertedIndex invertedIndex) {
 		final Map<Class<? extends Entity>, Map<String, String>> pathMappings = new HashMap<>();
-		for (final Class<? extends Entity> entityClass : new HashSet<>(
-				asList(Email.class, TextMessage.class, Conversation.class))) {
+		for (final Class<? extends Entity> entityClass : new HashSet<>(asList(Email.class, TextMessage.class, Conversation.class))) {
 			pathMappings.put(entityClass, new HashMap<>());
 			for (final Field field : entityClass.getFields()) {
 				if (field.getAnnotation(IndexablePath.class) != null) {
@@ -99,8 +96,7 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 		return new VisitorFieldPreActionFactory<PathContext>() {
 			// TODO[Thomas]: Consider a path stack solution instead
 			@Override
-			public <T extends Entity> VisitorFieldPreAction<T, PathContext> getFieldPreAction(
-					final Class<T> entityClass, final String field) {
+			public <T extends Entity> VisitorFieldPreAction<T, PathContext> getFieldPreAction(final Class<T> entityClass, final String field) {
 				if (pathMappings.containsKey(entityClass) && pathMappings.get(entityClass).containsKey(field)) {
 					final String path = pathMappings.get(entityClass).get(field);
 					return (entity, context) -> {
