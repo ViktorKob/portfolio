@@ -11,7 +11,6 @@ import org.junit.Test;
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.FakeWorldStorage;
 import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
-import net.thomas.portfolio.hbase_index.fake.world.storage.EventWriter;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.processing.utils.SelectorExtractor;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
@@ -28,9 +27,10 @@ public class FakeSelectorStatisticsStepUnitTest {
 	public void setUpForTest() {
 		selectorExtractor = new SelectorExtractor();
 		events = new FakeWorldStorage();
-		new FakeWorldGenerator(1234L, 5, 10, 10).generateAndWrite((EventWriter) events);
+		new FakeWorldGenerator(1234L, 5, 10, 10).generateAndWrite(events);
 		index = new FakeHbaseIndex();
 		index.setEventReader(events);
+		index.addEntitiesAndChildren(events);
 		selectorStatisticsStep = new FakeSelectorStatisticsStep();
 		selectorStatisticsStep.executeAndUpdateIndex(events, index);
 	}
@@ -40,8 +40,7 @@ public class FakeSelectorStatisticsStepUnitTest {
 		for (final Event event : events) {
 			final Set<SelectorEntity> selectors = selectorExtractor.extract(event);
 			for (final SelectorEntity selector : selectors) {
-				assertTrue("Could not find statistics for event using " + selector + " with " + event,
-						0 < getStatisticsCount(selector));
+				assertTrue("Could not find statistics for event using " + selector + " with " + event, 0 < getStatisticsCount(selector));
 			}
 		}
 	}

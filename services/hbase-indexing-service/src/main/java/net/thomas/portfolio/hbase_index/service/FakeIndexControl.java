@@ -1,9 +1,5 @@
 package net.thomas.portfolio.hbase_index.service;
 
-import static java.util.Arrays.asList;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -11,11 +7,9 @@ import org.springframework.stereotype.Component;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.events.IndexControl;
-import net.thomas.portfolio.hbase_index.fake.events.ProcessingStep;
 import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
 import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeInvertedIndexStep;
 import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeSelectorStatisticsStep;
-import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.fake.world.storage.EventDiskReader;
 import net.thomas.portfolio.hbase_index.fake.world.storage.EventDiskWriter;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
@@ -28,11 +22,9 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 @Component
 @Scope("singleton")
 public class FakeIndexControl implements IndexControl {
-
 	private HbaseIndexSchema schema;
 	private HbaseIndex index;
 
-	private List<ProcessingStep> indexSteps;
 	private boolean initialized;
 	private final long randomSeed;
 	private final int populationCount;
@@ -66,35 +58,33 @@ public class FakeIndexControl implements IndexControl {
 
 	private synchronized void initialize() {
 		if (!initialized) {
-			EventDiskReader events = new EventDiskReader(storageRootPath);
-			if (!events.canRead()) {
-				buildAndExportWorld(new EventDiskWriter(storageRootPath), randomSeed);
-			}
-			setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
-			index(events);
-			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class)
-					.describeSchema();
+			final EventDiskReader events = new EventDiskReader(storageRootPath);
+			index = startBuildingIndex(events);
+			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
 			initialized = true;
 		}
 	}
 
-	private void buildAndExportWorld(final EventDiskWriter worldWriter, final long randomSeed) {
-		final FakeWorldGenerator world = new FakeWorldGenerator(randomSeed, populationCount, averageRelationCount,
-				averageCommunicationCount);
-		world.generateAndWrite(worldWriter);
-	}
-
-	public void setIndexSteps(final List<ProcessingStep> indexSteps) {
-		this.indexSteps = indexSteps;
-	}
-
-	@Override
-	public synchronized void index(final EventReader events) {
+	private FakeHbaseIndex startBuildingIndex(final EventDiskReader events) {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
 		index.setEventReader(events);
-		for (final ProcessingStep step : indexSteps) {
-			step.executeAndUpdateIndex(events, index);
+		new Thread(() -> {
+			processEventsIntoIndex(events, index);
+		}).start();
+		return index;
+	}
+
+	private void processEventsIntoIndex(final EventDiskReader events, final FakeHbaseIndex index) {
+		if (!events.canRead()) {
+			buildAndExportWorld(new EventDiskWriter(storageRootPath), randomSeed);
 		}
-		this.index = index;
+		index.addEntitiesAndChildren(events);
+		new FakeInvertedIndexStep().executeAndUpdateIndex(events, index);
+		new FakeSelectorStatisticsStep().executeAndUpdateIndex(events, index);
+	}
+
+	private void buildAndExportWorld(final EventDiskWriter worldWriter, final long randomSeed) {
+		final FakeWorldGenerator world = new FakeWorldGenerator(randomSeed, populationCount, averageRelationCount, averageCommunicationCount);
+		world.generateAndWrite(worldWriter);
 	}
 }

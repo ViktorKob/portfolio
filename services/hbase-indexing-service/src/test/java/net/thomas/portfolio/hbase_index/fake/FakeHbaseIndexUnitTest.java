@@ -56,6 +56,7 @@ public class FakeHbaseIndexUnitTest {
 		statistics = mock(SelectorStatistics.class);
 		index = new FakeHbaseIndex();
 		index.setEventReader(events);
+		index.addEntitiesAndChildren(events);
 		index.setInvertedIndex(invertedIndex);
 		index.setSelectorStatistics(statistics);
 	}
@@ -92,9 +93,8 @@ public class FakeHbaseIndexUnitTest {
 	public void shouldPickSampleAtRandomWhenPossible() {
 		final Entities entities = index.getSamples(getClassSimpleName(SOME_EMAIL.from), 1);
 		final String sampleUid = getFirst(entities).getId().uid;
-		assertTrue(
-				SOME_EMAIL_ENDPOINT.uid.equals(sampleUid) || EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME.uid.equals(sampleUid)
-						|| EMAIL_ENDPOINT_MISSING_ADDRESS.uid.equals(sampleUid));
+		assertTrue(SOME_EMAIL_ENDPOINT.uid.equals(sampleUid) || EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME.uid.equals(sampleUid)
+				|| EMAIL_ENDPOINT_MISSING_ADDRESS.uid.equals(sampleUid));
 	}
 
 	@Test
@@ -112,8 +112,7 @@ public class FakeHbaseIndexUnitTest {
 
 	@Test
 	public void shouldLookupSelectorInInvertedIndex() {
-		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
-				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
+		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any())).thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
 		final DocumentInfos infos = index.invertedIndexLookup(idFor(SOME_LOCALNAME), new StubbedIndexable());
 		assertEquals(SOME_EMAIL.uid, getFirst(infos).getId().uid);
 	}
