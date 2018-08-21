@@ -10,14 +10,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.hbase_index.fake.FakeWorld;
+import net.thomas.portfolio.hbase_index.fake.events.IndexControl;
+import net.thomas.portfolio.hbase_index.fake.events.ProcessingStep;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
 import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeInvertedIndexStep;
 import net.thomas.portfolio.hbase_index.fake.processing_steps.FakeSelectorStatisticsStep;
-import net.thomas.portfolio.hbase_index.fake.world.IndexControl;
-import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
-import net.thomas.portfolio.hbase_index.fake.world.World;
-import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
-import net.thomas.portfolio.hbase_index.fake.world.WorldIoControl;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventDiskReader;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventDiskWriter;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
@@ -66,22 +66,22 @@ public class FakeIndexControl implements IndexControl {
 
 	private synchronized void initialize() {
 		if (!initialized) {
-			final WorldIoControl worldControl = new WorldIoControl(storageRootPath);
-			if (!worldControl.canImportWorld()) {
-				buildAndExportWorld(worldControl, randomSeed);
+			EventDiskReader events = new EventDiskReader(storageRootPath);
+			if (!events.canRead()) {
+				buildAndExportWorld(new EventDiskWriter(storageRootPath), randomSeed);
 			}
 			setIndexSteps(asList(new FakeInvertedIndexStep(), new FakeSelectorStatisticsStep()));
-			final WorldAccess world = worldControl.getWorldAccess();
-			index(world);
+			index(events);
 			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class)
 					.describeSchema();
 			initialized = true;
 		}
 	}
 
-	private void buildAndExportWorld(final WorldIoControl worldControl, final long randomSeed) {
-		final World world = new FakeWorld(randomSeed, populationCount, averageRelationCount, averageCommunicationCount);
-		worldControl.exportWorld(world);
+	private void buildAndExportWorld(final EventDiskWriter worldWriter, final long randomSeed) {
+		final FakeWorldGenerator world = new FakeWorldGenerator(randomSeed, populationCount, averageRelationCount,
+				averageCommunicationCount);
+		world.generateAndWrite(worldWriter);
 	}
 
 	public void setIndexSteps(final List<ProcessingStep> indexSteps) {
@@ -89,11 +89,11 @@ public class FakeIndexControl implements IndexControl {
 	}
 
 	@Override
-	public synchronized void index(final WorldAccess world) {
+	public synchronized void index(final EventReader events) {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
-		index.setWorldAccess(world);
+		index.setEventReader(events);
 		for (final ProcessingStep step : indexSteps) {
-			step.executeAndUpdateIndex(world, index);
+			step.executeAndUpdateIndex(events, index);
 		}
 		this.index = index;
 	}

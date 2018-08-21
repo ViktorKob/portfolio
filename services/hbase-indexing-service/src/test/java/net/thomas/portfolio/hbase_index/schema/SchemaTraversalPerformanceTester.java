@@ -5,13 +5,14 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.averagingLong;
 import static java.util.stream.Collectors.joining;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.fake.FakeWorld;
+import net.thomas.portfolio.hbase_index.fake.FakeWorldStorage;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.schema.SchemaTraversalPerformanceTester.TestContext;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
@@ -47,18 +48,23 @@ import net.thomas.portfolio.hbase_index.schema.processing.visitor.naive_reflecti
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 
 public class SchemaTraversalPerformanceTester
-		implements VisitorFieldSimpleActionFactory<TestContext>, VisitorEntityPreActionFactory<TestContext>, VisitorEntityPostActionFactory<TestContext>,
-		VisitorFieldPreActionFactory<TestContext>, VisitorFieldPostActionFactory<TestContext>, VisitorGenericFieldSimpleActionFactory<TestContext>,
-		VisitorGenericEntityPreActionFactory<TestContext>, VisitorGenericEntityPostActionFactory<TestContext>, VisitorGenericFieldPreActionFactory<TestContext>,
-		VisitorGenericFieldPostActionFactory<TestContext>, VisitorFieldSimpleAction<Entity, TestContext>, VisitorEntityPreAction<Entity, TestContext>,
-		VisitorEntityPostAction<Entity, TestContext>, VisitorFieldPreAction<Entity, TestContext>, VisitorFieldPostAction<Entity, TestContext>,
-		VisitorNaiveFieldPreAction<Entity, TestContext>, VisitorNaiveFieldSimpleAction<Entity, TestContext>, VisitorNaiveFieldPostAction<Entity, TestContext> {
+		implements VisitorFieldSimpleActionFactory<TestContext>, VisitorEntityPreActionFactory<TestContext>,
+		VisitorEntityPostActionFactory<TestContext>, VisitorFieldPreActionFactory<TestContext>,
+		VisitorFieldPostActionFactory<TestContext>, VisitorGenericFieldSimpleActionFactory<TestContext>,
+		VisitorGenericEntityPreActionFactory<TestContext>, VisitorGenericEntityPostActionFactory<TestContext>,
+		VisitorGenericFieldPreActionFactory<TestContext>, VisitorGenericFieldPostActionFactory<TestContext>,
+		VisitorFieldSimpleAction<Entity, TestContext>, VisitorEntityPreAction<Entity, TestContext>,
+		VisitorEntityPostAction<Entity, TestContext>, VisitorFieldPreAction<Entity, TestContext>,
+		VisitorFieldPostAction<Entity, TestContext>, VisitorNaiveFieldPreAction<Entity, TestContext>,
+		VisitorNaiveFieldSimpleAction<Entity, TestContext>, VisitorNaiveFieldPostAction<Entity, TestContext> {
 
 	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException {
 		final int iterations = 10;
 		final TestCase[] testCases = buildTestCases();
-		final FakeWorld world = new FakeWorld(1234l, 200, 15, 2000);
-		runTestCases(world, iterations, testCases);
+		final FakeWorldGenerator world = new FakeWorldGenerator(1234l, 200, 15, 2000);
+		FakeWorldStorage storage = new FakeWorldStorage();
+		world.generateAndWrite(storage);
+		runTestCases(storage, iterations, testCases);
 		printResults(testCases);
 		printCountsWereIdentical(testCases);
 	}
@@ -68,38 +74,36 @@ public class SchemaTraversalPerformanceTester
 		final EntityVisitor<TestContext> strictVisitor = buildManuallyImplementedAlgorithm(tester);
 		final EntityVisitor<TestContext> cachedReflectionVisitor = buildCachedReflectionBasedAlgorithm(tester);
 		final EntityVisitor<TestContext> naiveReflectionVisitor = buildNaiveReflectionBasedAlgorithm(tester);
-		return new TestCase[] { new TestCase("Direct implementation", strictVisitor), new TestCase("Cached reflection based", cachedReflectionVisitor),
+		return new TestCase[] { new TestCase("Direct implementation", strictVisitor),
+				new TestCase("Cached reflection based", cachedReflectionVisitor),
 				new TestCase("Naive reflection based", naiveReflectionVisitor) };
 	}
 
-	private static EntityVisitor<TestContext> buildManuallyImplementedAlgorithm(final SchemaTraversalPerformanceTester tester) {
+	private static EntityVisitor<TestContext> buildManuallyImplementedAlgorithm(
+			final SchemaTraversalPerformanceTester tester) {
 		return new StrictEntityHierarchyVisitorBuilder<TestContext>().setEntityPreActionFactory(tester)
-			.setEntityPostActionFactory(tester)
-			.setFieldPreActionFactory(tester)
-			.setFieldSimpleActionFactory(tester)
-			.setFieldPostActionFactory(tester)
-			.build();
+				.setEntityPostActionFactory(tester).setFieldPreActionFactory(tester).setFieldSimpleActionFactory(tester)
+				.setFieldPostActionFactory(tester).build();
 	}
 
 	@SuppressWarnings("unchecked")
-	private static EntityVisitor<TestContext> buildCachedReflectionBasedAlgorithm(final SchemaTraversalPerformanceTester tester) {
-		return new CachedReflectionBasedEntityVisitorBuilder<TestContext>(asSet(Email.class, TextMessage.class, Conversation.class))
-			.setEntityPreActionFactory(tester)
-			.setEntityPostActionFactory(tester)
-			.setFieldPreActionFactory(tester)
-			.setFieldSimpleActionFactory(tester)
-			.setFieldPostActionFactory(tester)
-			.build();
+	private static EntityVisitor<TestContext> buildCachedReflectionBasedAlgorithm(
+			final SchemaTraversalPerformanceTester tester) {
+		return new CachedReflectionBasedEntityVisitorBuilder<TestContext>(
+				asSet(Email.class, TextMessage.class, Conversation.class)).setEntityPreActionFactory(tester)
+						.setEntityPostActionFactory(tester).setFieldPreActionFactory(tester)
+						.setFieldSimpleActionFactory(tester).setFieldPostActionFactory(tester).build();
 	}
 
-	private static EntityVisitor<TestContext> buildNaiveReflectionBasedAlgorithm(final SchemaTraversalPerformanceTester tester) {
+	private static EntityVisitor<TestContext> buildNaiveReflectionBasedAlgorithm(
+			final SchemaTraversalPerformanceTester tester) {
 		return new NaiveRelectionBasedEntityVisitor<>(tester, tester, tester, tester, tester);
 	}
 
-	private static void runTestCases(final FakeWorld world, final int iterations, final TestCase[] testCases) {
+	private static void runTestCases(final EventReader events, final int iterations, final TestCase[] testCases) {
 		for (int i = 0; i < iterations; i++) {
 			for (int j = 0; j < testCases.length; j++) {
-				testCases[j].executeOn(world.getEvents());
+				testCases[j].executeOn(events);
 			}
 		}
 	}
@@ -144,7 +148,7 @@ public class SchemaTraversalPerformanceTester
 			results = new LinkedList<>();
 		}
 
-		public void executeOn(Collection<Event> events) {
+		public void executeOn(Iterable<Event> events) {
 			final long stamp = nanoTime();
 			for (final Event entity : events) {
 				visitor.visit(entity, context);
@@ -153,12 +157,9 @@ public class SchemaTraversalPerformanceTester
 		}
 
 		public void printResults() {
-			System.out.println("Time spend on " + name + " (" + results.size() + " runs): [" + results.stream()
-				.map(time -> time / 1000000.0)
-				.map(String::valueOf)
-				.collect(joining(", ")) + "] millis, average: "
-					+ results.stream()
-						.collect(averagingLong(Long::longValue)) / 1000000.0
+			System.out.println("Time spend on " + name + " (" + results.size() + " runs): ["
+					+ results.stream().map(time -> time / 1000000.0).map(String::valueOf).collect(joining(", "))
+					+ "] millis, average: " + results.stream().collect(averagingLong(Long::longValue)) / 1000000.0
 					+ " millis.");
 		}
 	}
@@ -180,9 +181,10 @@ public class SchemaTraversalPerformanceTester
 
 		@Override
 		public String toString() {
-			return "TestContext [entityPreInvocationCount=" + entityPreInvocationCount + ", entityPostInvocationCount=" + entityPostInvocationCount
-					+ ", fieldPreInvocationCount=" + fieldPreInvocationCount + ", fieldPostInvocationCount=" + fieldPostInvocationCount
-					+ ", fieldSimpleInvocationCount=" + fieldSimpleInvocationCount + "]";
+			return "TestContext [entityPreInvocationCount=" + entityPreInvocationCount + ", entityPostInvocationCount="
+					+ entityPostInvocationCount + ", fieldPreInvocationCount=" + fieldPreInvocationCount
+					+ ", fieldPostInvocationCount=" + fieldPostInvocationCount + ", fieldSimpleInvocationCount="
+					+ fieldSimpleInvocationCount + "]";
 		}
 	}
 
@@ -197,17 +199,20 @@ public class SchemaTraversalPerformanceTester
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldPreAction<T, TestContext> getFieldPreAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPreAction<T, TestContext> getFieldPreAction(Class<T> entityClass,
+			String field) {
 		return this::performFieldPreAction;
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldSimpleAction<T, TestContext> getFieldSimpleAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldSimpleAction<T, TestContext> getFieldSimpleAction(Class<T> entityClass,
+			String field) {
 		return this::performFieldSimpleAction;
 	}
 
 	@Override
-	public <T extends Entity> VisitorFieldPostAction<T, TestContext> getFieldPostAction(Class<T> entityClass, String field) {
+	public <T extends Entity> VisitorFieldPostAction<T, TestContext> getFieldPostAction(Class<T> entityClass,
+			String field) {
 		return this::performFieldPostAction;
 	}
 
@@ -236,17 +241,20 @@ public class SchemaTraversalPerformanceTester
 		context.fieldSimpleInvocationCount++;
 	}
 
-	private static Set<Class<? extends Event>> asSet(@SuppressWarnings("unchecked") Class<? extends Event>... eventClasses) {
+	private static Set<Class<? extends Event>> asSet(
+			@SuppressWarnings("unchecked") Class<? extends Event>... eventClasses) {
 		return new HashSet<>(asList(eventClasses));
 	}
 
 	@Override
-	public VisitorGenericFieldPostAction<TestContext> getGenericFieldPostAction(Class<? extends Entity> entityClass, String field) {
+	public VisitorGenericFieldPostAction<TestContext> getGenericFieldPostAction(Class<? extends Entity> entityClass,
+			String field) {
 		return this::performFieldPostAction;
 	}
 
 	@Override
-	public VisitorGenericFieldPreAction<TestContext> getGenericFieldPreAction(Class<? extends Entity> entityClass, String field) {
+	public VisitorGenericFieldPreAction<TestContext> getGenericFieldPreAction(Class<? extends Entity> entityClass,
+			String field) {
 		return this::performFieldPreAction;
 	}
 
@@ -261,7 +269,8 @@ public class SchemaTraversalPerformanceTester
 	}
 
 	@Override
-	public VisitorGenericFieldSimpleAction<TestContext> getGenericSimpleFieldAction(Class<? extends Entity> entityClass, String field) {
+	public VisitorGenericFieldSimpleAction<TestContext> getGenericSimpleFieldAction(Class<? extends Entity> entityClass,
+			String field) {
 		return this::performFieldSimpleAction;
 	}
 

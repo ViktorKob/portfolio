@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -20,7 +21,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 public class FakeIndexControlUnitTest {
 	@BeforeClass
 	public static void setUpFileSystem() throws IOException {
-		final Path outputFolder = get("data");
+		final Path outputFolder = get(STORAGE_ROOT);
 		delete(outputFolder.toFile());
 		if (exists(outputFolder)) {
 			throw new RuntimeException("Unable to delete folder from disk for test: " + outputFolder.toAbsolutePath());
@@ -48,12 +49,18 @@ public class FakeIndexControlUnitTest {
 		assertTrue(samples.hasData());
 	}
 
+	@AfterClass
+	public static void tearDownFolder() {
+		delete(get(STORAGE_ROOT).toFile());
+	}
+
+	private static final String STORAGE_ROOT = "fake_index_control_test";
 	private static final HbaseIndexingServiceConfiguration CONFIG = new HbaseIndexingServiceConfiguration();
 	static {
 		CONFIG.setRandomSeed(1234L);
 		CONFIG.setPopulationCount(10);
 		CONFIG.setAverageRelationCount(5);
 		CONFIG.setAverageCommunicationCount(20);
-		CONFIG.setStorageRootPath("fake_index_contron_test");
+		CONFIG.setStorageRootPath(STORAGE_ROOT);
 	}
 }

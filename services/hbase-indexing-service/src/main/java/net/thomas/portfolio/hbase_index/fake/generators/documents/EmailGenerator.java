@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.EventGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.meta.EmailEndpoint;

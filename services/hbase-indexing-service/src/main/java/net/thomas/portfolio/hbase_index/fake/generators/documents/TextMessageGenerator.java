@@ -2,8 +2,8 @@ package net.thomas.portfolio.hbase_index.fake.generators.documents;
 
 import java.util.List;
 
-import net.thomas.portfolio.hbase_index.fake.FakeWorld.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.EventGenerator;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator.Person;
 import net.thomas.portfolio.hbase_index.fake.generators.primitives.StringGenerator;
 import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.meta.CommunicationEndpoint;
