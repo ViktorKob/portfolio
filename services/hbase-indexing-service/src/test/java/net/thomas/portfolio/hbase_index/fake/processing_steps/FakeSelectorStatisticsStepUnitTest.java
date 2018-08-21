@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.hbase_index.fake.FakeWorld;
+import net.thomas.portfolio.hbase_index.fake.FakeWorldStorage;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventWriter;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.processing.utils.SelectorExtractor;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
@@ -17,7 +19,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class FakeSelectorStatisticsStepUnitTest {
-	private FakeWorld world;
+	private FakeWorldStorage events;
 	private FakeHbaseIndex index;
 	private SelectorExtractor selectorExtractor;
 	private FakeSelectorStatisticsStep selectorStatisticsStep;
@@ -25,19 +27,21 @@ public class FakeSelectorStatisticsStepUnitTest {
 	@Before
 	public void setUpForTest() {
 		selectorExtractor = new SelectorExtractor();
-		world = new FakeWorld(1234L, 5, 10, 10);
+		events = new FakeWorldStorage();
+		new FakeWorldGenerator(1234L, 5, 10, 10).generateAndWrite((EventWriter) events);
 		index = new FakeHbaseIndex();
-		index.setWorldAccess(new FakeWorldAccess(world));
+		index.setEventReader(events);
 		selectorStatisticsStep = new FakeSelectorStatisticsStep();
-		selectorStatisticsStep.executeAndUpdateIndex(new FakeWorldAccess(world), index);
+		selectorStatisticsStep.executeAndUpdateIndex(events, index);
 	}
 
 	@Test
 	public void shouldContainStatisticsForAllSelectors() {
-		for (final Event event : world.getEvents()) {
+		for (final Event event : events) {
 			final Set<SelectorEntity> selectors = selectorExtractor.extract(event);
 			for (final SelectorEntity selector : selectors) {
-				assertTrue("Could not find statistics for event using " + selector + " with " + event, 0 < getStatisticsCount(selector));
+				assertTrue("Could not find statistics for event using " + selector + " with " + event,
+						0 < getStatisticsCount(selector));
 			}
 		}
 	}

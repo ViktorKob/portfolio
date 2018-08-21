@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.hbase_index.fake.world.ProcessingStep;
-import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
+import net.thomas.portfolio.hbase_index.fake.events.ProcessingStep;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
@@ -27,8 +27,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeSelectorStatisticsStep implements ProcessingStep {
 	@Override
-	public void executeAndUpdateIndex(final WorldAccess world, final HbaseIndex partiallyConstructedIndex) {
-		((FakeHbaseIndex) partiallyConstructedIndex).setSelectorStatistics(generateSelectorStatistics(world));
+	public void executeAndUpdateIndex(final EventReader events, final HbaseIndex partiallyConstructedIndex) {
+		((FakeHbaseIndex) partiallyConstructedIndex).setSelectorStatistics(generateSelectorStatistics(events));
 	}
 
 	private SelectorStatistics generateSelectorStatistics(final Iterable<Event> events) {
@@ -40,21 +40,24 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 			counter.visit(event, new EventContext(event));
 			eventCount++;
 		}
-		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
+		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: "
+				+ (currentTimeMillis() - stamp) / 1000);
 		return statistics;
 	}
 
 	private StrictEntityHierarchyVisitor<EventContext> buildCounter(final SelectorStatistics statistics) {
-		return new StrictEntityHierarchyVisitorBuilder<EventContext>().setEntityPostActionFactory(createActionFactory(statistics)).build();
+		return new StrictEntityHierarchyVisitorBuilder<EventContext>()
+				.setEntityPostActionFactory(createActionFactory(statistics)).build();
 	}
 
 	private VisitorEntityPostActionFactory<EventContext> createActionFactory(final SelectorStatistics statistics) {
-		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(
-				asList(EmailEndpoint.class, CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
+		final Set<Class<? extends Entity>> blankActionEntities = new HashSet<>(asList(EmailEndpoint.class,
+				CommunicationEndpoint.class, Email.class, TextMessage.class, Conversation.class));
 
 		final VisitorEntityPostActionFactory<EventContext> actionFactory = new VisitorEntityPostActionFactory<EventContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, EventContext> getEntityPostAction(
+					final Class<T> entityClass) {
 				if (blankActionEntities.contains(entityClass)) {
 					return (entity, context) -> {
 					};

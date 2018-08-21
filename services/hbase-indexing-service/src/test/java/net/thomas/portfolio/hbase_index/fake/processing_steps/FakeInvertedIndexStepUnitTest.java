@@ -9,7 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
-import net.thomas.portfolio.hbase_index.fake.FakeWorld;
+import net.thomas.portfolio.hbase_index.fake.FakeWorldStorage;
+import net.thomas.portfolio.hbase_index.fake.generators.FakeWorldGenerator;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventWriter;
 import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
@@ -25,28 +28,30 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
 public class FakeInvertedIndexStepUnitTest {
 	private HbaseIndexSchema schema;
-	private FakeWorld world;
 	private FakeHbaseIndex index;
 	private SelectorExtractor selectorExtractor;
 	private FakeInvertedIndexStep invertedIndexStep;
+	private EventReader events;
 
 	@Before
 	public void setUpForTest() {
 		schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
 		selectorExtractor = new SelectorExtractor();
-		world = new FakeWorld(1234L, 5, 10, 10);
+		events = new FakeWorldStorage();
+		new FakeWorldGenerator(1234L, 5, 10, 10).generateAndWrite((EventWriter) events);
 		index = new FakeHbaseIndex();
-		index.setWorldAccess(new FakeWorldAccess(world));
+		index.setEventReader(events);
 		invertedIndexStep = new FakeInvertedIndexStep();
-		invertedIndexStep.executeAndUpdateIndex(new FakeWorldAccess(world), index);
+		invertedIndexStep.executeAndUpdateIndex(events, index);
 	}
 
 	@Test
 	public void shouldContainIndexForWorld() {
-		for (final Event event : world.getEvents()) {
+		for (final Event event : events) {
 			final Set<SelectorEntity> selectors = selectorExtractor.extract(event);
 			for (final SelectorEntity selector : selectors) {
-				assertTrue("Could not find matching event using " + selector + " with " + event, hasMatchingEvent(event, selector));
+				assertTrue("Could not find matching event using " + selector + " with " + event,
+						hasMatchingEvent(event, selector));
 			}
 		}
 	}

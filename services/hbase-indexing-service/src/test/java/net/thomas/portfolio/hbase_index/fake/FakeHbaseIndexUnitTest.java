@@ -27,7 +27,7 @@ import java.util.Iterator;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.EntityId;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
@@ -42,20 +42,20 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 
 public class FakeHbaseIndexUnitTest {
-	private WorldAccess world;
+	private EventReader events;
 	private FakeHbaseIndex index;
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics statistics;
 
 	@Before
 	public void setUpForTest() {
-		world = mock(WorldAccess.class);
-		when(world.iterator()).thenReturn(iteratorWith(SOME_EMAIL));
-		when(world.getEvent(eq(SOME_EMAIL.uid))).thenReturn(SOME_EMAIL);
+		events = mock(EventReader.class);
+		when(events.iterator()).thenReturn(iteratorWith(SOME_EMAIL));
+		when(events.getEvent(eq(SOME_EMAIL.uid))).thenReturn(SOME_EMAIL);
 		invertedIndex = mock(InvertedIndex.class);
 		statistics = mock(SelectorStatistics.class);
 		index = new FakeHbaseIndex();
-		index.setWorldAccess(world);
+		index.setEventReader(events);
 		index.setInvertedIndex(invertedIndex);
 		index.setSelectorStatistics(statistics);
 	}
@@ -92,8 +92,9 @@ public class FakeHbaseIndexUnitTest {
 	public void shouldPickSampleAtRandomWhenPossible() {
 		final Entities entities = index.getSamples(getClassSimpleName(SOME_EMAIL.from), 1);
 		final String sampleUid = getFirst(entities).getId().uid;
-		assertTrue(SOME_EMAIL_ENDPOINT.uid.equals(sampleUid) || EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME.uid.equals(sampleUid)
-				|| EMAIL_ENDPOINT_MISSING_ADDRESS.uid.equals(sampleUid));
+		assertTrue(
+				SOME_EMAIL_ENDPOINT.uid.equals(sampleUid) || EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME.uid.equals(sampleUid)
+						|| EMAIL_ENDPOINT_MISSING_ADDRESS.uid.equals(sampleUid));
 	}
 
 	@Test
@@ -104,14 +105,15 @@ public class FakeHbaseIndexUnitTest {
 
 	@Test
 	public void shouldContainReferencesWhenAdded() {
-		when(world.getReferences(eq(SOME_EMAIL.uid))).thenReturn(REFERENCES_FOR_SOME_EMAIL);
+		when(events.getReferences(eq(SOME_EMAIL.uid))).thenReturn(REFERENCES_FOR_SOME_EMAIL);
 		final References references = index.getReferences(idFor(SOME_EMAIL));
 		assertSame(REFERENCES_FOR_SOME_EMAIL, references);
 	}
 
 	@Test
 	public void shouldLookupSelectorInInvertedIndex() {
-		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any())).thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
+		when(invertedIndex.getEventUids(eq(SOME_LOCALNAME.uid), any()))
+				.thenReturn(singletonList(entityIdFor(SOME_EMAIL)));
 		final DocumentInfos infos = index.invertedIndexLookup(idFor(SOME_LOCALNAME), new StubbedIndexable());
 		assertEquals(SOME_EMAIL.uid, getFirst(infos).getId().uid);
 	}

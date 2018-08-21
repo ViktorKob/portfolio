@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.thomas.portfolio.hbase_index.fake.world.WorldAccess;
+import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.EntityId;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
@@ -37,13 +37,14 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private final Map<String, Map<String, Entity>> storage;
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics selectorStatistics;
-	private WorldAccess world;
 	private final Entity2DataTypeConverter entity2DataTypeConverter;
 	private final EntityVisitor<BlankVisitingContext> entityExtractor;
+	private EventReader events;
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
-		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>().setEntityPostActionFactory(createActionFactory()).build();
+		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>()
+				.setEntityPostActionFactory(createActionFactory()).build();
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
@@ -55,9 +56,9 @@ public class FakeHbaseIndex implements HbaseIndex {
 		this.selectorStatistics = selectorStatistics;
 	}
 
-	public void setWorldAccess(final WorldAccess world) {
-		this.world = world;
-		addEntitiesAndChildren(world);
+	public void setEventReader(final EventReader events) {
+		this.events = events;
+		addEntitiesAndChildren(events);
 	}
 
 	public void addEntitiesAndChildren(final Iterable<Event> entities) {
@@ -69,7 +70,8 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private VisitorEntityPostActionFactory<BlankVisitingContext> createActionFactory() {
 		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = new VisitorEntityPostActionFactory<BlankVisitingContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(
+					final Class<T> entityClass) {
 				if (!Event.class.isAssignableFrom(entityClass)) {
 					return (entity, context) -> {
 						addEntity(entity);
@@ -107,7 +109,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 				return typeStorage.get(uid);
 			}
 		} else {
-			final Event event = world.getEvent(uid);
+			final Event event = events.getEvent(uid);
 			if (event != null) {
 				return event;
 			}
@@ -122,11 +124,13 @@ public class FakeHbaseIndex implements HbaseIndex {
 	@Override
 	public DocumentInfos invertedIndexLookup(final DataTypeId selectorId, final Indexable indexable) {
 		final List<EntityId> eventIds = invertedIndex.getEventUids(selectorId.uid, indexable.path);
-		return new DocumentInfos(eventIds.stream().map(eventId -> (Event) getEntity(eventId)).map(entity -> extractInfo(entity)).collect(toList()));
+		return new DocumentInfos(eventIds.stream().map(eventId -> (Event) getEntity(eventId))
+				.map(entity -> extractInfo(entity)).collect(toList()));
 	}
 
 	private DocumentInfo extractInfo(final Event event) {
-		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent, event.timeOfInterception);
+		return new DocumentInfo(new DataTypeId(event.getClass().getSimpleName(), event.uid), event.timeOfEvent,
+				event.timeOfInterception);
 	}
 
 	@Override
@@ -136,7 +140,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 
 	@Override
 	public References getReferences(final DataTypeId documentId) {
-		return world.getReferences(documentId.uid);
+		return events.getReferences(documentId.uid);
 	}
 
 	@Override
