@@ -58,6 +58,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +94,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 
 /***
- * These tests are currently all being kept in the same class to encourage running them before checking in. The class has a startup time of around 7 seconds
- * while each test takes less than 10 ms. Splitting it up would slow down the test suite considerably so I chose speed over separation here.
+ * These tests are currently all being kept in the same class to encourage running them before
+ * checking in. The class has a startup time of around 7 seconds while each test takes less than 10
+ * ms. Splitting it up would slow down the test suite considerably so I chose speed over separation
+ * here.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
@@ -483,16 +486,21 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	// *** UsageActivitiesMutator
 	// ***************************************
-	// @Test
-	// public void shouldStoreUsageActivity() {
-	// final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-	// when(usageAdaptor.storeUsageActivity(eq(someId), eq(SOME_USAGE_ACTIVITY))).thenReturn(SOME_USAGE_ACTIVITY);
-	// queryBuilder.addVariable("uid", someId.uid);
-	// queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
-	//
-	// assertEquals(SOME_USAGE_ACTIVITY.type.name(), executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data",
-	// DOCUMENT_TYPE, "usageActivities", "activityType"));
-	// }
+	@Test
+	@Ignore("Still being implemented")
+	public void shouldStoreUsageActivity() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		when(usageAdaptor.storeUsageActivity(eq(someId), eq(SOME_USAGE_ACTIVITY))).thenReturn(SOME_USAGE_ACTIVITY);
+
+		queryBuilder.markAsMutation();
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.addVariable("activityType", SOME_USAGE_ACTIVITY.type.name());
+		queryBuilder.addVariable("user", SOME_USER);
+		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
+
+		assertEquals(SOME_USAGE_ACTIVITY.type.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType"));
+	}
 
 	private void assertUidInSomeEntityOfTypeEqualsUid(final String dataTypeType) {
 		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
@@ -552,11 +560,11 @@ public class NexusServiceControllerServiceAdaptorTest {
 	private Object lookupFirstValidReponseElement(Map<String, Object> response, String... path) {
 		try {
 			Object result = response;
-			for (int i = 0; i < path.length; i++) {
+			for (final String element : path) {
 				while (result instanceof List) {
 					result = ((List<?>) result).get(0);
 				}
-				result = ((Map<String, Object>) result).get(path[i]);
+				result = ((Map<String, Object>) result).get(element);
 			}
 			return result;
 		} catch (final Exception e) {
@@ -565,8 +573,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	private DataTypeId firstId(List<DocumentInfo> list) {
-		return list.get(0)
-			.getId();
+		return list.get(0).getId();
 	}
 
 	private void assertIsEmpty(List<?> list) {
