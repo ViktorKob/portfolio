@@ -1,6 +1,8 @@
 package net.thomas.portfolio.nexus.service.test_utils;
 
 import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder.QueryType.MUTATION;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder.QueryType.QUERY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,35 +14,47 @@ import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 public class GraphQlQueryBuilder {
+	private QueryType type;
 	private final Map<String, String> variables;
 	private String query;
 
 	public GraphQlQueryBuilder() {
 		variables = new HashMap<>();
+		type = QUERY;
+	}
+
+	public void markAsMutation() {
+		type = MUTATION;
 	}
 
 	public GraphQlQueryBuilder setNothingToFieldValueQuery(String dataType, String fieldPath) {
-		query = "query test{" + dataType + "{" + fieldPath + "}}";
+		query = "test{" + dataType + "{" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setUidToFieldValueQuery(String dataType, String fieldPath) {
-		query = "query test($uid:String){" + dataType + "(uid:$uid) {" + fieldPath + "}}";
+		query = "test($uid:String){" + dataType + "(uid:$uid) {" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setUidAndUserToFieldValueQuery(String dataType, String fieldPath) {
-		query = "query test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user) {" + fieldPath + "}}";
+		query = "test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user) {" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldPath) {
-		query = "query test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
+		query = "test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
+		return this;
+	}
+
+	public GraphQlQueryBuilder setUidActivityAndDocumentTypeToUsageActivityMutation(String documentType, String fieldPath) {
+		query = "test($uid: String!,$activityType: String!,$user: String){" + documentType + "(uid:$uid) {add(user:$user,activityType:$activityType){"
+				+ fieldPath + "}}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setSuggestionsToSelectorsQuery() {
-		query = "query test($simpleRepresentation:String!){suggest(simpleRep:$simpleRepresentation){uid}}";
+		query = " test($simpleRepresentation:String!){suggest(simpleRep:$simpleRepresentation){uid}}";
 		return this;
 	}
 
@@ -50,6 +64,15 @@ public class GraphQlQueryBuilder {
 	}
 
 	public ParameterGroup build() {
+		switch (type) {
+			case MUTATION:
+			query = "mutation " + query;
+				break;
+			case QUERY:
+			default:
+			query = "query " + query;
+				break;
+		}
 		return asGroup(new PreSerializedParameter("query", query), new PreSerializedParameter("operationName", "test"), jsonParameter("variables", variables));
 	}
 
@@ -59,5 +82,10 @@ public class GraphQlQueryBuilder {
 		} catch (final JsonProcessingException e) {
 			throw new RuntimeException("Parameter creation failed", e);
 		}
+	}
+
+	enum QueryType {
+		QUERY,
+		MUTATION;
 	}
 }
