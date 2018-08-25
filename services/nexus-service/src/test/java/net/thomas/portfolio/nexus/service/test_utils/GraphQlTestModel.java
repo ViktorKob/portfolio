@@ -70,7 +70,7 @@ public class GraphQlTestModel {
 	public static Map<String, Fields> TYPE_FIELDS = new HashMap<>();
 	private static int idSeed = 0;
 
-	public static void setUpHbaseAdaptorMock(HbaseIndexModelAdaptor adaptor) {
+	public static void setUpHbaseAdaptorMock(final HbaseIndexModelAdaptor adaptor) {
 		when(adaptor.getDataTypes()).thenReturn(DATA_TYPES);
 		setUpFields(adaptor);
 		setUpDocuments(adaptor);
@@ -79,7 +79,7 @@ public class GraphQlTestModel {
 		setUpEntities(adaptor);
 	}
 
-	private static void setUpFields(HbaseIndexModelAdaptor adaptor) {
+	private static void setUpFields(final HbaseIndexModelAdaptor adaptor) {
 		setFieldsForType(DOCUMENT_TYPE, timestamp("timestamp"));
 		setFieldsForType(SIMPLE_TYPE, string("string"), strings("strings"), integer("integer"), integer("long"), decimal("decimal"), timestamp("timestamp"),
 				geoLocation("geoLocation"));
@@ -102,7 +102,7 @@ public class GraphQlTestModel {
 		TYPE_FIELDS.put(type, builder.build());
 	}
 
-	private static void setUpDocuments(HbaseIndexModelAdaptor adaptor) {
+	private static void setUpDocuments(final HbaseIndexModelAdaptor adaptor) {
 		when(adaptor.getDocumentTypes()).thenReturn(DOCUMENT_TYPES);
 		final List<DocumentInfo> documentInfos = new LinkedList<>();
 		for (final String type : DOCUMENT_TYPES) {
@@ -113,7 +113,7 @@ public class GraphQlTestModel {
 		SOME_DOCUMENT_INFOS.setInfos(documentInfos);
 	}
 
-	private static void setUpSelectors(HbaseIndexModelAdaptor adaptor) {
+	private static void setUpSelectors(final HbaseIndexModelAdaptor adaptor) {
 		when(adaptor.getSelectorTypes()).thenReturn(SELECTOR_TYPES);
 		for (final String type : SELECTOR_TYPES) {
 			when(adaptor.isSelector(type)).thenReturn(true);
@@ -128,21 +128,18 @@ public class GraphQlTestModel {
 		}
 	}
 
-	public static final DataTypeId EXAMPLE_ID(String type) {
-		final String uid = new Hasher().add(type.getBytes())
-			.add(String.valueOf(idSeed++)
-				.getBytes())
-			.digest();
+	public static final DataTypeId EXAMPLE_ID(final String type) {
+		final String uid = new Hasher().add(type.getBytes()).add(String.valueOf(idSeed++).getBytes()).digest();
 		return new DataTypeId(type, uid);
 	}
 
-	private static void setUpEntities(HbaseIndexModelAdaptor adaptor) {
+	private static void setUpEntities(final HbaseIndexModelAdaptor adaptor) {
 		setUpDocument(adaptor);
 		final DataType simpleTypeEntity = setUpSimpleEntity(adaptor);
 		setUpComplexEntity(adaptor, simpleTypeEntity);
 	}
 
-	private static void setUpDocument(HbaseIndexModelAdaptor adaptor) {
+	private static void setUpDocument(final HbaseIndexModelAdaptor adaptor) {
 		final DataTypeId id = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		final Document entity = new Document(id);
 		entity.setTimeOfEvent(SOME_TIMESTAMP);
@@ -151,7 +148,7 @@ public class GraphQlTestModel {
 		when(adaptor.getDataType(id)).thenReturn(entity);
 	}
 
-	private static DataType setUpSimpleEntity(HbaseIndexModelAdaptor adaptor) {
+	private static DataType setUpSimpleEntity(final HbaseIndexModelAdaptor adaptor) {
 		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		final DataType simpleTypeEntity = new Selector(simpleTypeId);
 		simpleTypeEntity.put("string", SOME_STRING);
@@ -165,7 +162,7 @@ public class GraphQlTestModel {
 		return simpleTypeEntity;
 	}
 
-	private static void setUpComplexEntity(HbaseIndexModelAdaptor adaptor, DataType simpleTypeEntity) {
+	private static void setUpComplexEntity(final HbaseIndexModelAdaptor adaptor, final DataType simpleTypeEntity) {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		final DataType complexTypeEntity = new Selector(complexTypeId);
 		complexTypeEntity.put("simpleType", simpleTypeEntity);
