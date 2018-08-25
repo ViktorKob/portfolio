@@ -146,15 +146,25 @@ public class NexusServiceController {
 
 		@Override
 		protected List<GraphQLError> filterGraphQLErrors(final List<GraphQLError> errors) {
+
 			return errors.stream()
 					.filter(this::isClientError)
 					.map(error -> isClientException(error) ? new SanitizedError((ExceptionWhileDataFetching) error) : error)
+					.distinct()
 					.collect(toList());
 		}
 
 		private static class SanitizedError extends ExceptionWhileDataFetching {
 			public SanitizedError(final ExceptionWhileDataFetching error) {
 				super(rootPath(), error.getException(), null);
+			}
+
+			@Override
+			public boolean equals(final Object o) {
+				if (o instanceof SanitizedError) {
+					return getMessage().equals(((SanitizedError) o).getMessage());
+				}
+				return false;
 			}
 
 			@Override
