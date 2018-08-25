@@ -6,7 +6,12 @@ import graphql.GraphQLException;
 public class IllegalLookupException extends GraphQLException {
 	private static final long serialVersionUID = 1L;
 
-	public IllegalLookupException(String message) {
+	public IllegalLookupException(final String message) {
 		super(message);
+	}
+
+	@Override
+	public StackTraceElement[] getStackTrace() {
+		return new StackTraceElement[] { super.getStackTrace()[0] };
 	}
 }
