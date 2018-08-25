@@ -27,29 +27,29 @@ public class GraphQlQueryBuilder {
 		type = MUTATION;
 	}
 
-	public GraphQlQueryBuilder setNothingToFieldValueQuery(String dataType, String fieldPath) {
+	public GraphQlQueryBuilder setNothingToFieldValueQuery(final String dataType, final String fieldPath) {
 		query = "test{" + dataType + "{" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setUidToFieldValueQuery(String dataType, String fieldPath) {
+	public GraphQlQueryBuilder setUidToFieldValueQuery(final String dataType, final String fieldPath) {
 		query = "test($uid:String){" + dataType + "(uid:$uid) {" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setUidAndUserToFieldValueQuery(String dataType, String fieldPath) {
+	public GraphQlQueryBuilder setUidAndUserToFieldValueQuery(final String dataType, final String fieldPath) {
 		query = "test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user) {" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(String dataType, String fieldPath) {
+	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(final String dataType, final String fieldPath) {
 		query = "test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
 		return this;
 	}
 
-	public GraphQlQueryBuilder setUidActivityAndDocumentTypeToUsageActivityMutation(String documentType, String fieldPath) {
-		query = "test($uid: String!,$activityType: String!,$user: String){" + documentType + "(uid:$uid) {add(user:$user,activityType:$activityType){"
-				+ fieldPath + "}}}";
+	public GraphQlQueryBuilder setUidActivityAndDocumentTypeToUsageActivityMutation(final String documentType, final String fieldPath) {
+		query = "test($uid: String!,$activityType: String!,$user: String){usageActivity{" + documentType
+				+ "(uid:$uid) {add(user:$user,activityType:$activityType){" + fieldPath + "}}}}";
 		return this;
 	}
 
@@ -58,8 +58,8 @@ public class GraphQlQueryBuilder {
 		return this;
 	}
 
-	public GraphQlQueryBuilder addVariable(String name, String value) {
-		variables.put(name, value);
+	public GraphQlQueryBuilder addVariable(final String name, final Object value) {
+		variables.put(name, value.toString());
 		return this;
 	}
 
@@ -76,7 +76,7 @@ public class GraphQlQueryBuilder {
 		return asGroup(new PreSerializedParameter("query", query), new PreSerializedParameter("operationName", "test"), jsonParameter("variables", variables));
 	}
 
-	private PreSerializedParameter jsonParameter(String variable, Map<String, String> value) {
+	private PreSerializedParameter jsonParameter(final String variable, final Map<String, String> value) {
 		try {
 			return new PreSerializedParameter(variable, new ObjectMapper().writeValueAsString(value));
 		} catch (final JsonProcessingException e) {

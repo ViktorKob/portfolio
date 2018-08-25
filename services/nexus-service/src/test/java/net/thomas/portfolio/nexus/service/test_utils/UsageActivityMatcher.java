@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.service;
+package net.thomas.portfolio.nexus.service.test_utils;
 
 import org.mockito.ArgumentMatcher;
 
