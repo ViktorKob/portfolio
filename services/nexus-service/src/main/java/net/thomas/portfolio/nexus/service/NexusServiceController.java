@@ -1,6 +1,10 @@
 package net.thomas.portfolio.nexus.service;
 
+import static graphql.execution.ExecutionPath.rootPath;
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -10,6 +14,7 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.discovery.EurekaClient;
 
 import graphql.ExceptionWhileDataFetching;
@@ -52,7 +57,7 @@ public class NexusServiceController {
 	private RestTemplate restTemplate;
 	private Adaptors adaptors;
 
-	public NexusServiceController(NexusServiceConfiguration config) {
+	public NexusServiceController(final NexusServiceConfiguration config) {
 		this.config = config;
 	}
 
@@ -103,11 +108,11 @@ public class NexusServiceController {
 	private Adaptors buildCompositeAdaptors() {
 		final Adaptors.Builder builder = new Adaptors.Builder();
 		final Adaptors adaptors = builder.setAnalyticsAdaptor(analyticsAdaptor)
-			.setHbaseModelAdaptor(hbaseAdaptor)
-			.setLegalAdaptor(legalAdaptor)
-			.setRenderingAdaptor(renderingAdaptor)
-			.setUsageAdaptor(usageAdaptor)
-			.build();
+				.setHbaseModelAdaptor(hbaseAdaptor)
+				.setLegalAdaptor(legalAdaptor)
+				.setRenderingAdaptor(renderingAdaptor)
+				.setUsageAdaptor(usageAdaptor)
+				.build();
 		return adaptors;
 	}
 
@@ -121,11 +126,11 @@ public class NexusServiceController {
 
 	private static class CustomErrorHandler extends DefaultGraphQLErrorHandler {
 		@Override
-		protected boolean isClientError(GraphQLError error) {
+		protected boolean isClientError(final GraphQLError error) {
 			return isClientException(error) || super.isClientError(error);
 		}
 
-		private boolean isClientException(GraphQLError error) {
+		private boolean isClientException(final GraphQLError error) {
 			if (error instanceof ExceptionWhileDataFetching) {
 				return isClientException((ExceptionWhileDataFetching) error);
 			} else {
@@ -133,10 +138,30 @@ public class NexusServiceController {
 			}
 		}
 
-		private boolean isClientException(ExceptionWhileDataFetching error) {
+		private boolean isClientException(final ExceptionWhileDataFetching error) {
 			final Throwable exception = error.getException();
 			final Class<? extends Throwable> exceptionClass = exception.getClass();
 			return exceptionClass.isAnnotationPresent(ClientException.class);
+		}
+
+		@Override
+		protected List<GraphQLError> filterGraphQLErrors(final List<GraphQLError> errors) {
+			return errors.stream()
+					.filter(this::isClientError)
+					.map(error -> isClientException(error) ? new SanitizedError((ExceptionWhileDataFetching) error) : error)
+					.collect(toList());
+		}
+
+		private static class SanitizedError extends ExceptionWhileDataFetching {
+			public SanitizedError(final ExceptionWhileDataFetching error) {
+				super(rootPath(), error.getException(), null);
+			}
+
+			@Override
+			@JsonIgnore
+			public Throwable getException() {
+				return super.getException();
+			}
 		}
 	}
 }
