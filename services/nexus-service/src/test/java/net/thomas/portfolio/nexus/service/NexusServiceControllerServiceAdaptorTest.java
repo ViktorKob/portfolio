@@ -7,29 +7,31 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.joining;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.USER;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.COMPLEX_TYPE;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.DOCUMENT_TYPE;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.EXAMPLE_IDS;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.RAW_DATA_TYPE;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SIMPLE_TYPE;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DECIMAL;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_DOCUMENT_INFOS;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_DATE_ONLY_TIMESTAMP;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_FORMATTED_TIMESTAMP;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_GEO_LOCATION;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_HEADLINE;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_HTML;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_INTEGER;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_LONG_INTEGER;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_MISSING_UID;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_SIMPLE_REP;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_STRING;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_TIMESTAMP;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USAGE_ACTIVITIES;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USAGE_ACTIVITY;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.SOME_USER;
-import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestModel.setUpHbaseAdaptorMock;
-import static net.thomas.portfolio.nexus.service.test_utils.UsageActivityMatcher.matchesActivity;
+import static net.thomas.portfolio.nexus.service.test_utils.BoundMatcher.matches;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.COMPLEX_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.DOCUMENT_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.EXAMPLE_IDS;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.RAW_DATA_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SIMPLE_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_DECIMAL;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_DOCUMENT_INFOS;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_FORMATTED_DATE_ONLY_TIMESTAMP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_FORMATTED_TIMESTAMP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_GEO_LOCATION;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_HEADLINE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_HTML;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_INTEGER;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_LONG_INTEGER;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_MISSING_UID;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_SIMPLE_REP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_STRING;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_TIMESTAMP_VALUE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_USAGE_ACTIVITIES;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_USAGE_ACTIVITY;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_USAGE_ACTIVITY_TYPE;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_USER;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.setUpHbaseAdaptorMock;
+import static net.thomas.portfolio.nexus.service.test_utils.UsageActivityMatcher.matches;
 import static net.thomas.portfolio.services.Service.NEXUS_SERVICE;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
@@ -52,12 +54,14 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
 import static org.springframework.http.HttpMethod.GET;
 
+import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +95,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistic
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 
 /***
  * These tests are currently all being kept in the same class to encourage running them before
@@ -245,7 +250,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldLookupSelectorUidAndFetchTimestampField() {
-		final String expectedTimestamp = new DateConverter.Iec8601DateConverter().formatTimestamp(SOME_TIMESTAMP.getTimestamp());
+		final String expectedTimestamp = new DateConverter.Iec8601DateConverter().formatTimestamp(SOME_TIMESTAMP_VALUE);
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "timestamp");
@@ -282,12 +287,12 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldLookupDocumentUidAndFetchTimeOfEvent() {
-		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP.getTimestamp(), "timeOfEvent", "timestamp");
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP_VALUE, "timeOfEvent", "timestamp");
 	}
 
 	@Test
 	public void shouldLookupDocumentUidAndFetchTimeOfInterception() {
-		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP.getTimestamp(), "timeOfInterception", "timestamp");
+		assertFieldInSomeEntityOfTypeEqualsValue(DOCUMENT_TYPE, SOME_TIMESTAMP_VALUE, "timeOfInterception", "timestamp");
 	}
 
 	@Test
@@ -324,13 +329,13 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
 		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "headline");
 		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "headline"));
-		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity(SOME_USER, READ_DOCUMENT)));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches(SOME_USER, READ_DOCUMENT)));
 	}
 
 	@Test
 	public void shouldLookupDocumentUidAndStoreReadDocumentActivityWithUnspecifiedUserBeforeRenderingText() {
 		executeGraphQlLookupAndIgnoreResponse(DOCUMENT_TYPE, "headline");
-		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity("Unspecified user", READ_DOCUMENT)));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches("Unspecified user", READ_DOCUMENT)));
 	}
 
 	@Test
@@ -345,13 +350,13 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
 		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "html");
 		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "html"));
-		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity(SOME_USER, READ_DOCUMENT)));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches(SOME_USER, READ_DOCUMENT)));
 	}
 
 	@Test
 	public void shouldLookupDocumentUidAndStoreReadDocumentActivityWithUnspecifiedUserBeforeRenderingHtml() {
 		executeGraphQlLookupAndIgnoreResponse(DOCUMENT_TYPE, "html");
-		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matchesActivity("Unspecified user", READ_DOCUMENT)));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches("Unspecified user", READ_DOCUMENT)));
 	}
 
 	@Test
@@ -478,7 +483,53 @@ public class NexusServiceControllerServiceAdaptorTest {
 		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY.type.name(),
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	}
+
+	@Test
+	public void shouldFetchUsageActivitiesAfterDate() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("after"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
+		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(after:" + SOME_TIMESTAMP_VALUE + "){activityType}");
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	}
+
+	@Test
+	@Ignore("Working on it")
+	public void shouldFetchUsageActivitiesAfterFormattedDate() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("after"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
+		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(afterDate:\"" + SOME_FORMATTED_TIMESTAMP + "\"){activityType}");
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	}
+
+	@Test
+	public void shouldFetchUsageActivitiesBeforeDate() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("before"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
+		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(before:" + SOME_TIMESTAMP_VALUE + "){activityType}");
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
+				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	}
+
+	@Test
+	@Ignore("Working on it")
+	public void shouldFetchUsageActivitiesBeforeFormattedDate() {
+		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
+		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("before"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
+		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+		queryBuilder.addVariable("uid", someId.uid);
+		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(beforeDate:\"" + SOME_FORMATTED_TIMESTAMP + "\"){activityType}");
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
 				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
 	}
 
@@ -488,17 +539,17 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldStoreUsageActivity() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)))).thenReturn(SOME_USAGE_ACTIVITY);
+		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
 		executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
-		verify(usageAdaptor, times(1)).storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)));
+		verify(usageAdaptor, times(1)).storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)));
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectUser() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)))).thenReturn(SOME_USAGE_ACTIVITY);
+		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "user");
 		assertEquals(SOME_USAGE_ACTIVITY.user,
@@ -508,17 +559,17 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectActivityType() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)))).thenReturn(SOME_USAGE_ACTIVITY);
+		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
-		assertEquals(SOME_USAGE_ACTIVITY.type.name(),
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
 				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType"));
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectTimeOfActivity() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)))).thenReturn(SOME_USAGE_ACTIVITY);
+		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.addVariable("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "timeOfActivity");
@@ -529,7 +580,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectFormattedTimeOfActivity() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matchesActivity(SOME_USER, SOME_USAGE_ACTIVITY.type)))).thenReturn(SOME_USAGE_ACTIVITY);
+		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "formattedTimeOfActivity");
 		assertEquals(SOME_FORMATTED_TIMESTAMP,
@@ -539,7 +590,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	private void setupDefaultStoreUsageActivityCall(final DataTypeId someId) {
 		queryBuilder.markAsMutation();
 		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.addVariable("activityType", SOME_USAGE_ACTIVITY.type.name());
+		queryBuilder.addVariable("activityType", SOME_USAGE_ACTIVITY_TYPE.name());
 		queryBuilder.addVariable("user", SOME_USER);
 	}
 
@@ -610,6 +661,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 			return result;
 		} catch (final Exception e) {
 			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
+		}
+	}
+
+	private Field bound(final String fieldName) {
+		try {
+			return Bounds.class.getField(fieldName);
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException("Unable to locate field " + fieldName + " in Bounds");
 		}
 	}
 

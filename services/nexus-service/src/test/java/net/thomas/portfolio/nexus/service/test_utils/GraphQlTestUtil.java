@@ -38,17 +38,19 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iec8601DateConverter;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
-public class GraphQlTestModel {
+public class GraphQlTestUtil {
 	public static final String SOME_STRING = "some string";
 	public static final Integer SOME_INTEGER = 1;
 	public static final Long SOME_LONG_INTEGER = Long.MAX_VALUE;
 	public static final Double SOME_DECIMAL = 3.14;
 	public static final GeoLocation SOME_GEO_LOCATION = new GeoLocation(1.2, -1.2);
-	public static final Timestamp SOME_TIMESTAMP = new Timestamp(currentTimeMillis());
+	public static final Long SOME_TIMESTAMP_VALUE = currentTimeMillis();
+	public static final Timestamp SOME_TIMESTAMP = new Timestamp(SOME_TIMESTAMP_VALUE);
 	public static final Iec8601DateConverter DATE_CONVERTER = new DateConverter.Iec8601DateConverter();
-	public static final String SOME_FORMATTED_TIMESTAMP = DATE_CONVERTER.formatTimestamp(SOME_TIMESTAMP.getTimestamp());
-	public static final String SOME_FORMATTED_DATE_ONLY_TIMESTAMP = DATE_CONVERTER.formatDateTimestamp(SOME_TIMESTAMP.getTimestamp());
+	public static final String SOME_FORMATTED_TIMESTAMP = DATE_CONVERTER.formatTimestamp(SOME_TIMESTAMP_VALUE);
+	public static final String SOME_FORMATTED_DATE_ONLY_TIMESTAMP = DATE_CONVERTER.formatDateTimestamp(SOME_TIMESTAMP_VALUE);
 	public static final String SOME_HEADLINE = "headline";
 	public static final String SOME_HTML = "html";
 	public static final String SOME_USER = "SomeUser";
@@ -64,7 +66,8 @@ public class GraphQlTestModel {
 	public static final Collection<String> DOCUMENT_TYPES = asList(DOCUMENT_TYPE);
 	public static final Collection<String> SELECTOR_TYPES = asList(SIMPLE_TYPE, RECURSIVE_TYPE, COMPLEX_TYPE, NON_SIMPLE_REP_TYPE);
 	public static final DocumentInfos SOME_DOCUMENT_INFOS = new DocumentInfos(asList());
-	public static final UsageActivity SOME_USAGE_ACTIVITY = new UsageActivity(SOME_USER, ANALYSED_DOCUMENT, SOME_TIMESTAMP.getTimestamp());
+	public static final UsageActivityType SOME_USAGE_ACTIVITY_TYPE = ANALYSED_DOCUMENT;
+	public static final UsageActivity SOME_USAGE_ACTIVITY = new UsageActivity(SOME_USER, SOME_USAGE_ACTIVITY_TYPE, SOME_TIMESTAMP_VALUE);
 	public static final UsageActivities SOME_USAGE_ACTIVITIES = new UsageActivities();
 	public static Map<String, DataTypeId> EXAMPLE_IDS = new HashMap<>();
 	public static Map<String, Fields> TYPE_FIELDS = new HashMap<>();
