@@ -27,19 +27,11 @@ public class UsageDataServiceConfiguration {
 		private String user;
 		private String password;
 
-		public String getHost() {
-			return host;
-		}
-
-		public void setHost(String host) {
+		public void setHost(final String host) {
 			this.host = host;
 		}
 
-		public int getPort() {
-			return port;
-		}
-
-		public void setPort(int port) {
+		public void setPort(final int port) {
 			this.port = port;
 		}
 
@@ -47,7 +39,7 @@ public class UsageDataServiceConfiguration {
 			return schema;
 		}
 
-		public void setSchema(String schema) {
+		public void setSchema(final String schema) {
 			this.schema = schema;
 		}
 
@@ -55,7 +47,7 @@ public class UsageDataServiceConfiguration {
 			return user;
 		}
 
-		public void setUser(String user) {
+		public void setUser(final String user) {
 			this.user = user;
 		}
 
@@ -63,20 +55,20 @@ public class UsageDataServiceConfiguration {
 			return password;
 		}
 
-		public void setPassword(String password) {
+		public void setPassword(final String password) {
 			this.password = password;
 		}
 
-		public String getConnectionString(boolean withSchema) {
+		public String getConnectionString(final boolean withSchema) {
 			return "jdbc:mysql://" + host + ":" + port + (withSchema ? "/" + schema : "");
 		}
 	}
 
-	public void setHbaseIndexing(ServiceDependency hbaseIndexing) {
+	public void setHbaseIndexing(final ServiceDependency hbaseIndexing) {
 		this.hbaseIndexing = hbaseIndexing;
 	}
 
-	public void setDatabase(Database database) {
+	public void setDatabase(final Database database) {
 		this.database = database;
 	}
 }

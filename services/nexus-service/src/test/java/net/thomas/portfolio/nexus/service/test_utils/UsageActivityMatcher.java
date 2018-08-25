@@ -14,7 +14,7 @@ public class UsageActivityMatcher implements ArgumentMatcher<UsageActivity> {
 		this.activityType = activityType;
 	}
 
-	public static ArgumentMatcher<UsageActivity> matchesActivity(String userId, UsageActivityType activityType) {
+	public static ArgumentMatcher<UsageActivity> matches(String userId, UsageActivityType activityType) {
 		return new UsageActivityMatcher(userId, activityType);
 	}
 
