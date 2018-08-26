@@ -12,17 +12,18 @@ public class FormattedDateExtractor implements ArgumentExtractor {
 	private DateConverter dateConverter;
 
 	@Override
-	public void initialize(Adaptors adaptors) {
+	public void initialize(final Adaptors adaptors) {
 		dateConverter = adaptors.getIec8601DateConverter();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T extract(GraphQlArgument argument, DataFetchingEnvironment environment) {
+	public <T> T extract(final GraphQlArgument argument, final DataFetchingEnvironment environment) {
 		if (environment.containsArgument(argument.getName())) {
-			final String date = environment.getArgument(argument.getName());
+			String date = environment.getArgument(argument.getName());
+			date = date.replaceAll(" ", "+"); // TODO[Thomas]: Hack, due to + not being encoded by UriComponentsBuilder
 			try {
-				return (T) (Long) dateConverter.parseTimestamp(date);
+				return (T) (Long) dateConverter.parse(date);
 			} catch (final RuntimeException e) {
 				throw new GraphQLException("Unable to parse date " + date + " from argument " + argument.getName(), e);
 			}

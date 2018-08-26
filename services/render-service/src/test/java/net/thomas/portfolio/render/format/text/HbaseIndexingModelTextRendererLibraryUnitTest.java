@@ -34,18 +34,18 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iec8601DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iso8601DateConverter;
 
 public class HbaseIndexingModelTextRendererLibraryUnitTest {
 	private HbaseIndexingModelTextRendererLibrary library;
 	private TextRenderContextBuilder contextBuilder;
-	private Iec8601DateConverter converter;
+	private Iso8601DateConverter converter;
 
 	@Before
 	public void setUpForTest() {
 		library = new HbaseIndexingModelTextRendererLibrary();
 		contextBuilder = new TextRenderContextBuilder();
-		converter = new DateConverter.Iec8601DateConverter();
+		converter = new DateConverter.Iso8601DateConverter();
 	}
 
 	@Test
@@ -177,7 +177,7 @@ public class HbaseIndexingModelTextRendererLibraryUnitTest {
 		final RawDataType fromEndpoint = mockEmailEndpoint(null, emailAddress);
 		final Document document = mockEmail(ANOTHER_STRING, SOME_TIMESTAMP, fromEndpoint);
 		final String renderedEntity = library.render(document, contextBuilder.build());
-		assertTrue(renderedEntity, renderedEntity.contains(converter.formatTimestamp(SOME_TIMESTAMP.getTimestamp())));
+		assertTrue(renderedEntity, renderedEntity.contains(converter.format(SOME_TIMESTAMP.getTimestamp())));
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class HbaseIndexingModelTextRendererLibraryUnitTest {
 		final RawDataType fromEndpoint = mockCommunicationEndpoint(mockPublicId(ANOTHER_STRING), null);
 		final Document document = mockTextMessage(ANOTHER_STRING, SOME_TIMESTAMP, fromEndpoint);
 		final String renderedEntity = library.render(document, contextBuilder.build());
-		assertTrue(renderedEntity, renderedEntity.contains(converter.formatTimestamp(SOME_TIMESTAMP.getTimestamp())));
+		assertTrue(renderedEntity, renderedEntity.contains(converter.format(SOME_TIMESTAMP.getTimestamp())));
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class HbaseIndexingModelTextRendererLibraryUnitTest {
 		final RawDataType fromEndpoint = mockCommunicationEndpoint(mockPublicId(SOME_STRING), null);
 		final Document document = mockConversation(SOME_DURATION, SOME_TIMESTAMP, fromEndpoint);
 		final String renderedEntity = library.render(document, contextBuilder.build());
-		assertTrue(renderedEntity, renderedEntity.contains(converter.formatTimestamp(SOME_TIMESTAMP.getTimestamp())));
+		assertTrue(renderedEntity, renderedEntity.contains(converter.format(SOME_TIMESTAMP.getTimestamp())));
 	}
 
 	@Test
