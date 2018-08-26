@@ -61,7 +61,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,7 +249,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldLookupSelectorUidAndFetchTimestampField() {
-		final String expectedTimestamp = new DateConverter.Iec8601DateConverter().formatTimestamp(SOME_TIMESTAMP_VALUE);
+		final String expectedTimestamp = new DateConverter.Iso8601DateConverter().format(SOME_TIMESTAMP_VALUE);
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "timestamp");
@@ -499,7 +498,6 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	@Ignore("Working on it")
 	public void shouldFetchUsageActivitiesAfterFormattedDate() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("after"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
@@ -522,7 +520,6 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	@Ignore("Working on it")
 	public void shouldFetchUsageActivitiesBeforeFormattedDate() {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("before"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);

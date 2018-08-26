@@ -39,28 +39,30 @@ public class HttpRestClient {
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;
 
-	public HttpRestClient(EurekaClient discoveryClient, RestTemplate restTemplate, ServiceDependency serviceInfo) {
+	public HttpRestClient(final EurekaClient discoveryClient, final RestTemplate restTemplate, final ServiceDependency serviceInfo) {
 		this.discoveryClient = discoveryClient;
 		this.restTemplate = restTemplate;
 		this.serviceInfo = serviceInfo;
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType) {
+	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType) {
 		final URI request = buildUri(service, endpoint);
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType, ParameterGroup... parameters) {
+	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType,
+			final ParameterGroup... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, Class<T> responseType, Parameter... parameters) {
+	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType,
+			final Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		return execute(request, method, responseType);
 	}
 
-	private <T> T execute(final URI request, HttpMethod method, Class<T> responseType) {
+	private <T> T execute(final URI request, final HttpMethod method, final Class<T> responseType) {
 		try {
 			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
@@ -85,19 +87,19 @@ public class HttpRestClient {
 		}
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, ParameterizedTypeReference<T> responseType,
-			ParameterGroup... parameters) {
+	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method,
+			final ParameterizedTypeReference<T> responseType, final ParameterGroup... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(Service service, ServiceEndpoint endpoint, HttpMethod method, ParameterizedTypeReference<T> responseType,
-			Parameter... parameters) {
+	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method,
+			final ParameterizedTypeReference<T> responseType, final Parameter... parameters) {
 		final URI request = buildUri(service, endpoint, parameters);
 		return execute(request, method, responseType);
 	}
 
-	private <T> T execute(final URI request, HttpMethod method, ParameterizedTypeReference<T> responseType) {
+	private <T> T execute(final URI request, final HttpMethod method, final ParameterizedTypeReference<T> responseType) {
 		try {
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			if (OK.equals(response.getStatusCode())) {
@@ -121,42 +123,37 @@ public class HttpRestClient {
 		return new HttpEntity<>(headers);
 	}
 
-	private URI buildUri(Service serviceId, ServiceEndpoint endpoint) {
+	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint) {
 		return buildUri(serviceId, endpoint, emptySet());
 	}
 
-	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Parameter... parameters) {
+	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint, final Parameter... parameters) {
 		return buildUri(serviceId, endpoint, asList(parameters));
 	}
 
-	private URI buildUri(Service service, ServiceEndpoint endpoint, ParameterGroup... groups) {
-		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters)
-			.flatMap(Arrays::stream)
-			.collect(Collectors.toList());
+	private URI buildUri(final Service service, final ServiceEndpoint endpoint, final ParameterGroup... groups) {
+		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters).flatMap(Arrays::stream).collect(Collectors.toList());
 		return buildUri(service, endpoint, parameters);
 	}
 
-	private URI buildUri(Service serviceId, ServiceEndpoint endpoint, Collection<Parameter> parameters) {
+	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint, final Collection<Parameter> parameters) {
 		final InstanceInfo instanceInfo = getServiceInfo(serviceInfo.getName());
 		final String serviceUrl = instanceInfo.getHomePageUrl();
 		final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serviceUrl + buildResourceUrl(serviceId, endpoint));
 		addParametersToBuilder(builder, parameters);
-		return builder.build()
-			.encode()
-			.toUri();
+		return builder.build().encode().toUri();
 	}
 
-	private InstanceInfo getServiceInfo(String serviceName) {
+	private InstanceInfo getServiceInfo(final String serviceName) {
 		InstanceInfo instanceInfo = null;
 		int tries = 0;
 		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
 			try {
 				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
 			} catch (final RuntimeException e) {
-				if (e.getMessage()
-					.contains("No matches for the virtual host")) {
-					System.out
-						.println("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
+				if (e.getMessage().contains("No matches for the virtual host")) {
+					System.out.println(
+							"Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
 					try {
 						Thread.sleep(5000);
 					} catch (final InterruptedException e1) {
@@ -176,7 +173,7 @@ public class HttpRestClient {
 		return instanceInfo;
 	}
 
-	private void addParametersToBuilder(UriComponentsBuilder builder, Collection<Parameter> parameters) {
+	private void addParametersToBuilder(final UriComponentsBuilder builder, final Collection<Parameter> parameters) {
 		for (final Parameter parameter : parameters) {
 			if (parameter.getValue() != null) {
 				builder.queryParam(parameter.getName(), parameter.getValue());
@@ -184,7 +181,7 @@ public class HttpRestClient {
 		}
 	}
 
-	private String buildResourceUrl(Service serviceId, ServiceEndpoint endpoint) {
+	private String buildResourceUrl(final Service serviceId, final ServiceEndpoint endpoint) {
 		return serviceId.getContextPath() + endpoint.getContextPath();
 	}
 }

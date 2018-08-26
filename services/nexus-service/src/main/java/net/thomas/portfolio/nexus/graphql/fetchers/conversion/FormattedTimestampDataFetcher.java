@@ -37,9 +37,9 @@ public abstract class FormattedTimestampDataFetcher extends ModelDataFetcher<Str
 		if (timestamp == 0) {
 			return "Unknown";
 		} else if ("dateOnly".equals(detailLevel)) {
-			return dateFormatter.formatDateTimestamp(timestamp);
+			return dateFormatter.formatDate(timestamp);
 		} else {
-			return dateFormatter.formatTimestamp(timestamp);
+			return dateFormatter.format(timestamp);
 		}
 	}
 }
