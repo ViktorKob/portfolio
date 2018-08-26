@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.graphql.fetchers;
+package net.thomas.portfolio.nexus.graphql.exceptions;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

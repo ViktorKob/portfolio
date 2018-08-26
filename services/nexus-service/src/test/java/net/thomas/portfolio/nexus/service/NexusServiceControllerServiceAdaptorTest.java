@@ -1,13 +1,16 @@
 package net.thomas.portfolio.nexus.service;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
 import static java.util.Collections.reverse;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static java.util.stream.Collectors.joining;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.AFTER_DATE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.BEFORE_DATE;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.LIMIT;
+import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.OFFSET;
 import static net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument.USER;
-import static net.thomas.portfolio.nexus.service.test_utils.BoundMatcher.matches;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.COMPLEX_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.DOCUMENT_TYPE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.EXAMPLE_IDS;
@@ -21,8 +24,11 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_HEADLINE;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_HTML;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_INTEGER;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_INVALID_FORMATTED_TIMESTAMP;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_LIMIT;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_LONG_INTEGER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_MISSING_UID;
+import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_OFFSET;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_SIMPLE_REP;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_STRING;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_TIMESTAMP_VALUE;
@@ -32,7 +38,6 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME_USER;
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.setUpHbaseAdaptorMock;
 import static net.thomas.portfolio.nexus.service.test_utils.UsageActivityMatcher.matches;
-import static net.thomas.portfolio.services.Service.NEXUS_SERVICE;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
@@ -52,10 +57,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT;
-import static org.springframework.http.HttpMethod.GET;
 
-import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,15 +70,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder;
+import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryTestExecutionUtil;
+import net.thomas.portfolio.nexus.service.test_utils.UsageActivityTestUtil;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.LegalAdaptorImpl;
@@ -89,12 +91,10 @@ import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
-import net.thomas.portfolio.services.ServiceEndpoint;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 
 /***
  * These tests are currently all being kept in the same class to encourage running them before
@@ -106,12 +106,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false" })
 public class NexusServiceControllerServiceAdaptorTest {
-	private static final ServiceEndpoint GRAPHQL = () -> {
-		return "/graphql";
-	};
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("nexus-service", 18100);
-	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {
-	};
 
 	@TestConfiguration
 	static class HbaseServiceMockSetup {
@@ -143,14 +138,16 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Autowired
 	private RestTemplate restTemplate;
 	private HttpRestClient httpClient;
+	private GraphQlQueryTestExecutionUtil executionUtil;
 	private GraphQlQueryBuilder queryBuilder;
 
 	@Before
-	public void setupController() {
+	public void setupForTest() {
 		reset(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
+		executionUtil = new GraphQlQueryTestExecutionUtil(httpClient);
 		queryBuilder = new GraphQlQueryBuilder();
 	}
 
@@ -167,14 +164,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
 		queryBuilder.setSimpleRepToFieldValueQuery(SIMPLE_TYPE, "uid");
-		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
+		assertEquals(someId.uid, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "uid"));
 	}
 
 	@Test
 	public void shouldReturnErrorWhenSelectorNotPresent() {
 		queryBuilder.setNothingToFieldValueQuery(SIMPLE_TYPE, "uid");
 		assertContainsExpectedText("uid or simple representation must be specified",
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+				executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
@@ -183,14 +180,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "rawData");
 		final String expectedAnswer = new ObjectMapper().writeValueAsString(hbaseAdaptor.getDataType(someId));
-		assertEquals(expectedAnswer, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
+		assertEquals(expectedAnswer, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
 	}
 
 	@Test
 	public void shouldLookupSelectorByUidAndReturnNullWhenEntityIsMissing() throws JsonProcessingException {
 		queryBuilder.addVariable("uid", SOME_MISSING_UID);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "rawData");
-		assertNull(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
+		assertNull(executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "rawData"));
 	}
 
 	// ***************************************
@@ -201,7 +198,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "string");
-		assertEquals(SOME_STRING, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "string"));
+		assertEquals(SOME_STRING, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "string"));
 	}
 
 	@Test
@@ -209,7 +206,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "strings");
-		final List<Object> strings = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "strings");
+		final List<Object> strings = executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "strings");
 		assertEquals(SOME_STRING, strings.get(0));
 	}
 
@@ -218,7 +215,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "integer");
-		assertEquals(SOME_INTEGER, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "integer"));
+		assertEquals(SOME_INTEGER, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "integer"));
 	}
 
 	@Test
@@ -226,7 +223,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "long");
-		assertEquals(SOME_LONG_INTEGER, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "long"));
+		assertEquals(SOME_LONG_INTEGER, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "long"));
 	}
 
 	@Test
@@ -234,7 +231,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "decimal");
-		assertEquals(SOME_DECIMAL, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "decimal"));
+		assertEquals(SOME_DECIMAL, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "decimal"));
 	}
 
 	@Test
@@ -242,7 +239,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "geoLocation{longitude latitude}");
-		final Map<String, Object> response = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "geoLocation");
+		final Map<String, Object> response = executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "geoLocation");
 		assertEquals(SOME_GEO_LOCATION.longitude, response.get("longitude"));
 		assertEquals(SOME_GEO_LOCATION.latitude, response.get("latitude"));
 	}
@@ -253,7 +250,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "timestamp");
-		assertEquals(expectedTimestamp, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "timestamp"));
+		assertEquals(expectedTimestamp, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "timestamp"));
 	}
 
 	// ***************************************
@@ -265,7 +262,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.getSelectorSuggestions(eq(SOME_SIMPLE_REP))).thenReturn(singletonList(someId));
 		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
 		queryBuilder.setSuggestionsToSelectorsQuery();
-		assertEquals(someId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "suggest", "uid"));
+		assertEquals(someId.uid, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "suggest", "uid"));
 	}
 
 	// ***************************************
@@ -310,7 +307,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "formattedTimeOfEvent(detailLevel:\"dateOnly\")");
 		assertEquals(SOME_FORMATTED_DATE_ONLY_TIMESTAMP,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfEvent")));
+				executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfEvent")));
 	}
 
 	@Test
@@ -319,7 +316,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "formattedTimeOfInterception(detailLevel:\"dateOnly\")");
 		assertEquals(SOME_FORMATTED_DATE_ONLY_TIMESTAMP,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfInterception")));
+				executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "formattedTimeOfInterception")));
 	}
 
 	@Test
@@ -327,7 +324,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable(USER.getName(), SOME_USER);
 		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
 		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "headline");
-		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "headline"));
+		executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "headline"));
 		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches(SOME_USER, READ_DOCUMENT)));
 	}
 
@@ -348,7 +345,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable(USER.getName(), SOME_USER);
 		queryBuilder.addVariable("uid", EXAMPLE_IDS.get(DOCUMENT_TYPE).uid);
 		queryBuilder.setUidAndUserToFieldValueQuery(DOCUMENT_TYPE, "html");
-		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "html"));
+		executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(DOCUMENT_TYPE, "html"));
 		verify(usageAdaptor, times(1)).storeUsageActivity(eq(EXAMPLE_IDS.get(DOCUMENT_TYPE)), argThat(matches(SOME_USER, READ_DOCUMENT)));
 	}
 
@@ -373,7 +370,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(legalAdaptor.checkLegalityOfInvertedIndexLookup(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+		assertContainsExpectedText("must be justified", executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
@@ -383,7 +380,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(legalAdaptor.auditLogInvertedIndexLookup(eq(someId), any())).thenReturn(false);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events"));
+		assertIsEmpty(executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events"));
 	}
 
 	@Test
@@ -394,7 +391,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.lookupSelectorInInvertedIndex(any())).thenReturn(SOME_DOCUMENT_INFOS);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "events{uid}");
-		final Object result = executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
+		final Object result = executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "events", "uid");
 		assertEquals(firstId(SOME_DOCUMENT_INFOS.getInfos()).uid, result);
 	}
 
@@ -407,7 +404,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(legalAdaptor.checkLegalityOfStatisticsLookup(eq(someId), any())).thenReturn(ILLEGAL);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertContainsExpectedText("must be justified", executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
+		assertContainsExpectedText("must be justified", executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message"));
 	}
 
 	@Test
@@ -418,7 +415,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertEquals(0, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
+		assertEquals(0, (int) executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
 	}
 
 	@Test
@@ -429,7 +426,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(hbaseAdaptor.getStatistics(any())).thenReturn(new Statistics(singletonMap(INFINITY, 1l)));
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(SIMPLE_TYPE, "statistics{infinityTotal}");
-		assertEquals(1, (int) executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
+		assertEquals(1, (int) executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", SIMPLE_TYPE, "statistics", "infinityTotal"));
 	}
 
 	// ***************************************
@@ -441,7 +438,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "simpleType{uid}");
-		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "simpleType", "uid"));
+		assertEquals(simpleTypeId.uid, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "simpleType", "uid"));
 	}
 
 	@Test
@@ -449,7 +446,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingSimpleType{uid}");
-		assertNull(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingSimpleType"));
+		assertNull(executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingSimpleType"));
 	}
 
 	// ***************************************
@@ -461,7 +458,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId simpleTypeId = EXAMPLE_IDS.get(SIMPLE_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "arraySimpleType{uid}");
-		assertEquals(simpleTypeId.uid, executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "arraySimpleType", "uid"));
+		assertEquals(simpleTypeId.uid, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "arraySimpleType", "uid"));
 	}
 
 	@Test
@@ -469,7 +466,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId complexTypeId = EXAMPLE_IDS.get(COMPLEX_TYPE);
 		queryBuilder.addVariable("uid", complexTypeId.uid);
 		queryBuilder.setUidToFieldValueQuery(COMPLEX_TYPE, "missingArrayType{uid}");
-		assertIsEmpty(executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
+		assertIsEmpty(executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", COMPLEX_TYPE, "missingArrayType"));
 	}
 
 	// ***************************************
@@ -483,51 +480,57 @@ public class NexusServiceControllerServiceAdaptorTest {
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities{activityType}");
 		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+				executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	}
+
+	@Test
+	public void shouldFetchUsageActivitiesAfterOffset() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(OFFSET, SOME_OFFSET);
+	}
+
+	@Test
+	public void shouldFetchUsageActivitiesBeforeLimit() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(LIMIT, SOME_LIMIT);
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesAfterDate() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("after"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
-		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(after:" + SOME_TIMESTAMP_VALUE + "){activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(AFTER, SOME_TIMESTAMP_VALUE);
 	}
 
 	@Test
-	public void shouldFetchUsageActivitiesAfterFormattedDate() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("after"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
-		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(afterDate:\"" + SOME_FORMATTED_TIMESTAMP + "\"){activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	public void shouldFetchUsageActivitiesAfterFormattedDateTime() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(AFTER_DATE, SOME_FORMATTED_TIMESTAMP, AFTER, SOME_TIMESTAMP_VALUE);
 	}
 
 	@Test
-	public void shouldFetchUsageActivitiesBeforeDate() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("before"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
-		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(before:" + SOME_TIMESTAMP_VALUE + "){activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+	public void shouldReportMeaningfullErrorWhenAfterDateFormatIsInvalid() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		final String[] expectedFragments = new String[] { "Unable to parse", AFTER_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP };
+		util.assertThatFetchUsageActivityWithInvalidArgumentReturnErrorMessageFragments(AFTER_DATE, SOME_INVALID_FORMATTED_TIMESTAMP, expectedFragments);
+	}
+
+	@Test
+	public void shouldFetchUsageActivitiesBeforeDateTime() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(BEFORE, SOME_TIMESTAMP_VALUE);
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesBeforeFormattedDate() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.fetchUsageActivities(eq(someId), argThat(matches(bound("before"), SOME_TIMESTAMP_VALUE)))).thenReturn(SOME_USAGE_ACTIVITIES);
-		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidToFieldValueQuery(DOCUMENT_TYPE, "usageActivities(beforeDate:\"" + SOME_FORMATTED_TIMESTAMP + "\"){activityType}");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(BEFORE_DATE, SOME_FORMATTED_TIMESTAMP, BEFORE, SOME_TIMESTAMP_VALUE);
+	}
+
+	@Test
+	public void shouldReportMeaningfullErrorWhenBeforeDateFormatIsInvalid() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		final String[] expectedFragments = new String[] { "Unable to parse", BEFORE_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP };
+		util.assertThatFetchUsageActivityWithInvalidArgumentReturnErrorMessageFragments(BEFORE_DATE, SOME_INVALID_FORMATTED_TIMESTAMP, expectedFragments);
 	}
 
 	// ***************************************
@@ -535,60 +538,42 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	@Test
 	public void shouldStoreUsageActivity() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		setupDefaultStoreUsageActivityCall(someId);
+		util.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
-		executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
+		executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
 		verify(usageAdaptor, times(1)).storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)));
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectUser() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		setupDefaultStoreUsageActivityCall(someId);
-		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "user");
-		assertEquals(SOME_USAGE_ACTIVITY.user,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "user"));
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertDefaultMutationReturnsCorrectValueForField("user", SOME_USAGE_ACTIVITY.user);
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectActivityType() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		setupDefaultStoreUsageActivityCall(someId);
-		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType"));
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertDefaultMutationReturnsCorrectValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectTimeOfActivity() {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		setupDefaultStoreUsageActivityCall(someId);
-		queryBuilder.addVariable("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
-		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "timeOfActivity");
-		assertEquals(SOME_USAGE_ACTIVITY.timeOfActivity,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "timeOfActivity"));
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
+		util.assertDefaultMutationReturnsCorrectValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectFormattedTimeOfActivity() {
+		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		setupDefaultStoreUsageActivityCall(someId);
+		util.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "formattedTimeOfActivity");
-		assertEquals(SOME_FORMATTED_TIMESTAMP,
-				executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "formattedTimeOfActivity"));
-	}
-
-	private void setupDefaultStoreUsageActivityCall(final DataTypeId someId) {
-		queryBuilder.markAsMutation();
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.addVariable("activityType", SOME_USAGE_ACTIVITY_TYPE.name());
-		queryBuilder.addVariable("user", SOME_USER);
+		assertEquals(SOME_FORMATTED_TIMESTAMP, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE,
+				"add", "formattedTimeOfActivity"));
 	}
 
 	private void assertUidInSomeEntityOfTypeEqualsUid(final String dataTypeType) {
@@ -600,14 +585,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(dataTypeType, packFieldPath(asList(fields)));
-		executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields));
+		executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields));
 	}
 
 	private <T> void assertFieldInSomeEntityOfTypeEqualsValue(final String dataTypeType, final T value, final String... fields) {
 		final DataTypeId someId = EXAMPLE_IDS.get(dataTypeType);
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidToFieldValueQuery(dataTypeType, packFieldPath(asList(fields)));
-		assertEquals(value, executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields)));
+		assertEquals(value, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), queryPath(dataTypeType, fields)));
 	}
 
 	private String packFieldPath(final List<String> fields) {
@@ -633,40 +618,6 @@ public class NexusServiceControllerServiceAdaptorTest {
 			path[i + 2] = fields[i];
 		}
 		return path;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T executeQueryAndLookupResponseAtPath(final ParameterGroup query, final String... path) {
-		final Map<String, Object> response = executeQuery(query);
-		return (T) lookupFirstValidReponseElement(response, path);
-	}
-
-	private Map<String, Object> executeQuery(final ParameterGroup parameterGroup) {
-		return httpClient.loadUrlAsObject(NEXUS_SERVICE, GRAPHQL, GET, JSON, parameterGroup);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Object lookupFirstValidReponseElement(final Map<String, Object> response, final String... path) {
-		try {
-			Object result = response;
-			for (final String element : path) {
-				while (result instanceof List) {
-					result = ((List<?>) result).get(0);
-				}
-				result = ((Map<String, Object>) result).get(element);
-			}
-			return result;
-		} catch (final Exception e) {
-			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
-		}
-	}
-
-	private Field bound(final String fieldName) {
-		try {
-			return Bounds.class.getField(fieldName);
-		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException("Unable to locate field " + fieldName + " in Bounds");
-		}
 	}
 
 	private DataTypeId firstId(final List<DocumentInfo> list) {

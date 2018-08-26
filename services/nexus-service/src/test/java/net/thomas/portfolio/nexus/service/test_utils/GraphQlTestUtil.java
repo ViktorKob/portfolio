@@ -46,11 +46,14 @@ public class GraphQlTestUtil {
 	public static final Long SOME_LONG_INTEGER = Long.MAX_VALUE;
 	public static final Double SOME_DECIMAL = 3.14;
 	public static final GeoLocation SOME_GEO_LOCATION = new GeoLocation(1.2, -1.2);
+	public static final Integer SOME_OFFSET = 2;
+	public static final Integer SOME_LIMIT = 4;
 	public static final Long SOME_TIMESTAMP_VALUE = currentTimeMillis() / 1000 * 1000;
 	public static final Timestamp SOME_TIMESTAMP = new Timestamp(SOME_TIMESTAMP_VALUE);
 	public static final Iso8601DateConverter DATE_CONVERTER = new DateConverter.Iso8601DateConverter();
 	public static final String SOME_FORMATTED_TIMESTAMP = DATE_CONVERTER.format(SOME_TIMESTAMP_VALUE);
 	public static final String SOME_FORMATTED_DATE_ONLY_TIMESTAMP = DATE_CONVERTER.formatDate(SOME_TIMESTAMP_VALUE);
+	public static final String SOME_INVALID_FORMATTED_TIMESTAMP = "Not really a formatted timestamp";
 	public static final String SOME_HEADLINE = "headline";
 	public static final String SOME_HTML = "html";
 	public static final String SOME_USER = "SomeUser";

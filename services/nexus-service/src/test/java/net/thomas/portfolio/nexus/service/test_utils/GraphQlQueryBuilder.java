@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 
 public class GraphQlQueryBuilder {
 	private QueryType type;
@@ -33,23 +34,33 @@ public class GraphQlQueryBuilder {
 	}
 
 	public GraphQlQueryBuilder setUidToFieldValueQuery(final String dataType, final String fieldPath) {
-		query = "test($uid:String){" + dataType + "(uid:$uid) {" + fieldPath + "}}";
+		query = "test($uid:String){" + dataType + "(uid:$uid){" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setUidAndUserToFieldValueQuery(final String dataType, final String fieldPath) {
-		query = "test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user) {" + fieldPath + "}}";
+		query = "test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user){" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setSimpleRepToFieldValueQuery(final String dataType, final String fieldPath) {
-		query = "test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation) {" + fieldPath + "}}";
+		query = "test($simpleRepresentation:String){" + dataType + "(simpleRep:$simpleRepresentation){" + fieldPath + "}}";
 		return this;
 	}
 
 	public GraphQlQueryBuilder setUidActivityAndDocumentTypeToUsageActivityMutation(final String documentType, final String fieldPath) {
 		query = "test($uid: String!,$activityType: String!,$user: String){usageActivity{" + documentType
 				+ "(uid:$uid) {add(user:$user,activityType:$activityType){" + fieldPath + "}}}}";
+		return this;
+	}
+
+	public GraphQlQueryBuilder setUidAndUsageActivityArgumentToFieldValueQuery(final String dataType, final GraphQlArgument argument, Object value,
+			final String fieldPath) {
+		if (value instanceof String) {
+			value = "\"" + value + "\"";
+		}
+		query = "test($uid:String,$user:String){" + dataType + "(uid:$uid,user:$user){usageActivities(" + argument.getName() + ":" + value + "){" + fieldPath
+				+ "}}}";
 		return this;
 	}
 
