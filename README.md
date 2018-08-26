@@ -2,18 +2,19 @@
 
 # Portfolio 
 
-This repository contains examples of how I prioritize tasks and solve problems. It is meant to give potential employers an idea of, what they can expect from me as a developer.
+This repository contains examples of how I prioritize tasks and solve problems. It is meant to give potential employers an idea of what they can expect from me as a developer.
 
 For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation and GraphQL to wrap the API.
 
 It is very much a work in progress, and I plan on adding new features continuously until I run out of ideas or get the job I want.
 
 ### Quick-and-dirty structural diagram
-![Rough diagram of the services in the architecture and the flow of data](/images/rough_diagram.png)
+![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview.png)
 
-The **boxes** are the individual parts of the system, with a *hard* box for the NGINX proxy and *soft* boxes for the Spring services. 
-The **ellipses** represent other systems that are integrated with this one (everything, but the services is fake).
-The **arrows** represent the flow of data in the system. 
+The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
+The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
+The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
+The **arrows** represent the flow of data in the system. Queries are not considered data here. 
 
 # Quickstart
 ### To just see the infrastructure (Tested in Chrome and Firefox)
