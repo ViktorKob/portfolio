@@ -1,80 +1,63 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import static java.time.Instant.ofEpochMilli;
+import static java.time.ZoneOffset.UTC;
+import static java.time.ZonedDateTime.ofInstant;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.temporal.ChronoUnit.SECONDS;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAccessor;
 
 public interface DateConverter {
 
-	Date parse(String formattedDate);
+	long parse(String formattedDate);
 
-	long parseTimestamp(String formattedDate);
+	String format(Long timestamp);
 
-	String format(Date date);
+	String formatDate(Long timestamp);
 
-	String formatDate(Date date);
+	public static class Iso8601DateConverter implements DateConverter {
+		private final DateTimeFormatter formatter;
 
-	String formatTimestamp(Long timestamp);
-
-	String formatDateTimestamp(Long timestamp);
-
-	public static class Iec8601DateConverter implements DateConverter {
-		private final ThreadLocal<SimpleDateFormat> completeFormatter = new ThreadLocal<SimpleDateFormat>() {
-			@Override
-			protected SimpleDateFormat initialValue() {
-				return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-			}
-		};
-
-		private final ThreadLocal<SimpleDateFormat> dateFormatter = new ThreadLocal<SimpleDateFormat>() {
-			@Override
-			protected SimpleDateFormat initialValue() {
-				return new SimpleDateFormat("yyyy-MM-dd");
-			}
-		};
+		public Iso8601DateConverter() {
+			formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.append(ISO_LOCAL_DATE)
+					.optionalStart()
+					.appendLiteral('T')
+					.append(DateTimeFormatter.ISO_LOCAL_TIME)
+					.optionalEnd()
+					.optionalStart()
+					.appendOffsetId()
+					.optionalEnd()
+					.toFormatter();
+		}
 
 		@Override
-		public Date parse(String formattedDate) {
-			try {
-				if (formattedDate.length() <= 12) {
-					return dateFormatter.get()
-						.parse(formattedDate);
-				} else {
-					return completeFormatter.get()
-						.parse(formattedDate);
-				}
-			} catch (final ParseException e) {
-				throw new RuntimeException(e);
+		public long parse(final String formattedDate) {
+			final TemporalAccessor temporalAccessor = formatter.parseBest(formattedDate, ZonedDateTime::from, LocalDateTime::from, LocalDate::from);
+			if (temporalAccessor instanceof ZonedDateTime) {
+				return ((ZonedDateTime) temporalAccessor).toInstant().toEpochMilli();
+			} else if (temporalAccessor instanceof LocalDateTime) {
+				return ((LocalDateTime) temporalAccessor).atZone(UTC).toInstant().truncatedTo(SECONDS).toEpochMilli();
+			} else {
+				return ((LocalDate) temporalAccessor).atStartOfDay(UTC).toInstant().truncatedTo(SECONDS).toEpochMilli();
 			}
 		}
 
 		@Override
-		public long parseTimestamp(String formattedDate) {
-			return parse(formattedDate).getTime();
+		public String format(final Long timestamp) {
+			final ZonedDateTime dateTime = ofInstant(ofEpochMilli(timestamp), UTC).truncatedTo(SECONDS);
+			return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "+00:00";
 		}
 
 		@Override
-		public String format(Date date) {
-			return completeFormatter.get()
-				.format(date);
-		}
-
-		@Override
-		public String formatTimestamp(Long timestamp) {
-			return completeFormatter.get()
-				.format(new Date(timestamp));
-		}
-
-		@Override
-		public String formatDate(Date date) {
-			return dateFormatter.get()
-				.format(date);
-		}
-
-		@Override
-		public String formatDateTimestamp(Long timestamp) {
-			return dateFormatter.get()
-				.format(new Date(timestamp));
+		public String formatDate(final Long timestamp) {
+			return LocalDateTime.ofInstant(ofEpochMilli(timestamp), UTC).format(ISO_LOCAL_DATE) + "+00:00";
 		}
 	}
 }

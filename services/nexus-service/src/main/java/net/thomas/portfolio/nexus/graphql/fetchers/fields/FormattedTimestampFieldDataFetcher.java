@@ -20,6 +20,6 @@ public class FormattedTimestampFieldDataFetcher extends ModelDataFetcher<String>
 	@Override
 	public String get(DataFetchingEnvironment environment) {
 		final Timestamp timestamp = ((DataType) getEntity(environment)).get(fieldName);
-		return dateFormatter.formatTimestamp(timestamp.getTimestamp());
+		return dateFormatter.format(timestamp.getTimestamp());
 	}
 }
