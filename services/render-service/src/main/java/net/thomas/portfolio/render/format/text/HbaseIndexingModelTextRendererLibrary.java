@@ -10,16 +10,16 @@ import net.thomas.portfolio.render.common.context.TextRenderContext;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iec8601DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iso8601DateConverter;
 
 public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, TextRenderContext> {
 	private final HbaseIndexingModelTextRendererLibrary library;
-	private final Iec8601DateConverter converter;
+	private final Iso8601DateConverter converter;
 	private final Map<String, Renderer<String, TextRenderContext>> renderers;
 
 	public HbaseIndexingModelTextRendererLibrary() {
 		library = this;
-		converter = new DateConverter.Iec8601DateConverter();
+		converter = new DateConverter.Iso8601DateConverter();
 		renderers = new HashMap<>();
 		renderers.put("Localname", new SimpleFieldRenderer("name"));
 		renderers.put("DisplayedName", new SimpleFieldRenderer("name"));
@@ -111,7 +111,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render(element.get("from"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+			final String headline = library.render(element.get("from"), context) + " - " + converter.format(document.getTimeOfEvent()
 				.getTimestamp()) + ": " + element.get("subject");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
@@ -125,7 +125,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		@Override
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
-			final String headline = library.render(element.get("sender"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+			final String headline = library.render(element.get("sender"), context) + " - " + converter.format(document.getTimeOfEvent()
 				.getTimestamp()) + ": " + element.get("message");
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
@@ -140,7 +140,7 @@ public class HbaseIndexingModelTextRendererLibrary implements Renderer<String, T
 		public String render(DataType element, TextRenderContext context) {
 			final Document document = (Document) element;
 			final int duration = element.get("durationInSeconds");
-			final String headline = library.render(element.get("primary"), context) + " - " + converter.formatTimestamp(document.getTimeOfEvent()
+			final String headline = library.render(element.get("primary"), context) + " - " + converter.format(document.getTimeOfEvent()
 				.getTimestamp()) + ": conversation duration was " + duration / 60 + "m " + duration % 60 + "s";
 			if (headline.length() > 250) {
 				return headline.substring(0, 250);
