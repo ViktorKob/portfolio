@@ -11,11 +11,11 @@ It is very much a work in progress, and I plan on adding new features continuous
 ### Quick-and-dirty structural diagram
 ![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview_1.png)
 
-The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
-The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
-The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
-The **arrows** represent the flow of data in the system. Queries are not considered data here. 
-The **thick border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
+- The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
+- The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
+- The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
+- The **arrows** represent the flow of data in the system. Queries are not considered data here. 
+- The **thick border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
 
 # Quickstart
 ### To just see the infrastructure (Tested in Chrome and Firefox)
