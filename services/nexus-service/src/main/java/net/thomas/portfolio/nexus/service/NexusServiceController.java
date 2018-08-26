@@ -23,7 +23,7 @@ import graphql.servlet.DefaultGraphQLErrorHandler;
 import graphql.servlet.SimpleGraphQLServlet;
 import graphql.servlet.SimpleGraphQLServlet.Builder;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
-import net.thomas.portfolio.nexus.graphql.fetchers.ClientException;
+import net.thomas.portfolio.nexus.graphql.exceptions.ClientException;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;

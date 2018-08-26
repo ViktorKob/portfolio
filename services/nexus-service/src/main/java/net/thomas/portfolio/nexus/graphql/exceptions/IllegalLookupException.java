@@ -1,4 +1,4 @@
-package net.thomas.portfolio.nexus.graphql.fetchers;
+package net.thomas.portfolio.nexus.graphql.exceptions;
 
 import graphql.GraphQLException;
 
