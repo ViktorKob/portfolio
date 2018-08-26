@@ -9,7 +9,7 @@ For anyone not wishing to employ me, this is an example of how I would build a m
 It is very much a work in progress, and I plan on adding new features continuously until I run out of ideas or get the job I want.
 
 ### Quick-and-dirty structural diagram
-![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview.png)
+![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview_1.png)
 
 The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
 The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
