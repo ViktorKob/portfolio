@@ -21,7 +21,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.FieldsS
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSerialize(using = DataTypeSerializer.class)
 @JsonDeserialize(using = DataTypeDeserializer.class)
-@JsonSubTypes({ @Type(value = Selector.class), @Type(value = Document.class), @Type(value = RawDataType.class) })
+@JsonSubTypes({ @Type(Selector.class), @Type(Document.class), @Type(RawDataType.class) })
 public class DataType {
 	protected DataTypeId id;
 	protected Map<String, Object> fields;
