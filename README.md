@@ -15,7 +15,7 @@ It is very much a work in progress, and I plan on adding new features continuous
 - The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
 - The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
 - The **arrows** represent the flow of data in the system. Queries are not considered data here. 
-- The **thick border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
+- The **thick dotted border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
 
 # Quickstart
 ### To just see the infrastructure (Tested in Chrome and Firefox)
