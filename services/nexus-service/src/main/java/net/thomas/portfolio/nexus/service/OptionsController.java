@@ -5,13 +5,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.HeadersBuilder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import net.thomas.portfolio.services.ServiceGlobals;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-@Controller
+@RestController
 public class OptionsController {
 	@RequestMapping(path = ServiceGlobals.NEXUS_SERVICE_PATH + "/graphql", method = OPTIONS)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {

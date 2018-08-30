@@ -25,12 +25,11 @@ public class CrossSiteScriptingConfigurer implements WebMvcConfigurer {
 		registry.addInterceptor(new HandlerInterceptor() {
 			@Override
 			public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-				System.out.println(request.getMethod());
-				if (request.getMethod() == OPTIONS.name()) {
-					response.addHeader("Access-Control-Allow-Origin", "*");
+				response.addHeader("Access-Control-Allow-Origin", "*");
+				if (OPTIONS.name().equals(request.getMethod())) {
 					response.addHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
 					response.addHeader("Access-Control-Allow-Headers",
-							"DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range");
+							"DNT,Authorization,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range");
 					response.addHeader("Access-Control-Max-Age", "1728000");
 					response.setStatus(SC_NO_CONTENT);
 					return false;
