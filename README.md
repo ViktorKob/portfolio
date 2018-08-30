@@ -229,9 +229,9 @@ _Simple discovery service implementation with a hystrix UI_
 This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. All standard Eureka endpoints are accessible through the sub-context-path /eureka. It also enables the Hystrix UI, if you have access to a Hystrix stream you wan't to monitor.
 
 ### Admin
-_Service _
+_Service for monitoring the individual services in the infrastructure_
 
-[Source](https://github.com/ViktorKob/portfolio/tree/master/infrastructure "Infrastructure root")
+[Source](https://github.com/ViktorKob/portfolio/tree/master/admin "Infrastructure root")
 
 | Settings | |
 |---|---|
