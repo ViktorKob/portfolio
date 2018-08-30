@@ -29,6 +29,9 @@ public class NexusServiceProperties {
 		// ####################
 
 		put("graphiql.endpoint", "${nexus-context-path}/graphql");
+		put("graphiql.servlet.mapping", "${nexus-context-path}/graphql");
+		put("graphiql.servlet.enabled", "true");
+		put("graphiql.servlet.corsEnabled", "true");
 		put("management.endpoints.jmx.exposure.include", "*");
 
 		put("nexus-service.analytics.name", "${analytics-service-name}");

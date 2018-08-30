@@ -16,7 +16,7 @@ import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.services.ServiceEndpoint;
 
 public class GraphQlQueryTestExecutionUtil {
-	private static final ServiceEndpoint GRAPHQL = () -> {
+	private static final ServiceEndpoint GRAPH_QL = () -> {
 		return "/graphql";
 	};
 	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {
@@ -33,8 +33,19 @@ public class GraphQlQueryTestExecutionUtil {
 		return (T) lookupFirstValidReponseElement(response, path);
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> T executeMutationAndLookupResponseAtPath(final ParameterGroup query, final String... path) {
+		final Map<String, Object> response = executeMutation(query);
+		return (T) lookupFirstValidReponseElement(response, path);
+	}
+
 	private Map<String, Object> executeQuery(final ParameterGroup parameterGroup) {
-		return client.loadUrlAsObject(NEXUS_SERVICE, GRAPHQL, GET, JSON, parameterGroup);
+		return client.loadUrlAsObject(NEXUS_SERVICE, GRAPH_QL, GET, JSON, parameterGroup);
+	}
+
+	private Map<String, Object> executeMutation(final ParameterGroup parameterGroup) {
+		// TODO[Thomas]: Pending fix of authorization problem using post
+		return client.loadUrlAsObject(NEXUS_SERVICE, GRAPH_QL, GET, JSON, parameterGroup);
 	}
 
 	@SuppressWarnings("unchecked")

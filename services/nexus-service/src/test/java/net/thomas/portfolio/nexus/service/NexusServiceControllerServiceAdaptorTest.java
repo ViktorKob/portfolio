@@ -549,7 +549,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		util.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
-		executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
+		executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
 		verify(usageAdaptor, times(1)).storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)));
 	}
 
@@ -578,8 +578,8 @@ public class NexusServiceControllerServiceAdaptorTest {
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		util.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "formattedTimeOfActivity");
-		assertEquals(SOME_FORMATTED_TIMESTAMP, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE,
-				"add", "formattedTimeOfActivity"));
+		assertEquals(SOME_FORMATTED_TIMESTAMP, executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity",
+				DOCUMENT_TYPE, "add", "formattedTimeOfActivity"));
 	}
 
 	private void assertUidInSomeEntityOfTypeEqualsUid(final String dataTypeType) {
@@ -635,6 +635,6 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	private void assertContainsExpectedText(final String expectedText, final String response) {
-		assertTrue("Unable to find text '" + expectedText + "' in " + response, response.contains(expectedText));
+		assertTrue("Unable to find text '" + expectedText + "' in '" + response + "'", response.contains(expectedText));
 	}
 }
