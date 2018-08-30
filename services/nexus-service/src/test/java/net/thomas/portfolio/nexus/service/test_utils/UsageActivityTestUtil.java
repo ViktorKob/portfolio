@@ -72,7 +72,7 @@ public class UsageActivityTestUtil {
 		when(adaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, field);
-		assertEquals(value, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", field));
+		assertEquals(value, executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", field));
 	}
 
 	public void setupDefaultStoreUsageActivityCall(final DataTypeId someId) {

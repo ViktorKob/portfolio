@@ -66,7 +66,7 @@ public class HttpRestClient {
 		try {
 			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms calling " + request);
+			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing " + request);
 			if (OK == response.getStatusCode()) {
 				return response.getBody();
 			} else {
@@ -111,8 +111,8 @@ public class HttpRestClient {
 			if (NOT_FOUND.equals(e.getStatusCode())) {
 				return null;
 			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
-						e);
+				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName()
+						+ " is working properly. Http Error Code: " + e.getStatusCode() + "-" + e.getStatusText(), e);
 			}
 		}
 	}
