@@ -9,12 +9,6 @@ import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibraryBuilder;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser;
 
 public class HbaseIndexSchemaBuilder {
 	private final HashMap<String, Fields> dataTypeFields;
@@ -22,7 +16,6 @@ public class HbaseIndexSchemaBuilder {
 	private final Set<String> documentTypes;
 	private final Set<String> selectorTypes;
 	private final Set<String> simpleRepresentableTypes;
-	private final SimpleRepresentationParserLibraryBuilder parserBuilder;
 
 	public HbaseIndexSchemaBuilder() {
 		dataTypeFields = new HashMap<>();
@@ -30,8 +23,6 @@ public class HbaseIndexSchemaBuilder {
 		selectorTypes = new HashSet<>();
 		simpleRepresentableTypes = new HashSet<>();
 		indexableBuilder = new IndexableBuilder();
-		parserBuilder = new SimpleRepresentationParserLibraryBuilder();
-		parserBuilder.setDataTypeFields(dataTypeFields);
 	}
 
 	public HbaseIndexSchemaBuilder addFields(String dataType, Fields fields) {
@@ -65,28 +56,12 @@ public class HbaseIndexSchemaBuilder {
 		return this;
 	}
 
-	public HbaseIndexSchemaBuilder addSimpleRepresentationParser(String selectorType, String field, Class<? extends SimpleRepresentationParserImpl> parser) {
-		if (parser == StringFieldSimpleRepParser.class) {
-			parserBuilder.addStringFieldParser(selectorType, field);
-		} else if (parser == PositiveIntegerFieldSimpleRepParser.class) {
-			parserBuilder.addIntegerFieldParser(selectorType, field);
-		} else if (parser == DomainSimpleRepParser.class) {
-			parserBuilder.addDomainParser();
-		} else if (parser == EmailAddressSimpleRepParser.class) {
-			parserBuilder.addEmailAddressParser();
-		} else {
-			throw new UnknownParserException("Unknown simple representation parser of type " + parser.getSimpleName());
-		}
-		return this;
-	}
-
 	public HbaseIndexSchema build() {
 		final HbaseIndexSchemaImpl schema = new HbaseIndexSchemaImpl();
 		schema.setDataTypeFields(dataTypeFields);
 		schema.setDocumentTypes(documentTypes);
 		schema.setSelectorTypes(selectorTypes);
 		schema.setSimpleRepresentableTypes(simpleRepresentableTypes);
-		schema.setSimpleRepParsers(parserBuilder.build());
 		schema.setIndexables(indexableBuilder.build());
 		return schema;
 	}
@@ -109,16 +84,14 @@ public class HbaseIndexSchemaBuilder {
 			if (!indexables.containsKey(selectorType)) {
 				indexables.put(selectorType, new LinkedList<>());
 			}
-			indexables.get(selectorType)
-				.add(indexable);
+			indexables.get(selectorType).add(indexable);
 		}
 
 		private void updateIndexableByDocument(String documentType, final Indexable indexable) {
 			if (!indexables.containsKey(documentType)) {
 				indexables.put(documentType, new LinkedList<>());
 			}
-			indexables.get(documentType)
-				.add(indexable);
+			indexables.get(documentType).add(indexable);
 		}
 
 		public Map<String, Collection<Indexable>> build() {

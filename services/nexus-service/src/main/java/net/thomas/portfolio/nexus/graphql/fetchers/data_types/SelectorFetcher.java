@@ -36,7 +36,7 @@ public class SelectorFetcher extends ModelDataFetcher<SelectorProxy<?>> {
 			id = new DataTypeId(type, OPTIONAL_UID.extractFrom(environment));
 		}
 		if (OPTIONAL_SIMPLE_REP.canBeExtractedFrom(environment)) {
-			id = adaptors.getIdFromSimpleRep(type, OPTIONAL_SIMPLE_REP.extractFrom(environment));
+			id = adaptors.getFromSimpleRep(type, OPTIONAL_SIMPLE_REP.extractFrom(environment)).getId();
 		}
 		if (id != null) {
 			final SelectorIdProxy proxy = new SelectorIdProxy(id, adaptors);

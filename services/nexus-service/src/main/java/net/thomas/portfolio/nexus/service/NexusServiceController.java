@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ public class NexusServiceController {
 	@Autowired
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
+	@Qualifier("HbaseAdaptor")
 	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private LegalAdaptor legalAdaptor;

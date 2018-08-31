@@ -23,6 +23,12 @@ public class ServiceEndpointBuilder {
 		};
 	}
 
+	public static ServiceEndpoint asEndpoint(ServiceEndpoint firstPrefix, String secondPrefix, ServiceEndpoint thirdPrefix, String value) {
+		return () -> {
+			return firstPrefix.getContextPath() + "/" + secondPrefix + thirdPrefix.getContextPath() + "/" + value + "/";
+		};
+	}
+
 	public static ServiceEndpoint asEndpoint(ServiceEndpoint firstPrefix, ServiceEndpoint secondPrefix, String value) {
 		return () -> {
 			return firstPrefix.getContextPath() + secondPrefix.getContextPath() + "/" + value + "/";
@@ -30,7 +36,6 @@ public class ServiceEndpointBuilder {
 	}
 
 	private static String asString(ServiceEndpoint... suffixes) {
-		return stream(suffixes).map(ServiceEndpoint::getContextPath)
-			.collect(joining());
+		return stream(suffixes).map(ServiceEndpoint::getContextPath).collect(joining());
 	}
 }

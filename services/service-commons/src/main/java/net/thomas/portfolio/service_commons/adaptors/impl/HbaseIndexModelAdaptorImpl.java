@@ -5,6 +5,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.ENTITIES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.FROM_SIMPLE_REP;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SAMPLES;
@@ -14,7 +15,6 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId.NULL_ID;
 import static org.springframework.http.HttpMethod.GET;
 
 import java.util.Collection;
@@ -43,6 +43,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
@@ -65,9 +66,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 				// We try again until we succeed or the service is closed from the outside
 			}
 		}
-		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES)
-			.maximumSize(500)
-			.build(buildDataTypeCacheLoader(client));
+		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(500).build(buildDataTypeCacheLoader(client));
 	}
 
 	private CacheLoader<DataTypeId, DataType> buildDataTypeCacheLoader(HttpRestClient client) {
@@ -81,30 +80,17 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	@Override
 	public boolean isSimpleRepresentable(String dataType) {
-		return schema.getSimpleRepresentableTypes()
-			.contains(dataType);
-	}
-
-	@Override
-	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
-		final String uid = schema.parseToUid(type, simpleRep);
-		if (uid != null) {
-			return new DataTypeId(type, uid);
-		} else {
-			return NULL_ID;
-		}
+		return schema.getSimpleRepresentableTypes().contains(dataType);
 	}
 
 	@Override
 	public boolean isSelector(String dataType) {
-		return schema.getSelectorTypes()
-			.contains(dataType);
+		return schema.getSelectorTypes().contains(dataType);
 	}
 
 	@Override
 	public boolean isDocument(String dataType) {
-		return schema.getDocumentTypes()
-			.contains(dataType);
+		return schema.getDocumentTypes().contains(dataType);
 	}
 
 	@Override
@@ -144,10 +130,10 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
-		final ParameterizedTypeReference<List<DataTypeId>> responseType = new ParameterizedTypeReference<List<DataTypeId>>() {
+	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
+		final ParameterizedTypeReference<List<Selector>> responseType = new ParameterizedTypeReference<List<Selector>>() {
 		};
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, selectorString), GET, responseType, EMPTY_GROUP_LIST);
+		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation), GET, responseType, EMPTY_GROUP_LIST);
 	}
 
 	@Override
@@ -158,12 +144,19 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	public Selector getFromSimpleRep(String type, String simpleRep) {
+		final Selector selector = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, type, FROM_SIMPLE_REP, simpleRep), GET, Selector.class,
+				EMPTY_GROUP_LIST);
+		return selector;
+	}
+
+	@Override
+	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public DataType getDataType(DataTypeId id) {
 		try {
 			return dataTypeCache.get(id);
 		} catch (final InvalidCacheLoadException e) {
-			if (e.getMessage()
-				.contains("CacheLoader returned null for key")) {
+			if (e.getMessage().contains("CacheLoader returned null for key")) {
 				return null;
 			} else {
 				throw new RuntimeException("Unable to fetch data type", e);

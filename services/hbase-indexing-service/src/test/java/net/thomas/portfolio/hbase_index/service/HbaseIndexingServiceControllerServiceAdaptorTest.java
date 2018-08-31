@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
@@ -13,7 +14,6 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Source.APPLE;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
-import static net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId.NULL_ID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
@@ -62,7 +63,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLook
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RunWith(SpringRunner.class)
@@ -82,10 +82,6 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	static class ServiceBeansSetup {
 		@Bean
 		public HbaseIndexSchema getSchema() {
-			return buildSchemaForTesting();
-		}
-
-		private HbaseIndexSchema buildSchemaForTesting() {
 			final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
 			builder.addFields(DOCUMENT_TYPE, fields(string("name"), dataType("reference", RAW_DATA_TYPE)));
 			builder.addFields(RAW_DATA_TYPE, fields(string("name"), dataType("reference", SELECTOR_TYPE)));
@@ -95,8 +91,12 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 			builder.addSelectorTypes(SELECTOR_TYPE, SIMPLE_REPRESENTABLE_TYPE);
 			builder.addSimpleRepresentableTypes(SIMPLE_REPRESENTABLE_TYPE);
 			builder.addIndexable(SELECTOR_TYPE, "Path", DOCUMENT_TYPE, "Field");
-			builder.addSimpleRepresentationParser(SIMPLE_REPRESENTABLE_TYPE, "name", PositiveIntegerFieldSimpleRepParser.class);
 			return builder.build();
+		}
+
+		@Bean
+		public SimpleRepresentationParserLibrary getSimpleRepresentationParserLibrary() {
+			return mock(SimpleRepresentationParserLibrary.class);
 		}
 
 		@Bean
@@ -113,6 +113,8 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	@Autowired
 	private HbaseIndexSchema schema;
 	@Autowired
+	private SimpleRepresentationParserLibrary parserLibrary;
+	@Autowired
 	private HbaseIndex index;
 	@Autowired
 	private RestTemplate restTemplate;
@@ -120,12 +122,11 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 	@Before
 	public void setUpController() throws Exception {
-		reset(index);
+		reset(index, parserLibrary);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final HbaseIndexModelAdaptorImpl hbaseAdaptor = new HbaseIndexModelAdaptorImpl();
 		hbaseAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
-		adaptors = new Adaptors.Builder().setHbaseModelAdaptor(hbaseAdaptor)
-			.build();
+		adaptors = new Adaptors.Builder().setHbaseModelAdaptor(hbaseAdaptor).build();
 	}
 
 	@Test
@@ -228,27 +229,29 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	public void shouldGetIdFromSimpleRepFromSchema() {
-		final DataTypeId id = adaptors.getIdFromSimpleRep(SIMPLE_REPRESENTABLE_TYPE, SIMPLE_REPRESENTATION);
-		assertEquals(schema.parseToUid(SIMPLE_REPRESENTABLE_TYPE, SIMPLE_REPRESENTATION), id.uid);
+	public void shouldLookupSelectorWithIdFromSimpleRep() {
+		when(parserLibrary.parse(eq(SIMPLE_REPRESENTABLE_TYPE), eq(SIMPLE_REPRESENTATION))).thenReturn(SOME_ENTITY);
+		final Selector selector = adaptors.getFromSimpleRep(SIMPLE_REPRESENTABLE_TYPE, SIMPLE_REPRESENTATION);
+		assertEquals(new Selector(SOME_ID), selector);
 	}
 
 	@Test
-	public void shouldGetNullIdFromSimpleRepFromSchemaWhenNotParsable() {
-		final DataTypeId id = adaptors.getIdFromSimpleRep(SELECTOR_TYPE, INVALID_SIMPLE_REPRESENTATION);
-		assertEquals(NULL_ID, id);
+	public void shouldGetNullFromSimpleRepFromSchemaWhenNotParsable() {
+		final Selector selector = adaptors.getFromSimpleRep(SELECTOR_TYPE, INVALID_SIMPLE_REPRESENTATION);
+		assertNull(selector);
 	}
 
 	@Test
 	public void shouldLookupSuggestions() {
-		final List<DataTypeId> suggestions = adaptors.getSelectorSuggestions(SIMPLE_REPRESENTATION);
-		assertEquals(SIMPLE_REPRESENTABLE_TYPE, first(suggestions).type);
+		when(parserLibrary.getSelectorSuggestions(eq(SIMPLE_REPRESENTATION))).thenReturn(singletonList(SOME_ENTITY));
+		final List<Selector> suggestions = adaptors.getSelectorSuggestions(SIMPLE_REPRESENTATION);
+		assertEquals(SOME_ENTITY, first(suggestions));
 	}
 
 	@Test
 	public void shouldReturnNullSuggestionWhenNotParsingPossible() {
-		final List<DataTypeId> suggestions = adaptors.getSelectorSuggestions(INVALID_SIMPLE_REPRESENTATION);
-		assertNull(first(suggestions).uid);
+		final List<Selector> suggestions = adaptors.getSelectorSuggestions(INVALID_SIMPLE_REPRESENTATION);
+		assertNull(suggestions);
 	}
 
 	@Test
@@ -285,40 +288,34 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	public void shouldLookupSelectorInInvertedIndex() {
 		final Indexable indexable = new Indexable(SELECTOR_TYPE, "Path", DOCUMENT_TYPE, "Field");
 		when(index.invertedIndexLookup(eq(SOME_ID), eq(indexable)))
-			.thenReturn(new DocumentInfos(asList(new DocumentInfo(SOME_ID, new Timestamp(1000L), new Timestamp(2000L)))));
+				.thenReturn(new DocumentInfos(asList(new DocumentInfo(SOME_ID, new Timestamp(1000L), new Timestamp(2000L)))));
 		final DocumentInfos infos = adaptors
-			.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
+				.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
 		assertEquals(SOME_ID, first(infos).getId());
 	}
 
 	@Test
 	public void shouldReturnEmptyContainerWhenIdIsUnknown() {
 		final DocumentInfos infos = adaptors
-			.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
+				.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
 		assertNotNull(infos);
 		assertFalse(infos.hasData());
 	}
 
-	private DataTypeId first(List<DataTypeId> ids) {
-		return ids.get(0);
+	private Selector first(List<Selector> selectors) {
+		return selectors.get(0);
 	}
 
 	private DataType first(Entities entities) {
-		return entities.getEntities()
-			.iterator()
-			.next();
+		return entities.getEntities().iterator().next();
 	}
 
 	private Reference first(References references) {
-		return references.getReferences()
-			.iterator()
-			.next();
+		return references.getReferences().iterator().next();
 	}
 
 	private DocumentInfo first(DocumentInfos infos) {
-		return infos.getInfos()
-			.iterator()
-			.next();
+		return infos.getInfos().iterator().next();
 	}
 
 	private static final String SELECTOR_TYPE = "SELECTOR_TYPE";
@@ -328,5 +325,5 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	private static final String SIMPLE_REPRESENTATION = "1234";
 	private static final String INVALID_SIMPLE_REPRESENTATION = "NotANumber";
 	private static final DataTypeId SOME_ID = new DataTypeId(SELECTOR_TYPE, "FFABCD");
-	private static final DataType SOME_ENTITY = new Selector(SOME_ID, emptyMap());
+	private static final Selector SOME_ENTITY = new Selector(SOME_ID, emptyMap());
 }

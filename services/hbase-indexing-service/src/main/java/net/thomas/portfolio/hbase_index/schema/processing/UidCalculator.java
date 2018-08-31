@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.thomas.portfolio.common.utils.ToStringUtil;
 import net.thomas.portfolio.hbase_index.schema.Entity;
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
+import net.thomas.portfolio.hbase_index.schema.util.Hasher;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.Hasher;
 
 public class UidCalculator {
 	private final boolean keyShouldBeUnique;

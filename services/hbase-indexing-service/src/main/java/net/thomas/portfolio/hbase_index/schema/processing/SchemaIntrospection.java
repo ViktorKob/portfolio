@@ -12,6 +12,13 @@ import net.thomas.portfolio.hbase_index.schema.annotations.SchemaIgnore;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
 import net.thomas.portfolio.hbase_index.schema.events.Event;
 import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibraryBuilder;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.FieldsBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveFieldBuilder;
@@ -19,14 +26,17 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceFie
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.UnknownParserException;
 
 public class SchemaIntrospection {
 	private final HbaseIndexSchemaBuilder builder;
+	private final SimpleRepresentationParserLibraryBuilder parserLibraryBuilder;
 	private final Set<String> handledFieldTypes;
 	private final Set<Class<?>> handledSimpleRepresentationTypes;
 
 	public SchemaIntrospection() {
 		builder = new HbaseIndexSchemaBuilder();
+		parserLibraryBuilder = new SimpleRepresentationParserLibraryBuilder();
 		handledFieldTypes = new HashSet<>();
 		handledSimpleRepresentationTypes = new HashSet<>();
 	}
@@ -61,9 +71,23 @@ public class SchemaIntrospection {
 				if (!handledSimpleRepresentationTypes.contains(entityClass)) {
 					builder.addSimpleRepresentableTypes(simpleName);
 					final SimpleRepresentable description = entityClass.getAnnotation(SimpleRepresentable.class);
-					builder.addSimpleRepresentationParser(simpleName, description.field(), description.parser());
+					addSimpleRepresentationParser(simpleName, description.field(), description.parser());
 				}
 			}
+		}
+	}
+
+	public void addSimpleRepresentationParser(String selectorType, String field, Class<? extends SimpleRepresentationParserImpl> parser) {
+		if (parser == StringFieldSimpleRepParser.class) {
+			parserLibraryBuilder.addStringFieldParser(selectorType, field);
+		} else if (parser == PositiveIntegerFieldSimpleRepParser.class) {
+			parserLibraryBuilder.addIntegerFieldParser(selectorType, field);
+		} else if (parser == DomainSimpleRepParser.class) {
+			parserLibraryBuilder.addDomainParser();
+		} else if (parser == EmailAddressSimpleRepParser.class) {
+			parserLibraryBuilder.addEmailAddressParser();
+		} else {
+			throw new UnknownParserException("Unknown simple representation parser of type " + parser.getSimpleName());
 		}
 	}
 
@@ -79,6 +103,7 @@ public class SchemaIntrospection {
 			}
 		}
 		this.builder.addFields(entityClass.getSimpleName(), builder.build());
+		parserLibraryBuilder.addFields(entityClass.getSimpleName(), builder.build());
 	}
 
 	private FieldsBuilder addField(final FieldsBuilder builder, final Field field) {
@@ -169,5 +194,9 @@ public class SchemaIntrospection {
 
 	public HbaseIndexSchema describeSchema() {
 		return builder.build();
+	}
+
+	public SimpleRepresentationParserLibrary describeSimpleRepresentationParsers() {
+		return parserLibraryBuilder.build();
 	}
 }

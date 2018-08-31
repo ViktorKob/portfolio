@@ -21,25 +21,26 @@ import java.util.Map.Entry;
 
 import graphql.schema.DataFetchingEnvironment;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
-import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorIdProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorEntityProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.GlobalServiceArgumentId;
 import net.thomas.portfolio.nexus.graphql.fetchers.LocalServiceArgumentId;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.ServiceArgument;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
-public class SelectorSuggestionsFetcher extends ModelDataFetcher<List<SelectorIdProxy>> {
+public class SelectorSuggestionsFetcher extends ModelDataFetcher<List<SelectorEntityProxy>> {
 
 	public SelectorSuggestionsFetcher(Adaptors adaptors) {
 		super(adaptors);
 	}
 
 	@Override
-	public List<SelectorIdProxy> get(DataFetchingEnvironment environment) {
-		final List<DataTypeId> selectorSuggestionIds = adaptors.getSelectorSuggestions(SIMPLE_REP.extractFrom(environment));
+	public List<SelectorEntityProxy> get(DataFetchingEnvironment environment) {
+		final List<Selector> selectorSuggestions = adaptors.getSelectorSuggestions(SIMPLE_REP.extractFrom(environment));
 		final Map<ServiceArgument<?>, Object> arguments = extractArguments(environment);
-		return convert(selectorSuggestionIds, arguments);
+		return convert(selectorSuggestions, arguments);
 	}
 
 	protected Map<ServiceArgument<?>, Object> extractArguments(DataFetchingEnvironment environment) {
@@ -51,14 +52,11 @@ public class SelectorSuggestionsFetcher extends ModelDataFetcher<List<SelectorId
 		return arguments;
 	}
 
-	private List<SelectorIdProxy> convert(List<DataTypeId> selectorIds, Map<ServiceArgument<?>, Object> arguments) {
-		return selectorIds.stream()
-			.map(id -> new SelectorIdProxy(id, adaptors))
-			.peek(proxy -> decorateWithArguments(proxy, arguments))
-			.collect(toList());
+	private List<SelectorEntityProxy> convert(List<Selector> selectors, Map<ServiceArgument<?>, Object> arguments) {
+		return selectors.stream().map(id -> new SelectorEntityProxy(id, adaptors)).peek(proxy -> decorateWithArguments(proxy, arguments)).collect(toList());
 	}
 
-	private void decorateWithArguments(SelectorIdProxy proxy, Map<ServiceArgument<?>, Object> arguments) {
+	private void decorateWithArguments(DataTypeProxy<?, ?> proxy, Map<ServiceArgument<?>, Object> arguments) {
 		for (final Entry<ServiceArgument<?>, Object> entry : arguments.entrySet()) {
 			if (entry.getKey() instanceof GlobalServiceArgumentId) {
 				proxy.put((GlobalServiceArgumentId) entry.getKey(), entry.getValue());
