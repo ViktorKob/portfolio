@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
@@ -29,6 +29,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.UidConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.IdCalculator;
 
 public class IdCalculatorUnitTest {
 	private IdCalculator simpleTypeIdGenerator;

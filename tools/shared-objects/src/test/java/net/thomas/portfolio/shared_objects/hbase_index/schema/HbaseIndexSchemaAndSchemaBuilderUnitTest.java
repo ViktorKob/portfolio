@@ -10,16 +10,16 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.IdCalculator;
 
 public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
 	private HbaseIndexSchemaBuilder schemaBuilder;
@@ -196,7 +196,7 @@ public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
 	public void shouldAddDomainParser() {
 		schemaBuilder.addSimpleRepresentationParser(SOME_TYPE, SOME_FIELD, DomainSimpleRepParser.class);
 		final HbaseIndexSchemaImpl schema = (HbaseIndexSchemaImpl) schemaBuilder.build();
-		final SimpleRepresentationParser parser = first(schema.getSimpleRepParsers()
+		final SimpleRepresentationParserImpl parser = first(schema.getSimpleRepParsers()
 			.getParsers()
 			.values());
 		assertTrue(parser instanceof DomainSimpleRepParser);
@@ -206,7 +206,7 @@ public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
 	public void shouldAddEmailAddressParser() {
 		schemaBuilder.addSimpleRepresentationParser(SOME_TYPE, SOME_FIELD, EmailAddressSimpleRepParser.class);
 		final HbaseIndexSchemaImpl schema = (HbaseIndexSchemaImpl) schemaBuilder.build();
-		final SimpleRepresentationParser parser = first(schema.getSimpleRepParsers()
+		final SimpleRepresentationParserImpl parser = first(schema.getSimpleRepParsers()
 			.getParsers()
 			.values());
 		assertTrue(parser instanceof EmailAddressSimpleRepParser);
@@ -226,7 +226,7 @@ public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
 		return container.contains(type);
 	}
 
-	private static class UnknownParser extends SimpleRepresentationParser {
+	private static class UnknownParser extends SimpleRepresentationParserImpl {
 		public UnknownParser(String type, String pattern, IdCalculator idCalculator) {
 			super(SOME_TYPE, "", null);
 		}

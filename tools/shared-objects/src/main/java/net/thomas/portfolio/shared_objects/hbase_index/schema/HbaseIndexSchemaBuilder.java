@@ -9,12 +9,12 @@ import java.util.Set;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibraryBuilder;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibraryBuilder;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser;
 
 public class HbaseIndexSchemaBuilder {
 	private final HashMap<String, Fields> dataTypeFields;
@@ -65,7 +65,7 @@ public class HbaseIndexSchemaBuilder {
 		return this;
 	}
 
-	public HbaseIndexSchemaBuilder addSimpleRepresentationParser(String selectorType, String field, Class<? extends SimpleRepresentationParser> parser) {
+	public HbaseIndexSchemaBuilder addSimpleRepresentationParser(String selectorType, String field, Class<? extends SimpleRepresentationParserImpl> parser) {
 		if (parser == StringFieldSimpleRepParser.class) {
 			parserBuilder.addStringFieldParser(selectorType, field);
 		} else if (parser == PositiveIntegerFieldSimpleRepParser.class) {

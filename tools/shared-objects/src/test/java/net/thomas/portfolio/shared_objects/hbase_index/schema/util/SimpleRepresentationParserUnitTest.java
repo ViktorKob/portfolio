@@ -13,10 +13,11 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
 public class SimpleRepresentationParserUnitTest {
 
@@ -91,7 +92,7 @@ public class SimpleRepresentationParserUnitTest {
 	private static final String TYPE = "TYPE";
 	private static final DataTypeId ID = new DataTypeId(TYPE, "ABCD");
 
-	private static class TestSimpleRepresentationParser extends SimpleRepresentationParser {
+	private static class TestSimpleRepresentationParser extends SimpleRepresentationParserImpl {
 
 		public TestSimpleRepresentationParser(String type, String pattern, IdCalculator idCalculator) {
 			super(type, pattern, idCalculator);

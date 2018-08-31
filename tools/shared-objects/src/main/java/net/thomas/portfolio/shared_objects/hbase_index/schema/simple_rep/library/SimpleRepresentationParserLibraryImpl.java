@@ -1,21 +1,26 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library;
 
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.Map;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
 public class SimpleRepresentationParserLibraryImpl implements SimpleRepresentationParserLibrary {
-	protected Map<String, SimpleRepresentationParser> parsers;
+	protected Map<String, SimpleRepresentationParserImpl> parsers;
 
-	public SimpleRepresentationParserLibraryImpl(Map<String, SimpleRepresentationParser> parsers) {
+	public SimpleRepresentationParserLibraryImpl(Map<String, SimpleRepresentationParserImpl> parsers) {
 		this.parsers = parsers;
+		for (final SimpleRepresentationParserImpl parser : parsers.values()) {
+			parser.setLibrary(this);
+		}
 	}
 
 	@Override
 	public boolean hasValidFormat(String source) {
-		for (final SimpleRepresentationParser parser : parsers.values()) {
+		for (final SimpleRepresentationParserImpl parser : parsers.values()) {
 			if (parser.hasValidFormat(source)) {
 				return true;
 			}
@@ -26,7 +31,7 @@ public class SimpleRepresentationParserLibraryImpl implements SimpleRepresentati
 	@Override
 	public Selector parse(String type, String simpleRepresenation) {
 		if (parsers.containsKey(type)) {
-			final SimpleRepresentationParser parser = parsers.get(type);
+			final SimpleRepresentationParserImpl parser = parsers.get(type);
 			if (parser.hasValidFormat(simpleRepresenation)) {
 				return parser.parse(type, simpleRepresenation);
 			}

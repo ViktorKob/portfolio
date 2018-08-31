@@ -18,7 +18,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrarySerializable;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibrarySerializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
