@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library;
 
 import static java.util.Collections.singletonMap;
 import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserialize;
@@ -13,19 +13,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
 public class SimpleRepresentationParserLibrarySerializableUnitTest {
 
 	private static final String SOME_TYPE = "some type";
 	private static final String SOME_FIELD = "some field";
 	private SimpleRepresentationParserLibraryBuilder builder;
-	private SimpleRepresentationParser parserMock;
+	private SimpleRepresentationParserImpl parserMock;
 
 	@Before
 	public void setUpForTest() {
 		builder = new SimpleRepresentationParserLibraryBuilder();
 		builder.setDataTypeFields(singletonMap(SOME_TYPE, new Fields()));
-		parserMock = mock(SimpleRepresentationParser.class);
+		parserMock = mock(SimpleRepresentationParserImpl.class);
 		when(parserMock.getType()).thenReturn(TYPE);
 	}
 

@@ -1,9 +1,9 @@
 package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser.newDomainParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser.newEmailAddressParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser.newStringFieldParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser.newDomainParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser.newEmailAddressParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser.newStringFieldParser;
 
 import java.io.IOException;
 
@@ -17,13 +17,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
-public class ParserDeserializer extends JsonDeserializer<SimpleRepresentationParser> {
+public class ParserDeserializer extends JsonDeserializer<SimpleRepresentationParserImpl> {
 
 	@Override
-	public SimpleRepresentationParser deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+	public SimpleRepresentationParserImpl deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
 		final ObjectNode root = mapper.readTree(parser);
 		final IdCalculator idCalculator = extractIdCalculator(mapper, root);

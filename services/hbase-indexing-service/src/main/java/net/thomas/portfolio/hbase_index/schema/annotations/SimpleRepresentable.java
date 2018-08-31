@@ -6,7 +6,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
 /***
  * Indicated that this field should be included during key generation
@@ -14,7 +14,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleReprese
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface SimpleRepresentable {
-	Class<? extends SimpleRepresentationParser> parser();
+	Class<? extends SimpleRepresentationParserImpl> parser();
 
 	String field() default "";
 }

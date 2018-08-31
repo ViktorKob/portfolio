@@ -62,7 +62,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLook
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RunWith(SpringRunner.class)

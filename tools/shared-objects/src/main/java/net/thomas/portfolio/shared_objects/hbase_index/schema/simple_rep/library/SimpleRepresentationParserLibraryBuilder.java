@@ -1,18 +1,19 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library;
 
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParser.newDomainParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParser.newEmailAddressParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
-import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParser.newStringFieldParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser.newDomainParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser.newEmailAddressParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParser.newPositiveIntegerFieldParser;
+import static net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser.newStringFieldParser;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.IdCalculator;
 
 public class SimpleRepresentationParserLibraryBuilder {
-	private final Map<String, SimpleRepresentationParser> parsers;
+	private final Map<String, SimpleRepresentationParserImpl> parsers;
 	private Map<String, Fields> dataTypeFields;
 
 	public SimpleRepresentationParserLibraryBuilder() {
@@ -24,7 +25,7 @@ public class SimpleRepresentationParserLibraryBuilder {
 		return this;
 	}
 
-	public SimpleRepresentationParserLibraryBuilder add(SimpleRepresentationParser parser) {
+	public SimpleRepresentationParserLibraryBuilder add(SimpleRepresentationParserImpl parser) {
 		if (parsers.containsKey(parser.getType())) {
 			throw new RuntimeException("Parser for type " + parser.getType() + " was added more than once");
 		}

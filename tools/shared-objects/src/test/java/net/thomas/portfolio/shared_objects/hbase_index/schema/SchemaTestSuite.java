@@ -3,12 +3,12 @@ package net.thomas.portfolio.shared_objects.hbase_index.schema;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.DomainSimpleRepParserUnitTest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.EmailAddressSimpleRepParserUnitTest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.PositiveIntegerFieldSimpleRepParserUnitTest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.StringFieldSimpleRepParserUnitTest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibraryBuilderUnitTest;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserLibrarySerializableUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibraryBuilderUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibrarySerializableUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParserUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParserUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.PositiveIntegerFieldSimpleRepParserUnitTest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParserUnitTest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParserUnitTest;
 
 @RunWith(Suite.class)

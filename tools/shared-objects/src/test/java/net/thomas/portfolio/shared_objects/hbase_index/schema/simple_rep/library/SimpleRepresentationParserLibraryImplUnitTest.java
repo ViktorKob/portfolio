@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertFalse;
@@ -14,18 +14,18 @@ import org.junit.Test;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
 
 public class SimpleRepresentationParserLibraryImplUnitTest {
 	private SimpleRepresentationParserLibrary library;
-	private SimpleRepresentationParser parser;
+	private SimpleRepresentationParserImpl parser;
 
 	@Before
 	public void setUpForTest() {
-		parser = mock(SimpleRepresentationParser.class);
+		parser = mock(SimpleRepresentationParserImpl.class);
 		when(parser.getType()).thenReturn(SOME_TYPE);
-		library = new SimpleRepresentationParserLibraryBuilder().setDataTypeFields(singletonMap(SOME_TYPE, new Fields()))
-			.add(parser)
-			.build();
+		library = new SimpleRepresentationParserLibraryBuilder().setDataTypeFields(singletonMap(SOME_TYPE, new Fields())).add(parser).build();
 		when(parser.getType()).thenReturn(SOME_TYPE);
 		when(parser.parse(eq(SOME_TYPE), eq(SOME_STRING))).thenReturn(SOME_SELECTOR);
 	}

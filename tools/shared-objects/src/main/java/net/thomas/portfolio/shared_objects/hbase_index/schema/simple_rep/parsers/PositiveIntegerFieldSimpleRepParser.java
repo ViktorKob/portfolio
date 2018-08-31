@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers;
 
 import static java.util.regex.Pattern.compile;
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
@@ -7,12 +7,11 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.SimpleRepresentationParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.IdCalculator;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationParser {
+public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationParserImpl {
 	private final String field;
 	private final Pattern removableCharactersPattern;
 

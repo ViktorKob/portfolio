@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import net.thomas.portfolio.hbase_index.schema.Hasher;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
@@ -36,6 +35,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iso8601DateConverter;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.Hasher;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;

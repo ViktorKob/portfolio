@@ -1,4 +1,4 @@
-package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers;
 
 import static java.util.regex.Pattern.compile;
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
@@ -9,20 +9,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import net.thomas.portfolio.hbase_index.schema.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.model.utils.Parser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParser;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.IdCalculator;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.util.ParserDeserializer;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = ParserDeserializer.class)
-public abstract class SimpleRepresentationParser implements Parser<String, Selector> {
+public abstract class SimpleRepresentationParserImpl implements SimpleRepresentationParser<String, Selector> {
 	private final String type;
 	private final Pattern pattern;
 	private final IdCalculator idCalculator;
 	protected SimpleRepresentationParserLibrary library;
 
-	public SimpleRepresentationParser(String type, String pattern, IdCalculator idCalculator) {
+	public SimpleRepresentationParserImpl(String type, String pattern, IdCalculator idCalculator) {
 		this.type = type;
 		this.pattern = compile(pattern);
 		this.idCalculator = idCalculator;

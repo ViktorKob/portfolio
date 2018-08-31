@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.hbase_index.schema.util;
 
 import static java.lang.String.valueOf;
 import static java.security.MessageDigest.getInstance;
