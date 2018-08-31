@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.FROM_SIMPLE_REP_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
@@ -23,12 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
@@ -43,9 +46,22 @@ public class SelectorController {
 	HbaseIndexSchema schema;
 	@Autowired
 	HbaseIndex index;
+	@Autowired
+	private SimpleRepresentationParserLibrary parserLibrary;
 
 	public SelectorController() {
 		lookupExecutor = newSingleThreadExecutor();
+	}
+
+	@Secured("ROLE_USER")
+	@RequestMapping(path = FROM_SIMPLE_REP_PATH + "/{simpleRepresentation}/", method = GET)
+	public ResponseEntity<?> getEntityId(@PathVariable String dti_type, @PathVariable String simpleRepresentation) {
+		final Selector selector = parserLibrary.parse(dti_type, simpleRepresentation);
+		if (selector != null) {
+			return ok(selector);
+		} else {
+			return notFound().build();
+		}
 	}
 
 	@Secured("ROLE_USER")

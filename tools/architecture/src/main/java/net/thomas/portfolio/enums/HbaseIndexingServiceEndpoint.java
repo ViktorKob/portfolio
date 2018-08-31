@@ -2,6 +2,7 @@ package net.thomas.portfolio.enums;
 
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.DOCUMENTS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.ENTITIES_PATH;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.FROM_SIMPLE_REP_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.REFERENCES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
@@ -15,6 +16,7 @@ import net.thomas.portfolio.services.ServiceEndpoint;
 public enum HbaseIndexingServiceEndpoint implements ServiceEndpoint {
 	SCHEMA(SCHEMA_PATH),
 	SELECTORS(SELECTORS_PATH),
+	FROM_SIMPLE_REP(FROM_SIMPLE_REP_PATH),
 	SAMPLES(SAMPLES_PATH),
 	DOCUMENTS(DOCUMENTS_PATH),
 	ENTITIES(ENTITIES_PATH),

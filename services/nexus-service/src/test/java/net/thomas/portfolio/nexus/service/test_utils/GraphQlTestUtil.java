@@ -1,7 +1,9 @@
 package net.thomas.portfolio.nexus.service.test_utils;
 
 import static java.lang.System.currentTimeMillis;
+import static java.security.MessageDigest.getInstance;
 import static java.util.Arrays.asList;
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.decimal;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.geoLocation;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.integer;
@@ -15,6 +17,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -35,7 +39,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Timestamp;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter.Iso8601DateConverter;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.util.Hasher;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
@@ -129,14 +132,21 @@ public class GraphQlTestUtil {
 				when(adaptor.isSimpleRepresentable(type)).thenReturn(false);
 			}
 			EXAMPLE_IDS.put(type, EXAMPLE_ID(type));
-			when(adaptor.getIdFromSimpleRep(eq(type), eq(SOME_SIMPLE_REP))).thenReturn(EXAMPLE_IDS.get(type));
+			when(adaptor.getFromSimpleRep(eq(type), eq(SOME_SIMPLE_REP))).thenReturn(new Selector(EXAMPLE_IDS.get(type)));
 			when(adaptor.lookupSelectorInInvertedIndex(any())).thenReturn(new DocumentInfos());
 		}
 	}
 
 	public static final DataTypeId EXAMPLE_ID(final String type) {
-		final String uid = new Hasher().add(type.getBytes()).add(String.valueOf(idSeed++).getBytes()).digest();
-		return new DataTypeId(type, uid);
+		try {
+			final MessageDigest hasher = getInstance("MD5");
+			hasher.update(type.getBytes());
+			hasher.update(String.valueOf(idSeed++).getBytes());
+			final String uid = printHexBinary(hasher.digest());
+			return new DataTypeId(type, uid);
+		} catch (final NoSuchAlgorithmException e) {
+			throw new RuntimeException("Unable to calculate hash", e);
+		}
 	}
 
 	private static void setUpEntities(final HbaseIndexModelAdaptor adaptor) {

@@ -4,7 +4,7 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import net.thomas.portfolio.hbase_index.schema.annotations.PartOfKey;
 import net.thomas.portfolio.hbase_index.schema.annotations.SimpleRepresentable;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
 
 @SimpleRepresentable(parser = DomainSimpleRepParser.class)
 public class Domain extends SelectorEntity {

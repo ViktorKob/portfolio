@@ -16,6 +16,7 @@ import net.thomas.portfolio.hbase_index.schema.events.Conversation;
 import net.thomas.portfolio.hbase_index.schema.events.Email;
 import net.thomas.portfolio.hbase_index.schema.events.TextMessage;
 import net.thomas.portfolio.hbase_index.schema.processing.SchemaIntrospection;
+import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -24,6 +25,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 public class FakeIndexControl implements IndexControl {
 	private HbaseIndexSchema schema;
 	private HbaseIndex index;
+	private SimpleRepresentationParserLibrary parserLibrary;
 
 	private boolean initialized;
 	private final long randomSeed;
@@ -56,11 +58,20 @@ public class FakeIndexControl implements IndexControl {
 		return index;
 	}
 
+	@Override
+	@Bean
+	public SimpleRepresentationParserLibrary getSimpleRepresentationParserLibrary() {
+		initialize();
+		return parserLibrary;
+	}
+
 	private synchronized void initialize() {
 		if (!initialized) {
 			final EventDiskReader events = new EventDiskReader(storageRootPath);
 			index = startBuildingIndex(events);
-			schema = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class).describeSchema();
+			final SchemaIntrospection introspection = new SchemaIntrospection().examine(Email.class, TextMessage.class, Conversation.class);
+			schema = introspection.describeSchema();
+			parserLibrary = introspection.describeSimpleRepresentationParsers();
 			initialized = true;
 		}
 	}

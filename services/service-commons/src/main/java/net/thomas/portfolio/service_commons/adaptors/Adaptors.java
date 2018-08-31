@@ -17,6 +17,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.ModelUtilities;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -27,7 +28,8 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 /***
- * This collection of adaptors allows usage of all endpoints in the service infrastructure as java methods.
+ * This collection of adaptors allows usage of all endpoints in the service infrastructure as java
+ * methods.
  */
 public class Adaptors {
 	private final AnalyticsAdaptor analyticsAdaptor;
@@ -49,10 +51,10 @@ public class Adaptors {
 
 	/***
 	 * Using {@link AnalyticsAdaptor#getKnowledge}<BR>
-	 * This method will run a query in the analytics system to fetch relevant information about the selector.
+	 * This method will run a query in the analytics system to fetch relevant information about the
+	 * selector.
 	 *
-	 * @param selectorId
-	 *            The ID of the selector to query about
+	 * @param selectorId The ID of the selector to query about
 	 * @return A summary of the knowledge about this exact selector present in the system
 	 */
 	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
@@ -89,9 +91,9 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getIndexedDocumentTypes}<BR>
 	 *
-	 * @param selectorType
-	 *            The selector type in question
-	 * @return All document types in the current schema, that can be hit when querying for this selector type
+	 * @param selectorType The selector type in question
+	 * @return All document types in the current schema, that can be hit when querying for this selector
+	 *         type
 	 */
 	public Set<String> getIndexedDocumentTypes(String selectorType) {
 		return hbaseModelAdaptor.getIndexedDocumentTypes(selectorType);
@@ -100,9 +102,9 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getIndexedRelations}<BR>
 	 *
-	 * @param selectorType
-	 *            The selector type in question
-	 * @return All types of relations in the current schema, that can be hit when querying for this selector type
+	 * @param selectorType The selector type in question
+	 * @return All types of relations in the current schema, that can be hit when querying for this
+	 *         selector type
 	 */
 	public Set<String> getIndexedRelations(String selectorType) {
 		return hbaseModelAdaptor.getIndexedRelations(selectorType);
@@ -111,7 +113,8 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getAllIndexedRelations}<BR>
 	 *
-	 * @return All types of relations in the current schema, that can be hit when querying for any selector type
+	 * @return All types of relations in the current schema, that can be hit when querying for any
+	 *         selector type
 	 */
 	public Collection<String> getAllIndexedRelations() {
 		return hbaseModelAdaptor.getAllIndexedRelations();
@@ -120,32 +123,29 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getSelectorSuggestions}<BR>
 	 *
-	 * @param simpleRepresentation
-	 *            A simple, human readable representation of a selector
-	 * @return A list of IDs for possible selectors based on the simple representation, ordered by occurrence in the data followed by relevance guess
+	 * @param simpleRepresentation A simple, human readable representation of a selector
+	 * @return A list of possible selectors based on the simple representation, ordered by whether they
+	 *         occur in the data followed by guessed relevance
 	 */
-	public List<DataTypeId> getSelectorSuggestions(String simpleRepresentation) {
+	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
 		return hbaseModelAdaptor.getSelectorSuggestions(simpleRepresentation);
 	}
 
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getIdFromSimpleRep}<BR>
 	 *
-	 * @param type
-	 *            Type of the selector
-	 * @param simpleRep
-	 *            A simple, human readable representation of the selector
-	 * @return The ID for the selector in the current schema
+	 * @param type      Type of the selector
+	 * @param simpleRep A simple, human readable representation of the selector
+	 * @return The selector as it would be represented in the current model
 	 */
-	public DataTypeId getIdFromSimpleRep(String type, String simpleRep) {
-		return hbaseModelAdaptor.getIdFromSimpleRep(type, simpleRep);
+	public Selector getFromSimpleRep(String type, String simpleRep) {
+		return hbaseModelAdaptor.getFromSimpleRep(type, simpleRep);
 	}
 
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#isSimpleRepresentable}<BR>
 	 *
-	 * @param type
-	 *            Type of the selector
+	 * @param type Type of the selector
 	 * @return true, if the selector has a simple, human readable representation
 	 */
 	public boolean isSimpleRepresentable(String dataType) {
@@ -155,8 +155,7 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#isSelector}<BR>
 	 *
-	 * @param type
-	 *            The data type is question
+	 * @param type The data type is question
 	 * @return true, if this type is a Selector in the current schema
 	 */
 	public boolean isSelector(String dataType) {
@@ -166,8 +165,7 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#isDocument}<BR>
 	 *
-	 * @param type
-	 *            The data type is question
+	 * @param type The data type is question
 	 * @return true, if this type is a Document in the current schema
 	 */
 	public boolean isDocument(String dataType) {
@@ -177,8 +175,7 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getFieldsForDataType}<BR>
 	 *
-	 * @param dataType
-	 *            The data type in question
+	 * @param dataType The data type in question
 	 * @return All fields belonging to this type in the current schema
 	 */
 	public Fields getFieldsForDataType(String dataType) {
@@ -188,11 +185,10 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getSamples}<BR>
 	 *
-	 * @param dataType
-	 *            The type to fetch samples for
-	 * @param amount
-	 *            Maximum number of samples to return
-	 * @return A collection of amount samples of dataType if possible, otherwise all matching samples of dataType
+	 * @param dataType The type to fetch samples for
+	 * @param amount   Maximum number of samples to return
+	 * @return A collection of amount samples of dataType if possible, otherwise all matching samples of
+	 *         dataType
 	 */
 	public Entities getSamples(String dataType, int amount) {
 		return hbaseModelAdaptor.getSamples(dataType, amount);
@@ -201,8 +197,7 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getDataType}<BR>
 	 *
-	 * @param id
-	 *            Id of the data type to load
+	 * @param id Id of the data type to load
 	 * @return The complete set of values for this data type with all sub-types
 	 */
 	public DataType getDataType(DataTypeId id) {
@@ -212,8 +207,7 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getReferences}<BR>
 	 *
-	 * @param documentId
-	 *            The ID of the document to load references for
+	 * @param documentId The ID of the document to load references for
 	 * @return All references for this data type in the index
 	 */
 	public References getReferences(DataTypeId id) {
@@ -223,11 +217,12 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#getStatistics}<BR>
 	 *
-	 * <B>All queries into the selector statistics are validated using the legal service before the query is executed.</B>
+	 * <B>All queries into the selector statistics are validated using the legal service before the
+	 * query is executed.</B>
 	 *
-	 * @param selectorId
-	 *            The ID of the selector to load statistics for
-	 * @return An occurrence count for how often this selector is seen in the data, grouped by a set of time periods from today backwards
+	 * @param selectorId The ID of the selector to load statistics for
+	 * @return An occurrence count for how often this selector is seen in the data, grouped by a set of
+	 *         time periods from today backwards
 	 */
 	public Statistics getStatistics(DataTypeId selectorId) {
 		return hbaseModelAdaptor.getStatistics(selectorId);
@@ -236,13 +231,13 @@ public class Adaptors {
 	/***
 	 * Using {@link HbaseIndexModelAdaptor#lookupSelectorInInvertedIndex}<BR>
 	 *
-	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds, legal information and a set of optional filtering
-	 * values.<BR>
+	 * This method allows for lookups of data in the inverted index using a selector, a set of bounds,
+	 * legal information and a set of optional filtering values.<BR>
 	 *
-	 * <B>All queries into the inverted index are validated using the legal service before the query is executed.</B>
+	 * <B>All queries into the inverted index are validated using the legal service before the query is
+	 * executed.</B>
 	 *
-	 * @param request
-	 *            The description of a lookup in the inverted index
+	 * @param request The description of a lookup in the inverted index
 	 * @return A list of document information containers ordered by time of event (descending)
 	 */
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
@@ -252,10 +247,8 @@ public class Adaptors {
 	/***
 	 * Using {@link LegalAdaptor#checkLegalityOfInvertedIndexLookup}<BR>
 	 *
-	 * @param selectorId
-	 *            The ID of the selector is being queried
-	 * @param legalInfo
-	 *            The legal parameters supporting the lookup
+	 * @param selectorId The ID of the selector is being queried
+	 * @param legalInfo  The legal parameters supporting the lookup
 	 * @return An assessment of whether the lookup would be legal to complete
 	 */
 	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
@@ -265,10 +258,8 @@ public class Adaptors {
 	/***
 	 * Using {@link LegalAdaptor#checkLegalityOfStatisticsLookup}<BR>
 	 *
-	 * @param dataTypeId
-	 *            The ID of the selector is being queried
-	 * @param legalInfo
-	 *            The legal parameters supporting the lookup
+	 * @param dataTypeId The ID of the selector is being queried
+	 * @param legalInfo  The legal parameters supporting the lookup
 	 * @return An assessment of whether the lookup would be legal to complete
 	 */
 	public Legality checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
@@ -278,10 +269,8 @@ public class Adaptors {
 	/***
 	 * Using {@link LegalAdaptor#auditLogInvertedIndexLookup}<BR>
 	 *
-	 * @param selectorId
-	 *            The ID of the selector to lookup events for
-	 * @param legalInfo
-	 *            The legal parameters supporting the lookup
+	 * @param selectorId The ID of the selector to lookup events for
+	 * @param legalInfo  The legal parameters supporting the lookup
 	 * @return True if the logging is successful
 	 */
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
@@ -291,10 +280,8 @@ public class Adaptors {
 	/***
 	 * Using {@link LegalAdaptor#auditLogStatisticsLookup}<BR>
 	 *
-	 * @param selectorId
-	 *            The ID of the selector to lookup statistics for
-	 * @param legalInfo
-	 *            The legal parameters supporting the lookup
+	 * @param selectorId The ID of the selector to lookup statistics for
+	 * @param legalInfo  The legal parameters supporting the lookup
 	 * @return True if the logging is successful
 	 */
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
@@ -304,8 +291,7 @@ public class Adaptors {
 	/***
 	 * Using {@link RenderingAdaptor#renderAsSimpleRepresentation}<BR>
 	 *
-	 * @param selectorId
-	 *            The ID of the selector to lookup a simple representation for
+	 * @param selectorId The ID of the selector to lookup a simple representation for
 	 * @return The simple representation, if the selector is known in the index, null otherwise.
 	 */
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
@@ -315,8 +301,7 @@ public class Adaptors {
 	/***
 	 * Using {@link RenderingAdaptor#renderAsText}<BR>
 	 *
-	 * @param id
-	 *            The ID of the data type to render
+	 * @param id The ID of the data type to render
 	 * @return A textual representation of the type, if the data type exists, null otherwise
 	 */
 	public String renderAsText(DataTypeId id) {
@@ -326,8 +311,7 @@ public class Adaptors {
 	/***
 	 * Using {@link RenderingAdaptor#renderAsHtml}<BR>
 	 *
-	 * @param id
-	 *            The ID of the data type to render
+	 * @param id The ID of the data type to render
 	 * @return An HTML representation of the type, if the data type exists, null otherwise
 	 */
 	public String renderAsHtml(DataTypeId id) {
@@ -337,10 +321,8 @@ public class Adaptors {
 	/***
 	 * Using {@link UsageAdaptor#storeUsageActivity}<BR>
 	 *
-	 * @param documentId
-	 *            The ID of the document that has been used
-	 * @param activity
-	 *            A description of who used the document how, when
+	 * @param documentId The ID of the document that has been used
+	 * @param activity   A description of who used the document how, when
 	 * @return A copy of the activity entity as it was stored
 	 */
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
@@ -350,10 +332,8 @@ public class Adaptors {
 	/***
 	 * Using {@link UsageAdaptor#fetchUsageActivities}<BR>
 	 *
-	 * @param documentId
-	 *            The ID of the document to fetch usage events for
-	 * @param bounds
-	 *            The parameters for the fetch
+	 * @param documentId The ID of the document to fetch usage events for
+	 * @param bounds     The parameters for the fetch
 	 * @return An ordered (newest first) list of events for the document
 	 */
 	public UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds) {

@@ -34,7 +34,7 @@ import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DataTypeProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentInfoProxy;
 import net.thomas.portfolio.nexus.graphql.data_proxies.DocumentProxy;
-import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorIdProxy;
+import net.thomas.portfolio.nexus.graphql.data_proxies.SelectorProxy;
 import net.thomas.portfolio.nexus.graphql.fetchers.ModelDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfEventDataFetcher;
 import net.thomas.portfolio.nexus.graphql.fetchers.conversion.FormattedTimeOfInterceptionDataFetcher;
@@ -299,7 +299,7 @@ public class GraphQlQueryModelBuilder {
 		final GraphQLInterfaceType.Builder builder = newInterface().name("Selector")
 				.description("Interface for the different types of documents (from the set " + buildPresentationListFromCollection(adaptors.getDocumentTypes())
 						+ ")")
-				.typeResolver(environment -> environment.getSchema().getObjectType(((SelectorIdProxy) environment.getObject()).getId().type));
+				.typeResolver(environment -> environment.getSchema().getObjectType(((SelectorProxy<?>) environment.getObject()).getId().type));
 		builder.field(createUidField(adaptors));
 		builder.field(createTypeField(adaptors));
 		builder.field(createHeadlineField(adaptors));

@@ -19,9 +19,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 
@@ -30,9 +32,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 public class HbaseIndexingServiceController {
 
 	@Autowired
-	HbaseIndexSchema schema;
+	private HbaseIndexSchema schema;
 	@Autowired
-	HbaseIndex index;
+	private SimpleRepresentationParserLibrary parserLibrary;
+	@Autowired
+	private HbaseIndex index;
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = SCHEMA_PATH, method = GET)
@@ -41,9 +45,9 @@ public class HbaseIndexingServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{selectorString}/", method = GET)
-	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String selectorString) {
-		final List<DataTypeId> suggestions = schema.getSelectorSuggestions(selectorString);
+	@RequestMapping(path = SELECTORS_PATH + SUGGESTIONS_PATH + "/{simpleRepresentation}/", method = GET)
+	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String simpleRepresentation) {
+		final List<Selector> suggestions = parserLibrary.getSelectorSuggestions(simpleRepresentation);
 		if (suggestions != null && suggestions.size() > 0) {
 			return ok(suggestions);
 		} else {

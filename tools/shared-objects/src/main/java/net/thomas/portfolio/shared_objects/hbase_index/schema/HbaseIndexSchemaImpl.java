@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -16,9 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
-import net.thomas.portfolio.shared_objects.hbase_index.schema.simple_rep.library.SimpleRepresentationParserLibrarySerializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
@@ -29,7 +24,6 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 	protected Set<String> selectorTypes;
 	protected Set<String> simpleRepresentableTypes;
 	protected Map<String, Collection<Indexable>> indexables;
-	protected SimpleRepresentationParserLibrarySerializable simpleRepParsers;
 	@JsonIgnore
 	protected Map<String, Set<String>> indexableDocumentTypes;
 	@JsonIgnore
@@ -61,10 +55,7 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		this.indexables = indexables;
 		indexableDocumentTypes = buildIndexableMap(indexables, Indexable::getDocumentType);
 		indexableRelations = buildIndexableMap(indexables, Indexable::getPath);
-		allIndexableRelations = indexableRelations.values()
-			.stream()
-			.flatMap(Collection::stream)
-			.collect(toSet());
+		allIndexableRelations = indexableRelations.values().stream().flatMap(Collection::stream).collect(toSet());
 	}
 
 	private Map<String, Set<String>> buildIndexableMap(Map<String, Collection<Indexable>> indexables, Function<? super Indexable, ? extends String> mapper) {
@@ -72,16 +63,10 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		for (final String selectorType : selectorTypes) {
 			if (indexables.containsKey(selectorType)) {
 				final Collection<Indexable> selectorIndexables = indexables.get(selectorType);
-				relationMap.put(selectorType, selectorIndexables.stream()
-					.map(mapper)
-					.collect(toSet()));
+				relationMap.put(selectorType, selectorIndexables.stream().map(mapper).collect(toSet()));
 			}
 		}
 		return relationMap;
-	}
-
-	public void setSimpleRepParsers(SimpleRepresentationParserLibrarySerializable simpleRepParsers) {
-		this.simpleRepParsers = simpleRepParsers;
 	}
 
 	public Map<String, Fields> getDataTypeFields() {
@@ -144,42 +129,9 @@ public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 		return indexables.get(selectorType);
 	}
 
-	public SimpleRepresentationParserLibrarySerializable getSimpleRepParsers() {
-		return simpleRepParsers;
-	}
-
 	@Override
 	@JsonIgnore
 	public Field getFieldForIndexable(Indexable indexable) {
-		return dataTypeFields.get(indexable.documentType)
-			.get(indexable.documentField);
-	}
-
-	@Override
-	@JsonIgnore
-	public List<DataTypeId> getSelectorSuggestions(String selectorString) {
-		final LinkedList<DataTypeId> selectorIds = new LinkedList<>();
-		for (final String selectorType : getSelectorTypes()) {
-			try {
-				final DataTypeId selectorId = new DataTypeId(selectorType, parseToUid(selectorType, selectorString));
-				if (selectorId != null) {
-					selectorIds.add(selectorId);
-				}
-			} catch (final Throwable t) {
-				// Ignored
-			}
-		}
-		return selectorIds;
-	}
-
-	@Override
-	@JsonIgnore
-	public String parseToUid(String type, String simpleRep) {
-		final Selector parsedType = simpleRepParsers.parse(type, simpleRep);
-		if (parsedType != null) {
-			return parsedType.getId().uid;
-		} else {
-			return null;
-		}
+		return dataTypeFields.get(indexable.documentType).get(indexable.documentField);
 	}
 }

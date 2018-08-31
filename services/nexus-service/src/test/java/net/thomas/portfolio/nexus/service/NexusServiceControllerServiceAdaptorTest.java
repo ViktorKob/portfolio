@@ -66,9 +66,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
@@ -94,6 +94,7 @@ import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter;
 
 /***
@@ -110,11 +111,31 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@TestConfiguration
 	static class HbaseServiceMockSetup {
-		@Bean(name = "HbaseIndexModelAdaptor")
+		@Bean(name = "AnalyticsAdaptor")
+		public AnalyticsAdaptor getAnalyticsAdaptor() {
+			return mock(AnalyticsAdaptorImpl.class);
+		}
+
+		@Bean(name = "HbaseAdaptor")
 		public HbaseIndexModelAdaptor getHbaseModelAdaptor() {
 			final HbaseIndexModelAdaptor adaptor = mock(HbaseIndexModelAdaptorImpl.class);
 			setUpHbaseAdaptorMock(adaptor);
 			return adaptor;
+		}
+
+		@Bean(name = "LegalAdaptor")
+		public LegalAdaptor getLegalAdaptor() {
+			return mock(LegalAdaptorImpl.class);
+		}
+
+		@Bean(name = "RenderingAdaptor")
+		public RenderingAdaptor getRenderingAdaptor() {
+			return mock(RenderingAdaptorImpl.class);
+		}
+
+		@Bean(name = "UsageAdaptor")
+		public UsageAdaptor getUsageAdaptor() {
+			return mock(UsageAdaptorImpl.class);
 		}
 	}
 
@@ -126,14 +147,15 @@ public class NexusServiceControllerServiceAdaptorTest {
 	}
 
 	@Autowired
-	private HbaseIndexModelAdaptor hbaseAdaptor;
-	@MockBean(name = "AnalyticsAdaptor", classes = { AnalyticsAdaptorImpl.class })
 	private AnalyticsAdaptor analyticsAdaptor;
-	@MockBean(name = "LegalAdaptor", classes = { LegalAdaptorImpl.class })
+	@Autowired
+	@Qualifier("HbaseAdaptor")
+	private HbaseIndexModelAdaptor hbaseAdaptor;
+	@Autowired
 	private LegalAdaptor legalAdaptor;
-	@MockBean(name = "RenderAdaptor", classes = { RenderingAdaptorImpl.class })
+	@Autowired
 	private RenderingAdaptor renderingAdaptor;
-	@MockBean(name = "UsageAdaptor", classes = { UsageAdaptorImpl.class })
+	@Autowired
 	private UsageAdaptor usageAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
@@ -265,7 +287,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldReturnSuggestionBasedOnSimpleRep() {
 		final DataTypeId someId = EXAMPLE_IDS.get(SIMPLE_TYPE);
-		when(hbaseAdaptor.getSelectorSuggestions(eq(SOME_SIMPLE_REP))).thenReturn(singletonList(someId));
+		when(hbaseAdaptor.getSelectorSuggestions(eq(SOME_SIMPLE_REP))).thenReturn(singletonList(new Selector(someId)));
 		queryBuilder.addVariable("simpleRepresentation", SOME_SIMPLE_REP);
 		queryBuilder.setSuggestionsToSelectorsQuery();
 		assertEquals(someId.uid, executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", "suggest", "uid"));
