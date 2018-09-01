@@ -66,7 +66,7 @@ public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, 
 				// We try again until we succeed or the service is closed from the outside
 			}
 		}
-		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(500).build(buildDataTypeCacheLoader(client));
+		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(200).build(buildDataTypeCacheLoader(client));
 	}
 
 	private CacheLoader<DataTypeId, DataType> buildDataTypeCacheLoader(HttpRestClient client) {
