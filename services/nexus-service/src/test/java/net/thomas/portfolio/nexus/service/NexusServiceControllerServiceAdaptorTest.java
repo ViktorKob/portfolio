@@ -99,7 +99,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter
 
 /***
  * These tests are currently all being kept in the same class to encourage running them before
- * checking in. The class has a startup time of around 7 seconds while each test takes less than 10
+ * checking in. The class has a startup time of around 10 seconds while each test takes less than 50
  * ms. Splitting it up would slow down the test suite considerably so I chose speed over separation
  * here.
  */
@@ -162,6 +162,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 	private HttpRestClient httpClient;
 	private GraphQlQueryTestExecutionUtil executionUtil;
 	private GraphQlQueryBuilder queryBuilder;
+	private UsageActivityTestUtil usageActivityTestUtil;
 
 	@Before
 	public void setupForTest() {
@@ -171,6 +172,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
 		executionUtil = new GraphQlQueryTestExecutionUtil(httpClient);
 		queryBuilder = new GraphQlQueryBuilder();
+		usageActivityTestUtil = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 	}
 
 	// ***************************************
@@ -513,52 +515,56 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldFetchUsageActivitiesAfterOffset() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(OFFSET, SOME_OFFSET);
+		usageActivityTestUtil.setupFetchWithArgument(OFFSET, SOME_OFFSET);
+		usageActivityTestUtil.setupMockedResponse(OFFSET, SOME_OFFSET);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesBeforeLimit() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(LIMIT, SOME_LIMIT);
+		usageActivityTestUtil.setupFetchWithArgument(LIMIT, SOME_LIMIT);
+		usageActivityTestUtil.setupMockedResponse(LIMIT, SOME_LIMIT);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesAfterDate() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(AFTER, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupFetchWithArgument(AFTER, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupMockedResponse(AFTER, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesAfterFormattedDateTime() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(AFTER_DATE, SOME_FORMATTED_TIMESTAMP, AFTER, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupFetchWithArgument(AFTER_DATE, SOME_FORMATTED_TIMESTAMP);
+		usageActivityTestUtil.setupMockedResponse(AFTER, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldReportMeaningfullErrorWhenAfterDateFormatIsInvalid() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		final String[] expectedFragments = new String[] { "Unable to parse", AFTER_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP };
-		util.assertThatFetchUsageActivityWithInvalidArgumentReturnErrorMessageFragments(AFTER_DATE, SOME_INVALID_FORMATTED_TIMESTAMP, expectedFragments);
+		usageActivityTestUtil.setupFetchWithArgument(AFTER_DATE, SOME_INVALID_FORMATTED_TIMESTAMP);
+		usageActivityTestUtil.executeAndVerifyErrorMessage(new String[] { "Unable to parse", AFTER_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP });
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesBeforeDateTime() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(BEFORE, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupFetchWithArgument(BEFORE, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupMockedResponse(BEFORE, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldFetchUsageActivitiesBeforeFormattedDate() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(BEFORE_DATE, SOME_FORMATTED_TIMESTAMP, BEFORE, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.setupFetchWithArgument(BEFORE_DATE, SOME_FORMATTED_TIMESTAMP);
+		usageActivityTestUtil.setupMockedResponse(BEFORE, SOME_TIMESTAMP_VALUE);
+		usageActivityTestUtil.executeAndVerifyResponse();
 	}
 
 	@Test
 	public void shouldReportMeaningfullErrorWhenBeforeDateFormatIsInvalid() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		final String[] expectedFragments = new String[] { "Unable to parse", BEFORE_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP };
-		util.assertThatFetchUsageActivityWithInvalidArgumentReturnErrorMessageFragments(BEFORE_DATE, SOME_INVALID_FORMATTED_TIMESTAMP, expectedFragments);
+		usageActivityTestUtil.setupFetchWithArgument(BEFORE_DATE, SOME_INVALID_FORMATTED_TIMESTAMP);
+		usageActivityTestUtil.executeAndVerifyErrorMessage(new String[] { "Unable to parse", BEFORE_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP });
 	}
 
 	// ***************************************
@@ -566,10 +572,9 @@ public class NexusServiceControllerServiceAdaptorTest {
 	// ***************************************
 	@Test
 	public void shouldStoreUsageActivity() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		util.setupDefaultStoreUsageActivityCall(someId);
+		usageActivityTestUtil.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "activityType");
 		executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", "activityType");
 		verify(usageAdaptor, times(1)).storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)));
@@ -577,28 +582,27 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectUser() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertDefaultMutationReturnsCorrectValueForField("user", SOME_USAGE_ACTIVITY.user);
+		usageActivityTestUtil.setupDefaultMutationAndLookupField("user");
+		usageActivityTestUtil.executeAndVerifyValueForField("user", SOME_USAGE_ACTIVITY.user);
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectActivityType() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertDefaultMutationReturnsCorrectValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
+		usageActivityTestUtil.setupDefaultMutationAndLookupField("activityType");
+		usageActivityTestUtil.executeAndVerifyValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectTimeOfActivity() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
-		util.assertDefaultMutationReturnsCorrectValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
+		usageActivityTestUtil.setupDefaultMutationAndLookupField("timeOfActivity");
+		usageActivityTestUtil.executeAndVerifyValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectFormattedTimeOfActivity() {
-		final UsageActivityTestUtil util = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(usageAdaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
-		util.setupDefaultStoreUsageActivityCall(someId);
+		usageActivityTestUtil.setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, "formattedTimeOfActivity");
 		assertEquals(SOME_FORMATTED_TIMESTAMP, executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity",
 				DOCUMENT_TYPE, "add", "formattedTimeOfActivity"));
