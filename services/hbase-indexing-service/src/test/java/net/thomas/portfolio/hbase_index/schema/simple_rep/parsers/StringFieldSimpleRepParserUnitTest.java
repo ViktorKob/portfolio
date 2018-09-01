@@ -4,7 +4,6 @@ import static net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.StringF
 import static net.thomas.portfolio.hbase_index.test_utils.DataTypeFieldMatcher.matchesField;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -13,8 +12,6 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
-import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.StringFieldSimpleRepParser;
 import net.thomas.portfolio.hbase_index.schema.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -35,26 +32,6 @@ public class StringFieldSimpleRepParserUnitTest {
 	public void shouldParseSimpleRepAndBuildSelector() {
 		final Selector selector = parser.parse(TYPE, SIMPLE_REP);
 		assertEquals(ID, selector.getId());
-	}
-
-	@Test
-	public void shouldAlwaysReturnSameHashCode() {
-		assertEquals(parser.hashCode(), newStringFieldParser(TYPE, FIELD, idCalculatorMock).hashCode());
-	}
-
-	@Test
-	public void shouldBeEqualIfSameTypeAndNotNull() {
-		assertEquals(parser, newStringFieldParser(TYPE, FIELD, idCalculatorMock));
-	}
-
-	@Test
-	public void shouldNotBeEqualIfDifferentType() {
-		assertNotEquals(parser, "");
-	}
-
-	@Test
-	public void shouldNotBeEqualIfNull() {
-		assertNotEquals(parser, (DomainSimpleRepParser) null);
 	}
 
 	@Test

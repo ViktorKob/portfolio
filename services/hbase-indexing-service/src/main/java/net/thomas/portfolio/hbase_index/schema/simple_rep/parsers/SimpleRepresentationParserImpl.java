@@ -5,19 +5,12 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParser;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.hbase_index.schema.util.IdCalculator;
-import net.thomas.portfolio.hbase_index.schema.util.ParserDeserializer;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonDeserialize(using = ParserDeserializer.class)
 public abstract class SimpleRepresentationParserImpl implements SimpleRepresentationParser<String, Selector> {
 	private final String type;
 	private final Pattern pattern;
@@ -40,8 +33,7 @@ public abstract class SimpleRepresentationParserImpl implements SimpleRepresenta
 
 	@Override
 	public boolean hasValidFormat(String source) {
-		return pattern.matcher(source)
-			.matches();
+		return pattern.matcher(source).matches();
 	}
 
 	@Override
@@ -56,21 +48,6 @@ public abstract class SimpleRepresentationParserImpl implements SimpleRepresenta
 
 	protected void populateUid(final Selector selector, String type) {
 		selector.setId(idCalculator.calculate(type, selector));
-	}
-
-	public abstract String getImplementationClass();
-
-	public String getPattern() {
-		return pattern.toString();
-	}
-
-	public IdCalculator getIdCalculator() {
-		return idCalculator;
-	}
-
-	@JsonIgnore
-	public SimpleRepresentationParserLibrary getLibrary() {
-		return library;
 	}
 
 	@Override

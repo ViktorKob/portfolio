@@ -122,11 +122,6 @@ public class SimpleRepresentationParserLibraryImplUnitTest {
 		@Override
 		protected void populateValues(DataType entity, String source) {
 		}
-
-		@Override
-		public String getImplementationClass() {
-			return getClass().getSimpleName();
-		}
 	}
 
 	private static final String SOME_TYPE = "TYPE";
