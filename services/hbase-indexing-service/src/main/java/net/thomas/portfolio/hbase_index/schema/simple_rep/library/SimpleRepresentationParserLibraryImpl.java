@@ -22,6 +22,7 @@ public class SimpleRepresentationParserLibraryImpl implements SimpleRepresentati
 		}
 	}
 
+	@Override
 	public void setSelectorTypes(Collection<String> selectorTypes) {
 		this.selectorTypes = selectorTypes;
 	}
@@ -61,36 +62,6 @@ public class SimpleRepresentationParserLibraryImpl implements SimpleRepresentati
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (parsers == null ? 0 : parsers.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof SimpleRepresentationParserLibraryImpl)) {
-			return false;
-		}
-		final SimpleRepresentationParserLibraryImpl other = (SimpleRepresentationParserLibraryImpl) obj;
-		if (parsers == null) {
-			if (other.parsers != null) {
-				return false;
-			}
-		} else if (!parsers.equals(other.parsers)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override

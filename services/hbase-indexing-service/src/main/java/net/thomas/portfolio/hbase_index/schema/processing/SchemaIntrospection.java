@@ -81,7 +81,7 @@ public class SchemaIntrospection {
 		if (parser == StringFieldSimpleRepParser.class) {
 			parserLibraryBuilder.addStringFieldParser(selectorType, field);
 		} else if (parser == PositiveIntegerFieldSimpleRepParser.class) {
-			parserLibraryBuilder.addIntegerFieldParser(selectorType, field);
+			parserLibraryBuilder.addPositiveIntegerFieldParser(selectorType, field);
 		} else if (parser == DomainSimpleRepParser.class) {
 			parserLibraryBuilder.addDomainParser();
 		} else if (parser == EmailAddressSimpleRepParser.class) {

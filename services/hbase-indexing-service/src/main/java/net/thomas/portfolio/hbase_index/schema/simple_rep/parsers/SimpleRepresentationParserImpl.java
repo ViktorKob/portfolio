@@ -32,19 +32,19 @@ public abstract class SimpleRepresentationParserImpl implements SimpleRepresenta
 	}
 
 	@Override
-	public boolean hasValidFormat(String source) {
-		return pattern.matcher(source).matches();
+	public boolean hasValidFormat(String simpleRepresentation) {
+		return pattern.matcher(simpleRepresentation).matches();
 	}
 
 	@Override
-	public Selector parse(String type, String source) {
+	public Selector parse(String type, String simpleRepresentation) {
 		final Selector selector = new Selector();
-		populateValues(selector, source);
+		populateValues(selector, simpleRepresentation);
 		populateUid(selector, type);
 		return selector;
 	}
 
-	protected abstract void populateValues(DataType entity, String source);
+	protected abstract void populateValues(DataType entity, String simpleRepresentation);
 
 	protected void populateUid(final Selector selector, String type) {
 		selector.setId(idCalculator.calculate(type, selector));

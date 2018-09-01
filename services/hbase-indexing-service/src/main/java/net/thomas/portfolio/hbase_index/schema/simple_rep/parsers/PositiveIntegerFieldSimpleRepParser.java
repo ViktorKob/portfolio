@@ -30,9 +30,9 @@ public class PositiveIntegerFieldSimpleRepParser extends SimpleRepresentationPar
 	}
 
 	@Override
-	protected void populateValues(DataType entity, String source) {
-		source = removableCharactersPattern.matcher(source).replaceAll("");
-		entity.put(field, source);
+	protected void populateValues(DataType entity, String simpleRepresentation) {
+		simpleRepresentation = removableCharactersPattern.matcher(simpleRepresentation).replaceAll("");
+		entity.put(field, simpleRepresentation);
 	}
 
 	public String getField() {

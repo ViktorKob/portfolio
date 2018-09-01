@@ -19,16 +19,16 @@ public class DomainSimpleRepParser extends SimpleRepresentationParserImpl {
 	}
 
 	@Override
-	protected void populateValues(DataType entity, String source) {
-		if (source.charAt(0) == '.') {
-			source = source.substring(1);
+	protected void populateValues(DataType entity, String simpleRepresentation) {
+		if (simpleRepresentation.charAt(0) == '.') {
+			simpleRepresentation = simpleRepresentation.substring(1);
 		}
-		if (source.contains(".")) {
-			final int firstDot = source.indexOf('.');
-			entity.put("domainPart", source.substring(0, firstDot));
-			entity.put("domain", library.parse("Domain", source.substring(firstDot)));
+		if (simpleRepresentation.contains(".")) {
+			final int firstDot = simpleRepresentation.indexOf('.');
+			entity.put("domainPart", simpleRepresentation.substring(0, firstDot));
+			entity.put("domain", library.parse("Domain", simpleRepresentation.substring(firstDot)));
 		} else {
-			entity.put("domainPart", source);
+			entity.put("domainPart", simpleRepresentation);
 		}
 	}
 

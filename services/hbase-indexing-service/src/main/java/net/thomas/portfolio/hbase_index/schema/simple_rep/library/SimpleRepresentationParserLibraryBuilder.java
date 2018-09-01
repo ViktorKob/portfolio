@@ -44,7 +44,7 @@ public class SimpleRepresentationParserLibraryBuilder {
 		return this;
 	}
 
-	public SimpleRepresentationParserLibraryBuilder addIntegerFieldParser(final String type, final String field) {
+	public SimpleRepresentationParserLibraryBuilder addPositiveIntegerFieldParser(final String type, final String field) {
 		add(newPositiveIntegerFieldParser(type, field, createIdCalculator(dataTypeFields.get(type))));
 		return this;
 	}
