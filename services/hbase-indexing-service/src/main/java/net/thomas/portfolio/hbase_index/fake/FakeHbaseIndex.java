@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.fake;
 
 import static java.lang.Math.random;
+import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import net.thomas.portfolio.hbase_index.schema.processing.data.SelectorStatistic
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityVisitor;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorEntityPostAction;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.factories.VisitorEntityPostActionFactory;
-import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.BlankVisitingContext;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.BlankContext;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.strict_implementation.StrictEntityHierarchyVisitorBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
@@ -38,12 +39,12 @@ public class FakeHbaseIndex implements HbaseIndex {
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics selectorStatistics;
 	private final Entity2DataTypeConverter entity2DataTypeConverter;
-	private final EntityVisitor<BlankVisitingContext> entityExtractor;
+	private final EntityVisitor<BlankContext> entityExtractor;
 	private EventReader events;
 
 	public FakeHbaseIndex() {
 		storage = new HashMap<>();
-		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankVisitingContext>().setEntityPostActionFactory(createActionFactory()).build();
+		entityExtractor = new StrictEntityHierarchyVisitorBuilder<BlankContext>().setEntityPostActionFactory(createActionFactory()).build();
 		entity2DataTypeConverter = new Entity2DataTypeConverter();
 	}
 
@@ -60,15 +61,20 @@ public class FakeHbaseIndex implements HbaseIndex {
 	}
 
 	public void addEntitiesAndChildren(final Iterable<Event> entities) {
+		System.out.println("Starting inverted index step");
+		final long stamp = currentTimeMillis();
+		long eventCount = 0;
 		for (final Event entity : entities) {
-			entityExtractor.visit(entity, new BlankVisitingContext());
+			entityExtractor.visit(entity, new BlankContext());
+			eventCount++;
 		}
+		System.out.println("Seconds spend caching selectors for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 	}
 
-	private VisitorEntityPostActionFactory<BlankVisitingContext> createActionFactory() {
-		final VisitorEntityPostActionFactory<BlankVisitingContext> actionFactory = new VisitorEntityPostActionFactory<BlankVisitingContext>() {
+	private VisitorEntityPostActionFactory<BlankContext> createActionFactory() {
+		final VisitorEntityPostActionFactory<BlankContext> actionFactory = new VisitorEntityPostActionFactory<BlankContext>() {
 			@Override
-			public <T extends Entity> VisitorEntityPostAction<T, BlankVisitingContext> getEntityPostAction(final Class<T> entityClass) {
+			public <T extends Entity> VisitorEntityPostAction<T, BlankContext> getEntityPostAction(final Class<T> entityClass) {
 				if (!Event.class.isAssignableFrom(entityClass)) {
 					return (entity, context) -> {
 						addEntity(entity);
