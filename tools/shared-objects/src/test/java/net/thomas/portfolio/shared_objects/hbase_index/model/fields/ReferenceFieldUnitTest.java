@@ -6,7 +6,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Refer
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.nonKeyDataTypeArray;
 import static net.thomas.portfolio.testing_tools.EqualsTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.testing_tools.HashCodeTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserializeAsType;
 import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
@@ -61,10 +61,7 @@ public class ReferenceFieldUnitTest {
 
 	@Test
 	public void checkValuesForFieldBuilder() {
-		field = new ReferenceField.ReferenceFieldBuilder(SOME_NAME).setType(SOME_TYPE)
-			.markIsArray()
-			.markIsPartOfKey()
-			.build();
+		field = new ReferenceField.ReferenceFieldBuilder(SOME_NAME).setType(SOME_TYPE).markIsArray().markIsPartOfKey().build();
 		assertEquals(SOME_NAME, field.getName());
 		assertEquals(SOME_TYPE, field.getType());
 		assertTrue(field.isArray());
@@ -73,10 +70,10 @@ public class ReferenceFieldUnitTest {
 
 	@Test
 	public void shouldHaveSymmetricProtocol() {
-		assertCanSerializeAndDeserialize(dataType(SOME_NAME, SOME_TYPE));
-		assertCanSerializeAndDeserialize(dataTypeArray(SOME_NAME, SOME_TYPE));
-		assertCanSerializeAndDeserialize(nonKeyDataType(SOME_NAME, SOME_TYPE));
-		assertCanSerializeAndDeserialize(nonKeyDataTypeArray(SOME_NAME, SOME_TYPE));
+		assertCanSerializeAndDeserializeAsType(dataType(SOME_NAME, SOME_TYPE), Field.class);
+		assertCanSerializeAndDeserializeAsType(dataTypeArray(SOME_NAME, SOME_TYPE), Field.class);
+		assertCanSerializeAndDeserializeAsType(nonKeyDataType(SOME_NAME, SOME_TYPE), Field.class);
+		assertCanSerializeAndDeserializeAsType(nonKeyDataTypeArray(SOME_NAME, SOME_TYPE), Field.class);
 	}
 
 	@Test

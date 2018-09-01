@@ -18,7 +18,7 @@ import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Primi
 import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.PrimitiveType.TIMESTAMP;
 import static net.thomas.portfolio.testing_tools.EqualsTestUtil.assertEqualsIsValidIncludingNullChecks;
 import static net.thomas.portfolio.testing_tools.HashCodeTestUtil.assertHashCodeIsValidIncludingNullChecks;
-import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserializeAsType;
 import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserializeWithNullValues;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
@@ -195,10 +195,7 @@ public class PrimitiveFieldUnitTest {
 
 	@Test
 	public void checkValuesForFieldBuilder() {
-		field = new PrimitiveField.PrimitiveFieldBuilder(SOME_NAME).setType(String.class)
-			.markIsArray()
-			.markIsPartOfKey()
-			.build();
+		field = new PrimitiveField.PrimitiveFieldBuilder(SOME_NAME).setType(String.class).markIsArray().markIsPartOfKey().build();
 		assertEquals(SOME_NAME, field.getName());
 		assertEquals(STRING, field.getType());
 		assertTrue(field.isArray());
@@ -207,11 +204,11 @@ public class PrimitiveFieldUnitTest {
 
 	@Test
 	public void shouldHaveSymmetricProtocol() {
-		assertCanSerializeAndDeserialize(string(SOME_NAME));
-		assertCanSerializeAndDeserialize(strings(SOME_NAME));
-		assertCanSerializeAndDeserialize(decimal(SOME_NAME));
-		assertCanSerializeAndDeserialize(geoLocation(SOME_NAME));
-		assertCanSerializeAndDeserialize(timestamp(SOME_NAME));
+		assertCanSerializeAndDeserializeAsType(string(SOME_NAME), Field.class);
+		assertCanSerializeAndDeserializeAsType(strings(SOME_NAME), Field.class);
+		assertCanSerializeAndDeserializeAsType(decimal(SOME_NAME), Field.class);
+		assertCanSerializeAndDeserializeAsType(geoLocation(SOME_NAME), Field.class);
+		assertCanSerializeAndDeserializeAsType(timestamp(SOME_NAME), Field.class);
 	}
 
 	@Test

@@ -4,7 +4,6 @@ import static net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.EmailAd
 import static net.thomas.portfolio.hbase_index.test_utils.DataTypeFieldMatcher.matchesFields;
 import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -17,8 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
-import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.DomainSimpleRepParser;
-import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.EmailAddressSimpleRepParser;
 import net.thomas.portfolio.hbase_index.schema.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -41,26 +38,6 @@ public class EmailAddressSimpleRepParserUnitTest {
 	public void shouldParseEmailAddress() {
 		final Selector selector = parser.parse(EMAIL_ADDRESS_TYPE, EMAIL_ADDRESS_SIMPLE_REP);
 		assertEquals(ID, selector.getId());
-	}
-
-	@Test
-	public void shouldAlwaysReturnSameHashCode() {
-		assertEquals(parser.hashCode(), newEmailAddressParser(idCalculatorMock).hashCode());
-	}
-
-	@Test
-	public void shouldBeEqualIfSameTypeAndNotNull() {
-		assertEquals(parser, newEmailAddressParser(idCalculatorMock));
-	}
-
-	@Test
-	public void shouldNotBeEqualIfDifferentType() {
-		assertNotEquals(parser, "");
-	}
-
-	@Test
-	public void shouldNotBeEqualIfNull() {
-		assertNotEquals(parser, (DomainSimpleRepParser) null);
 	}
 
 	@Test

@@ -13,9 +13,7 @@ import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.parsers.SimpleRepresentationParserImpl;
-import net.thomas.portfolio.hbase_index.schema.util.IdCalculator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -35,14 +33,6 @@ public class SimpleRepresentationParserUnitTest {
 		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
 		final String type = parser.getType();
 		assertEquals(TYPE, type);
-	}
-
-	@Test
-	public void shouldSetLibraryAsFieldInParser() {
-		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
-		final SimpleRepresentationParserLibrary libraryMock = mock(SimpleRepresentationParserLibrary.class);
-		parser.setLibrary(libraryMock);
-		assertSame(libraryMock, parser.getLibrary());
 	}
 
 	@Test
@@ -72,14 +62,6 @@ public class SimpleRepresentationParserUnitTest {
 	}
 
 	@Test
-	public void shouldContainLibrary() {
-		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
-		final SimpleRepresentationParserLibrary library = mock(SimpleRepresentationParserLibrary.class);
-		parser.setLibrary(library);
-		assertSame(library, parser.getLibrary());
-	}
-
-	@Test
 	public void shouldHaveToString() {
 		final TestSimpleRepresentationParser parser = new TestSimpleRepresentationParser(TYPE, ANY_PATTERN, idCalculatorMock);
 		assertToStringContainsAllFieldsFromObject(parser);
@@ -100,18 +82,8 @@ public class SimpleRepresentationParserUnitTest {
 		}
 
 		@Override
-		public SimpleRepresentationParserLibrary getLibrary() {
-			return library;
-		}
-
-		@Override
 		protected void populateValues(DataType entity, String source) {
 			entity.put(FIELD, VALUE);
-		}
-
-		@Override
-		public String getImplementationClass() {
-			return getClass().getSimpleName();
 		}
 	}
 }

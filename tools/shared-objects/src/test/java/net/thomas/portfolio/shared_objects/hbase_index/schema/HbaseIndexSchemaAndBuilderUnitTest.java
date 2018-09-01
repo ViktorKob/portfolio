@@ -1,4 +1,4 @@
-package net.thomas.portfolio.hbase_index.schema;
+package net.thomas.portfolio.shared_objects.hbase_index.schema;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
@@ -16,7 +16,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaBuilder;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
-public class HbaseIndexSchemaAndSchemaBuilderUnitTest {
+public class HbaseIndexSchemaAndBuilderUnitTest {
 	private HbaseIndexSchemaBuilder schemaBuilder;
 
 	@Before

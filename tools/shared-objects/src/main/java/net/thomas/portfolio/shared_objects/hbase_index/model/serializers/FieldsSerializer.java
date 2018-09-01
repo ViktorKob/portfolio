@@ -1,6 +1,7 @@
 package net.thomas.portfolio.shared_objects.hbase_index.model.serializers;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,30 +30,34 @@ public class FieldsSerializer extends StdSerializer<Map<String, Object>> {
 		for (final Entry<String, Object> field : value.entrySet()) {
 			final Object fieldValue = field.getValue();
 			if (fieldValue != null) {
-				writeField(generator, provider, field, fieldValue);
+				writeField(generator, provider, field.getKey(), fieldValue);
 			}
 		}
 		generator.writeEndObject();
 	}
 
-	private void writeField(JsonGenerator generator, SerializerProvider provider, final Entry<String, Object> field, final Object fieldValue)
+	private void writeField(JsonGenerator generator, SerializerProvider provider, String fieldName, final Object fieldValue)
 			throws IOException, JsonMappingException {
-		generator.writeFieldName(field.getKey());
-		if (isArray(fieldValue)) {
+		generator.writeFieldName(fieldName);
+		writeValue(generator, provider, fieldValue);
+	}
+
+	private void writeValue(JsonGenerator generator, SerializerProvider provider, final Object fieldValue) throws IOException, JsonMappingException {
+		if (isPlural(fieldValue)) {
 			generator.writeStartArray();
-			generator.writeString(fieldValue.toString());
+			for (final Object fieldSubValue : (Collection<?>) fieldValue) {
+				writeValue(generator, provider, fieldSubValue);
+			}
 			generator.writeEndArray();
 		} else if (fieldValue instanceof DataType) {
 			final DataType subType = (DataType) fieldValue;
-			provider.findTypedValueSerializer(DataType.class, false, null)
-				.serialize(subType, generator, provider);
+			provider.findTypedValueSerializer(DataType.class, false, null).serialize(subType, generator, provider);
 		} else {
 			generator.writeObject(fieldValue);
 		}
 	}
 
-	private boolean isArray(final Object object) {
-		return object.getClass()
-			.isArray();
+	private boolean isPlural(final Object object) {
+		return object.getClass().isArray() || object instanceof Collection;
 	}
 }

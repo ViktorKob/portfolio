@@ -33,21 +33,6 @@ public class DomainSimpleRepParser extends SimpleRepresentationParserImpl {
 	}
 
 	@Override
-	public String getImplementationClass() {
-		return getClass().getSimpleName();
-	}
-
-	@Override
-	public int hashCode() {
-		return 1;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return obj != null && obj instanceof DomainSimpleRepParser;
-	}
-
-	@Override
 	public String toString() {
 		return asString(this);
 	}
