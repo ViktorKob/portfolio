@@ -26,33 +26,32 @@ public class UsageActivityTestUtil {
 	private final GraphQlQueryBuilder queryBuilder;
 	private final UsageAdaptor adaptor;
 	private final GraphQlQueryTestExecutionUtil executionUtil;
+	private final DataTypeId someId;
 
 	public UsageActivityTestUtil(final GraphQlQueryBuilder queryBuilder, final UsageAdaptor adaptor, final GraphQlQueryTestExecutionUtil executionUtil) {
 		this.queryBuilder = queryBuilder;
 		this.adaptor = adaptor;
 		this.executionUtil = executionUtil;
+		someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 	}
 
-	public void assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(final GraphQlArgument argument, final Object value) {
-		assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(argument, value, argument, value);
-	}
-
-	public void assertThatFetchUsageActivityWithArgumentFunctionsCorrectly(final GraphQlArgument argumentToLookUp, final Object valueToLookUp,
-			final GraphQlArgument argumentToLookFor, final Object valueToLookFor) {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		when(adaptor.fetchUsageActivities(eq(someId), argThat(matches(bound(argumentToLookFor), valueToLookFor)))).thenReturn(SOME_USAGE_ACTIVITIES);
-		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+	public void setupFetchWithArgument(final GraphQlArgument argumentToLookUp, final Object valueToLookUp) {
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.setUidAndUsageActivityArgumentToFieldValueQuery(DOCUMENT_TYPE, argumentToLookUp, valueToLookUp, "activityType");
-		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(),
-				executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities", "activityType"));
 	}
 
-	public void assertThatFetchUsageActivityWithInvalidArgumentReturnErrorMessageFragments(final GraphQlArgument argument, final Object value,
-			final String... fragments) {
-		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
-		queryBuilder.addVariable("uid", someId.uid);
-		queryBuilder.setUidAndUsageActivityArgumentToFieldValueQuery(DOCUMENT_TYPE, argument, value, "activityType");
+	public void setupMockedResponse(final GraphQlArgument argumentToLookFor, final Object valueToLookFor) {
+		SOME_USAGE_ACTIVITIES.setActivities(singletonList(SOME_USAGE_ACTIVITY));
+		when(adaptor.fetchUsageActivities(eq(someId), argThat(matches(bound(argumentToLookFor), valueToLookFor)))).thenReturn(SOME_USAGE_ACTIVITIES);
+	}
+
+	public void executeAndVerifyResponse() {
+		final Object response = executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "data", DOCUMENT_TYPE, "usageActivities",
+				"activityType");
+		assertEquals(SOME_USAGE_ACTIVITY_TYPE.name(), response);
+	}
+
+	public void executeAndVerifyErrorMessage(final String... fragments) {
 		final String message = executionUtil.executeQueryAndLookupResponseAtPath(queryBuilder.build(), "errors", "message").toString();
 		for (final String fragment : fragments) {
 			assertTrue(message.contains(fragment));
@@ -67,12 +66,17 @@ public class UsageActivityTestUtil {
 		}
 	}
 
-	public void assertDefaultMutationReturnsCorrectValueForField(final String field, final Object value) {
+	public void setupDefaultMutationAndLookupField(final String field) {
 		final DataTypeId someId = EXAMPLE_IDS.get(DOCUMENT_TYPE);
 		when(adaptor.storeUsageActivity(eq(someId), argThat(matches(SOME_USER, SOME_USAGE_ACTIVITY_TYPE)))).thenReturn(SOME_USAGE_ACTIVITY);
 		setupDefaultStoreUsageActivityCall(someId);
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, field);
-		assertEquals(value, executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add", field));
+	}
+
+	public void executeAndVerifyValueForField(final String field, final Object value) {
+		final Object response = executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add",
+				field);
+		assertEquals(value, response);
 	}
 
 	public void setupDefaultStoreUsageActivityCall(final DataTypeId someId) {
