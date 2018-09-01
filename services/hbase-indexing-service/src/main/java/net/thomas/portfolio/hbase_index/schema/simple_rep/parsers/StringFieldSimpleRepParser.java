@@ -25,8 +25,8 @@ public class StringFieldSimpleRepParser extends SimpleRepresentationParserImpl {
 	}
 
 	@Override
-	protected void populateValues(DataType entity, String source) {
-		entity.put(field, source);
+	protected void populateValues(DataType entity, String simpleRepresentation) {
+		entity.put(field, simpleRepresentation);
 	}
 
 	public String getField() {
