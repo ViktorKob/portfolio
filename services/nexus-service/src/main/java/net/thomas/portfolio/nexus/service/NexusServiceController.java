@@ -64,7 +64,7 @@ public class NexusServiceController {
 		return new AnalyticsAdaptorImpl();
 	}
 
-	@Bean(name = "HbaseIndexModelAdaptor")
+	@Bean(name = "HbaseAdaptor")
 	public HbaseIndexModelAdaptor getHbaseIndexModelAdaptor() {
 		return new HbaseIndexModelAdaptorImpl();
 	}
