@@ -20,7 +20,7 @@
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphql-spring-boot-starter</artifactId>
 			<version>5.0.2</version>
-		</dependency> 
+		</dependency>
 		<dependency>
 			<groupId>com.graphql-java</groupId>
 			<artifactId>graphiql-spring-boot-starter</artifactId>
@@ -40,10 +40,11 @@
 			<artifactId>graphql-java</artifactId>
 			<version>10.0</version>
 		</dependency>
-		<!-- dependency> 
-		<groupId>com.graphql-java</groupId>
-		 <artifactId>voyager-spring-boot-starter</artifactId> 
-			<version>5.0.2</version> </dependency -->
+		<dependency>
+			<groupId>com.graphql-java</groupId>
+			<artifactId>voyager-spring-boot-starter</artifactId>
+			<version>5.0.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>

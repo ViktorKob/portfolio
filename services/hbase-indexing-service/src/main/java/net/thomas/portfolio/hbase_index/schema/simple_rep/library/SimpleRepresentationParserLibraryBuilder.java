@@ -35,10 +35,6 @@ public class SimpleRepresentationParserLibraryBuilder {
 		return this;
 	}
 
-	public SimpleRepresentationParserLibrary build() {
-		return new SimpleRepresentationParserLibraryImpl(parsers);
-	}
-
 	public SimpleRepresentationParserLibraryBuilder addStringFieldParser(final String type, final String field) {
 		add(newStringFieldParser(type, field, createIdCalculator(dataTypeFields.get(type))));
 		return this;
@@ -61,5 +57,11 @@ public class SimpleRepresentationParserLibraryBuilder {
 
 	private IdCalculator createIdCalculator(Fields fields) {
 		return new IdCalculator(fields, false);
+	}
+
+	public SimpleRepresentationParserLibrary build() {
+		final SimpleRepresentationParserLibraryImpl library = new SimpleRepresentationParserLibraryImpl(parsers);
+		library.setSelectorTypes(dataTypeFields.keySet());
+		return library;
 	}
 }
