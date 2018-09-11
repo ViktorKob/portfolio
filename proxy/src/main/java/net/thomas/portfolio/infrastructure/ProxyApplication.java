@@ -1,7 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.ProxyServiceParameters.loadProxyServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.ProxyServiceProperties.loadProxyServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

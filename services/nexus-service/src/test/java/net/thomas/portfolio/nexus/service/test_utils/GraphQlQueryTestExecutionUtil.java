@@ -44,7 +44,6 @@ public class GraphQlQueryTestExecutionUtil {
 	}
 
 	private Map<String, Object> executeMutation(final ParameterGroup parameterGroup) {
-		// TODO[Thomas]: Pending fix of authorization problem using post
 		return client.loadUrlAsObject(NEXUS_SERVICE, GRAPH_QL, GET, JSON, parameterGroup);
 	}
 

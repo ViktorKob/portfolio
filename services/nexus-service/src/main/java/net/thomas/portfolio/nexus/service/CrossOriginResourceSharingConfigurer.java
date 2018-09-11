@@ -6,9 +6,7 @@ import static org.springframework.http.HttpMethod.OPTIONS;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,9 +15,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * https://sandstorm.de/de/blog/post/cors-headers-for-spring-boot-kotlin-webflux-reactor-project.html
  * Added due to problem with cross site scripting requiring authentication
  */
-@Configuration
-@EnableWebMvc
-public class CrossSiteScriptingConfigurer implements WebMvcConfigurer {
+// @Configuration
+// @EnableWebMvc
+public class CrossOriginResourceSharingConfigurer implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new HandlerInterceptor() {

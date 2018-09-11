@@ -73,16 +73,17 @@ public class UsageActivityTestUtil {
 		queryBuilder.setUidActivityAndDocumentTypeToUsageActivityMutation(DOCUMENT_TYPE, field);
 	}
 
-	public void executeAndVerifyValueForField(final String field, final Object value) {
-		final Object response = executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add",
-				field);
-		assertEquals(value, response);
-	}
-
 	public void setupDefaultStoreUsageActivityCall(final DataTypeId someId) {
 		queryBuilder.markAsMutation();
 		queryBuilder.addVariable("uid", someId.uid);
 		queryBuilder.addVariable("activityType", SOME_USAGE_ACTIVITY_TYPE.name());
 		queryBuilder.addVariable("user", SOME_USER);
 	}
+
+	public void executeMutationAndVerifyValueForField(final String field, final Object value) {
+		final Object response = executionUtil.executeMutationAndLookupResponseAtPath(queryBuilder.build(), "data", "usageActivity", DOCUMENT_TYPE, "add",
+				field);
+		assertEquals(value, response);
+	}
+
 }

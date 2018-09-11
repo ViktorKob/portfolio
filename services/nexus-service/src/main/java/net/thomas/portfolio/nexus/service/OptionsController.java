@@ -1,5 +1,6 @@
 package net.thomas.portfolio.nexus.service;
 
+import static net.thomas.portfolio.services.ServiceGlobals.NEXUS_SERVICE_PATH;
 import static org.springframework.http.ResponseEntity.noContent;
 import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
 
@@ -8,12 +9,11 @@ import org.springframework.http.ResponseEntity.HeadersBuilder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.thomas.portfolio.services.ServiceGlobals;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @RestController
 public class OptionsController {
-	@RequestMapping(path = ServiceGlobals.NEXUS_SERVICE_PATH + "/graphql", method = OPTIONS)
+	@RequestMapping(path = NEXUS_SERVICE_PATH + "/graphql", method = OPTIONS)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
 		final HeadersBuilder<?> response = noContent();
 		response.header("Access-Control-Allow-Origin", "*");

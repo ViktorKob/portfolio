@@ -1,7 +1,7 @@
 package net.thomas.portfolio.nexus;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceProperties.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
@@ -17,7 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableHystrix
 public class NexusServiceApplication {
 	@Configuration
-	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
+	static class CorsBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
