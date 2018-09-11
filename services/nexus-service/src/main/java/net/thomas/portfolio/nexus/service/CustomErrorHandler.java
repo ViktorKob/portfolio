@@ -42,6 +42,8 @@ public class CustomErrorHandler extends DefaultGraphQLErrorHandler {
 	}
 
 	private static class SanitizedError extends ExceptionWhileDataFetching {
+		private static final long serialVersionUID = 1L;
+
 		public SanitizedError(final ExceptionWhileDataFetching error) {
 			super(rootPath(), error.getException(), null);
 		}

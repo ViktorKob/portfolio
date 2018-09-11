@@ -11,6 +11,6 @@ external-protocol: http://
 For development:
 ####################
 
-usage-data-service.database.password: ""
+usage-data-service.database.password: "computer"
 
 ####################

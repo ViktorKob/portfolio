@@ -1,25 +1,17 @@
 package net.thomas.portfolio.nexus.service;
 
-import static graphql.servlet.SimpleGraphQLServlet.builder;
-
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
-import graphql.servlet.GraphQLSchemaProvider;
-import graphql.servlet.GraphQLServletListener;
-import graphql.servlet.SimpleGraphQLServlet;
+import graphql.schema.GraphQLSchema;
+import graphql.servlet.GraphQLObjectMapper;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
@@ -113,18 +105,12 @@ public class NexusServiceController {
 	}
 
 	@Bean
-	public ServletRegistrationBean<SimpleGraphQLServlet> graphQLServletRegistrationBean() throws IOException {
-		final GraphQLSchemaProvider schemaProvider = new GraphQlModelBuilder().setAdaptors(adaptors).build();
-		final SimpleGraphQLServlet servlet = builder(schemaProvider).withGraphQLErrorHandler(new CustomErrorHandler()).build();
-		servlet.addListener(new CustomListener());
-		return new ServletRegistrationBean<>(servlet, "/schema.json", "/graphql/*");
+	public GraphQLSchema buildSchema() {
+		return new GraphQlModelBuilder().setAdaptors(adaptors).build();
 	}
 
-	class CustomListener implements GraphQLServletListener {
-		@Override
-		public RequestCallback onRequest(HttpServletRequest request, HttpServletResponse response) {
-			response.addHeader("Access-Control-Allow-Origin", "*");
-			return null;
-		}
+	@Bean
+	public GraphQLObjectMapper graphQLObjectMapper() {
+		return GraphQLObjectMapper.newBuilder().withGraphQLErrorHandler(new CustomErrorHandler()).build();
 	}
 }

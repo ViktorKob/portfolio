@@ -28,12 +28,28 @@ public class NexusServiceProperties {
 		// Unique settings:
 		// ####################
 
-		put("graphiql.endpoint", "${nexus-context-path}/graphql");
-		put("graphiql.servlet.mapping", "${nexus-context-path}/graphql");
-		put("graphiql.servlet.enabled", "true");
-		put("graphiql.servlet.corsEnabled", "true");
+		setupServlet();
+
 		put("management.endpoints.jmx.exposure.include", "*");
 
+		setupAdaptors();
+
+		put("logging.level.org.springframework", "INFO");
+		put("logging.level.springfox", "INFO");
+
+		setupHystrix();
+
+		// ####################
+	}
+
+	private static void setupServlet() {
+		put("graphql.servlet.corsEnabled", "true");
+
+		put("graphiql.pageTitle", "Portfolio GraphiQL interface");
+		put("graphiql.headers.Authorization", "Basic c2VydmljZS11c2VyOnBhc3N3b3Jk");
+	}
+
+	private static void setupAdaptors() {
 		put("nexus-service.analytics.name", "${analytics-service-name}");
 		put("nexus-service.analytics.credentials.user", "service-user");
 		put("nexus-service.analytics.credentials.password", "password");
@@ -53,17 +69,14 @@ public class NexusServiceProperties {
 		put("nexus-service.usage.name", "${usage-data-service-name}");
 		put("nexus-service.usage.credentials.user", "service-user");
 		put("nexus-service.usage.credentials.password", "password");
+	}
 
-		put("logging.level.org.springframework", "INFO");
-		put("logging.level.springfox", "INFO");
-
+	private static void setupHystrix() {
 		put("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", "5000");
 		put("hystrix.command.default.circuitBreaker.requestVolumeThreshold", "5");
 		put("hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds", "1000");
 		put("hystrix.command.default.metrics.rollingStats.timeInMilliseconds", "300000");
 		put("hystrix.command.default.metrics.rollingStats.numBuckets", "300");
-
-		// ####################
 	}
 
 	private static void put(String propertyId, String value) {

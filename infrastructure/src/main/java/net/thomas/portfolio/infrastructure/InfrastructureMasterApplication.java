@@ -1,7 +1,7 @@
 package net.thomas.portfolio.infrastructure;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.InfrastructureServiceParameters.loadInfrastructureServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.InfrastructureServiceProperties.loadInfrastructureServiceConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -23,13 +23,7 @@ public class InfrastructureMasterApplication {
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf()
-				.disable()
-				.authorizeRequests()
-				.anyRequest()
-				.authenticated()
-				.and()
-				.httpBasic();
+			http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 	}
 

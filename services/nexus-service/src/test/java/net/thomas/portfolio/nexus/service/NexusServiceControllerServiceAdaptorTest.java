@@ -39,7 +39,7 @@ import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.SOME
 import static net.thomas.portfolio.nexus.service.test_utils.GraphQlTestUtil.setUpHbaseAdaptorMock;
 import static net.thomas.portfolio.nexus.service.test_utils.UsageActivityMatcher.matches;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceProperties.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.NexusServiceProperties.loadNexusConfigurationIntoProperties;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static net.thomas.portfolio.shared_objects.legal.Legality.ILLEGAL;
@@ -76,6 +76,9 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import graphql.schema.GraphQLSchema;
+import graphql.servlet.DefaultGraphQLSchemaProvider;
+import graphql.servlet.GraphQLSchemaProvider;
 import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder;
 import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryTestExecutionUtil;
 import net.thomas.portfolio.nexus.service.test_utils.UsageActivityTestUtil;
@@ -110,7 +113,13 @@ public class NexusServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("nexus-service", 18100);
 
 	@TestConfiguration
-	static class HbaseServiceMockSetup {
+	static class ServiceMockSetup {
+		@Bean
+		public GraphQLSchemaProvider graphQLSchemaProvider(GraphQLSchema schema) {
+			// TODO[Thomas]: Pending fix of POST support for graphql in HttpRestClient
+			return new DefaultGraphQLSchemaProvider(schema, schema);
+		}
+
 		@Bean(name = "AnalyticsAdaptor")
 		public AnalyticsAdaptor getAnalyticsAdaptor() {
 			return mock(AnalyticsAdaptorImpl.class);
@@ -141,9 +150,9 @@ public class NexusServiceControllerServiceAdaptorTest {
 
 	@BeforeClass
 	public static void setupContextPath() {
-		loadNexusConfigurationIntoProperties();
-		loadDefaultServiceConfigurationIntoProperties();
 		loadServicePathsIntoProperties();
+		loadDefaultServiceConfigurationIntoProperties();
+		loadNexusConfigurationIntoProperties();
 	}
 
 	@Autowired
@@ -583,19 +592,19 @@ public class NexusServiceControllerServiceAdaptorTest {
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectUser() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("user");
-		usageActivityTestUtil.executeAndVerifyValueForField("user", SOME_USAGE_ACTIVITY.user);
+		usageActivityTestUtil.executeMutationAndVerifyValueForField("user", SOME_USAGE_ACTIVITY.user);
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectActivityType() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("activityType");
-		usageActivityTestUtil.executeAndVerifyValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
+		usageActivityTestUtil.executeMutationAndVerifyValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectTimeOfActivity() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("timeOfActivity");
-		usageActivityTestUtil.executeAndVerifyValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
+		usageActivityTestUtil.executeMutationAndVerifyValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
 	}
 
 	@Test

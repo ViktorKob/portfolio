@@ -3,7 +3,7 @@ package net.thomas.portfolio.analytics.service;
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
 import static net.thomas.portfolio.services.configuration.AnalyticsServiceProperties.loadAnalyticsConfigurationIntoProperties;
-import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceProperties.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;

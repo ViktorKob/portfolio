@@ -2,7 +2,7 @@ package net.thomas.portfolio.legal.service;
 
 import static java.util.Arrays.asList;
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceProperties.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.LegalServiceProperties.loadLegalConfigurationIntoProperties;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERTAIN;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;

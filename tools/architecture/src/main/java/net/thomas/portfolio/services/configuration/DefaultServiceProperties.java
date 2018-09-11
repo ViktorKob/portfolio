@@ -9,31 +9,11 @@ import java.util.Map.Entry;
 /***
  * Hard-coded configurations pending addition of config server
  */
-public class InfrastructureServiceParameters {
+public class DefaultServiceProperties {
 
 	public static final Map<String, String> SERVICE_PROPERTIES;
 	static {
 		SERVICE_PROPERTIES = new HashMap<>();
-		// ####################
-		// Service settings:
-		// ####################
-
-		put("service-context-path", "${infrastructure-context-path}");
-		put("service-name", "${infrastructure-service-name}");
-		put("service-status-page",
-				"${external-protocol}service-user:password@${external-service-address}${infrastructure-context-path}/hystrix/monitor?stream="
-						+ "${external-protocol}service-user%3Apassword%40${external-service-address}%2FNexusService%2Factuator%2F"
-						+ "hystrix.stream&delay=1000&title=Nexus%20Service%20Monitor");
-
-		// ####################
-		// Unique settings:
-		// ####################
-
-		put("eureka.server.enableSelfPreservation", "false");
-		put("ribbon.eureka.enabled", "true");
-		put("ribbon.eureka.ConnectTimeout", "2000");
-		put("ribbon.eureka.ReadTimeout", "600000");
-
 		// ####################
 		// Standard settings:
 		// ####################
@@ -67,19 +47,18 @@ public class InfrastructureServiceParameters {
 		put("eureka.instance.metadata-map.user.password", "${spring.security.user.password}");
 
 		put("eureka.client.register-with-eureka", "true");
-		put("eureka.client.fetch-registry", "false");
+		put("eureka.client.fetch-registry", "true");
 		put("eureka.client.registry-fetch-interval-seconds", "5");
 		put("eureka.client.service-url.defaultZone", "http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/");
 
 		// ####################
-
 	}
 
 	private static void put(String propertyId, String value) {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 
-	public static void loadInfrastructureServiceConfigurationIntoProperties() {
+	public static void loadDefaultServiceConfigurationIntoProperties() {
 		for (final Entry<String, String> property : SERVICE_PROPERTIES.entrySet()) {
 			setProperty(property.getKey(), property.getValue());
 		}

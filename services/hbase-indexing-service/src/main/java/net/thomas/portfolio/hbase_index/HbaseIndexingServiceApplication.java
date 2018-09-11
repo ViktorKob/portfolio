@@ -1,7 +1,7 @@
 package net.thomas.portfolio.hbase_index;
 
 import static net.thomas.portfolio.services.Service.loadServicePathsIntoProperties;
-import static net.thomas.portfolio.services.configuration.DefaultServiceParameters.loadDefaultServiceConfigurationIntoProperties;
+import static net.thomas.portfolio.services.configuration.DefaultServiceProperties.loadDefaultServiceConfigurationIntoProperties;
 import static net.thomas.portfolio.services.configuration.HbaseIndexingServiceProperties.loadHbaseIndexingConfigurationIntoProperties;
 import static org.springframework.boot.SpringApplication.run;
 import static springfox.documentation.builders.PathSelectors.any;
