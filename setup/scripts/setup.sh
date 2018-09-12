@@ -1,9 +1,10 @@
+sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get -y upgrade
 sudo ufw allow 22
 sudo ufw allow 80
 echo "y" | sudo ufw enable
-sudo apt-get -y install maven mysql-server git openjdk-8-jdk nginx
+sudo apt-get -y install maven mysql-server git oracle-java8-installer
 mkdir git
 cd git
 git config credential.helper store
