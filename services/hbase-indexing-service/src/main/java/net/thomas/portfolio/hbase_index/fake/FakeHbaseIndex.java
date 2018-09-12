@@ -61,7 +61,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 	}
 
 	public void addEntitiesAndChildren(final Iterable<Event> entities) {
-		System.out.println("Starting inverted index step");
+		System.out.println("Starting selector caching step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event entity : entities) {
