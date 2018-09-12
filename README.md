@@ -47,6 +47,7 @@ To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 83
 - Check out the entire repository.
 - Import the root pom into your favorite IDE.
 - Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.
+- If you are running linux, make sure the maximum number of open files is larger than 200K (ulimit -n to check).
 - Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
 - Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
 - Start the Proxy service from the proxy folder (net.thomas.portfolio.infrastructure.ProxyApplication). 
