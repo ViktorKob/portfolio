@@ -1,21 +1,11 @@
 echo "Updating sources and building packages"
 cd ~/git/portfolio
 git pull
-cd ~/git/portfolio/tools
-mvn clean install
-cd ~/git/portfolio/infrastructure
-mvn clean package
-cd ~/git/portfolio/admin
-mvn clean package
-cd ~/git/portfolio/proxy
-mvn clean package
-cd ~/git/portfolio/services
 mvn clean package
 
-cd 
+cd
 
 echo "Moving services to staging folder"
-mkdir -p ~/services 
 cp ~/git/portfolio/infrastructure/target/infrastructure-service.jar ~/services/
 cp ~/git/portfolio/admin/target/admin-service.jar ~/services/
 cp ~/git/portfolio/proxy/target/proxy-service.jar ~/services/
