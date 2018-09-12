@@ -1,5 +1,7 @@
 package net.thomas.portfolio.hbase_index.service;
 
+import static java.lang.System.currentTimeMillis;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -80,7 +82,10 @@ public class FakeIndexControl implements IndexControl {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
 		index.setEventReader(events);
 		new Thread(() -> {
+			System.out.println("Initializing data for service...");
+			final long stamp = currentTimeMillis();
 			processEventsIntoIndex(events, index);
+			System.out.println("Done initializing data for service in " + (currentTimeMillis() - stamp) / 1000 + " seconds.");
 		}).start();
 		return index;
 	}
