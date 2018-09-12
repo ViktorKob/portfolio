@@ -17,4 +17,8 @@ cp ~/git/portfolio/services/nexus-service/target/nexus-service.jar ~/services/
 cp ~/git/portfolio/services/render-service/target/render-service.jar ~/services/
 cp ~/git/portfolio/services/usage-data-service/target/usage-data-service.jar ~/services/
 
+cd ~/services
+mkdir -p infrastructure proxy admin analytics hbase-indexing legal nexus render usage-data  
+cd ~
+
 echo "Ready for deployment"
