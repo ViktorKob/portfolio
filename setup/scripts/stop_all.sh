@@ -1,4 +1,6 @@
+screen -S Proxy -X kill
 screen -S Infrastructure -X kill
+screen -S Admin -X kill
 screen -S Analytics -X kill
 screen -S Render -X kill
 screen -S Legal -X kill

@@ -4,6 +4,6 @@ mkdir -p ~/services/legal
 cp ~/services/legal-service.jar ~/services/legal/
 cd ~/services/legal/
 rm screenlog.0
-screen -S Legal -L -d -m java -Xmx128M -jar legal-service.jar
+screen -S Legal -L -d -m java -Xmx100M -jar legal-service.jar
 cd
 echo "Done (probably)"

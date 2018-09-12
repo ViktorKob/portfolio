@@ -4,7 +4,7 @@ mkdir -p ~/services/render
 cp ~/services/render-service.jar ~/services/render/
 cd ~/services/render/
 rm screenlog.0
-screen -S Render -L -d -m java -Xmx128M -jar render-service.jar
+screen -S Render -L -d -m java -Xmx100M -jar render-service.jar
 cd
 echo "Done (probably)"
 
