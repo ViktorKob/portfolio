@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -80,6 +81,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 	@TestConfiguration
 	static class ServiceBeansSetup {
+
 		@Bean
 		public HbaseIndexSchema getSchema() {
 			final HbaseIndexSchemaBuilder builder = new HbaseIndexSchemaBuilder();
@@ -90,7 +92,9 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 			builder.addDocumentTypes(DOCUMENT_TYPE);
 			builder.addSelectorTypes(SELECTOR_TYPE, SIMPLE_REPRESENTABLE_TYPE);
 			builder.addSimpleRepresentableTypes(SIMPLE_REPRESENTABLE_TYPE);
-			builder.addIndexable(SELECTOR_TYPE, "Path", DOCUMENT_TYPE, "Field");
+			builder.addIndexable(SELECTOR_TYPE, SOME_PATH, DOCUMENT_TYPE, "Field");
+			builder.addIndexable(SELECTOR_TYPE, SOME_PATH, ANOTHER_DOCUMENT_TYPE, "Field");
+			builder.addIndexable(SELECTOR_TYPE, ANOTHER_PATH, DOCUMENT_TYPE, "Field");
 			return builder.build();
 		}
 
@@ -285,6 +289,13 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
+	public void shouldGetNothingForUnknownSelector() {
+		when(index.getStatistics(eq(SOME_UNKNOWN_ID))).thenReturn(new Statistics());
+		final Statistics statistics = adaptors.getStatistics(SOME_UNKNOWN_ID);
+		assertNull(statistics);
+	}
+
+	@Test
 	public void shouldLookupSelectorInInvertedIndex() {
 		final Indexable indexable = new Indexable(SELECTOR_TYPE, "Path", DOCUMENT_TYPE, "Field");
 		when(index.invertedIndexLookup(eq(SOME_ID), eq(indexable)))
@@ -292,6 +303,9 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 		final DocumentInfos infos = adaptors
 				.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
 		assertEquals(SOME_ID, first(infos).getId());
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, DOCUMENT_TYPE, "Field")));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, ANOTHER_DOCUMENT_TYPE, "Field")));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, ANOTHER_PATH, DOCUMENT_TYPE, "Field")));
 	}
 
 	@Test
@@ -300,6 +314,25 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 				.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
 		assertNotNull(infos);
 		assertFalse(infos.hasData());
+	}
+
+	@Test
+	public void shouldAddDocumentTypeFilterToInvertedIndexLookup() {
+		when(index.invertedIndexLookup(any(), any())).thenReturn(new DocumentInfos());
+		adaptors.lookupSelectorInInvertedIndex(
+				new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), singleton(DOCUMENT_TYPE), emptySet()));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, DOCUMENT_TYPE, "Field")));
+		verify(index, times(0)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, ANOTHER_DOCUMENT_TYPE, "Field")));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, ANOTHER_PATH, DOCUMENT_TYPE, "Field")));
+	}
+
+	@Test
+	public void shouldAddRelationFilterToInvertedIndexLookup() {
+		when(index.invertedIndexLookup(any(), any())).thenReturn(new DocumentInfos());
+		adaptors.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), singleton(SOME_PATH)));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, DOCUMENT_TYPE, "Field")));
+		verify(index, times(1)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, SOME_PATH, ANOTHER_DOCUMENT_TYPE, "Field")));
+		verify(index, times(0)).invertedIndexLookup(eq(SOME_ID), eq(new Indexable(SELECTOR_TYPE, ANOTHER_PATH, DOCUMENT_TYPE, "Field")));
 	}
 
 	private Selector first(List<Selector> selectors) {
@@ -320,10 +353,14 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 
 	private static final String SELECTOR_TYPE = "SELECTOR_TYPE";
 	private static final String DOCUMENT_TYPE = "DOCUMENT_TYPE";
+	private static final String ANOTHER_DOCUMENT_TYPE = "ANOTHER_DOCUMENT_TYPE";
+	private static final String SOME_PATH = "Path";
+	private static final String ANOTHER_PATH = "ANOTHER_PATH";
 	private static final String RAW_DATA_TYPE = "RAW_TYPE";
 	private static final String SIMPLE_REPRESENTABLE_TYPE = "SIMPLE_REP";
 	private static final String SIMPLE_REPRESENTATION = "1234";
 	private static final String INVALID_SIMPLE_REPRESENTATION = "NotANumber";
 	private static final DataTypeId SOME_ID = new DataTypeId(SELECTOR_TYPE, "FFABCD");
+	private static final DataTypeId SOME_UNKNOWN_ID = new DataTypeId(SELECTOR_TYPE, "AAAAAAAA1111");
 	private static final Selector SOME_ENTITY = new Selector(SOME_ID, emptyMap());
 }
