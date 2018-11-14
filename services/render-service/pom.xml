@@ -15,6 +15,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreesvg</artifactId>
+			<version>3.3</version>
+		</dependency>
+		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>architecture</artifactId>
 		</dependency>
@@ -66,7 +71,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<plugins>
