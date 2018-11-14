@@ -68,7 +68,7 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18120", "eureka.client.registerWithEureka:false",
-		"eureka.client.fetchRegistry:false" })
+		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("hbase-indexing-service", 18120);
 
