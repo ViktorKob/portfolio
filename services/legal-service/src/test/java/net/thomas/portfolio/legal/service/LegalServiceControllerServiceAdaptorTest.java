@@ -40,7 +40,7 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18350", "eureka.client.registerWithEureka:false",
-		"eureka.client.fetchRegistry:false" })
+		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class LegalServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("legal-service", 18350);
 
@@ -74,8 +74,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl();
 		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
-		adaptors = new Adaptors.Builder().setLegalAdaptor(legalAdaptor)
-			.build();
+		adaptors = new Adaptors.Builder().setLegalAdaptor(legalAdaptor).build();
 	}
 
 	@Test

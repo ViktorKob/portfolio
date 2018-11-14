@@ -35,7 +35,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18150", "eureka.client.registerWithEureka:false",
-		"eureka.client.fetchRegistry:false" })
+		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class RenderServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("render-service", 18150);
 
@@ -76,8 +76,7 @@ public class RenderServiceControllerServiceAdaptorTest {
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final RenderingAdaptorImpl renderingAdaptor = new RenderingAdaptorImpl();
 		renderingAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
-		adaptors = new Adaptors.Builder().setRenderingAdaptor(renderingAdaptor)
-			.build();
+		adaptors = new Adaptors.Builder().setRenderingAdaptor(renderingAdaptor).build();
 	}
 
 	@Test
