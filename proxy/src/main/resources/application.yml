@@ -6,6 +6,7 @@ service-port: 80
 discovery-address: localhost:8000
 external-service-address: localhost:80
 external-protocol: http://
+spring.main.allow-bean-definition-overriding: true
 
 ####################
 HTTPS settings:
