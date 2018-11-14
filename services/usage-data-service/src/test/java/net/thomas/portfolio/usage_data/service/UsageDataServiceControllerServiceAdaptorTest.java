@@ -43,7 +43,7 @@ import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18200", "eureka.client.registerWithEureka:false",
-		"eureka.client.fetchRegistry:false" })
+		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class UsageDataServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("usage-data-service", 18200);
 
@@ -81,8 +81,7 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final UsageAdaptorImpl usageAdaptor = new UsageAdaptorImpl();
 		usageAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
-		adaptors = new Adaptors.Builder().setUsageAdaptor(usageAdaptor)
-			.build();
+		adaptors = new Adaptors.Builder().setUsageAdaptor(usageAdaptor).build();
 	}
 
 	@Test

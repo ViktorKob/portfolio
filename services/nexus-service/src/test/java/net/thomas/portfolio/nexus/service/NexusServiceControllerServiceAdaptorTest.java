@@ -108,7 +108,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
-		"eureka.client.fetchRegistry:false" })
+		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class NexusServiceControllerServiceAdaptorTest {
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("nexus-service", 18100);
 
