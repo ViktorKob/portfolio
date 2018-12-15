@@ -17,8 +17,8 @@ public class ProxyServiceProperties {
 	static {
 		SERVICE_PROPERTIES = new HashMap<>();
 
+		put("service-context-path", "/proxy");
 		put("service-name", "proxy-service");
-		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}/proxy/actuator/health");
 
 		// ####################
 		// Unique settings:
@@ -59,17 +59,17 @@ public class ProxyServiceProperties {
 		put("spring.security.user.password", "password");
 		put("spring.security.user.roles", "USER");
 
-		put("management.endpoints.web.base-path", "/proxy/actuator");
+		put("management.endpoints.web.base-path", "${service-context-path}/actuator");
 		put("management.endpoints.web.cors.allowed-origins", "true");
 		put("management.endpoints.web.exposure.include", "*");
 		put("management.endpoint.health.show-details", "ALWAYS");
 
 		put("eureka.instance.lease-renewal-interval-in-seconds", "5");
 		put("eureka.instance.lease-expiration-duration-in-seconds", "10");
-		put("eureka.instance.health-check-url-path", "/proxy/actuator/health");
+		put("eureka.instance.health-check-url-path", "${service-context-path}/actuator/health");
 		put("eureka.instance.status-page-url-path", "${service-status-page}");
 
-		put("eureka.instance.metadata-map.management.context-path", "/proxy/actuator");
+		put("eureka.instance.metadata-map.management.context-path", "${service-context-path}/actuator");
 		put("eureka.instance.metadata-map.user.name", "${spring.security.user.name}");
 		put("eureka.instance.metadata-map.user.password", "${spring.security.user.password}");
 
