@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ViktorKob/portfolio.svg?branch=master)](https://travis-ci.org/ViktorKob/portfolio) [![Coverage Status](https://coveralls.io/repos/github/ViktorKob/portfolio/badge.svg?branch=master)](https://coveralls.io/github/ViktorKob/portfolio?branch=master)
+[![Build Status](https://travis-ci.org/ViktorKob/portfolio.svg?branch=master)](https://travis-ci.org/ViktorKob/portfolio) [![Coverage Status](https://coveralls.io/repos/github/ViktorKob/portfolio/badge.svg?branch=master)](https://coveralls.io/github/ViktorKob/portfolio?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3c60ea7c93fc488d8bf4879522209c70)](https://www.codacy.com/app/ViktorKob/portfolio?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ViktorKob/portfolio&amp;utm_campaign=Badge_Grade)
 
 # Portfolio 
 
