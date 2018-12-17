@@ -52,6 +52,7 @@ public class UidCalculator {
 			for (final Object listEntity : (Object[]) field.get(entity)) {
 				hasher.add(interpret(field.get(listEntity)));
 			}
+
 		} else {
 			hasher.add(interpret(field.get(entity)));
 		}
