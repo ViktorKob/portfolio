@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying hbase-indexing service"
 screen -S HbaseIndexing -X kill
 mkdir -p ~/services/hbase-indexing

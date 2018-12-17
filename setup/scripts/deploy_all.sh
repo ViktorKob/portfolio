@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 ./deploy_infrastructure.sh
 sleep 10
 ./deploy_proxy.sh

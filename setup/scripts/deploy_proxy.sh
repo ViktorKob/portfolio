@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying proxy service"
 screen -S Proxy -X kill
 mkdir -p ~/services/proxy

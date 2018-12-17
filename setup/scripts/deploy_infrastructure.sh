@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying infrastructure service"
 screen -S Infrastructure -X kill
 mkdir -p ~/services/infrastructure
