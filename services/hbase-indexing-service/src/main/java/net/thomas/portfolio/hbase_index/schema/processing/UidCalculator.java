@@ -37,7 +37,7 @@ public class UidCalculator {
 	private void handleFields(final Hasher hasher, Entity entity) {
 		try {
 			final Class<? extends Entity> entityClass = entity.getClass();
-			for (final java.lang.reflect.Field field : entityClass.getFields()) {
+			for (final Field field : entityClass.getFields()) {
 				if (field.isAnnotationPresent(PartOfKey.class)) {
 					addField(hasher, entity, field);
 				}
