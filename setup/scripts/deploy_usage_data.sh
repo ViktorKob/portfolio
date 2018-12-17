@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying usage-data service"
 screen -S UsageData -X kill
 mkdir -p ~/services/usage-data

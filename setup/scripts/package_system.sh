@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "Updating sources and building packages"
 cd ~/git/portfolio
 git pull

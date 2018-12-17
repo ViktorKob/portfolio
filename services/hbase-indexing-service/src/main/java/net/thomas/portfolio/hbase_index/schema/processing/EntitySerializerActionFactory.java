@@ -225,21 +225,21 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class EmailVisitorActions extends SerializerVisitorActions<Email> {
 		@Override
 		public VisitorFieldSimpleAction<Email, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("subject")) {
+			if ("subject".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("s", entity.subject);
 				});
-			} else if (field.equals("timeOfEvent")) {
+			} else if ("timeOfEvent".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOE");
 					writeTimestamp(generator, entity.timeOfEvent);
 				});
-			} else if (field.equals("timeOfInterception")) {
+			} else if ("timeOfInterception".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOI");
 					writeTimestamp(generator, entity.timeOfInterception);
 				});
-			} else if (field.equals("message")) {
+			} else if ("message".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("m", entity.message);
 				});
@@ -250,21 +250,21 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 		@Override
 		public VisitorFieldPreAction<Email, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("from")) {
+			if ("from".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
 				});
-			} else if (field.equals("to")) {
+			} else if ("to".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("b");
 					generator.writeStartArray();
 				});
-			} else if (field.equals("cc")) {
+			} else if ("cc".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("c");
 					generator.writeStartArray();
 				});
-			} else if (field.equals("bcc")) {
+			} else if ("bcc".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
 					generator.writeStartArray();
@@ -276,15 +276,15 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 		@Override
 		public VisitorFieldPostAction<Email, SerializerContext> getFieldPostAction(final String field) {
-			if (field.equals("to")) {
+			if ("to".equals(field)) {
 				return wrapPostWithSerializerAction((entity, generator) -> {
 					generator.writeEndArray();
 				});
-			} else if (field.equals("cc")) {
+			} else if ("cc".equals(field)) {
 				return wrapPostWithSerializerAction((entity, generator) -> {
 					generator.writeEndArray();
 				});
-			} else if (field.equals("bcc")) {
+			} else if ("bcc".equals(field)) {
 				return wrapPostWithSerializerAction((entity, generator) -> {
 					generator.writeEndArray();
 				});
@@ -303,26 +303,26 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class TextMessageVisitorActions extends SerializerVisitorActions<TextMessage> {
 		@Override
 		public VisitorFieldSimpleAction<TextMessage, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("message")) {
+			if ("message".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("m", entity.message);
 				});
-			} else if (field.equals("timeOfEvent")) {
+			} else if ("timeOfEvent".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOE");
 					writeTimestamp(generator, entity.timeOfEvent);
 				});
-			} else if (field.equals("timeOfInterception")) {
+			} else if ("timeOfInterception".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOI");
 					writeTimestamp(generator, entity.timeOfInterception);
 				});
-			} else if (field.equals("senderLocation")) {
+			} else if ("senderLocation".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("aL");
 					writeLocation(generator, entity.senderLocation);
 				});
-			} else if (field.equals("receiverLocation")) {
+			} else if ("receiverLocation".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("bL");
 					writeLocation(generator, entity.receiverLocation);
@@ -334,11 +334,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 		@Override
 		public VisitorFieldPreAction<TextMessage, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("sender")) {
+			if ("sender".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
 				});
-			} else if (field.equals("receiver")) {
+			} else if ("receiver".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("b");
 				});
@@ -357,26 +357,26 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class ConversationVisitorActions extends SerializerVisitorActions<Conversation> {
 		@Override
 		public VisitorFieldSimpleAction<Conversation, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("durationInSeconds")) {
+			if ("durationInSeconds".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeNumberField("d", entity.durationInSeconds);
 				});
-			} else if (field.equals("timeOfEvent")) {
+			} else if ("timeOfEvent".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOE");
 					writeTimestamp(generator, entity.timeOfEvent);
 				});
-			} else if (field.equals("timeOfInterception")) {
+			} else if ("timeOfInterception".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("tOI");
 					writeTimestamp(generator, entity.timeOfInterception);
 				});
-			} else if (field.equals("primaryLocation")) {
+			} else if ("primaryLocation".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("aL");
 					writeLocation(generator, entity.primaryLocation);
 				});
-			} else if (field.equals("secondaryLocation")) {
+			} else if ("secondaryLocation".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("bL");
 					writeLocation(generator, entity.secondaryLocation);
@@ -388,11 +388,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 		@Override
 		public VisitorFieldPreAction<Conversation, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("primary")) {
+			if ("primary".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
 				});
-			} else if (field.equals("secondary")) {
+			} else if ("secondary".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("b");
 				});
@@ -411,7 +411,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class LocalnameVisitorActions extends SerializerVisitorActions<Localname> {
 		@Override
 		public VisitorFieldSimpleAction<Localname, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("name")) {
+			if ("name".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.name);
 				});
@@ -424,7 +424,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class DisplayedNameVisitorActions extends SerializerVisitorActions<DisplayedName> {
 		@Override
 		public VisitorFieldSimpleAction<DisplayedName, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("name")) {
+			if ("name".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.name);
 				});
@@ -437,7 +437,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class PublicIdVisitorActions extends SerializerVisitorActions<PublicId> {
 		@Override
 		public VisitorFieldSimpleAction<PublicId, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("number")) {
+			if ("number".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.number);
 				});
@@ -450,7 +450,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class PrivateIdVisitorActions extends SerializerVisitorActions<PrivateId> {
 		@Override
 		public VisitorFieldSimpleAction<PrivateId, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("number")) {
+			if ("number".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("n", entity.number);
 				});
@@ -463,7 +463,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class DomainVisitorActions extends SerializerVisitorActions<Domain> {
 		@Override
 		public VisitorFieldSimpleAction<Domain, SerializerContext> getFieldSimpleAction(final String field) {
-			if (field.equals("domainPart")) {
+			if ("domainPart".equals(field)) {
 				return wrapSimpleWithSerializerAction((entity, generator) -> {
 					generator.writeStringField("dP", entity.domainPart);
 				});
@@ -474,7 +474,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 
 		@Override
 		public VisitorFieldPreAction<Domain, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("domain")) {
+			if ("domain".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
 				});
@@ -487,11 +487,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class EmailAddressVisitorActions extends SerializerVisitorActions<EmailAddress> {
 		@Override
 		public VisitorFieldPreAction<EmailAddress, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("localname")) {
+			if ("localname".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("l");
 				});
-			} else if (field.equals("domain")) {
+			} else if ("domain".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
 				});
@@ -504,11 +504,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class EmailEndpointVisitorActions extends SerializerVisitorActions<EmailEndpoint> {
 		@Override
 		public VisitorFieldPreAction<EmailEndpoint, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("displayedName")) {
+			if ("displayedName".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("d");
 				});
-			} else if (field.equals("address")) {
+			} else if ("address".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
 				});
@@ -521,11 +521,11 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	class CommunicationEndpointVisitorActions extends SerializerVisitorActions<CommunicationEndpoint> {
 		@Override
 		public VisitorFieldPreAction<CommunicationEndpoint, SerializerContext> getFieldPreAction(final String field) {
-			if (field.equals("publicId")) {
+			if ("publicId".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("a");
 				});
-			} else if (field.equals("privateId")) {
+			} else if ("privateId".equals(field)) {
 				return wrapPreWithSerializerAction((entity, generator) -> {
 					generator.writeFieldName("b");
 				});

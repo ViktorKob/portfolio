@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying nexus service"
 screen -S Nexus -X kill
 mkdir -p ~/services/nexus

@@ -20,12 +20,12 @@ public class EventDiskIo {
 	protected Path eventRootPath;
 
 	public EventDiskIo(String storageRoot) {
-		eventRootPath = get(storageRoot.toString(), "events");
+		eventRootPath = get(storageRoot, "events");
 		objectMapper = buildEventMapper();
 	}
 
 	private ObjectMapper buildEventMapper() {
-		ObjectMapper objectMapper = new ObjectMapper();
+		final ObjectMapper objectMapper = new ObjectMapper();
 		final SimpleModule module = new SimpleModule();
 		module.addSerializer(Event.class, new EventSerializer());
 		module.addDeserializer(Event.class, new EventDeserializer());
@@ -42,13 +42,13 @@ public class EventDiskIo {
 	}
 
 	protected Path createEventPath(final String uid) {
-		Path pathToFolder = getPathToEntity(uid);
+		final Path pathToFolder = getPathToEntity(uid);
 		pathToFolder.toFile().mkdirs();
 		return get(pathToFolder.toString(), uid + EVENT_FILE_SUFFIX);
 	}
 
 	protected Path createEventReferencesPath(final String uid) {
-		Path pathToFolder = getPathToEntity(uid);
+		final Path pathToFolder = getPathToEntity(uid);
 		pathToFolder.toFile().mkdirs();
 		return get(pathToFolder.toString(), uid + REFERENCE_FILE_SUFFIX);
 	}

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying legal service"
 screen -S Legal -X kill
 mkdir -p ~/services/legal

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying admin service"
 screen -S Admin -X kill
 mkdir -p ~/services/admin

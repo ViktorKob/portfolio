@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying render service"
 screen -S Render -X kill
 mkdir -p ~/services/render

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 echo "(Re)deploying analytics service"
 screen -S Analytics -X kill
 mkdir -p ~/services/analytics
