@@ -211,10 +211,8 @@ public class ReflectionUtil {
 			ConstructorAndAccessors bestConstructor = null;
 			for (final Constructor<?> constructor : constructors) {
 				final Map<Parameter, AccessibleObject> parameters = canBeUsedWithObject(constructor, object);
-				if (!parameters.isEmpty()) {
-					if (bestConstructor == null || bestConstructor.constructor.getParameterCount() < constructor.getParameterCount()) {
-						bestConstructor = new ConstructorAndAccessors(constructor, parameters);
-					}
+				if (!parameters.isEmpty() && (bestConstructor == null || bestConstructor.constructor.getParameterCount() < constructor.getParameterCount())) {
+					bestConstructor = new ConstructorAndAccessors(constructor, parameters);
 				}
 			}
 			return bestConstructor;
