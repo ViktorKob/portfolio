@@ -85,7 +85,11 @@ public class DataType {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof DataType) {
-			return id.equals(((DataType) obj).id);
+			if (id == null) {
+				return ((DataType) obj).id == null;
+			} else {
+				return id.equals(((DataType) obj).id);
+			}
 		} else {
 			return false;
 		}

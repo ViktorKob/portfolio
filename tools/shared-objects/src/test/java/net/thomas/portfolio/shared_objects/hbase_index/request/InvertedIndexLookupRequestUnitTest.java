@@ -25,7 +25,7 @@ public class InvertedIndexLookupRequestUnitTest {
 	private InvertedIndexLookupRequest lookup;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		lookup = new InvertedIndexLookupRequest(ID, LEGAL_INFO, BOUNDS, DOCUMENT_TYPES, RELATIONS);
 	}
 

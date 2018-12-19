@@ -15,7 +15,7 @@ public class UsageActivityUnitTest {
 	private UsageActivity activity;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		activity = new UsageActivity(USER, ANALYSED_DOCUMENT, TIME_OF_ACTIVITY);
 	}
 

@@ -40,10 +40,6 @@ public class DataTypeFieldMatcher implements ArgumentMatcher<DataType> {
 	}
 
 	private boolean valueIsDifferent(Object value, Object expectedValue) {
-		if (expectedValue instanceof DataType) {
-			return value == expectedValue;
-		} else {
-			return !value.equals(expectedValue);
-		}
+		return !value.equals(expectedValue);
 	}
 }
