@@ -19,11 +19,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 public class StringFieldSimpleRepParserUnitTest {
 
 	private StringFieldSimpleRepParser parser;
-	private IdCalculator idCalculatorMock;
 
 	@Before
 	public void setupForTest() {
-		idCalculatorMock = mock(IdCalculator.class);
+		final IdCalculator idCalculatorMock = mock(IdCalculator.class);
 		when(idCalculatorMock.calculate(eq(TYPE), argThat(matchesField(FIELD, SIMPLE_REP)))).thenReturn(ID);
 		parser = newStringFieldParser(TYPE, FIELD, idCalculatorMock);
 	}

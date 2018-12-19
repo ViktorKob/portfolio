@@ -18,7 +18,7 @@ public class BoundsUnitTest {
 	private Bounds bounds;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		bounds = new Bounds(SOME_OFFSET, SOME_LIMIT, SOME_AFTER, SOME_BEFORE);
 	}
 

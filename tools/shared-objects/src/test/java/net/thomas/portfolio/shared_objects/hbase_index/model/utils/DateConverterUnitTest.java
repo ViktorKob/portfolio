@@ -29,7 +29,7 @@ public class DateConverterUnitTest {
 	private DateConverter converter;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		converter = new DateConverter.Iso8601DateConverter();
 	}
 

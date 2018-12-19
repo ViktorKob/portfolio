@@ -23,11 +23,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 public class EmailAddressSimpleRepParserUnitTest {
 
 	private EmailAddressSimpleRepParser parser;
-	private IdCalculator idCalculatorMock;
 
 	@Before
 	public void setUpForTest() {
-		idCalculatorMock = mock(IdCalculator.class);
+		final IdCalculator idCalculatorMock = mock(IdCalculator.class);
 		final Map<String, Object> expectedFields = createExpectedEmailAddressFields();
 		when(idCalculatorMock.calculate(eq(EMAIL_ADDRESS_TYPE), argThat(matchesFields(expectedFields)))).thenReturn(ID);
 		parser = newEmailAddressParser(idCalculatorMock);

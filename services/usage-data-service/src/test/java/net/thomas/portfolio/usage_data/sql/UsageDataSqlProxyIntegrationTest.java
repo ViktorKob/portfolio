@@ -44,7 +44,7 @@ public class UsageDataSqlProxyIntegrationTest {
 	}
 
 	@Before
-	public void setup() throws SQLException {
+	public void setUp() throws SQLException {
 		wipeOldTests(DATABASE_CONFIG);
 	}
 

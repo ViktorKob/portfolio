@@ -67,12 +67,10 @@ public class SchemaIntrospection {
 			builder.addDocumentTypes(simpleName);
 		} else if (isSelector(entityClass)) {
 			builder.addSelectorTypes(simpleName);
-			if (isSimpleRepresentable(entityClass)) {
-				if (!handledSimpleRepresentationTypes.contains(entityClass)) {
-					builder.addSimpleRepresentableTypes(simpleName);
-					final SimpleRepresentable description = entityClass.getAnnotation(SimpleRepresentable.class);
-					addSimpleRepresentationParser(simpleName, description.field(), description.parser());
-				}
+			if (isSimpleRepresentable(entityClass) && !handledSimpleRepresentationTypes.contains(entityClass)) {
+				builder.addSimpleRepresentableTypes(simpleName);
+				final SimpleRepresentable description = entityClass.getAnnotation(SimpleRepresentable.class);
+				addSimpleRepresentationParser(simpleName, description.field(), description.parser());
 			}
 		}
 	}

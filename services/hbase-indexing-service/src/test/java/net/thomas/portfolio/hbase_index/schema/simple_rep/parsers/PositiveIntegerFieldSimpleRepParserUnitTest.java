@@ -19,11 +19,10 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 public class PositiveIntegerFieldSimpleRepParserUnitTest {
 
 	private PositiveIntegerFieldSimpleRepParser parser;
-	private IdCalculator idCalculatorMock;
 
 	@Before
 	public void setupForTest() {
-		idCalculatorMock = mock(IdCalculator.class);
+		final IdCalculator idCalculatorMock = mock(IdCalculator.class);
 		onlyAcceptCorrectSimpleRepFieldValue(idCalculatorMock);
 		parser = newPositiveIntegerFieldParser(TYPE, FIELD, idCalculatorMock);
 	}
