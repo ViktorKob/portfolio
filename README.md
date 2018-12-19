@@ -114,7 +114,7 @@ When I write code, there is a set of principles that I try to respect more than 
   - Commit often, merge often, deploy often, get feedback often; argue why not rather than why 
 
 ## Status at the moment
-The project contains a set of services:
+The project contains a set of services: 
 
 ### Nexus
 _GraphQL service that enables easy access to the other services_
