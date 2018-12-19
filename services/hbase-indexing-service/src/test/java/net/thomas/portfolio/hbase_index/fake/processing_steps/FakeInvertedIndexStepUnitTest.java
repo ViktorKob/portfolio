@@ -30,7 +30,6 @@ public class FakeInvertedIndexStepUnitTest {
 	private HbaseIndexSchema schema;
 	private FakeHbaseIndex index;
 	private SelectorExtractor selectorExtractor;
-	private FakeInvertedIndexStep invertedIndexStep;
 	private EventReader events;
 
 	@Before
@@ -42,7 +41,7 @@ public class FakeInvertedIndexStepUnitTest {
 		index = new FakeHbaseIndex();
 		index.setEventReader(events);
 		index.addEntitiesAndChildren(events);
-		invertedIndexStep = new FakeInvertedIndexStep();
+		final FakeInvertedIndexStep invertedIndexStep = new FakeInvertedIndexStep();
 		invertedIndexStep.executeAndUpdateIndex(events, index);
 	}
 

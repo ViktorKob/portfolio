@@ -19,7 +19,6 @@ public class SelectorStatistics {
 	private static final long A_DAY = 1000 * 60 * 60 * 24;
 	private static final long A_WEEK = 7 * A_DAY;
 	private static final long A_MONTH = 30 * A_DAY;
-	private final long now;
 	private final long yesterday;
 	private final long oneWeekAgo;
 	private final long threeMonthsAgo;
@@ -27,7 +26,7 @@ public class SelectorStatistics {
 
 	public SelectorStatistics() {
 		statistics = new HashMap<>();
-		now = new GregorianCalendar(2017, 10, 17).getTimeInMillis();
+		final long now = new GregorianCalendar(2017, 10, 17).getTimeInMillis();
 		yesterday = now - A_DAY;
 		oneWeekAgo = now - A_WEEK;
 		threeMonthsAgo = now - 3 * A_MONTH;
