@@ -17,7 +17,7 @@ public class ProxyServiceProperties {
 	static {
 		SERVICE_PROPERTIES = new HashMap<>();
 
-		put("service-context-path", "/proxy");
+		put("service-context-path", "/Proxy");
 		put("service-name", "proxy-service");
 
 		// ####################
