@@ -60,7 +60,7 @@ public class UsageDataServiceConfiguration {
 		}
 
 		public String getConnectionString(final boolean withSchema) {
-			return "jdbc:mysql://" + host + ":" + port + (withSchema ? "/" + schema : "");
+			return "jdbc:mysql://" + host + ":" + port + (withSchema ? "/" + schema : "?serverTimezone=UTC");
 		}
 	}
 
