@@ -22,8 +22,7 @@ public class VisitorAlgorithmUnitTest {
 	protected void visit(final Entity entity) {
 		for (int i = 0; i < countingContexts.length; i++) {
 			countingContexts[i] = new InvocationCountingContext();
-			final EntityVisitor<InvocationCountingContext> algorithm = algorithms.get(i)
-				.getVisitor();
+			final EntityVisitor<InvocationCountingContext> algorithm = algorithms.get(i).getVisitor();
 			algorithm.visit(entity, countingContexts[i]);
 		}
 	}
@@ -31,10 +30,8 @@ public class VisitorAlgorithmUnitTest {
 	protected void assertEqualsForAllAlgorithms(String action, Entity entity, int occurrances) {
 		for (int i = 0; i < algorithms.size(); i++) {
 			final int actualCount = countingContexts[i].getEntityActionCount(entity, action);
-			final String message = algorithms.get(0)
-				.getName() + ": Count for " + action + " was wrong; should have been " + occurrances + ", but was " + actualCount + " for entity "
-					+ entity.getClass()
-						.getSimpleName();
+			final String message = algorithms.get(0).getName() + ": Count for " + action + " was wrong; should have been " + occurrances + ", but was "
+					+ actualCount + " for entity " + entity.getClass().getSimpleName();
 			assertEquals(message, occurrances, actualCount);
 		}
 	}
@@ -42,10 +39,8 @@ public class VisitorAlgorithmUnitTest {
 	protected void assertThatAllAlgorithms(String action, Entity entity, String field, int occurrances) {
 		for (int i = 0; i < algorithms.size(); i++) {
 			final int actualCount = countingContexts[i].getFieldActionCount(entity, action, field);
-			final String message = algorithms.get(0)
-				.getName() + ": Count for " + action + ", field " + field + " was wrong; should have been " + occurrances + ", but was " + actualCount
-					+ " for entity " + entity.getClass()
-						.getSimpleName();
+			final String message = algorithms.get(0).getName() + ": Count for " + action + ", field " + field + " was wrong; should have been " + occurrances
+					+ ", but was " + actualCount + " for entity " + entity.getClass().getSimpleName();
 			assertEquals(message, occurrances, actualCount);
 		}
 	}
