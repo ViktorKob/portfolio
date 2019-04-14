@@ -66,14 +66,14 @@ This project was created as a greenfield project, but also contains code fragmen
 
 In general, my focus is on getting features to market as soon as possible, both for the added value and to gain feedback early. Secondly, I priotize expanding the core of stability in the more mature part of the system. I try to observe the following:
 
-- Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
-- Make it work at all, before trying to make it nice
-- Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
-- Write tests for units that worry you right away, do the rest when the units have matured reasonably
-- Consider (and preferably fix) all warnings and bugs as soon as possible
-- Whenever possible, write tests for public bugs before fixing them to guarantee reccurrences will be caught and fixed
-- If someone else already made it for you, consider if using their solution is better than building your own
-- Adding features is gold, but remember to also go back and cleanup the code; try to always keep up with changes in the immediate code base
+	- Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
+	- Make it work at all, before trying to make it nice
+	- Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
+	- Write tests for units that worry you right away, do the rest when the units have matured reasonably
+	- Consider (and preferably fix) all warnings and bugs as soon as possible
+	- Whenever possible, write tests for public bugs before fixing them to guarantee reccurrences will be caught and fixed
+	- If someone else already made it for you, consider if using their solution is better than building your own
+	- Adding features is gold, but remember to also go back and cleanup the code; try to always keep up with changes in the immediate code base
 
 ### Development approach
 
@@ -83,15 +83,15 @@ For bug-tracking and issue management, I have experience using [JIRA](https://ww
 
 These are just tools, though. When I develop a new feature, the steps I go through are often the following:
  
-1. Plan layout in relation to the existing infrastructure based on domain knowledge and feature requirements
-2. Define points of contact with the existing system and planned (near future) sister components
-3. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
-4. Deploy the system and make sure the fake component behaves as intended; change whatever doesn't and make the fake "production ready"
-5. Either check for thirds party tools that match / can be used for parts of the implementation, or reason why it should be implemented directly
-6. Either replace the fake with the integration of a third party tool or implement the details
-7. Deploy component with the rest of the system and check everything works
-8. Cleanup obvious omissions and do general refactoring of the system
-9. Over time, visit the component once in a while and check if anything should be refactored based on other feature implementations  
+ 1. Plan layout in relation to the existing infrastructure based on domain knowledge and feature requirements
+ 2. Define points of contact with the existing system and planned (near future) sister components
+ 3. Build prototype component super-structure, faking the details (as little as is required to emulate the actual component)
+ 4. Deploy the system and make sure the fake component behaves as intended; change whatever doesn't and make the fake "production ready"
+ 5. Either check for thirds party tools that match / can be used for parts of the implementation, or reason why it should be implemented directly
+ 6. Either replace the fake with the integration of a third party tool or implement the details
+ 7. Deploy component with the rest of the system and check everything works
+ 8. Cleanup obvious omissions and do general refactoring of the system
+ 9. Over time, visit the component once in a while and check if anything should be refactored based on other feature implementations  
 
 If I am "just" adding features to an existing component, many of the steps are pretty light-weight or perhaps even skipped, but it is still the primary approach I use.
 
@@ -99,19 +99,19 @@ If I am "just" adding features to an existing component, many of the steps are p
 
 When I write code, there is a set of principles that I try to respect more than others. "Try", because it is a process, not a goal, but still I value these highly. If you already know "Clean Code" by Robert C. Martin (Uncle Bob), much of this will seem familiar. I do not agree, however, with the principle that you should always prioritize code quality over development speed, rather I believe both to be equally important. I do not expect you do agree with these, but I stand by them, and update them as I evolve. 
 
-  - Only start feature implementation that can be completed in at most a few days, but preferably in a matter of hours; instead make the sub-features production ready, before working on the complex features that depend on these
-  - Write the code to be read, using comments to elaborate invisible details or APIs, but not to explain the code itself
-  - Use meaningful names; use the domain, spend time choosing them, don't use personal acronyms, and refactor when encountering strange or misleading names
-  - Keep it small; start large, but work towards short functions, short classes and split into meaningful sub-classes when appropriate
-  - Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing for the build server
-  - Code coverage is a tool, not a goal; 100% in itself is irrelevant, but the correct level of testing makes refactoring easy
-  - Perfection is a beacon, continuous improvement is a path; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving in the right direction
-  - Make it work at all before worrying about details and niceness
-  - Stay agile and "light-weight" for as long as possible; prioritize change initially, and add documentation and tests when the right level of maturity has been reached
-  - [SOLID](https://en.wikipedia.org/wiki/SOLID)
-  - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
-  - When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change if it deviates from the ticket description
-  - Commit often, merge often, deploy often, get feedback often; argue why not rather than why 
+- Only start feature implementation that can be completed in at most a few days, but preferably in a matter of hours; instead make the sub-features production ready, before working on the complex features that depend on these
+- Write the code to be read, using comments to elaborate invisible details or APIs, but not to explain the code itself
+- Use meaningful names; use the domain, spend time choosing them, don't use personal acronyms, and refactor when encountering strange or misleading names
+- Keep it small; start large, but work towards short functions, short classes and split into meaningful sub-classes when appropriate
+- Consider every single warning (both during development and when using static analysis) in the code and decide how to handle it; leave nothing for the build server
+- Code coverage is a tool, not a goal; 100% in itself is irrelevant, but the correct level of testing makes refactoring easy
+- Perfection is a beacon, continuous improvement is a path; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving in the right direction
+- Make it work at all before worrying about details and niceness
+- Stay agile and "light-weight" for as long as possible; prioritize change initially, and add documentation and tests when the right level of maturity has been reached
+- [SOLID](https://en.wikipedia.org/wiki/SOLID)
+- [KISS](https://en.wikipedia.org/wiki/KISS_principle)
+- When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change if it deviates from the ticket description
+- Commit often, merge often, deploy often, get feedback often; argue why not rather than why 
 
 ## Status at the moment
 The project contains a set of services: 
@@ -257,10 +257,6 @@ Reverse proxy for the entire setup and single point of access to the services. A
 
 ## Pending experimentation ideas
 - [ ] Config server 
-- [ ] Serialization format for data storage 
-- [ ] Read and write sample data from disk during queries 
-- [X] Hbase model schema building using reflection
 - [ ] Red-green deployment of changes 
-- [X] Add ~~OpenAPI 3~~ Swagger 2 integration to the services
 - [ ] Add authentication layer, e.g. using UAA, JWS, OAuth2, JWT, JWA and OpenID
 - [ ] Containerization of services (probably using Docker)
