@@ -27,7 +27,7 @@ public class AdminServiceProperties {
 		// ####################
 
 		put("spring.boot.admin.context-path", "${service-context-path}");
-		put("spring.boot.admin.client.url", "${external-protocol}service-user:password@${external-service-address}${service-context-path}");
+		put("spring.boot.admin.url", "${external-protocol}service-user:password@${external-service-address}${service-context-path}");
 		put("management.endpoints.web.base-path", "${service-context-path}/actuator");
 
 		// ####################
@@ -66,7 +66,6 @@ public class AdminServiceProperties {
 		put("eureka.client.service-url.defaultZone", "http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/");
 
 		// ####################
-
 	}
 
 	private static void put(String propertyId, String value) {
