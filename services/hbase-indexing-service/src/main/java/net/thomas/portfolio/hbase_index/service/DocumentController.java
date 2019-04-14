@@ -25,7 +25,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 public class DocumentController {
 
 	@Autowired
-	HbaseIndex index;
+	private HbaseIndex index;
 
 	@Secured("ROLE_USER")
 	@RequestMapping(path = SAMPLES_PATH, method = GET)
