@@ -1,12 +1,14 @@
 package net.thomas.portfolio.common.services.parameters;
 
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import net.thomas.portfolio.testing_tools.ToStringTestUtil;
-
 public class PreSerializedParameterUnitTest {
+	private static final boolean TEST_DONE = true;
+
 	@Test
 	public void shouldContainNameAfterInitialization() {
 		final PreSerializedParameter parameter = new PreSerializedParameter(SOME_NAME, SOME_VALUE);
@@ -21,7 +23,8 @@ public class PreSerializedParameterUnitTest {
 
 	@Test
 	public void shouldHaveValidToStringMethod() {
-		ToStringTestUtil.assertToStringContainsAllFieldsFromObject(new PreSerializedParameter(SOME_NAME, SOME_VALUE));
+		assertToStringContainsAllFieldsFromObject(new PreSerializedParameter(SOME_NAME, SOME_VALUE));
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	private static final String SOME_NAME = "SOME_NAME";

@@ -78,9 +78,6 @@ public class GraphQlQueryModelBuilder {
 	private static final boolean REQUIRED = false;
 	private Adaptors adaptors;
 
-	public GraphQlQueryModelBuilder() {
-	}
-
 	public GraphQlQueryModelBuilder setAdaptors(final Adaptors adaptors) {
 		this.adaptors = adaptors;
 		return this;
