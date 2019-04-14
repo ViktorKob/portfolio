@@ -25,6 +25,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.RawDataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 
 public class Entity2DataTypeConverterUnitTest {
+	private static final boolean TEST_DONE = true;
+
 	private Entity2DataTypeConverter converter;
 
 	@Before
@@ -38,6 +40,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(entity);
 			assertTrue(getClassSimpleName(entity).equals(convertedEntity.getId().type));
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -46,6 +49,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(entity);
 			assertTrue(entity.uid.equals(convertedEntity.getId().uid));
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -54,6 +58,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(event);
 			assertTrue(convertedEntity instanceof Document);
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -62,6 +67,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(metaEntity);
 			assertTrue(convertedEntity instanceof RawDataType);
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -70,6 +76,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(selector);
 			assertTrue(convertedEntity instanceof Selector);
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -78,6 +85,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(event);
 			assertTrue(event.timeOfEvent.equals(((Document) convertedEntity).getTimeOfEvent()));
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -86,6 +94,7 @@ public class Entity2DataTypeConverterUnitTest {
 			final DataType convertedEntity = converter.convert(event);
 			assertTrue(event.timeOfInterception.equals(((Document) convertedEntity).getTimeOfInterception()));
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -98,6 +107,7 @@ public class Entity2DataTypeConverterUnitTest {
 				}
 			}
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -112,6 +122,7 @@ public class Entity2DataTypeConverterUnitTest {
 				}
 			}
 		});
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	private void assertSubEntitiesHavePairwiseIdenticalUids(final Entity[] subEntities, final List<? extends DataType> subDataTypes) {
