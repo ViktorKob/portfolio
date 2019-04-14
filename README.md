@@ -11,11 +11,11 @@ It is very much a work in progress, and I plan on adding new features continuous
 ## Quick-and-dirty structural diagram
 ![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview_1.png)
 
-  - The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
-  - The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
-  - The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
-  - The **arrows** represent the flow of data in the system. Queries are not considered data here. 
-  - The **thick dotted border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
+- The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
+- The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
+- The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
+- The **arrows** represent the flow of data in the system. Queries are not considered data here. 
+- The **thick dotted border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
 
 ## Quickstart
 ### To just see the infrastructure (Tested in Chrome and Firefox)
@@ -44,15 +44,15 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 
 To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 8300 and 8350 are available on your system. Or simply run it, and check these first if a service fails. 
 
-  - Check out the entire repository.
-  - Import the root pom into your favorite IDE.
-  - Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.
-  - If you are running linux, make sure the maximum number of open files is larger than 200K (ulimit -n to check).
-  - Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
-  - Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
-  - Start the Proxy service from the proxy folder (net.thomas.portfolio.infrastructure.ProxyApplication). 
-  - Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
-  - Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
+- Check out the entire repository.
+- Import the root pom into your favorite IDE.
+- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.
+- If you are running linux, make sure the maximum number of open files is larger than 200K (ulimit -n to check).
+- Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
+- Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
+- Start the Proxy service from the proxy folder (net.thomas.portfolio.infrastructure.ProxyApplication). 
+- Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
+- Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
 
 Now you can do as described above, but locally (without https, though). <BR>
 ~~Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndexingService/).~~ You should be able both to go through the proxy and to go directly to each service.<BR>
@@ -66,14 +66,14 @@ This project was created as a greenfield project, but also contains code fragmen
 
 In general, my focus is on getting features to market as soon as possible, both for the added value and to gain feedback early. Secondly, I priotize expanding the core of stability in the more mature part of the system. I try to observe the following:
 
-  - Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
-  - Make it work at all, before trying to make it nice
-  - Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
-  - Write tests for units that worry you right away, do the rest when the units have matured reasonably
-  - Consider (and preferably fix) all warnings and bugs as soon as possible
-  - Whenever possible, write tests for public bugs before fixing them to guarantee reccurrences will be caught and fixed
-  - If someone else already made it for you, consider if using their solution is better than building your own
-  - Adding features is gold, but remember to also go back and cleanup the code; try to always keep up with changes in the immediate code base
+- Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
+- Make it work at all, before trying to make it nice
+- Early feedback is key for quality; rather than maturing a feature extensively, throw it out of the nest and check whether it can fly
+- Write tests for units that worry you right away, do the rest when the units have matured reasonably
+- Consider (and preferably fix) all warnings and bugs as soon as possible
+- Whenever possible, write tests for public bugs before fixing them to guarantee reccurrences will be caught and fixed
+- If someone else already made it for you, consider if using their solution is better than building your own
+- Adding features is gold, but remember to also go back and cleanup the code; try to always keep up with changes in the immediate code base
 
 ### Development approach
 

@@ -43,9 +43,9 @@ public class SelectorController {
 	private final ExecutorService lookupExecutor;
 
 	@Autowired
-	HbaseIndexSchema schema;
+	private HbaseIndexSchema schema;
 	@Autowired
-	HbaseIndex index;
+	private HbaseIndex index;
 	@Autowired
 	private SimpleRepresentationParserLibrary parserLibrary;
 
