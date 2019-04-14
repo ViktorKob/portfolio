@@ -129,10 +129,13 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			implements VisitorEntityPreAction<ENTITY_TYPE, SerializerContext>, VisitorEntityPostAction<ENTITY_TYPE, SerializerContext>
 	{
 		protected final VisitorFieldSimpleAction<ENTITY_TYPE, SerializerContext> NO_SIMPLE_ACTION = (entity, context) -> {
+			// Not applicable here
 		};
 		protected final VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> NO_FIELD_PRE_ACTION = (entity, context) -> {
+			// Not applicable here
 		};
 		protected final VisitorFieldPostAction<ENTITY_TYPE, SerializerContext> NO_FIELD_POST_ACTION = (entity, context) -> {
+			// Not applicable here
 		};
 
 		// TODO[Thomas]: Replace with annotated aspect instead
@@ -149,6 +152,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		protected void _performPreEntityAction(final ENTITY_TYPE entity, final SerializerContext context) throws IOException {
+			// Not applicable here
 		}
 
 		// TODO[Thomas]: Replace with annotated aspect instead
@@ -168,6 +172,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 		}
 
 		protected void _performPostEntityAction(final ENTITY_TYPE entity, final SerializerContext context) throws IOException {
+			// Not applicable here
 		}
 
 		public VisitorFieldPreAction<ENTITY_TYPE, SerializerContext> getFieldPreAction(final String field) {
