@@ -5,9 +5,6 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaIm
 public class HtmlRenderContextBuilder {
 	private HbaseIndexSchemaImpl schema;
 
-	public HtmlRenderContextBuilder() {
-	}
-
 	public HtmlRenderContextBuilder setSchema(HbaseIndexSchemaImpl schema) {
 		this.schema = schema;
 		return this;

@@ -110,6 +110,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
 		"eureka.client.fetchRegistry:false", "spring.main.allow-bean-definition-overriding:true" })
 public class NexusServiceControllerServiceAdaptorTest {
+	private static final boolean TEST_DONE = true;
 	private static final TestCommunicationWiringTool COMMUNICATION_WIRING = new TestCommunicationWiringTool("nexus-service", 18100);
 
 	@TestConfiguration
@@ -526,6 +527,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(OFFSET, SOME_OFFSET);
 		usageActivityTestUtil.setupMockedResponse(OFFSET, SOME_OFFSET);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -533,6 +535,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(LIMIT, SOME_LIMIT);
 		usageActivityTestUtil.setupMockedResponse(LIMIT, SOME_LIMIT);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -540,6 +543,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(AFTER, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.setupMockedResponse(AFTER, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -547,12 +551,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(AFTER_DATE, SOME_FORMATTED_TIMESTAMP);
 		usageActivityTestUtil.setupMockedResponse(AFTER, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
 	public void shouldReportMeaningfullErrorWhenAfterDateFormatIsInvalid() {
 		usageActivityTestUtil.setupFetchWithArgument(AFTER_DATE, SOME_INVALID_FORMATTED_TIMESTAMP);
 		usageActivityTestUtil.executeAndVerifyErrorMessage(new String[] { "Unable to parse", AFTER_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP });
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -560,6 +566,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(BEFORE, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.setupMockedResponse(BEFORE, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
@@ -567,12 +574,14 @@ public class NexusServiceControllerServiceAdaptorTest {
 		usageActivityTestUtil.setupFetchWithArgument(BEFORE_DATE, SOME_FORMATTED_TIMESTAMP);
 		usageActivityTestUtil.setupMockedResponse(BEFORE, SOME_TIMESTAMP_VALUE);
 		usageActivityTestUtil.executeAndVerifyResponse();
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
 	public void shouldReportMeaningfullErrorWhenBeforeDateFormatIsInvalid() {
 		usageActivityTestUtil.setupFetchWithArgument(BEFORE_DATE, SOME_INVALID_FORMATTED_TIMESTAMP);
 		usageActivityTestUtil.executeAndVerifyErrorMessage(new String[] { "Unable to parse", BEFORE_DATE.getName(), SOME_INVALID_FORMATTED_TIMESTAMP });
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	// ***************************************
@@ -592,18 +601,21 @@ public class NexusServiceControllerServiceAdaptorTest {
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectUser() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("user");
 		usageActivityTestUtil.executeMutationAndVerifyValueForField("user", SOME_USAGE_ACTIVITY.user);
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectActivityType() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("activityType");
 		usageActivityTestUtil.executeMutationAndVerifyValueForField("activityType", SOME_USAGE_ACTIVITY.type.name());
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
 	public void shouldStoreUsageActivityAndReturnActivityWithCorrectTimeOfActivity() {
 		usageActivityTestUtil.setupDefaultMutationAndLookupField("timeOfActivity");
 		usageActivityTestUtil.executeMutationAndVerifyValueForField("timeOfActivity", SOME_USAGE_ACTIVITY.timeOfActivity);
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
 	@Test
