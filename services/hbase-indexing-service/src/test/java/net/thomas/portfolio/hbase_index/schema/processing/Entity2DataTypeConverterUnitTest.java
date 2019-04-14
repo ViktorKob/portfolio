@@ -36,7 +36,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertDataTypeTypeCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);
-			getClassSimpleName(entity).equals(convertedEntity.getId().type);
+			assertTrue(getClassSimpleName(entity).equals(convertedEntity.getId().type));
 		});
 	}
 
@@ -44,7 +44,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertUidsCorrectly() {
 		runTestOnAllEntityTypes((entity) -> {
 			final DataType convertedEntity = converter.convert(entity);
-			entity.uid.equals(convertedEntity.getId().uid);
+			assertTrue(entity.uid.equals(convertedEntity.getId().uid));
 		});
 	}
 
@@ -76,7 +76,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertTimeOfEventCorrectlyForEvent() {
 		runTestOnAllEventTypes((event) -> {
 			final DataType convertedEntity = converter.convert(event);
-			event.timeOfEvent.equals(((Document) convertedEntity).getTimeOfEvent());
+			assertTrue(event.timeOfEvent.equals(((Document) convertedEntity).getTimeOfEvent()));
 		});
 	}
 
@@ -84,7 +84,7 @@ public class Entity2DataTypeConverterUnitTest {
 	public void shouldConvertTimeOfInterceptionCorrectlyForEvent() {
 		runTestOnAllEventTypes((event) -> {
 			final DataType convertedEntity = converter.convert(event);
-			event.timeOfInterception.equals(((Document) convertedEntity).getTimeOfInterception());
+			assertTrue(event.timeOfInterception.equals(((Document) convertedEntity).getTimeOfInterception()));
 		});
 	}
 
