@@ -17,7 +17,7 @@ public class LegalInformationUnitTest {
 	private LegalInformation info;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		info = new LegalInformation(USER, JUSTIFICATION, LOWER_BOUND, UPPER_BOUND);
 	}
 

@@ -35,7 +35,7 @@ public class PrimitiveFieldUnitTest {
 	private PrimitiveField field;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		field = strings(SOME_NAME);
 	}
 
