@@ -547,7 +547,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			this.action = action;
 		}
 
-		void perform(final ENTITY_TYPE entity, final SerializerContext context) {
+		public void perform(final ENTITY_TYPE entity, final SerializerContext context) {
 			final JsonGenerator generator = context.generator;
 			try {
 				action.perform(entity, generator);
