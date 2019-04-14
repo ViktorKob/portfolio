@@ -4,13 +4,11 @@ import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.CERT
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.POSSIBLY;
 import static net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel.UNLIKELY;
 
-import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
+import net.thomas.portfolio.shared_objects.analytics.ConfidenceLevel;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 public class AnalyticsControl {
-	public AnalyticsControl() {
-	}
 
 	public AnalyticalKnowledge getPriorKnowledge(DataTypeId id) {
 		final ConfidenceLevel recognition = determineFakeRecognizedValue(id);

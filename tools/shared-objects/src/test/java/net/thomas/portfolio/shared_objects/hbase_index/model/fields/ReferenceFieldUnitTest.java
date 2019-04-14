@@ -20,7 +20,7 @@ public class ReferenceFieldUnitTest {
 	private ReferenceField field;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		field = dataType(SOME_NAME, SOME_TYPE);
 	}
 

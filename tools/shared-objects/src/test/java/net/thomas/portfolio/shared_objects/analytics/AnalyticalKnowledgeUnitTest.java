@@ -23,7 +23,7 @@ public class AnalyticalKnowledgeUnitTest {
 	private ObjectMapper mapper;
 
 	@Before
-	public void setup() {
+	public void setUp() {
 		mapper = new ObjectMapper();
 	}
 
