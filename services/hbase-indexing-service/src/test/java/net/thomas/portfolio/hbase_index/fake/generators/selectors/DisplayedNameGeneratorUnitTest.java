@@ -2,6 +2,7 @@ package net.thomas.portfolio.hbase_index.fake.generators.selectors;
 
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
@@ -40,7 +41,7 @@ public class DisplayedNameGeneratorUnitTest {
 				return;
 			}
 		}
-		throw new RuntimeException("Unable to locate any whitespaces in samples");
+		fail("Unable to locate any whitespaces in samples");
 	}
 
 	@Test
