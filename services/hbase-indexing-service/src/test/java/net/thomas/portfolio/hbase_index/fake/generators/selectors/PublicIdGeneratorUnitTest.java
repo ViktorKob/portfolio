@@ -12,6 +12,7 @@ import net.thomas.portfolio.hbase_index.schema.selectors.PublicId;
 
 public class PublicIdGeneratorUnitTest {
 
+	private static final boolean TEST_DONE = true;
 	private static final long SOME_RANDOM_SEED = 1l;
 	private static Iterator<PublicId> GENERATOR;
 
@@ -47,5 +48,6 @@ public class PublicIdGeneratorUnitTest {
 				throw new RuntimeException("Found whitespaces in sample");
 			}
 		}
+		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 }
