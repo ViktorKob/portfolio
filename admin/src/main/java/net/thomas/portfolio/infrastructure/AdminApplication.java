@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import de.codecentric.boot.admin.server.config.EnableAdminServer;
 
@@ -18,19 +19,14 @@ import de.codecentric.boot.admin.server.config.EnableAdminServer;
 @EnableAutoConfiguration
 @EnableAdminServer
 @EnableEurekaClient
+@CrossOrigin
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class AdminApplication {
 	@Configuration
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf()
-				.disable()
-				.authorizeRequests()
-				.anyRequest()
-				.authenticated()
-				.and()
-				.httpBasic();
+			http.cors().and().csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 	}
 
