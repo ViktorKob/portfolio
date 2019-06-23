@@ -48,6 +48,7 @@ public class ProxyServiceProperties {
 
 		put("server.port", "${service-port}");
 		put("server.max-http-header-size", "200000");
+		put("server.use-forward-header", "true");
 
 		put("server.tomcat.max-connections", "2000");
 		put("server.tomcat.max-http-post-size", "200000");

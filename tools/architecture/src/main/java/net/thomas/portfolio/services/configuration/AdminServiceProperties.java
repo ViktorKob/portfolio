@@ -28,6 +28,7 @@ public class AdminServiceProperties {
 
 		put("spring.boot.admin.context-path", "${service-context-path}");
 		put("spring.boot.admin.url", "${external-protocol}service-user:password@${external-service-address}${service-context-path}");
+		put("spring.boot.admin.ui.public-url", "${external-protocol}service-user:password@${external-service-address}${service-context-path}");
 		put("management.endpoints.web.base-path", "${service-context-path}/actuator");
 
 		// ####################
@@ -36,6 +37,7 @@ public class AdminServiceProperties {
 
 		put("server.port", "${service-port}");
 		put("server.max-http-header-size", "200000");
+		put("server.use-forward-header", "true");
 
 		put("server.tomcat.max-connections", "2000");
 		put("server.tomcat.max-http-post-size", "200000");
