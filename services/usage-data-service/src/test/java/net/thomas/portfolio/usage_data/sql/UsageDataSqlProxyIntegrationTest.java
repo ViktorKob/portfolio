@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,11 +36,12 @@ public class UsageDataSqlProxyIntegrationTest {
 	}
 
 	private static void removeSchemaIfPresent() {
-		try (Connection connection = getConnection("jdbc:mysql://" + HOST + ":" + MYSQL_PORT, USER_NAME, PASSWORD);
-				Statement statement = connection.createStatement()) {
-			statement.execute("DROP DATABASE " + SCHEMA);
-		} catch (final SQLException e) {
-			// Ignored
+		final File databaseFolder = new File("database");
+		if (databaseFolder.exists()) {
+			for (final String fileName : databaseFolder.list()) {
+				final File currentFile = new File(databaseFolder.getPath(), fileName);
+				currentFile.delete();
+			}
 		}
 	}
 
@@ -72,7 +74,7 @@ public class UsageDataSqlProxyIntegrationTest {
 	}
 
 	private void wipeOldTests(Database databaseConfig) throws SQLException {
-		try (final Connection connection = getConnection(databaseConfig.getConnectionString(true), databaseConfig.getUser(), databaseConfig.getPassword())) {
+		try (final Connection connection = getConnection(databaseConfig.getConnectionString())) {
 			try (Statement statement = connection.createStatement()) {
 				statement.execute("DELETE FROM user_accessed_document WHERE document_type = '" + DOCUMENT_TYPE + "'");
 				statement.execute("DELETE FROM user WHERE name ='" + USER + "'");
@@ -80,11 +82,7 @@ public class UsageDataSqlProxyIntegrationTest {
 		}
 	}
 
-	private static final String HOST = "localhost";
-	private static final int MYSQL_PORT = 3306;
 	private static final String SCHEMA = "usage_data";
-	private static final String USER_NAME = "root";
-	private static final String PASSWORD = "";
 	private static final String DOCUMENT_TYPE = "TEST_TYPE";
 	private static final String UID = "00000000";
 	private static final String USER = "TEST_USER";
@@ -100,12 +98,12 @@ public class UsageDataSqlProxyIntegrationTest {
 	}
 
 	private static Database createTestDatabaseConfig() {
+		final File databaseHomeDir = new File("database");
+		if (!databaseHomeDir.exists()) {
+			databaseHomeDir.mkdirs();
+		}
 		final Database databaseConfig = new Database();
-		databaseConfig.setHost(HOST);
-		databaseConfig.setPort(3306);
-		databaseConfig.setUser(USER_NAME);
-		databaseConfig.setPassword(PASSWORD);
-		databaseConfig.setSchema(SCHEMA);
+		databaseConfig.setDatabaseName(SCHEMA);
 		return databaseConfig;
 	}
 }

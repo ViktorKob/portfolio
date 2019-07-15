@@ -6,11 +6,3 @@ service-port: 8200
 discovery-address: localhost:8000
 external-service-address: localhost:80
 external-protocol: http://
-
-####################
-For development:
-####################
-
-usage-data-service.database.password: "computer"
-
-####################

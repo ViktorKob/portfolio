@@ -31,11 +31,7 @@ public class UsageDataServiceProperties {
 		put("usage-data-service.hbaseIndexing.credentials.user", "service-user");
 		put("usage-data-service.hbaseIndexing.credentials.password", "password");
 
-		put("usage-data-service.database.host", "localhost");
-		put("usage-data-service.database.port", "3306");
-		put("usage-data-service.database.schema", "usage_data");
-		put("usage-data-service.database.user", "root");
-//		put("usage-data-service.database.password", "computer");
+		put("usage-data-service.database.database_name", "usage_data");
 
 		// ####################
 	}
