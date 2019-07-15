@@ -21,46 +21,18 @@ public class UsageDataServiceConfiguration {
 	}
 
 	public static class Database {
-		private String host;
-		private int port;
-		private String schema;
-		private String user;
-		private String password;
+		private String databaseName;
 
-		public void setHost(final String host) {
-			this.host = host;
+		public String getDatabaseName() {
+			return databaseName;
 		}
 
-		public void setPort(final int port) {
-			this.port = port;
+		public void setDatabaseName(String databaseName) {
+			this.databaseName = databaseName;
 		}
 
-		public String getSchema() {
-			return schema;
-		}
-
-		public void setSchema(final String schema) {
-			this.schema = schema;
-		}
-
-		public String getUser() {
-			return user;
-		}
-
-		public void setUser(final String user) {
-			this.user = user;
-		}
-
-		public String getPassword() {
-			return password;
-		}
-
-		public void setPassword(final String password) {
-			this.password = password;
-		}
-
-		public String getConnectionString(final boolean withSchema) {
-			return "jdbc:mysql://" + host + ":" + port + (withSchema ? "/" + schema : "?serverTimezone=UTC");
+		public String getConnectionString() {
+			return "jdbc:sqlite:database/" + databaseName + ".db";
 		}
 	}
 
