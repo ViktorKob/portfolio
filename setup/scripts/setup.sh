@@ -5,7 +5,7 @@ sudo apt-get -y upgrade
 sudo ufw allow 22
 sudo ufw allow 443
 echo "y" | sudo ufw enable
-sudo apt-get -y install maven mysql-server git oracle-java8-installer
+sudo apt-get -y install maven git oracle-java8-installer
 mkdir git
 cd git
 git config credential.helper store
