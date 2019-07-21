@@ -64,7 +64,7 @@ This project was created as a greenfield project, but also contains code fragmen
 
 ### Prioritization
 
-In general, my focus is on getting features to market as soon as possible, both for the added value and to gain feedback early. Secondly, I priotize expanding the core of stability in the more mature part of the system. I try to observe the following:
+In general, my focus is on getting features to market as soon as possible, both for the added value and to gain feedback early. Secondly, I prioritize expanding the core of stability in the more mature part of the system. I try to observe the following:
 
 - Never get sucked down by irrelevant details, time spend working on one component is time not spend working on everything else
 - Make it work at all, before trying to make it nice
