@@ -12,7 +12,7 @@ It is very much a work in progress, and I plan on adding new features continuous
 ![Diagram of the services in the architecture and the flow of data](/images/rough_system_overview_1.png)
 
 - The **boxes** are the individual parts of the system, with a *hard* box for the proxy and *soft* boxes for the internal services. 
-- The **database icon** exemplify the usage data storage. This is implemented using MySql with InnoDB.
+- The **database icon** exemplify the usage data storage. This is implemented using SQLite and jOOQ.
 - The **clouds** exemplify related systems outside the infrastructure. None of these exist in the repository.
 - The **arrows** represent the flow of data in the system. Queries are not considered data here. 
 - The **thick dotted border** represents the services that register themselves with the discovery service. These can all be scaled up and down as required, though external limitations may apply. 
@@ -46,7 +46,7 @@ To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 83
 
 - Check out the entire repository.
 - Import the root pom into your favorite IDE.
-- Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.
+- ~~Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.~~ I now use SQLite instead for easier setup and execution. It should be enough to simply run the service.
 - If you are running linux, make sure the maximum number of open files is larger than 200K (ulimit -n to check).
 - Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
 - Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
@@ -173,14 +173,14 @@ _Service responsible for storing and showing user interaction with the model_
 | Settings | |
 |---|---|
 |**Port**|8200|
-|**Technologies**|MySQL, jOOQ, Spring|
+|**Technologies**|SQLite, jOOQ, Spring|
 |**User**|service-user|
 |**Password**|password|
 |**Endpoints**|[Swagger](https://viktorkob.ml/UsageDataService/swagger-ui.html)|
 
-To enable storage of data about usage of the data model, this service employ a mysql backend and exposes two endpoint for manipulating the contents of this. jOOQ is used as a middle layer to enable compile-time validation of SQL queries. 
+To enable storage of data about usage of the data model, this service employ a SQLite backend and exposes two endpoint for manipulating the contents of this. jOOQ is used as a middle layer to enable compile-time validation of SQL queries. 
 
-On startup it will attempt to contact a mysql-server as specified in the properties and make sure it contains a database schema with the name "usage-data". If the server doesn't contain one, it will be created with the necessary tables. If it does, it will assume that it has the correct structure and attempt to use it. 
+On startup it will attempt to run SQLite as specified in the properties and make sure it can access a database schema with the name "usage-data". If the server doesn't contain one, it will be created with the necessary tables. If it does, it will assume that it has the correct structure and attempt to use it. 
 
 ### Analytics
 _Fake service representing interaction with the analytical information in the company_
