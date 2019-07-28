@@ -26,7 +26,6 @@
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
-			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
