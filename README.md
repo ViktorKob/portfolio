@@ -107,7 +107,7 @@ When I write code, there is a set of principles that I try to respect more than 
 - Code coverage is a tool, not a goal; 100% in itself is irrelevant, but the correct level of testing makes refactoring easy
 - Perfection is a beacon, continuous improvement is a path; use the [Boy Scout Rule](https://medium.com/@biratkirat/step-8-the-boy-scout-rule-robert-c-martin-uncle-bob-9ac839778385), but keep moving in the right direction
 - Make it work at all before worrying about details and niceness
-- Stay agile and "light-weight" for as long as possible; prioritize change initially, and add documentation and tests when the right level of maturity has been reached
+- Stay agile and "light-weight" for as long as possible; prioritize change initially, and add documentation and fine-grained tests when the right level of maturity has been reached
 - [SOLID](https://en.wikipedia.org/wiki/SOLID)
 - [KISS](https://en.wikipedia.org/wiki/KISS_principle)
 - When checking in, try to make it clear what is changed, e.g. by using a ticket id and a few lines about the specific change if it deviates from the ticket description
