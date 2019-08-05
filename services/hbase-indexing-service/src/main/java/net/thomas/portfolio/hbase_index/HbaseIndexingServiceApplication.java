@@ -27,13 +27,7 @@ public class HbaseIndexingServiceApplication {
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf()
-				.disable()
-				.authorizeRequests()
-				.anyRequest()
-				.authenticated()
-				.and()
-				.httpBasic();
+			http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 	}
 
@@ -42,10 +36,7 @@ public class HbaseIndexingServiceApplication {
 	public class SwaggerConfig {
 		@Bean
 		public Docket api() {
-			return new Docket(SWAGGER_2).select()
-				.apis(basePackage("net.thomas.portfolio.hbase_index.service"))
-				.paths(any())
-				.build();
+			return new Docket(SWAGGER_2).select().apis(basePackage("net.thomas.portfolio.hbase_index.service")).paths(any()).build();
 		}
 	}
 
