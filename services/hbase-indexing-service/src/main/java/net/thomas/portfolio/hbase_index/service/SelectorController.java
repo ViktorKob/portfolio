@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
@@ -38,6 +40,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RestController
+@Api(value = "", description = "Lookup of selectors and their related data")
 @RequestMapping(value = SELECTORS_PATH + "/{dti_type}")
 public class SelectorController {
 	private final ExecutorService lookupExecutor;
@@ -54,6 +57,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup selector using it's simple string representation (will return the ID for the selector even if it does not exist)", response = Selector.class)
 	@RequestMapping(path = FROM_SIMPLE_REP_PATH + "/{simpleRepresentation}/", method = GET)
 	public ResponseEntity<?> getEntityId(@PathVariable String dti_type, @PathVariable String simpleRepresentation) {
 		final Selector selector = parserLibrary.parse(dti_type, simpleRepresentation);
@@ -65,6 +69,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Fetch {amount} random sample selectors of type {dti_type} from HBASE", response = Entities.class)
 	@RequestMapping(path = SAMPLES_PATH, method = GET)
 	public ResponseEntity<?> getSamples(@PathVariable String dti_type, Integer amount) {
 		if (amount == null) {
@@ -79,6 +84,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup statistics for selector with type {dti_type} and uid {dti_uid}", response = Statistics.class)
 	@RequestMapping(path = "/{dti_uid}" + STATISTICS_PATH, method = GET)
 	public ResponseEntity<?> getStatistics(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
@@ -91,6 +97,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup selector with type {dti_type} and uid {dti_uid}", response = DataType.class)
 	@RequestMapping(path = "/{dti_uid}", method = GET)
 	public ResponseEntity<?> getSelector(@PathVariable String dti_type, @PathVariable String dti_uid) {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
@@ -103,6 +110,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup selector with type {dti_type} and uid {dti_uid} in inverted index using the specified parameters", response = DocumentInfos.class)
 	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH, method = GET)
 	public ResponseEntity<?> lookupSelectorInInvertedIndex(@PathVariable String dti_type, @PathVariable String dti_uid, LegalInformation legalInfo,
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,

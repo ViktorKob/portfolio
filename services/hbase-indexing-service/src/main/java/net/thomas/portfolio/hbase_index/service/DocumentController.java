@@ -31,7 +31,7 @@ public class DocumentController {
 	private HbaseIndex index;
 
 	@Secured("ROLE_USER")
-	@ApiOperation(value = "Fetch {amount} random sample documents of type {dti_type} from the index", response = Entities.class)
+	@ApiOperation(value = "Fetch {amount} random sample documents of type {dti_type} from HBASE", response = Entities.class)
 	@RequestMapping(path = SAMPLES_PATH, method = GET)
 	public ResponseEntity<?> getSamples(@PathVariable String dti_type, Integer amount) {
 		if (amount == null) {
