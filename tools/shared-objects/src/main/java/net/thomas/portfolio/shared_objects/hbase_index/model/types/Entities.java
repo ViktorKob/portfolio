@@ -6,8 +6,13 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "A collection of entities from the index")
 public class Entities {
+	@ApiModelProperty("The collection of entities")
 	private Collection<DataType> entities;
 
 	public Entities() {

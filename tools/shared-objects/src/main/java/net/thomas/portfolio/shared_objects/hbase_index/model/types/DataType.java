@@ -28,7 +28,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.FieldsS
 public class DataType {
 	@ApiModelProperty("The id for this specific entity in the model, guaranteed to be globally unique")
 	protected DataTypeId id;
-	@ApiModelProperty("The values for each field supported by this specific type")
+	@ApiModelProperty("The values for each field supported by this specific type {String: Field}")
 	protected Map<String, Object> fields;
 
 	public DataType() {

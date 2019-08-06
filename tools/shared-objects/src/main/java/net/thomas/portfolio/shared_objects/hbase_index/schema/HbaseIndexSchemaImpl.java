@@ -11,18 +11,27 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(value = "HBASE Index Schema", description = "Schema for the data model in the HBASE index")
 public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 
+	@ApiModelProperty("The fields available in each data type")
 	protected Map<String, Fields> dataTypeFields;
+	@ApiModelProperty("Names of all the valid data types in the index")
 	protected Set<String> dataTypes;
+	@ApiModelProperty("Names of all the valid document types in the index")
 	protected Set<String> documentTypes;
+	@ApiModelProperty("Names of all the valid selector types in the index")
 	protected Set<String> selectorTypes;
+	@ApiModelProperty("Names of all selector types in the index that have a simple string representation")
 	protected Set<String> simpleRepresentableTypes;
+	@ApiModelProperty("The indexables for each data type")
 	protected Map<String, Collection<Indexable>> indexables;
 	@JsonIgnore
 	protected Map<String, Set<String>> indexableDocumentTypes;

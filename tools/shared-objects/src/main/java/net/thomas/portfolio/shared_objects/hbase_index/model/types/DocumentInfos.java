@@ -6,7 +6,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "A collection of document infos")
 public class DocumentInfos {
 	private List<DocumentInfo> infos;
 

@@ -10,7 +10,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "Container for the definition of each named field for a data type {String: {Field}}")
 public class Fields extends LinkedHashMap<String, Field> implements Iterable<Field> {
 	private static final long serialVersionUID = 1L;
 

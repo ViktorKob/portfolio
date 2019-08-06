@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModel;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@ApiModel(description = "Collection of references to a single event from a set of sources")
+@ApiModel(description = "Collection of unique references to a unique event from a set of sources")
 public class References {
 	private Collection<Reference> references;
 
