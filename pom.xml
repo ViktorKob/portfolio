@@ -22,6 +22,7 @@
 		<project.spring.version>5.1.6.RELEASE</project.spring.version>
 		<project.spring.boot.version>2.1.5.RELEASE</project.spring.boot.version>
 		<project.spring.cloud.version>Greenwich.RELEASE</project.spring.cloud.version>
+		<project.swagger.version>2.9.2</project.swagger.version>
 	</properties>
 
 	<dependencyManagement>

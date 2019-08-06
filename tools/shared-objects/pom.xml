@@ -31,6 +31,11 @@
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>common</artifactId>
 		</dependency>
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<version>${project.swagger.version}</version>
+			</dependency>
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>testing-tools</artifactId>
