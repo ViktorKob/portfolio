@@ -172,7 +172,7 @@ _Simple discovery service implementation with a hystrix UI_
 |**Technologies**|Eureka, Hystrix, Spring|
 |**Endpoints**|<ul><li>/Infrastructure/</li></ul>|
 
-This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. All standard Eureka endpoints are accessible through the sub-context-path /eureka. It also enables the Hystrix UI, if you have access to a Hystrix stream you wan't to monitor.
+This is my discovery service for the infrastructure. It doesn't really contain any code, just configuration. All standard Eureka endpoints are accessible through the sub-context-path /eureka. It also enables the Hystrix UI, if you have access to a Hystrix stream you want to monitor.
 
 ### Admin
 _Service for monitoring the individual services in the infrastructure_
