@@ -9,11 +9,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(description = "Reference to a single event from a specific source")
 public class Reference {
-	@ApiModelProperty(notes = "Codeword for the source in question")
+	@ApiModelProperty("Codeword for the source in question")
 	private Source source;
-	@ApiModelProperty(notes = "Id that allows lookup of the specific event in the source system")
+	@ApiModelProperty("Id that allows lookup of the specific event in the source system")
 	private String originalId;
-	@ApiModelProperty(notes = "Classification levels for the specific event when comming from the source system")
+	@ApiModelProperty("Classification levels for the specific event when comming from the source system")
 	private Set<Classification> classifications;
 
 	public Reference() {

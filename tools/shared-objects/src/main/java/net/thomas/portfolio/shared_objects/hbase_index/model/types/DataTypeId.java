@@ -3,11 +3,14 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "The globally unique id for an entity")
 public class DataTypeId implements ParameterGroup {
 	public static final DataTypeId NULL_ID = new NullId();
 
@@ -41,10 +44,12 @@ public class DataTypeId implements ParameterGroup {
 		}
 	}
 
+	@ApiModelProperty("The type of the entity")
 	public String getDti_type() {
 		return type;
 	}
 
+	@ApiModelProperty("The uid of the entity, as an MD5 hash consisting of 32 HEX chars")
 	public String getDti_uid() {
 		return uid;
 	}

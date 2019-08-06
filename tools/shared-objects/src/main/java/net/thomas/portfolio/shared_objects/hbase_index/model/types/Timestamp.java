@@ -7,11 +7,17 @@ import java.time.ZoneId;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "A unique point in time measured in signed distance from the epoch in ms in UTC with the original timezone stored as aa string next to it")
 public class Timestamp {
 	public static final Timestamp UNKNOWN = new Timestamp(0l);
 
+	@ApiModelProperty("Exact time as ms since the epoch in UTC")
 	private Long timestampInUtc;
+	@ApiModelProperty("The original timezone from the source as a Java ZoneId")
 	private String originalTimeZoneId;
 
 	public Timestamp() {

@@ -14,6 +14,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTypeDeserializer;
 import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.DataTypeSerializer;
 import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.FieldsSerializer;
@@ -22,8 +24,11 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.serializers.FieldsS
 @JsonSerialize(using = DataTypeSerializer.class)
 @JsonDeserialize(using = DataTypeDeserializer.class)
 @JsonSubTypes({ @Type(Selector.class), @Type(Document.class), @Type(RawDataType.class) })
+@ApiModel(description = "A specific entity of some type from the model")
 public class DataType {
+	@ApiModelProperty("The id for this specific entity in the model, guaranteed to be globally unique")
 	protected DataTypeId id;
+	@ApiModelProperty("The values for each field supported by this specific type")
 	protected Map<String, Object> fields;
 
 	public DataType() {

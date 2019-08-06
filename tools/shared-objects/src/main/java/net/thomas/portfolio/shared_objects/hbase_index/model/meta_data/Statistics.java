@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "Interception counting statistics over time")
 public class Statistics {
-	@ApiModelProperty(notes = "Interception count for each relevant duration")
+	@ApiModelProperty("Interception count for each relevant duration")
 	private Map<StatisticsPeriod, Long> statistics;
 
 	public Statistics() {
