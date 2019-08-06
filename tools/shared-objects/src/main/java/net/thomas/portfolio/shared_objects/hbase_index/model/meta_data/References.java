@@ -6,7 +6,10 @@ import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "Collection of references to a single event from a set of sources")
 public class References {
 	private Collection<Reference> references;
 

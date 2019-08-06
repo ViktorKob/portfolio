@@ -2,10 +2,18 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.meta_data;
 
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(description = "Description of a specifc way to index an event based on a selector related to it")
 public class Indexable {
+	@ApiModelProperty(notes = "The type of the selector linked to the event")
 	public String selectorType;
+	@ApiModelProperty(notes = "A name describing the relationsship between the selector and the document")
 	public String path;
+	@ApiModelProperty(notes = "The type of event")
 	public String documentType;
+	@ApiModelProperty(notes = "The field in the event that the selector is located under")
 	public String documentField;
 
 	public Indexable() {

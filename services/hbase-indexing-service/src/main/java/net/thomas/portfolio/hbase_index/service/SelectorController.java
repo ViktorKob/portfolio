@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
@@ -71,7 +72,8 @@ public class SelectorController {
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch {amount} random sample selectors of type {dti_type} from HBASE", response = Entities.class)
 	@RequestMapping(path = SAMPLES_PATH, method = GET)
-	public ResponseEntity<?> getSamples(@PathVariable String dti_type, Integer amount) {
+	public ResponseEntity<?> getSamples(@ApiParam(value = "Type of the selector to fetch") @PathVariable String dti_type,
+			@ApiParam(value = "Maximum number of samples to fetch", defaultValue = "10") Integer amount) {
 		if (amount == null) {
 			amount = 10;
 		}
@@ -110,7 +112,7 @@ public class SelectorController {
 	}
 
 	@Secured("ROLE_USER")
-	@ApiOperation(value = "Lookup selector with type {dti_type} and uid {dti_uid} in inverted index using the specified parameters", response = DocumentInfos.class)
+	@ApiOperation(value = "Lookup selector with type {dti_type} and uid {dti_uid} in inverted index using the specified constraints", response = DocumentInfos.class)
 	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH, method = GET)
 	public ResponseEntity<?> lookupSelectorInInvertedIndex(@PathVariable String dti_type, @PathVariable String dti_uid, LegalInformation legalInfo,
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
