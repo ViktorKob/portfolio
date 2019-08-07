@@ -5,6 +5,8 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AnalyticalKnowledge {
 	@JsonIgnore
@@ -23,6 +25,7 @@ public class AnalyticalKnowledge {
 		this.isRestricted = isRestricted;
 	}
 
+	@ApiModelProperty("Alias for the selector in the analytical system")
 	public String getPk_alias() {
 		return alias;
 	}
@@ -31,6 +34,7 @@ public class AnalyticalKnowledge {
 		this.alias = alias;
 	}
 
+	@ApiModelProperty("Whether the selector is known by the analysts")
 	public ConfidenceLevel getPk_isKnown() {
 		return isKnown;
 	}
@@ -39,6 +43,7 @@ public class AnalyticalKnowledge {
 		this.isKnown = isKnown;
 	}
 
+	@ApiModelProperty("Whether lookups based on this selector ")
 	public ConfidenceLevel getPk_isRestricted() {
 		return isRestricted;
 	}

@@ -13,15 +13,18 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.render.common.context.HtmlRenderContext;
 import net.thomas.portfolio.render.common.context.HtmlRenderContextBuilder;
@@ -37,7 +40,9 @@ import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-@Controller
+@RestController
+@Api(value = "", description = "Conversion of data types to different string representations")
+@EnableConfigurationProperties
 public class RenderServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
@@ -80,13 +85,14 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Render specific entity using its simple string representation", response = String.class)
 	@RequestMapping(path = RENDER_SELECTOR_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_SIMPLE_REPRESENTATION_PATH, method = GET)
 	public ResponseEntity<String> renderAsSimpleRepresentation(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
 			final DataType entity = hbaseAdaptor.getDataType(id);
 			if (entity != null) {
 				final SimpleRepresentationRenderContext renderContext = new SimpleRepresentationRenderContextBuilder().setHbaseModelAdaptor(hbaseAdaptor)
-					.build();
+						.build();
 				return ok(rendererProvider.renderAsSimpleRep(entity, renderContext));
 			} else {
 				return notFound().build();
@@ -97,6 +103,7 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Render specific entity as a string", response = String.class)
 	@RequestMapping(path = RENDER_ENTITY_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_TEXT_PATH, method = GET)
 	public ResponseEntity<String> renderAsText(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
@@ -113,6 +120,7 @@ public class RenderServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Render specific entity as HTML with embedded JavaScript", response = String.class)
 	@RequestMapping(path = RENDER_ENTITY_ROOT_PATH + "/{dti_type}/{dti_uid}" + AS_HTML_PATH, method = GET)
 	public ResponseEntity<String> renderAsHtml(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {

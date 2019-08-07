@@ -42,7 +42,6 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @RestController
 @Api(value = "", description = "Interaction with the legal service")
 @EnableConfigurationProperties
-@RequestMapping("")
 public class LegalServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);

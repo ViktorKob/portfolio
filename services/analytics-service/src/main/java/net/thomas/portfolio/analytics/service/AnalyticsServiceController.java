@@ -9,15 +9,18 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.analytics.system.AnalyticsControl;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
@@ -25,9 +28,12 @@ import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAda
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
+import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
-@Controller
+@RestController
+@Api(value = "", description = "Interaction with the Analytical systems")
+@EnableConfigurationProperties
 public class AnalyticsServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
@@ -65,6 +71,7 @@ public class AnalyticsServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup knowledge about this specific selektor in the analytical systems", response = AnalyticalKnowledge.class)
 	@RequestMapping(path = LOOKUP_KNOWLEDGE_ROOT_PATH + "/{dti_type}/{dti_uid}" + LOOKUP_KNOWLEDGE_PATH, method = GET)
 	public ResponseEntity<?> lookupPriorKnowledge(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {

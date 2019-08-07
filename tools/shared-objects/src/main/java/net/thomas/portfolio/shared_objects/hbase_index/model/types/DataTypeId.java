@@ -57,6 +57,7 @@ public class DataTypeId implements ParameterGroup {
 	}
 
 	@Override
+	@ApiModelProperty("Should be ignored")
 	@JsonIgnore
 	public Parameter[] getParameters() {
 		return new Parameter[] { new PreSerializedParameter("dti_type", type), new PreSerializedParameter("dti_uid", uid) };
