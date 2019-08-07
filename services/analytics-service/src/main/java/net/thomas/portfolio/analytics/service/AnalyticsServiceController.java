@@ -71,7 +71,7 @@ public class AnalyticsServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@ApiOperation(value = "Lookup knowledge about this specific selektor in the analytical systems", response = AnalyticalKnowledge.class)
+	@ApiOperation(value = "Lookup knowledge about this specific selector in the analytical systems", response = AnalyticalKnowledge.class)
 	@RequestMapping(path = LOOKUP_KNOWLEDGE_ROOT_PATH + "/{dti_type}/{dti_uid}" + LOOKUP_KNOWLEDGE_PATH, method = GET)
 	public ResponseEntity<?> lookupPriorKnowledge(DataTypeId id) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid)) {
