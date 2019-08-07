@@ -13,16 +13,16 @@ import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bounds implements ParameterGroup {
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Integer offset;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Integer limit;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Long after;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Long before;
 
 	public Bounds() {

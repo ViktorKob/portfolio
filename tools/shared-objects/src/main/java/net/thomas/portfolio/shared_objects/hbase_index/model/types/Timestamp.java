@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class Timestamp {
 	public static final Timestamp UNKNOWN = new Timestamp(0l);
 
-	@ApiModelProperty("Exact time as ms since the epoch in UTC")
+	@ApiModelProperty(value = "Exact time as ms since the epoch in UTC", example = "1415463675")
 	private Long timestampInUtc;
 	@ApiModelProperty("The original timezone from the source as a Java ZoneId")
 	private String originalTimeZoneId;

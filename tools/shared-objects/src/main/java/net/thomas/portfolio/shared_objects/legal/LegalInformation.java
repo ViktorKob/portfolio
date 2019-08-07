@@ -15,16 +15,16 @@ import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 @ApiModel(description = "Container for relevant legal information justifying the execution of an action")
 public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public String user;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public String justification;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Long lowerBound;
 	@JsonIgnore
-	@ApiModelProperty("Should be ignored")
+	@ApiModelProperty(value = "Should be ignored", example = "0")
 	public Long upperBound;
 
 	public LegalInformation() {
@@ -70,7 +70,7 @@ public class LegalInformation implements ParameterGroup {
 		}
 	}
 
-	@ApiModelProperty("The lower bound for the scope of the action as a Unix timestamp")
+	@ApiModelProperty(value = "The lower bound for the scope of the action as a Unix timestamp", example = "1415463675")
 	public Long getLi_lowerBound() {
 		return lowerBound;
 	}
@@ -79,7 +79,7 @@ public class LegalInformation implements ParameterGroup {
 		this.lowerBound = lowerBound;
 	}
 
-	@ApiModelProperty("The upper bound for the scope of the action as a Unix timestamp")
+	@ApiModelProperty(value = "The upper bound for the scope of the action as a Unix timestamp", example = "1415463675")
 	public Long getLi_upperBound() {
 		return upperBound;
 	}
