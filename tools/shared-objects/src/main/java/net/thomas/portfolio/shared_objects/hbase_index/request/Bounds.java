@@ -5,6 +5,7 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
@@ -12,12 +13,16 @@ import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bounds implements ParameterGroup {
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Integer offset;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Integer limit;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Long after;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Long before;
 
 	public Bounds() {
@@ -67,6 +72,7 @@ public class Bounds implements ParameterGroup {
 		}
 	}
 
+	@ApiModelProperty(value = "Number of elements to skip", example = "0")
 	public Integer getB_offset() {
 		return offset;
 	}
@@ -75,6 +81,7 @@ public class Bounds implements ParameterGroup {
 		this.offset = offset;
 	}
 
+	@ApiModelProperty(value = "Maximimum number of elements to return", example = "20")
 	public Integer getB_limit() {
 		return limit;
 	}
@@ -83,6 +90,7 @@ public class Bounds implements ParameterGroup {
 		this.limit = limit;
 	}
 
+	@ApiModelProperty(value = "Oldest relevant date as a Unix timestamp", example = "1415463675")
 	public Long getB_after() {
 		return after;
 	}
@@ -91,6 +99,7 @@ public class Bounds implements ParameterGroup {
 		this.after = after;
 	}
 
+	@ApiModelProperty(value = "Newest relevant date as a Unix timestamp", example = "1415463675")
 	public Long getB_before() {
 		return before;
 	}

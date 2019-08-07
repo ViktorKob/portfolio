@@ -41,7 +41,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @RestController
-@Api(value = "", description = "Conversion of data types to different string representations")
+@Api(value = "", description = "Conversion of entities to different string representations")
 @EnableConfigurationProperties
 public class RenderServiceController {
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);

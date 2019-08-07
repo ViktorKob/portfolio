@@ -7,7 +7,10 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "Set of previous interaction with a specific document")
 public class UsageActivities {
 	private List<UsageActivity> activities;
 

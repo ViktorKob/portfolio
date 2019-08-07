@@ -18,12 +18,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.discovery.EurekaClient;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.common.services.parameters.validation.EnumValueValidator;
 import net.thomas.portfolio.common.services.parameters.validation.IntegerRangeValidator;
 import net.thomas.portfolio.common.services.parameters.validation.LongRangeValidator;
@@ -41,7 +43,8 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.sql.SqlProxy;
 
-@Controller
+@RestController
+@Api(value = "", description = "Lookup of previous analysts interaction with documents")
 @EnableConfigurationProperties
 @RequestMapping(value = USAGE_ACTIVITIES_ROOT_PATH + "/{dti_type}/{dti_uid}" + USAGE_ACTIVITIES_PATH)
 public class UsageDataServiceController {
@@ -96,6 +99,7 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Lookup usage interaction with this document", response = UsageActivities.class)
 	@RequestMapping(method = GET)
 	public ResponseEntity<?> fetchUsageActivity(DataTypeId id, Bounds bounds) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && OFFSET.isValid(bounds.offset) && LIMIT.isValid(bounds.limit)) {
@@ -118,6 +122,7 @@ public class UsageDataServiceController {
 	}
 
 	@Secured("ROLE_USER")
+	@ApiOperation(value = "Add usage interaction (returns a copy of the information stored)", response = UsageActivities.class)
 	@RequestMapping(method = POST)
 	public ResponseEntity<?> storeUsageActivity(DataTypeId id, UsageActivity activity) {
 		if (TYPE.isValid(id.type) && UID.isValid(id.uid) && USERNAME.isValid(activity.user) && USAGE_ACTIVITY_TYPE.isValid(activity.type)

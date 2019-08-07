@@ -5,17 +5,23 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "Previous interaction with a specific document")
 public class UsageActivity implements ParameterGroup {
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public String user;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public UsageActivityType type;
 	@JsonIgnore
+	@ApiModelProperty(value = "Timestamp for the activity as a Unix timestamp", example = "1415463675")
 	public Long timeOfActivity;
 
 	public UsageActivity() {
@@ -27,6 +33,7 @@ public class UsageActivity implements ParameterGroup {
 		this.timeOfActivity = timeOfActivity;
 	}
 
+	@ApiModelProperty("Id of the user performing the interaction")
 	public String getUai_user() {
 		return user;
 	}
@@ -35,6 +42,7 @@ public class UsageActivity implements ParameterGroup {
 		this.user = user;
 	}
 
+	@ApiModelProperty("Type of activity performed")
 	public UsageActivityType getUai_type() {
 		return type;
 	}
@@ -43,6 +51,7 @@ public class UsageActivity implements ParameterGroup {
 		this.type = type;
 	}
 
+	@ApiModelProperty(value = "Time of activity (will be set to 'now' if left out)", example = "1415463675")
 	public Long getUai_timeOfActivity() {
 		return timeOfActivity;
 	}
