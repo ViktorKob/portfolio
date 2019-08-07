@@ -10,6 +10,7 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -21,6 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableHystrix
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class HbaseIndexingServiceApplication {
 	@Configuration

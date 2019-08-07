@@ -39,9 +39,7 @@ public interface ParameterGroup {
 
 		@Override
 		public Parameter[] getParameters() {
-			final Collection<Parameter> parameters = values.stream()
-				.map(value -> new PreSerializedParameter(name, value))
-				.collect(toList());
+			final Collection<Parameter> parameters = values.stream().map(value -> new PreSerializedParameter(name, value)).collect(toList());
 			return parameters.toArray(new Parameter[parameters.size()]);
 		}
 	}

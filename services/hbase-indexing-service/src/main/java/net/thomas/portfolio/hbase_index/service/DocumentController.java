@@ -24,7 +24,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 @RestController
 @Api(value = "", description = "Lookup of documents and their related data")
-@RequestMapping(value = DOCUMENTS_PATH + "/{dti_type}")
+@RequestMapping(DOCUMENTS_PATH + "/{dti_type}")
 public class DocumentController {
 
 	@Autowired

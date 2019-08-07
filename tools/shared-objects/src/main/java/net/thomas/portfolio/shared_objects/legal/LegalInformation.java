@@ -5,19 +5,26 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ApiModel(description = "Container for relevant legal information justifying the execution of an action")
 public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public String user;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public String justification;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Long lowerBound;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public Long upperBound;
 
 	public LegalInformation() {
@@ -37,6 +44,7 @@ public class LegalInformation implements ParameterGroup {
 		upperBound = source.upperBound;
 	}
 
+	@ApiModelProperty("The ID of the user trying to perform the action")
 	public String getLi_user() {
 		return user;
 	}
@@ -49,6 +57,7 @@ public class LegalInformation implements ParameterGroup {
 		}
 	}
 
+	@ApiModelProperty("The legal justification for performing the action in question")
 	public String getLi_justification() {
 		return justification;
 	}
@@ -61,6 +70,7 @@ public class LegalInformation implements ParameterGroup {
 		}
 	}
 
+	@ApiModelProperty("The lower bound for the scope of the action as a Unix timestamp")
 	public Long getLi_lowerBound() {
 		return lowerBound;
 	}
@@ -69,6 +79,7 @@ public class LegalInformation implements ParameterGroup {
 		this.lowerBound = lowerBound;
 	}
 
+	@ApiModelProperty("The upper bound for the scope of the action as a Unix timestamp")
 	public Long getLi_upperBound() {
 		return upperBound;
 	}

@@ -15,8 +15,10 @@ public class DataTypeId implements ParameterGroup {
 	public static final DataTypeId NULL_ID = new NullId();
 
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public String type;
 	@JsonIgnore
+	@ApiModelProperty("Should be ignored")
 	public String uid;
 
 	public DataTypeId() {

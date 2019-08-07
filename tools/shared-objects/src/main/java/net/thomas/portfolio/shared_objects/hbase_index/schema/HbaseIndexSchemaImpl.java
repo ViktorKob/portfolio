@@ -21,7 +21,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 @ApiModel(value = "HBASE Index Schema", description = "Schema for the data model in the HBASE index")
 public class HbaseIndexSchemaImpl implements HbaseIndexSchema {
 
-	@ApiModelProperty("The fields available in each data type")
+	@ApiModelProperty(value = "The fields available in each data type")
 	protected Map<String, Fields> dataTypeFields;
 	@ApiModelProperty("Names of all the valid data types in the index")
 	protected Set<String> dataTypes;
