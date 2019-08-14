@@ -42,6 +42,11 @@
 			<version>3.0.2</version>
 		</dependency>
 		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>testing-tools</artifactId>
 			<scope>test</scope>
