@@ -1,0 +1,32 @@
+{
+  "name": "PortfolioLegalService",
+  "version": "1.0.0",
+  "description": "HTML access to the legal service",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "build-dev": "cross-env NODE_ENV=dev webpack --color",
+    "build-dev-w": "cross-env NODE_ENV=dev webpack --color --watch",
+    "build-prod": "cross-env NODE_ENV=production webpack --hide-modules"
+  },
+  "dependencies": {
+    "vue": "^2.5.11"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "cross-env": "^5.0.5",
+    "css-loader": "^0.28.7",
+    "file-loader": "^1.1.4",
+    "vue-loader": "^13.0.5",
+    "vue-template-compiler": "^2.4.4",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1",
+    "url-loader": "0.6.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

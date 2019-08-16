@@ -1,1 +1,5 @@
 /target/
+**/node/**
+**/node_modules/**
+**/target_web/**
+**/package-lock.json

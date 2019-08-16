@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+**/target
 
 # Generated property files
 **/build-info.properties
