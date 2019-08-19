@@ -4,6 +4,7 @@ import static java.lang.System.nanoTime;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
@@ -14,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +36,7 @@ import net.thomas.portfolio.services.Service;
 import net.thomas.portfolio.services.ServiceEndpoint;
 
 public class HttpRestClient {
+	private static final Logger LOG = getLogger(HttpRestClient.class);
 	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 60;
 	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
@@ -66,7 +69,7 @@ public class HttpRestClient {
 		try {
 			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-			System.out.println("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing " + request);
+			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing " + request);
 			if (OK == response.getStatusCode()) {
 				return response.getBody();
 			} else {
@@ -152,8 +155,7 @@ public class HttpRestClient {
 				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
 			} catch (final RuntimeException e) {
 				if (e.getMessage().contains("No matches for the virtual host")) {
-					System.out.println(
-							"Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
+					LOG.error("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
 					try {
 						Thread.sleep(5000);
 					} catch (final InterruptedException e1) {
