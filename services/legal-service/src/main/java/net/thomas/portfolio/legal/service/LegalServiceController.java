@@ -12,6 +12,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +45,7 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @Api(value = "", description = "Interaction with the legal service")
 @EnableConfigurationProperties
 public class LegalServiceController {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LegalServiceController.class);
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
@@ -79,14 +82,16 @@ public class LegalServiceController {
 
 	@PostConstruct
 	public void initializeService() {
-		new Thread(() -> {
-			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
-			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
-		}).start();
 		legalRulesSystem = new LegalRulesControl();
 		legalRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
 		auditLoggingSystem = new AuditLoggingControl();
+		new Thread(() -> {
+			LOGGER.info("Initializing adaptors and validators");
+			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
+			LOGGER.info("Done initializing adaptors and validators");
+		}).start();
 	}
 
 	@Secured("ROLE_USER")
