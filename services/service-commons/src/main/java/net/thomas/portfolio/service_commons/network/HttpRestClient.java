@@ -69,7 +69,7 @@ public class HttpRestClient {
 		try {
 			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing " + request);
+			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing request '" + request + "'");
 			if (OK == response.getStatusCode()) {
 				return response.getBody();
 			} else {
