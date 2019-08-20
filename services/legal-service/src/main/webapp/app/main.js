@@ -1,13 +1,11 @@
 console.log("main.js loaded");
 
-var greeter = require('./greeter');
+var renderer = require("./query_list_renderer.js");
+var queryHistory = JSON.parse(localStorage.getItem("queryHistory"));
+var queryHistoryRender = renderer.renderQueryList(queryHistory);
 
-var greeting = greeter.greet();
-
-if (typeof document !== 'undefined') {
-  var el = document.createElement('h1');
-  el.innerHTML = greeting;
-  document.body.appendChild(el);
+if (typeof document !== "undefined") {
+  document.body.appendChild(queryHistoryRender);
 } else {
-  console.log(greeting);
+   console.log(queryHistoryRender);
 }

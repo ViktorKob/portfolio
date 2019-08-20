@@ -8,7 +8,10 @@ const PATHS = {
 
 module.exports = {
   entry: './app/main.js',
-
+  mode: "development",
+  optimization: {
+		minimize: false
+  },
   output: {
     path: PATHS.build,
     filename: 'legal_service_main.js'

@@ -178,7 +178,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 	public void printSamples(final int amount) {
 		for (final String type : storage.keySet()) {
 			for (final DataType sample : getSamples(type, amount).getEntities()) {
-				System.out.println(sample.toString());
+				System.out.println(sample);
 			}
 		}
 	}

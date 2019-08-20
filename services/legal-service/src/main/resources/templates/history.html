@@ -7,7 +7,14 @@
   <link rel="stylesheet" href="css/main.css">
  </head>
  <body>
-
+  <script th:inline="javascript">
+   /*<![CDATA[*/
+   localStorage.setItem("queryHistory", /*[[${queryHistory}]]*/);
+   /*]]>*/
+  </script> 
   <script src="webjars/portfolio-legal-service/1.0.0/legal_service_main.js"></script>
+  <script>
+	/*localStorage.clear();*/
+  </script> 
  </body>
 </html>
