@@ -2,12 +2,15 @@ package net.thomas.portfolio.hbase_index.fake.processing_steps;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.events.ProcessingStep;
@@ -32,6 +35,8 @@ import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeInvertedIndexStep implements ProcessingStep {
+	private static final Logger LOG = getLogger(FakeInvertedIndexStep.class);
+
 	@Override
 	public void executeAndUpdateIndex(final EventReader events, final HbaseIndex partiallyConstructedIndex) {
 		((FakeHbaseIndex) partiallyConstructedIndex).setInvertedIndex(generateInvertedIndex(events));
@@ -71,14 +76,14 @@ public class FakeInvertedIndexStep implements ProcessingStep {
 	}
 
 	private void indexEvents(final Iterable<Event> events, final StrictEntityHierarchyVisitor<PathContext> traversal) {
-		System.out.println("Starting inverted index step");
+		LOG.info("Starting inverted index step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event event : events) {
 			traversal.visit(event, new PathContext(event));
 			eventCount++;
 		}
-		System.out.println("Seconds spend building inverted index for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
+		LOG.info("Seconds spend building inverted index for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 	}
 
 	private VisitorFieldPreActionFactory<PathContext> createFieldPreActionFactory(final InvertedIndex invertedIndex) {

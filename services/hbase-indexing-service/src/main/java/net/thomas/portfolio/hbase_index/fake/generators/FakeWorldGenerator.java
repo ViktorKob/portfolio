@@ -3,6 +3,7 @@ package net.thomas.portfolio.hbase_index.fake.generators;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import net.thomas.portfolio.hbase_index.fake.generators.documents.ConversationGenerator;
 import net.thomas.portfolio.hbase_index.fake.generators.documents.EmailGenerator;
@@ -39,6 +42,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 
 public class FakeWorldGenerator {
+	private static final Logger LOG = getLogger(FakeWorldGenerator.class);
 
 	private long randomSeed;
 	private final int populationCount;
@@ -55,16 +59,16 @@ public class FakeWorldGenerator {
 	public void generateAndWrite(EventWriter writer) {
 		final long stamp = currentTimeMillis();
 		final List<Domain> domains = registerDomains(randomSeed);
-		System.out.println("World creation (1 of 5): Registered " + domains.size() + " domains.");
+		LOG.info("World creation (1 of 5): Registered " + domains.size() + " domains.");
 		final List<Person> people = populateWorld(populationCount, domains, randomSeed++);
-		System.out.println("World creation (2 of 5): Gave birth to " + people.size() + " people.");
+		LOG.info("World creation (2 of 5): Gave birth to " + people.size() + " people.");
 		final Map<Integer, List<Person>> relations = buildRelations(people, averageRelationCount, randomSeed++);
-		System.out.println("World creation (3 of 5): Build " + mapToRelationCount(relations) + " relations.");
+		LOG.info("World creation (3 of 5): Build " + mapToRelationCount(relations) + " relations.");
 		final Collection<String> eventUids = communicate(people, relations, averageCommunicationCount, randomSeed++, writer);
-		System.out.println("World creation (4 of 5): Communicated " + eventUids.size() + " times.");
+		LOG.info("World creation (4 of 5): Communicated " + eventUids.size() + " times.");
 		generateSourceReferences(eventUids, randomSeed++, writer);
-		System.out.println("World creation (5 of 5): Intercepted communication.");
-		System.out.println("World creation         : Created world in " + (currentTimeMillis() - stamp) / 1000 + " seconds.");
+		LOG.info("World creation (5 of 5): Intercepted communication.");
+		LOG.info("World creation         : Created world in " + (currentTimeMillis() - stamp) / 1000 + " seconds.");
 	}
 
 	private int mapToRelationCount(Map<Integer, List<Person>> relations) {

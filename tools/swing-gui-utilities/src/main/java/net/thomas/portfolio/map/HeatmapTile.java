@@ -40,7 +40,7 @@ public class HeatmapTile implements MapTile {
 			final long stamp = System.nanoTime();
 			final int[][][] map = buildMapData(width, height);
 			final Image image = buildImage(width, height, map);
-			System.out.println((System.nanoTime() - stamp) / 1000000 + " milis spend building image with " + points.size() + " points.");
+			System.out.println((System.nanoTime() - stamp) / 1000000 + " millis spend building image with " + points.size() + " points.");
 			return image;
 		} else {
 			return null;

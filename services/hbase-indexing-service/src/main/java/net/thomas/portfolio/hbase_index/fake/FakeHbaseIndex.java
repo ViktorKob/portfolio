@@ -3,6 +3,7 @@ package net.thomas.portfolio.hbase_index.fake;
 import static java.lang.Math.random;
 import static java.lang.System.currentTimeMillis;
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import net.thomas.portfolio.hbase_index.fake.world.storage.EventReader;
 import net.thomas.portfolio.hbase_index.schema.Entity;
@@ -35,6 +38,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeHbaseIndex implements HbaseIndex {
+	private static final Logger LOG = getLogger(FakeHbaseIndex.class);
+
 	private final Map<String, Map<String, Entity>> storage;
 	private InvertedIndex invertedIndex;
 	private SelectorStatistics selectorStatistics;
@@ -61,14 +66,14 @@ public class FakeHbaseIndex implements HbaseIndex {
 	}
 
 	public void addEntitiesAndChildren(final Iterable<Event> entities) {
-		System.out.println("Starting selector caching step");
+		LOG.info("Starting selector caching step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event entity : entities) {
 			entityExtractor.visit(entity, new BlankContext());
 			eventCount++;
 		}
-		System.out.println("Seconds spend caching selectors for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
+		LOG.info("Seconds spend caching selectors for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 	}
 
 	private VisitorEntityPostActionFactory<BlankContext> createActionFactory() {
@@ -173,7 +178,7 @@ public class FakeHbaseIndex implements HbaseIndex {
 	public void printSamples(final int amount) {
 		for (final String type : storage.keySet()) {
 			for (final DataType sample : getSamples(type, amount).getEntities()) {
-				System.out.println(sample);
+				System.out.println(sample.toString());
 			}
 		}
 	}

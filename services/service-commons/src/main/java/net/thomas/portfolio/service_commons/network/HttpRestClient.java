@@ -170,7 +170,7 @@ public class HttpRestClient {
 		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
 			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
 		} else if (tries > 1) {
-			System.out.println("Discovery of " + serviceInfo.getName() + " successful.");
+			LOG.info("Discovery of " + serviceInfo.getName() + " successful.");
 		}
 		return instanceInfo;
 	}

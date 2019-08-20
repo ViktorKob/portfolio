@@ -2,9 +2,12 @@ package net.thomas.portfolio.hbase_index.fake.processing_steps;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import org.slf4j.Logger;
 
 import net.thomas.portfolio.hbase_index.fake.FakeHbaseIndex;
 import net.thomas.portfolio.hbase_index.fake.events.ProcessingStep;
@@ -26,6 +29,8 @@ import net.thomas.portfolio.hbase_index.schema.selectors.SelectorEntity;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 
 public class FakeSelectorStatisticsStep implements ProcessingStep {
+	private static final Logger LOG = getLogger(FakeSelectorStatisticsStep.class);
+
 	@Override
 	public void executeAndUpdateIndex(final EventReader events, final HbaseIndex partiallyConstructedIndex) {
 		((FakeHbaseIndex) partiallyConstructedIndex).setSelectorStatistics(generateSelectorStatistics(events));
@@ -34,14 +39,14 @@ public class FakeSelectorStatisticsStep implements ProcessingStep {
 	private SelectorStatistics generateSelectorStatistics(final Iterable<Event> events) {
 		final SelectorStatistics statistics = new SelectorStatistics();
 		final StrictEntityHierarchyVisitor<EventContext> counter = buildCounter(statistics);
-		System.out.println("Starting selector statistics step");
+		LOG.info("Starting selector statistics step");
 		final long stamp = currentTimeMillis();
 		long eventCount = 0;
 		for (final Event event : events) {
 			counter.visit(event, new EventContext(event));
 			eventCount++;
 		}
-		System.out.println("Seconds spend building selector statistics for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
+		LOG.info("Seconds spend building selector statistics for " + eventCount + " events: " + (currentTimeMillis() - stamp) / 1000);
 		return statistics;
 	}
 

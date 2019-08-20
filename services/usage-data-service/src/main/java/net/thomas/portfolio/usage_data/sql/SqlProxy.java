@@ -1,12 +1,12 @@
 package net.thomas.portfolio.usage_data.sql;
 
 import static java.lang.System.currentTimeMillis;
-import static java.lang.System.out;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.sql.DriverManager.getConnection;
 import static net.thomas.portfolio.usage_data.schema.tables.AccessType.ACCESS_TYPE;
 import static net.thomas.portfolio.usage_data.schema.tables.User.USER;
 import static net.thomas.portfolio.usage_data.schema.tables.UserAccessedDocument.USER_ACCESSED_DOCUMENT;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,6 +27,7 @@ import org.jooq.DSLContext;
 import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.impl.DSL;
+import org.slf4j.Logger;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -36,6 +37,8 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 import net.thomas.portfolio.usage_data.service.UsageDataServiceConfiguration.Database;
 
 public class SqlProxy {
+	private static final Logger LOG = getLogger(SqlProxy.class);
+
 	private Database databaseConfig;
 
 	public void setDatabase(final Database databaseConfig) {
@@ -80,7 +83,7 @@ public class SqlProxy {
 		if (!schemaPath.toFile().exists()) {
 			schemaPath = Paths.get(".", "src", "main", "resources", "schema", "usage_data_schema.sql");
 		}
-		out.println("Using schema path " + schemaPath);
+		LOG.info("Using schema path " + schemaPath);
 		return schemaPath;
 	}
 

@@ -1,7 +1,9 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.lang.System.currentTimeMillis;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -25,6 +27,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 @Component
 @Scope("singleton")
 public class FakeIndexControl implements IndexControl {
+	private static final Logger LOG = getLogger(FakeIndexControl.class);
+
 	private HbaseIndexSchema schema;
 	private HbaseIndex index;
 	private SimpleRepresentationParserLibrary parserLibrary;
@@ -82,10 +86,10 @@ public class FakeIndexControl implements IndexControl {
 		final FakeHbaseIndex index = new FakeHbaseIndex();
 		index.setEventReader(events);
 		new Thread(() -> {
-			System.out.println("Initializing data for service...");
+			LOG.info("Initializing data for service...");
 			final long stamp = currentTimeMillis();
 			processEventsIntoIndex(events, index);
-			System.out.println("Done initializing data for service in " + (currentTimeMillis() - stamp) / 1000 + " seconds.");
+			LOG.info("Done initializing data for service in " + (currentTimeMillis() - stamp) / 1000 + " seconds.");
 		}).start();
 		return index;
 	}
