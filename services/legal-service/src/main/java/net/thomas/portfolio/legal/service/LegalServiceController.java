@@ -1,6 +1,5 @@
 package net.thomas.portfolio.legal.service;
 
-import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
@@ -92,12 +91,6 @@ public class LegalServiceController {
 			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
-			LOG.info("Adding fake audit log data");
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me", "For reasons", 0l, Long.MAX_VALUE));
-			auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For reasons", currentTimeMillis(), Long.MAX_VALUE));
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2", "For other reasons", 0l, currentTimeMillis()));
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3", null, null, null));
-			LOG.info("Done adding fake audit log data");
 		}).start();
 	}
 
