@@ -1,5 +1,6 @@
 package net.thomas.portfolio.legal.service;
 
+import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
@@ -58,8 +59,9 @@ public class LegalServiceController {
 	private HbaseIndexModelAdaptor hbaseAdaptor;
 	@Autowired
 	private RestTemplate restTemplate;
-	private LegalRulesControl legalRulesSystem;
-	private AuditLoggingControl auditLoggingSystem;
+	@Autowired
+	private AuditLoggingControl auditLogging;
+	private LegalRulesControl legalRules;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
@@ -82,15 +84,20 @@ public class LegalServiceController {
 
 	@PostConstruct
 	public void initializeService() {
-		legalRulesSystem = new LegalRulesControl();
-		legalRulesSystem.setAnalyticsAdaptor(analyticsAdaptor);
-		auditLoggingSystem = new AuditLoggingControl();
+		legalRules = new LegalRulesControl();
+		legalRules.setAnalyticsAdaptor(analyticsAdaptor);
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
 			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
 			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
+			LOG.info("Adding fake audit log data");
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me", "For reasons", 0l, Long.MAX_VALUE));
+			auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For reasons", currentTimeMillis(), Long.MAX_VALUE));
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2", "For other reasons", 0l, currentTimeMillis()));
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3", null, null, null));
+			LOG.info("Done adding fake audit log data");
 		}).start();
 	}
 
@@ -99,7 +106,7 @@ public class LegalServiceController {
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final Legality response = legalRulesSystem.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
+			final Legality response = legalRules.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
 			return ok(response);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
@@ -111,7 +118,7 @@ public class LegalServiceController {
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
 		if (TYPE.isValid(dataTypeId.type) && UID.isValid(dataTypeId.uid)) {
-			final Legality response = legalRulesSystem.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
+			final Legality response = legalRules.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
 			return ok(response);
 		} else {
 			return badRequest().body(TYPE.getReason(dataTypeId.type) + "<BR>" + UID.getReason(dataTypeId.uid));
@@ -123,7 +130,7 @@ public class LegalServiceController {
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
+			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 			return ok(accepted);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
@@ -135,7 +142,7 @@ public class LegalServiceController {
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final boolean accepted = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfo);
+			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 			return ok(accepted);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
