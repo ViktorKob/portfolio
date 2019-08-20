@@ -33,7 +33,7 @@ public class LegalServiceApplication {
 
 	@Configuration
 	@EnableSwagger2
-	public class SwaggerConfig {
+	static class SwaggerConfig {
 		@Bean
 		public Docket api() {
 			return new Docket(SWAGGER_2).select().apis(basePackage("net.thomas.portfolio.legal.service")).paths(any()).build();

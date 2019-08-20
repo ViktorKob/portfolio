@@ -95,12 +95,6 @@ public class LegalServiceController {
 	}
 
 	@Secured("ROLE_USER")
-	@RequestMapping("/history")
-	public String getQueryHistory() {
-		return "history";
-	}
-
-	@Secured("ROLE_USER")
 	@ApiOperation(value = "Verify that looking up the specified selector in inverted index is legal based on the specified legal information", response = Legality.class)
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
