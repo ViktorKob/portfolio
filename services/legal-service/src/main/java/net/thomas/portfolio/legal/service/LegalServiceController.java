@@ -1,15 +1,24 @@
 package net.thomas.portfolio.legal.service;
 
+import static java.lang.System.currentTimeMillis;
+import static java.util.Collections.reverse;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_UPDATED;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_MESSAGE_PREFIX;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
+import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -18,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +39,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
+import net.thomas.portfolio.legal.system.AuditLoggingControl.HistoryItem;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
@@ -52,6 +63,8 @@ public class LegalServiceController {
 	private final LegalServiceConfiguration config;
 	@Autowired
 	private EurekaClient discoveryClient;
+	@Autowired
+	private SimpMessagingTemplate webSocket;
 	@Autowired
 	private AnalyticsAdaptor analyticsAdaptor;
 	@Autowired
@@ -91,6 +104,12 @@ public class LegalServiceController {
 			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
+			LOG.info("Adding fake audit log data");
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me", "For reasons", 0l, Long.MAX_VALUE));
+			auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For reasons", currentTimeMillis(), Long.MAX_VALUE));
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2", "For other reasons", 0l, currentTimeMillis()));
+			auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3", null, null, null));
+			LOG.info("Done adding fake audit log data");
 		}).start();
 	}
 
@@ -124,6 +143,7 @@ public class LegalServiceController {
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
+			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
 			return ok(accepted);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
@@ -136,9 +156,23 @@ public class LegalServiceController {
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
+			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED);
 			return ok(accepted);
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
+	}
+
+	@Secured("ROLE_USER")
+	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryList.class)
+	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH, method = GET)
+	public ResponseEntity<?> lookupAuditLoggingHistory() {
+		final List<HistoryItem> history = new LinkedList<>(auditLogging.getHistory());
+		reverse(history);
+		return ok(history);
+	}
+
+	private static class HistoryList extends LinkedList<HistoryItem> {
+		private static final long serialVersionUID = 1L;
 	}
 }

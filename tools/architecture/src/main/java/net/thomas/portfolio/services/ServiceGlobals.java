@@ -5,6 +5,7 @@ public class ServiceGlobals {
 	public static final String INFRASTRUCTURE_MASTER_NAME = "infrastructure-master";
 	public static final String ADMIN_SERVICE_PATH = "/Admin";
 	public static final String ADMIN_SERVICE_NAME = "admin-service";
+	public static final String MESSAGE_PREFIX = "/topic";
 
 	public static final String ANALYTICS_SERVICE_PATH = "/AnalyticsService";
 	public static final String ANALYTICS_SERVICE_NAME = "analytics-service";

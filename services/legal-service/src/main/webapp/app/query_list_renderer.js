@@ -3,9 +3,13 @@ function br(){
 }
 
 function textNode(type, text){
-	var node = document.createElement(type);
-	node.appendChild(document.createTextNode(text));
-	return node; 
+	if(type !== null){
+		var node = document.createElement(type);
+		node.appendChild(document.createTextNode(text));
+		return node; 
+	} else {
+		return document.createTextNode(text);
+	}	
 }
 
 function zeropad(number){
@@ -90,7 +94,7 @@ var renderedValues;
 function renderQuery(value, index, array){
 	renderedValues.appendChild(renderItem(value));
 }
-  
+
 module.exports = {
 	renderQueryList: function(queryHistory) {
 		renderedValues = document.createElement("UL");
@@ -101,7 +105,7 @@ module.exports = {
 			var item = document.createElement("LI");
 			item.className = "list-group-item";
 			item.appendChild(document.createTextNode("No queries rendered"));
-			renderedValues.appendChild(item);  	
+			renderedValues.appendChild(item);
 		}
 		return div("container", [textNode("H3", "Queries accepted by the service"), renderedValues]);
 	}  

@@ -1,11 +1,11 @@
-console.log("main.js loaded");
+var bootstrapRenderer = require("./query_list_renderer");
+var reactRenderer = require("./query_list_react_renderer");
 
-var renderer = require("./query_list_renderer.js");
 var queryHistory = JSON.parse(localStorage.getItem("queryHistory"));
-var queryHistoryRender = renderer.renderQueryList(queryHistory);
+var queryHistoryRender = bootstrapRenderer.renderQueryList(queryHistory);
 
 if (typeof document !== "undefined") {
   document.body.appendChild(queryHistoryRender);
 } else {
-   console.log(queryHistoryRender);
+   console.log(queryHistoryRender); 
 }
