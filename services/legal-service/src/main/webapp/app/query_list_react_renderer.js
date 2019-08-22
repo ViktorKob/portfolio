@@ -1,8 +1,15 @@
+import Accordion from "react-bootstrap/Accordion";
+import Card from "react-bootstrap/Card";
+import CardGroup from 'react-bootstrap/CardGroup'
+import Col from 'react-bootstrap/Col'
+import Container from "react-bootstrap/Container";
+import Row from 'react-bootstrap/Row'
+
 const React = require("react");
 const ReactDOM = require("react-dom");
 const client = require("./client");
 const SockJS = require('sockjs-client');
-require('stompjs');
+require('stompjs'); 
 
 function zeropad(number){
 	var numberString = "" + number;
@@ -30,14 +37,89 @@ function date(timestamp){
 	return document.createTextNode(convertTimestamp(timestamp)); 
 }
 
+function has(object, propertyName){
+	return object.__proto__.hasOwnProperty(propertyName); 
+}
+
 class HistoryItem extends React.Component{
 	render() {
-		var timeOfLogging = convertTimestamp(this.props.item.timeOfLogging);
+		var justification = has(this.props.item.legalInfo, "li_justification")? "No justification was given" : this.props.item.legalInfo.li_justification;
+		var before = !has(this.props.item.legalInfo, "li_upperBound")? convertTimestamp(this.props.item.legalInfo.li_upperBound) : "No latest date was given";
+		var after = !has(this.props.item.legalInfo, "li_lowerBound")? convertTimestamp(this.props.item.legalInfo.li_lowerBound) : "No earliest date was given";
 		return (
-			<tr>
-				<td>{this.props.item.type}</td>
-				<td>{timeOfLogging}</td>
-			</tr>
+			<Card>
+				<Card.Header>
+					{this.props.item.type} - {convertTimestamp(this.props.item.timeOfLogging)}
+				</Card.Header>
+				<Card.Body>
+					<CardGroup>
+						<Card>
+							<Card.Header>
+								Selector
+							</Card.Header>
+							<Card.Body>
+								<Container>
+									<Row>
+										<Col xs = {2}>
+											Type: 
+										</Col>
+										<Col xs = {4}>
+											{this.props.item.selectorId.dti_type}
+										</Col>
+									</Row>
+									<Row>
+										<Col xs = {2}>
+											Uid: 
+										</Col>
+										<Col xs = {4}>
+											{this.props.item.selectorId.dti_uid}
+										</Col>
+									</Row>
+								</Container>
+							</Card.Body>
+						</Card>
+						<Card>
+							<Card.Header>
+								Legal Information
+							</Card.Header>
+							<Card.Body>
+								<Row>
+									<Col xs = {4}>
+										User: 
+									</Col>
+									<Col xs = {8}>
+										{this.props.item.legalInfo.li_user}
+									</Col>
+								</Row>
+								<Row>
+									<Col xs = {4}>
+										Justification: 
+									</Col>
+									<Col xs = {8}>
+										{justification}
+									</Col>
+								</Row>
+								<Row>
+									<Col xs = {4}>
+										Before: 
+									</Col>
+									<Col xs = {8}>
+										{before}
+									</Col>
+								</Row>
+								<Row>
+									<Col xs = {4}>
+										After: 
+									</Col>
+									<Col xs = {8}>
+										{after}
+									</Col>
+								</Row>
+							</Card.Body>
+						</Card>
+					</CardGroup>
+				</Card.Body>
+			</Card>
 		)
 	}
 }
@@ -48,21 +130,20 @@ class History extends React.Component{
 			<HistoryItem key={JSON.stringify(item)} item={item}/>
 		);
 		return (
-			<table>
-				<tbody>
-					<tr>
-						<th>Type</th>
-						<th>Date of execution</th>
-					</tr>
-					{history}
-				</tbody>
-			</table>
+			<Card>
+				<Card.Title>Queries accepted by the service</Card.Title>
+				<Card.Body>
+					<Accordion>
+						{history}
+					</Accordion>
+				</Card.Body>
+			</Card>
 		)
 	}
 }
   
 function register(registrations) {
-	const socket = SockJS('v1/selectors/web-socket');
+	const socket = SockJS('stomp'); 
 	const stompClient = Stomp.over(socket);
 	stompClient.connect({}, function(frame) {
 		registrations.forEach(function (registration) {
@@ -87,7 +168,7 @@ class QueryListRenderer extends React.Component {
 	}
 
 	fetchData(){
-		client({method: "GET", path: "v1/selectors/history"}).done(response => {
+		client({method: "GET", path: "v1/selectors/history"}).then(response => {
 			this.setState({history: response.entity});
 		});
 	}

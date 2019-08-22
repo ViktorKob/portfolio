@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,6 +97,7 @@ public class LegalServiceController {
 
 	@PostConstruct
 	public void initializeService() {
+		webSocket.setMessageConverter(new MappingJackson2MessageConverter());
 		legalRules = new LegalRulesControl();
 		legalRules.setAnalyticsAdaptor(analyticsAdaptor);
 		new Thread(() -> {

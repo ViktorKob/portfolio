@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableDiscoveryClient
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = false)
 public class LegalServiceApplication {
+
 	public static void main(String[] args) {
 		loadServicePathsIntoProperties();
 		loadDefaultServiceConfigurationIntoProperties();

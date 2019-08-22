@@ -1,9 +1,11 @@
 package net.thomas.portfolio.shared_objects.legal;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,6 +14,7 @@ import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(NON_NULL)
 @ApiModel(description = "Container for relevant legal information justifying the execution of an action")
 public class LegalInformation implements ParameterGroup {
 	@JsonIgnore

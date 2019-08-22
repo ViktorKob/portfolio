@@ -1,4 +1,4 @@
-package net.thomas.portfolio.legal.configuration;
+package net.thomas.portfolio.infrastructure.config;
 
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_MESSAGE_PREFIX;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
@@ -14,10 +14,6 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 @Component
 @EnableWebSocketMessageBroker
 public class WebSocketConfiguration extends AbstractSecurityWebSocketMessageBrokerConfigurer {
-	@Override
-	protected boolean sameOriginDisabled() {
-		return true;
-	}
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
