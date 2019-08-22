@@ -12,11 +12,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+
+import com.github.mthizo247.cloud.netflix.zuul.web.socket.EnableZuulWebSocket;
 
 @SpringBootApplication
 @EnableAutoConfiguration
 @EnableZuulProxy
 @EnableEurekaClient
+@EnableZuulWebSocket
+@EnableWebSocketMessageBroker
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class ProxyApplication {
 	@Configuration

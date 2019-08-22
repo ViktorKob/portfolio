@@ -58,6 +58,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.github.mthizo247</groupId>
+			<artifactId>spring-cloud-netflix-zuul-websocket</artifactId>
+			<version>1.0.0-RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>

@@ -88,6 +88,11 @@ public class ProxyServiceProperties {
 		put("zuul.routes." + service.name() + ".path", service.getContextPath() + "/**");
 		put("zuul.routes." + service.name() + ".strip-prefix", "false");
 		put("zuul.routes." + service.name() + ".service-id", service.getServiceName());
+		if (service.needsWebSocketForwarding()) {
+			put("zuul.ws.brokerages." + service.name() + ".end-points", "/stomp");
+			put("zuul.ws.brokerages." + service.name() + ".brokers", service.getWebSocketBroker());
+			put("zuul.ws.brokerages." + service.name() + ".destination-prefixes", "/stomp");
+		}
 	}
 
 	private static void put(String propertyId, String value) {
