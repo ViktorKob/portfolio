@@ -21,31 +21,31 @@ function zeropad(number){
 
 // Based on 'https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript'
 function convertTimestamp(timestamp){
-  var a = new Date(timestamp);
-  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var year = a.getFullYear();
-  var month = months[a.getMonth()];
-  var date = a.getDate();
-  var hour = a.getHours();
-  var min = a.getMinutes();
-  var sec = a.getSeconds();
-  var time = month + ', ' + date + ' ' + year + ' - ' + zeropad(hour) + ':' + zeropad(min) + ':' + zeropad(sec) ;
-  return time; 
+	if(typeof timestamp !== "undefined" && timestamp < 32503420800){
+		var a = new Date(timestamp);
+		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+		var year = a.getFullYear();
+		var month = months[a.getMonth()];
+		var date = a.getDate();
+		var hour = a.getHours();
+		var min = a.getMinutes();
+		var sec = a.getSeconds();
+		var time = month + ', ' + date + ' ' + year + ' - ' + zeropad(hour) + ':' + zeropad(min) + ':' + zeropad(sec) ;
+		return time; 
+	} else {
+		return "No date given";
+	}
 }
 
 function date(timestamp){
 	return document.createTextNode(convertTimestamp(timestamp)); 
 }
 
-function has(object, propertyName){
-	return object.__proto__.hasOwnProperty(propertyName); 
-}
-
 class HistoryItem extends React.Component{
 	render() {
-		var justification = has(this.props.item.legalInfo, "li_justification")? "No justification was given" : this.props.item.legalInfo.li_justification;
-		var before = !has(this.props.item.legalInfo, "li_upperBound")? convertTimestamp(this.props.item.legalInfo.li_upperBound) : "No latest date was given";
-		var after = !has(this.props.item.legalInfo, "li_lowerBound")? convertTimestamp(this.props.item.legalInfo.li_lowerBound) : "No earliest date was given";
+		var justification = this.props.item.legalInfo.li_justification; //"No justification was given";
+		var before = convertTimestamp(this.props.item.legalInfo.li_upperBound);
+		var after = convertTimestamp(this.props.item.legalInfo.li_lowerBound);
 		return (
 			<Card>
 				<Card.Header>
