@@ -59,24 +59,12 @@ class HistoryItem extends React.Component{
 								Selector
 							</Card.Header>
 							<Card.Body>
-								<Container>
-									<Row>
-										<Col xs = {2}>
-											Type: 
-										</Col>
-										<Col xs = {4}>
-											{this.props.item.selectorId.dti_type}
-										</Col>
-									</Row>
-									<Row>
-										<Col xs = {2}>
-											Uid: 
-										</Col>
-										<Col xs = {4}>
-											{this.props.item.selectorId.dti_uid}
-										</Col>
-									</Row>
-								</Container>
+								<Row>
+									{this.props.item.selectorId.dti_type}
+								</Row>
+								<Row>
+									{this.props.item.selectorId.dti_uid}
+								</Row>
 							</Card.Body>
 						</Card>
 						<Card>
