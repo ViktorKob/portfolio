@@ -20,8 +20,8 @@ function zeropad(number){
 }
 
 // Based on 'https://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript'
-function convertTimestamp(timestamp){
-	if(typeof timestamp !== "undefined" && timestamp < 32503420800){
+function convertTimestamp(timestamp){                 
+	if(typeof timestamp !== "undefined" && timestamp < 32503420800000){
 		var a = new Date(timestamp);
 		var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 		var year = a.getFullYear();
@@ -46,6 +46,7 @@ class HistoryItem extends React.Component{
 		var justification = this.props.item.legalInfo.li_justification; //"No justification was given";
 		var before = convertTimestamp(this.props.item.legalInfo.li_upperBound);
 		var after = convertTimestamp(this.props.item.legalInfo.li_lowerBound);
+		console.log(this.props.item.timeOfLogging);
 		return (
 			<Card>
 				<Card.Header>
@@ -182,5 +183,5 @@ class QueryListRenderer extends React.Component {
 
 ReactDOM.render(
 	<QueryListRenderer />,
-	document.getElementById("reactiveQueryHistory")
+	document.getElementById("queryHistory")
 )
