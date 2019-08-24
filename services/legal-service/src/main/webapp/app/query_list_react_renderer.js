@@ -46,7 +46,6 @@ class HistoryItem extends React.Component{
 		var justification = this.props.item.legalInfo.li_justification; //"No justification was given";
 		var before = convertTimestamp(this.props.item.legalInfo.li_upperBound);
 		var after = convertTimestamp(this.props.item.legalInfo.li_lowerBound);
-		console.log(this.props.item.timeOfLogging);
 		return (
 			<Card>
 				<Card.Header>
