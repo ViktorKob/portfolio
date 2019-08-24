@@ -157,7 +157,7 @@ public class LegalServiceController {
 	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
+			final boolean accepted = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
 			return ok(accepted);
 		} else {
