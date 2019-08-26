@@ -12,7 +12,9 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -40,7 +42,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
-import net.thomas.portfolio.legal.system.AuditLoggingControl.HistoryItem;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
@@ -50,6 +51,7 @@ import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
@@ -169,9 +171,22 @@ public class LegalServiceController {
 	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryList.class)
 	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH, method = GET)
 	public ResponseEntity<?> lookupAuditLoggingHistory() {
-		final List<HistoryItem> history = new LinkedList<>(auditLogging.getHistory());
+		final List<HistoryItem> history = new LinkedList<>(auditLogging.getAll());
 		reverse(history);
 		return ok(history);
+	}
+
+	@Secured("ROLE_USER")
+	@ApiOperation(value = "Fetch audit log item from history", response = HistoryItem.class)
+	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH + "/{id}", method = GET)
+	public ResponseEntity<?> lookupAuditLoggingHistoryItem(Integer id) {
+		final HistoryItem item = auditLogging.getItem(id);
+		if (item != null) {
+			item.add(linkTo(LegalServiceController.class).slash(LEGAL_ROOT_PATH).slash(HISTORY_PATH).slash(item.getItemId()).withSelfRel());
+			return ok(item);
+		} else {
+			return notFound().build();
+		}
 	}
 
 	private static class HistoryList extends LinkedList<HistoryItem> {

@@ -2,52 +2,45 @@ package net.thomas.portfolio.legal.system;
 
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.unmodifiableList;
-import static net.thomas.portfolio.legal.system.AuditLoggingControl.QueryType.INVERTED_INDEX;
-import static net.thomas.portfolio.legal.system.AuditLoggingControl.QueryType.SELECTOR_STATISTICS;
+import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.INVERTED_INDEX;
+import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.SELECTOR_STATISTICS;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @Component
 @Scope("singleton")
 public class AuditLoggingControl {
-	private final LinkedList<HistoryItem> history;
+	private final List<HistoryItem> history;
 
 	public AuditLoggingControl() {
-		history = new LinkedList<>();
+		history = new ArrayList<>();
 	}
 
-	public boolean logInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return history.add(new HistoryItem(INVERTED_INDEX, currentTimeMillis(), selectorId, legalInfo));
+	public synchronized boolean logInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return history.add(new HistoryItem(history.size(), INVERTED_INDEX, currentTimeMillis(), selectorId, legalInfo));
 	}
 
-	public boolean logStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		return history.add(new HistoryItem(SELECTOR_STATISTICS, currentTimeMillis(), selectorId, legalInfo));
+	public synchronized boolean logStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		return history.add(new HistoryItem(history.size(), SELECTOR_STATISTICS, currentTimeMillis(), selectorId, legalInfo));
 	}
 
-	public List<HistoryItem> getHistory() {
+	public List<HistoryItem> getAll() {
 		return unmodifiableList(history);
 	}
 
-	public static enum QueryType {
-		INVERTED_INDEX,
-		SELECTOR_STATISTICS
-	}
-
-	@RequiredArgsConstructor
-	@ToString
-	public static class HistoryItem {
-		public final QueryType type;
-		public final long timeOfLogging;
-		public final DataTypeId selectorId;
-		public final LegalInformation legalInfo;
+	public HistoryItem getItem(int id) {
+		if (id > 0 && id < history.size()) {
+			return history.get(id);
+		} else {
+			return null;
+		}
 	}
 }

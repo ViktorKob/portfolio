@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
-import net.thomas.portfolio.legal.system.AuditLoggingControl.HistoryItem;
+import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 
 @Controller
 @Api(value = "", description = "Interaction with the legal service")
@@ -46,7 +46,7 @@ public class LegalServiceWebController {
 	@GetMapping("/history")
 	public String getQueryHistory(Model model) {
 		try {
-			final List<HistoryItem> history = new LinkedList<>(auditLogging.getHistory());
+			final List<HistoryItem> history = new LinkedList<>(auditLogging.getAll());
 			reverse(history);
 			model.addAttribute("queryHistory", new ObjectMapper().writeValueAsString(history));
 		} catch (final JsonProcessingException e) {
