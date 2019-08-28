@@ -12,26 +12,30 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.Link.REL_FIRST;
+import static org.springframework.hateoas.Link.REL_LAST;
+import static org.springframework.hateoas.Link.REL_NEXT;
+import static org.springframework.hateoas.Link.REL_PREVIOUS;
+import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -41,6 +45,7 @@ import com.netflix.discovery.EurekaClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
+import net.thomas.portfolio.hateoas.LegalLinkFactory;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
@@ -52,6 +57,7 @@ import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem;
+import net.thomas.portfolio.shared_objects.legal.HistoryItemList;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 
@@ -64,6 +70,9 @@ public class LegalServiceController {
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
 
 	private final LegalServiceConfiguration config;
+
+	@Value("${global-url-prefix}")
+	private String globalUrlPrefix;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
@@ -77,6 +86,7 @@ public class LegalServiceController {
 	@Autowired
 	private AuditLoggingControl auditLogging;
 	private LegalRulesControl legalRules;
+	private LegalLinkFactory linkFactory;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
@@ -102,6 +112,7 @@ public class LegalServiceController {
 		webSocket.setMessageConverter(new MappingJackson2MessageConverter());
 		legalRules = new LegalRulesControl();
 		legalRules.setAnalyticsAdaptor(analyticsAdaptor);
+		linkFactory = new LegalLinkFactory(globalUrlPrefix);
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
 			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
@@ -161,35 +172,74 @@ public class LegalServiceController {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final boolean accepted = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-			return ok(accepted);
+			return ResponseEntity.created(null).build();
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
 	}
 
 	@Secured("ROLE_USER")
-	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryList.class)
+	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryItemList.class)
 	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH, method = GET)
 	public ResponseEntity<?> lookupAuditLoggingHistory() {
-		final List<HistoryItem> history = new LinkedList<>(auditLogging.getAll());
+		final HistoryItemList history = new HistoryItemList();
+		auditLogging.getAll().forEach((item) -> {
+			// TOOD[Thomas]: Create DTOs with links instead
+			updateChildLinks(item);
+			history.add(item);
+		});
 		reverse(history);
+		history.add(new Link(linkFactory.getHistoryLink(), REL_SELF));
 		return ok(history);
 	}
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch audit log item from history", response = HistoryItem.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH + "/{id}", method = GET)
-	public ResponseEntity<?> lookupAuditLoggingHistoryItem(Integer id) {
-		final HistoryItem item = auditLogging.getItem(id);
+	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH + "/{itemId}", method = GET)
+	public ResponseEntity<?> lookupAuditLoggingHistoryItem(@PathVariable Integer itemId) {
+		final HistoryItem item = auditLogging.getItem(itemId);
 		if (item != null) {
-			item.add(linkTo(LegalServiceController.class).slash(LEGAL_ROOT_PATH).slash(HISTORY_PATH).slash(item.getItemId()).withSelfRel());
+			// TOOD[Thomas]: Create DTOs with links instead
+			updateRootLinks(item);
 			return ok(item);
 		} else {
 			return notFound().build();
 		}
 	}
 
-	private static class HistoryList extends LinkedList<HistoryItem> {
-		private static final long serialVersionUID = 1L;
+	private void updateRootLinks(final HistoryItem item) {
+		item.removeLinks();
+		addSelfLink(item);
+		addNeighbourLinks(item);
+		addBorderLinks(item);
+	}
+
+	private void updateChildLinks(final HistoryItem item) {
+		item.removeLinks();
+		addSelfLink(item);
+	}
+
+	private void addSelfLink(final HistoryItem item) {
+		item.add(buildLink(item.getHI_ItemId(), REL_SELF));
+	}
+
+	private void addNeighbourLinks(final HistoryItem item) {
+		if (item.getHI_ItemId() > 0) {
+			item.add(buildLink(item.getHI_ItemId() - 1, REL_PREVIOUS));
+		}
+		if (item.getHI_ItemId() < auditLogging.getLastId()) {
+			item.add(buildLink(item.getHI_ItemId() + 1, REL_NEXT));
+		}
+	}
+
+	private void addBorderLinks(final HistoryItem item) {
+		if (auditLogging.getLastId() > -1) {
+			item.add(buildLink(0, REL_FIRST));
+			item.add(buildLink(auditLogging.getLastId(), REL_LAST));
+		}
+	}
+
+	private Link buildLink(int itemId, final String relation) {
+		return new Link(linkFactory.getHistoryItemLink(itemId), relation);
 	}
 }

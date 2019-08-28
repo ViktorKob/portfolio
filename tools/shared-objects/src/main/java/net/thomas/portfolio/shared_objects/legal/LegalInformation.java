@@ -9,25 +9,27 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.EqualsAndHashCode;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
+@EqualsAndHashCode
 @ApiModel(description = "Container for relevant legal information justifying the execution of an action")
 public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", example = "0", hidden = true)
 	public String user;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", example = "0", hidden = true)
 	public String justification;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", example = "0", hidden = true)
 	public Long lowerBound;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", example = "0", hidden = true)
 	public Long upperBound;
 
 	public LegalInformation() {
@@ -73,7 +75,7 @@ public class LegalInformation implements ParameterGroup {
 		}
 	}
 
-	@ApiModelProperty(value = "The lower bound for the scope of the action as a Unix timestamp", example = "1415463675")
+	@ApiModelProperty(value = "The lower bound for the scope of the action as a Unix timestamp with milliseconds", example = "1415463675")
 	public Long getLi_lowerBound() {
 		return lowerBound;
 	}
@@ -82,7 +84,7 @@ public class LegalInformation implements ParameterGroup {
 		this.lowerBound = lowerBound;
 	}
 
-	@ApiModelProperty(value = "The upper bound for the scope of the action as a Unix timestamp", example = "1415463675")
+	@ApiModelProperty(value = "The upper bound for the scope of the action as a Unix timestamp with milliseconds", example = "1415463675")
 	public Long getLi_upperBound() {
 		return upperBound;
 	}
@@ -93,63 +95,10 @@ public class LegalInformation implements ParameterGroup {
 
 	@Override
 	@JsonIgnore
+	@ApiModelProperty(value = "Should be ignored", example = "[]", hidden = true)
 	public Parameter[] getParameters() {
 		return new Parameter[] { new PreSerializedParameter("li_user", user), new PreSerializedParameter("li_justification", justification),
 				new PreSerializedParameter("li_lowerBound", lowerBound), new PreSerializedParameter("li_upperBound", upperBound) };
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (justification == null ? 0 : justification.hashCode());
-		result = prime * result + (lowerBound == null ? 0 : lowerBound.hashCode());
-		result = prime * result + (upperBound == null ? 0 : upperBound.hashCode());
-		result = prime * result + (user == null ? 0 : user.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof LegalInformation)) {
-			return false;
-		}
-		final LegalInformation other = (LegalInformation) obj;
-		if (justification == null) {
-			if (other.justification != null) {
-				return false;
-			}
-		} else if (!justification.equals(other.justification)) {
-			return false;
-		}
-		if (lowerBound == null) {
-			if (other.lowerBound != null) {
-				return false;
-			}
-		} else if (!lowerBound.equals(other.lowerBound)) {
-			return false;
-		}
-		if (upperBound == null) {
-			if (other.upperBound != null) {
-				return false;
-			}
-		} else if (!upperBound.equals(other.upperBound)) {
-			return false;
-		}
-		if (user == null) {
-			if (other.user != null) {
-				return false;
-			}
-		} else if (!user.equals(other.user)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override
