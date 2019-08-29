@@ -1,7 +1,7 @@
 package net.thomas.portfolio.legal.service;
 
 import static java.lang.System.currentTimeMillis;
-import static java.util.Collections.reverse;
+import static java.util.stream.Collectors.toList;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_UPDATED;
@@ -17,11 +17,16 @@ import static org.springframework.hateoas.Link.REL_LAST;
 import static org.springframework.hateoas.Link.REL_NEXT;
 import static org.springframework.hateoas.Link.REL_PREVIOUS;
 import static org.springframework.hateoas.Link.REL_SELF;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+
+import java.net.URI;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -31,6 +36,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -44,6 +51,7 @@ import com.netflix.discovery.EurekaClient;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Getter;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.hateoas.LegalLinkFactory;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
@@ -64,7 +72,9 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @RestController
 @Api(value = "", description = "Interaction with the legal service")
 @EnableConfigurationProperties
+@RequestMapping(value = LEGAL_ROOT_PATH, produces = "application/hal+json")
 public class LegalServiceController {
+	private static final boolean INCLUDE_NEIGHBOURHOOD = true;
 	private static final Logger LOG = getLogger(LegalServiceController.class);
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
@@ -130,7 +140,7 @@ public class LegalServiceController {
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Verify that looking up the specified selector in inverted index is legal based on the specified legal information", response = Legality.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + LEGAL_RULES_PATH, method = GET)
+	@RequestMapping(path = "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final Legality response = legalRules.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
@@ -142,7 +152,7 @@ public class LegalServiceController {
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Verify that looking up statistics for the specified selector is legal based on the specified legal information", response = Legality.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + LEGAL_RULES_PATH, method = GET)
+	@RequestMapping(path = "/{dti_type}/{dti_uid}" + STATISTICS_PATH + LEGAL_RULES_PATH, method = GET)
 	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
 		if (TYPE.isValid(dataTypeId.type) && UID.isValid(dataTypeId.uid)) {
 			final Legality response = legalRules.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
@@ -154,88 +164,102 @@ public class LegalServiceController {
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Audit log that a lookup in inverted index is being executed, justified by the specified legal information (returns true, when log has been written to disk)", response = Boolean.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + AUDIT_LOGGING_PATH, method = POST)
+	@RequestMapping(path = "/{dti_type}/{dti_uid}" + INVERTED_INDEX_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final boolean accepted = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
-			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-			return ok(accepted);
-		} else {
-			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
+		try {
+			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
+				final int itemId = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
+				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
+				return created(URI.create(linkFactory.getHistoryItemLink(itemId))).build();
+			} else {
+				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
+			}
+		} catch (final RuntimeException e) {
+			LOG.error("Unable to complete audit logging", e);
+			return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Unable to complete request; adding log to storage failed.");
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Audit log that a lookup in selector statistics is being executed, justified by the specified legal information (returns true, when log has been written to disk)", response = Boolean.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + "/{dti_type}/{dti_uid}" + STATISTICS_PATH + AUDIT_LOGGING_PATH, method = POST)
+	@RequestMapping(path = "/{dti_type}/{dti_uid}" + STATISTICS_PATH + AUDIT_LOGGING_PATH, method = POST)
 	public ResponseEntity<?> auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
-			final boolean accepted = auditLogging.logStatisticsLookup(selectorId, legalInfo);
-			webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-			return ResponseEntity.created(null).build();
-		} else {
-			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
+		try {
+			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
+				final int itemId = auditLogging.logStatisticsLookup(selectorId, legalInfo);
+				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
+				return created(URI.create(linkFactory.getHistoryItemLink(itemId))).build();
+			} else {
+				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
+			}
+		} catch (final RuntimeException e) {
+			LOG.error("Unable to complete audit logging", e);
+			return ResponseEntity.status(INTERNAL_SERVER_ERROR).body("Unable to complete request; adding log to storage failed.");
 		}
 	}
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryItemList.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH, method = GET)
+	@RequestMapping(path = HISTORY_PATH, method = GET)
 	public ResponseEntity<?> lookupAuditLoggingHistory() {
-		final HistoryItemList history = new HistoryItemList();
-		auditLogging.getAll().forEach((item) -> {
-			// TOOD[Thomas]: Create DTOs with links instead
-			updateChildLinks(item);
-			history.add(item);
-		});
-		reverse(history);
-		history.add(new Link(linkFactory.getHistoryLink(), REL_SELF));
-		return ok(history);
+		final List<HistoryItemResource> items = auditLogging.getAll().stream().map(HistoryItemResource::new).collect(toList());
+		final Resources<HistoryItemResource> container = new Resources<>(items);
+		container.add(new Link(linkFactory.getHistoryLink()));
+		return ok(container);
 	}
 
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch audit log item from history", response = HistoryItem.class)
-	@RequestMapping(path = LEGAL_ROOT_PATH + HISTORY_PATH + "/{itemId}", method = GET)
+	@RequestMapping(path = HISTORY_PATH + "/{itemId}", method = GET)
 	public ResponseEntity<?> lookupAuditLoggingHistoryItem(@PathVariable Integer itemId) {
 		final HistoryItem item = auditLogging.getItem(itemId);
 		if (item != null) {
-			// TOOD[Thomas]: Create DTOs with links instead
-			updateRootLinks(item);
-			return ok(item);
+			return ok(new HistoryItemResource(item, INCLUDE_NEIGHBOURHOOD));
 		} else {
 			return notFound().build();
 		}
 	}
 
-	private void updateRootLinks(final HistoryItem item) {
-		item.removeLinks();
-		addSelfLink(item);
-		addNeighbourLinks(item);
-		addBorderLinks(item);
-	}
+	@Getter
+	public class HistoryItemResource extends ResourceSupport {
+		private final HistoryItem item;
 
-	private void updateChildLinks(final HistoryItem item) {
-		item.removeLinks();
-		addSelfLink(item);
-	}
-
-	private void addSelfLink(final HistoryItem item) {
-		item.add(buildLink(item.getHI_ItemId(), REL_SELF));
-	}
-
-	private void addNeighbourLinks(final HistoryItem item) {
-		if (item.getHI_ItemId() > 0) {
-			item.add(buildLink(item.getHI_ItemId() - 1, REL_PREVIOUS));
+		public HistoryItemResource(HistoryItem item) {
+			this.item = item;
+			addSelfLink(item);
 		}
-		if (item.getHI_ItemId() < auditLogging.getLastId()) {
-			item.add(buildLink(item.getHI_ItemId() + 1, REL_NEXT));
-		}
-	}
 
-	private void addBorderLinks(final HistoryItem item) {
-		if (auditLogging.getLastId() > -1) {
-			item.add(buildLink(0, REL_FIRST));
-			item.add(buildLink(auditLogging.getLastId(), REL_LAST));
+		public HistoryItemResource(HistoryItem item, boolean includeNeighbourhood) {
+			this(item);
+			if (includeNeighbourhood) {
+				addHistoryLink();
+				addNeighbourLinks(item);
+				addBorderLinks(item);
+			}
+		}
+
+		private void addSelfLink(final HistoryItem item) {
+			add(buildLink(item.getItemId(), REL_SELF));
+		}
+
+		private void addHistoryLink() {
+			add(new Link(linkFactory.getHistoryLink(), "all"));
+		}
+
+		private void addNeighbourLinks(final HistoryItem item) {
+			if (item.getItemId() > 0) {
+				add(buildLink(item.getItemId() - 1, REL_PREVIOUS));
+			}
+			if (item.getItemId() < auditLogging.getLastId()) {
+				add(buildLink(item.getItemId() + 1, REL_NEXT));
+			}
+		}
+
+		private void addBorderLinks(final HistoryItem item) {
+			if (auditLogging.getLastId() > -1) {
+				add(buildLink(0, REL_FIRST));
+				add(buildLink(auditLogging.getLastId(), REL_LAST));
+			}
 		}
 	}
 

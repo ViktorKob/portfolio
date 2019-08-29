@@ -6,6 +6,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.emptySet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
@@ -65,6 +66,7 @@ public class HttpRestClient {
 		return execute(request, method, responseType);
 	}
 
+	@SuppressWarnings("unchecked") // Pending a better solution
 	private <T> T execute(final URI request, final HttpMethod method, final Class<T> responseType) {
 		try {
 			final long stamp = nanoTime();
@@ -72,6 +74,8 @@ public class HttpRestClient {
 			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing request '" + request + "'");
 			if (OK == response.getStatusCode()) {
 				return response.getBody();
+			} else if (CREATED == response.getStatusCode()) {
+				return (T) (Boolean) true;
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 			}

@@ -33,7 +33,7 @@ public class HistoryItemUnitTest {
 	@Test
 	public void shouldUseNowAsTimeOfLogging() {
 		final HistoryItem item = builder.build();
-		assertEquals(currentTimeMillis(), item.getHI_TimeOfLogging(), 10);
+		assertEquals(currentTimeMillis(), item.getTimeOfLogging(), 10);
 	}
 
 	@Test

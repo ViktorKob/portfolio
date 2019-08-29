@@ -1,6 +1,6 @@
 package net.thomas.portfolio.legal.system;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,14 +23,14 @@ public class AuditLoggingControlUnitTest {
 	}
 
 	@Test
-	public void shouldReturnOkAfterAuditLoggingInvertedIndexLookup() {
-		final Boolean loggingWasSuccessfull = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfoBuilder.build());
-		assertTrue(loggingWasSuccessfull);
+	public void shouldReturnIdAfterAuditLoggingInvertedIndexLookup() {
+		final int itemId = auditLoggingSystem.logInvertedIndexLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(auditLoggingSystem.getLastId(), itemId);
 	}
 
 	@Test
-	public void shouldReturnOkAfterAuditLoggingStatisticsLookup() {
-		final Boolean loggingWasSuccessfull = auditLoggingSystem.logStatisticsLookup(selectorId, legalInfoBuilder.build());
-		assertTrue(loggingWasSuccessfull);
+	public void shouldReturnIdAfterAuditLoggingStatisticsLookup() {
+		final int itemId = auditLoggingSystem.logStatisticsLookup(selectorId, legalInfoBuilder.build());
+		assertEquals(auditLoggingSystem.getLastId(), itemId);
 	}
 }
