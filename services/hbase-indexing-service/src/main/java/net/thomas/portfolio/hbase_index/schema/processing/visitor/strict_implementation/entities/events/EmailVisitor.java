@@ -47,7 +47,6 @@ public class EmailVisitor<CONTEXT_TYPE extends VisitingContext> extends StrictEn
 		timeOfInterceptionFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "timeOfInterception");
 		subjectFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "subject");
 		messageFieldAction = simpleFieldActionFactory.getFieldSimpleAction(Email.class, "message");
-
 	}
 
 	@Override

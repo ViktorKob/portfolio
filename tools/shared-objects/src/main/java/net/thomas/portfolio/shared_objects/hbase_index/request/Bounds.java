@@ -13,16 +13,16 @@ import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bounds implements ParameterGroup {
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", hidden = true)
 	public Integer offset;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", hidden = true)
 	public Integer limit;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", hidden = true)
 	public Long after;
 	@JsonIgnore
-	@ApiModelProperty(value = "Should be ignored", example = "0")
+	@ApiModelProperty(value = "Should be ignored", hidden = true)
 	public Long before;
 
 	public Bounds() {
@@ -90,7 +90,7 @@ public class Bounds implements ParameterGroup {
 		this.limit = limit;
 	}
 
-	@ApiModelProperty(value = "Oldest relevant date as a Unix timestamp", example = "1415463675")
+	@ApiModelProperty(value = "Oldest relevant date as a Unix timestamp in milliseconds", example = "1215463675")
 	public Long getB_after() {
 		return after;
 	}
@@ -99,7 +99,7 @@ public class Bounds implements ParameterGroup {
 		this.after = after;
 	}
 
-	@ApiModelProperty(value = "Newest relevant date as a Unix timestamp", example = "1415463675")
+	@ApiModelProperty(value = "Newest relevant date as a Unix timestamp in milliseconds", example = "1415463675")
 	public Long getB_before() {
 		return before;
 	}
@@ -110,6 +110,7 @@ public class Bounds implements ParameterGroup {
 
 	@Override
 	@JsonIgnore
+	@ApiModelProperty(hidden = true)
 	public Parameter[] getParameters() {
 		return new Parameter[] { new PreSerializedParameter("b_offset", offset), new PreSerializedParameter("b_limit", limit),
 				new PreSerializedParameter("b_before", before), new PreSerializedParameter("b_after", after) };

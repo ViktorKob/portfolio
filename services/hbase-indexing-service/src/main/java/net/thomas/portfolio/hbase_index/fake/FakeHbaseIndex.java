@@ -80,14 +80,9 @@ public class FakeHbaseIndex implements HbaseIndex {
 		final VisitorEntityPostActionFactory<BlankContext> actionFactory = new VisitorEntityPostActionFactory<BlankContext>() {
 			@Override
 			public <T extends Entity> VisitorEntityPostAction<T, BlankContext> getEntityPostAction(final Class<T> entityClass) {
-				if (!Event.class.isAssignableFrom(entityClass)) {
-					return (entity, context) -> {
-						addEntity(entity);
-					};
-				} else {
-					return (entity, context) -> {
-					};
-				}
+				return (entity, context) -> {
+					addEntity(entity);
+				};
 			}
 		};
 		return actionFactory;

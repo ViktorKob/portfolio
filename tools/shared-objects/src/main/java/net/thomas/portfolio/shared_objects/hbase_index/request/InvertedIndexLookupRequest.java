@@ -10,16 +10,23 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
+import lombok.Setter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
 public class InvertedIndexLookupRequest {
 	public DataTypeId selectorId;
 	public LegalInformation legalInfo;
 	public Bounds bounds;
+	@ApiModelProperty(value = "The relation types to include in the response (leaving it out will return documents of all types)")
 	public Set<String> documentTypes;
+	@ApiModelProperty(value = "The relation types to include in the response (leaving it out will return documents with all types of relations)")
 	public Set<String> relations;
 
 	public InvertedIndexLookupRequest() {
@@ -83,70 +90,9 @@ public class InvertedIndexLookupRequest {
 	}
 
 	@JsonIgnore
+	@ApiModelProperty(hidden = true)
 	public ParameterGroup[] getGroups() {
 		return new ParameterGroup[] { legalInfo, bounds, asGroup("documentType", documentTypes), asGroup("relation", relations) };
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (bounds == null ? 0 : bounds.hashCode());
-		result = prime * result + (documentTypes == null ? 0 : documentTypes.hashCode());
-		result = prime * result + (legalInfo == null ? 0 : legalInfo.hashCode());
-		result = prime * result + (relations == null ? 0 : relations.hashCode());
-		result = prime * result + (selectorId == null ? 0 : selectorId.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof InvertedIndexLookupRequest)) {
-			return false;
-		}
-		final InvertedIndexLookupRequest other = (InvertedIndexLookupRequest) obj;
-		if (bounds == null) {
-			if (other.bounds != null) {
-				return false;
-			}
-		} else if (!bounds.equals(other.bounds)) {
-			return false;
-		}
-		if (documentTypes == null) {
-			if (other.documentTypes != null) {
-				return false;
-			}
-		} else if (!documentTypes.equals(other.documentTypes)) {
-			return false;
-		}
-		if (legalInfo == null) {
-			if (other.legalInfo != null) {
-				return false;
-			}
-		} else if (!legalInfo.equals(other.legalInfo)) {
-			return false;
-		}
-		if (relations == null) {
-			if (other.relations != null) {
-				return false;
-			}
-		} else if (!relations.equals(other.relations)) {
-			return false;
-		}
-		if (selectorId == null) {
-			if (other.selectorId != null) {
-				return false;
-			}
-		} else if (!selectorId.equals(other.selectorId)) {
-			return false;
-		}
-		return true;
 	}
 
 	@Override
