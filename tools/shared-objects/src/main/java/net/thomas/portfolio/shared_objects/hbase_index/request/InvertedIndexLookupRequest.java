@@ -11,15 +11,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.EqualsAndHashCode;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
-@Setter
+@EqualsAndHashCode
 public class InvertedIndexLookupRequest {
 	public DataTypeId selectorId;
 	public LegalInformation legalInfo;
