@@ -240,7 +240,7 @@ public class LegalServiceController {
 		}
 
 		private void addSelfLink(final HistoryItem item) {
-			add(buildLink(REL_SELF, item.getItemId()));
+			add(buildItemLink(REL_SELF, item.getItemId()));
 		}
 
 		private void addHistoryLink() {
@@ -251,22 +251,22 @@ public class LegalServiceController {
 
 		private void addNeighbourLinks(final HistoryItem item) {
 			if (item.getItemId() > 0) {
-				add(buildLink(REL_PREVIOUS, item.getItemId() - 1));
+				add(buildItemLink(REL_PREVIOUS, item.getItemId() - 1));
 			}
 			if (item.getItemId() < auditLogging.getLastId()) {
-				add(buildLink(REL_NEXT, item.getItemId() + 1));
+				add(buildItemLink(REL_NEXT, item.getItemId() + 1));
 			}
 		}
 
 		private void addBorderLinks(final HistoryItem item) {
 			if (auditLogging.getLastId() > -1) {
-				add(buildLink(REL_FIRST, 0));
-				add(buildLink(REL_LAST, auditLogging.getLastId()));
+				add(buildItemLink(REL_FIRST, 0));
+				add(buildItemLink(REL_LAST, auditLogging.getLastId()));
 			}
 		}
 	}
 
-	private Link buildLink(final String relation, int itemId) {
+	private Link buildItemLink(final String relation, int itemId) {
 		return asLink(relation, () -> {
 			return urlFactory.getHistoryItemUrl(itemId);
 		});

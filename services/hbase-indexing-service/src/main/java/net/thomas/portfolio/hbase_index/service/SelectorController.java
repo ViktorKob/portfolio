@@ -6,6 +6,8 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
+import static net.thomas.portfolio.service_commons.hateoas.LinkFactory.asLink;
+import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -14,7 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import net.thomas.portfolio.hateoas.HbaseIndexUrlFactory;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
@@ -46,6 +54,8 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 public class SelectorController {
 	private final ExecutorService lookupExecutor;
 
+	@Value("${global-url-prefix}")
+	private String globalUrlPrefix;
 	@Autowired
 	private HbaseIndexSchema schema;
 	@Autowired
@@ -53,8 +63,15 @@ public class SelectorController {
 	@Autowired
 	private SimpleRepresentationParserLibrary parserLibrary;
 
+	private HbaseIndexUrlFactory urlFactory;
+
 	public SelectorController() {
 		lookupExecutor = newSingleThreadExecutor();
+	}
+
+	@PostConstruct
+	public void initializeService() {
+		urlFactory = new HbaseIndexUrlFactory(globalUrlPrefix);
 	}
 
 	@Secured("ROLE_USER")
@@ -92,7 +109,10 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final Statistics statistics = index.getStatistics(id);
 		if (statistics.hasData()) {
-			return ok(statistics);
+			final Resource<Statistics> resource = new Resource<>(statistics);
+			resource.add(buildStatisticsLink(REL_SELF, id));
+			resource.add(buildSelectorLink("selector", id));
+			return ok(resource);
 		} else {
 			return notFound().build();
 		}
@@ -134,5 +154,17 @@ public class SelectorController {
 			builder.addIndexableFilter(new IndexableFilter.RelationFilter(relations));
 		}
 		return builder.build();
+	}
+
+	private Link buildSelectorLink(final String relation, final DataTypeId id) {
+		return asLink(relation, () -> {
+			return urlFactory.getSelectorUrl(id.type, id.uid);
+		});
+	}
+
+	private Link buildStatisticsLink(final String relation, DataTypeId id) {
+		return asLink(relation, () -> {
+			return urlFactory.getStatisticsUrl(id.type, id.uid);
+		});
 	}
 }

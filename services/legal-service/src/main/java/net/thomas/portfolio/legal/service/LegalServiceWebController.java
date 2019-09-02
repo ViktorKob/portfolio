@@ -25,7 +25,7 @@ import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 
 @Controller
-@Api(value = "", description = "Interaction with the legal service")
+@Api(value = "", description = "HTML and JavaScript pages allowing GUI interaction with the legal service")
 @EnableConfigurationProperties
 public class LegalServiceWebController {
 	private static final Logger LOG = getLogger(LegalServiceWebController.class);
