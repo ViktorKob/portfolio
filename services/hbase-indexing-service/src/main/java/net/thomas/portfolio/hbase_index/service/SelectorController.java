@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +51,7 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 
 @RestController
 @Api(value = "", description = "Lookup of selectors and their related data")
-@RequestMapping(value = SELECTORS_PATH + "/{dti_type}")
+@RequestMapping(value = SELECTORS_PATH + "/{dti_type}", produces = "application/hal+json")
 public class SelectorController {
 	private final ExecutorService lookupExecutor;
 
@@ -80,7 +81,7 @@ public class SelectorController {
 	public ResponseEntity<?> getEntityId(@PathVariable String dti_type, @PathVariable String simpleRepresentation) {
 		final Selector selector = parserLibrary.parse(dti_type, simpleRepresentation);
 		if (selector != null) {
-			return ok(selector);
+			return ok(packForTransport(selector));
 		} else {
 			return notFound().build();
 		}
@@ -109,10 +110,7 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final Statistics statistics = index.getStatistics(id);
 		if (statistics.hasData()) {
-			final Resource<Statistics> resource = new Resource<>(statistics);
-			resource.add(buildStatisticsLink(REL_SELF, id));
-			resource.add(buildSelectorLink("selector", id));
-			return ok(resource);
+			return ok(packForTransport(id, statistics));
 		} else {
 			return notFound().build();
 		}
@@ -125,7 +123,7 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final DataType entity = index.getDataType(id);
 		if (entity != null) {
-			return ok(entity);
+			return ok(packForTransport(entity));
 		} else {
 			return notFound().build();
 		}
@@ -156,6 +154,21 @@ public class SelectorController {
 		return builder.build();
 	}
 
+	private ResourceSupport packForTransport(DataType selector) {
+		final Resource<DataType> packed = new Resource<>(selector);
+		packed.add(buildSelectorLink(REL_SELF, selector.getId()));
+		packed.add(buildStatisticsLink("statistics", selector.getId()));
+		packed.add(buildInvertedIndexLink("invertedIndex", selector.getId()));
+		return packed;
+	}
+
+	private Resource<Statistics> packForTransport(final DataTypeId id, final Statistics statistics) {
+		final Resource<Statistics> packed = new Resource<>(statistics);
+		packed.add(buildStatisticsLink(REL_SELF, id));
+		packed.add(buildSelectorLink("selector", id));
+		return packed;
+	}
+
 	private Link buildSelectorLink(final String relation, final DataTypeId id) {
 		return asLink(relation, () -> {
 			return urlFactory.getSelectorUrl(id.type, id.uid);
@@ -165,6 +178,12 @@ public class SelectorController {
 	private Link buildStatisticsLink(final String relation, DataTypeId id) {
 		return asLink(relation, () -> {
 			return urlFactory.getStatisticsUrl(id.type, id.uid);
+		});
+	}
+
+	private Link buildInvertedIndexLink(final String relation, DataTypeId id) {
+		return asLink(relation, () -> {
+			return urlFactory.getInvertedIndexUrl(id.type, id.uid);
 		});
 	}
 }

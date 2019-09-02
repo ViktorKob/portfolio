@@ -2,6 +2,7 @@ package net.thomas.portfolio.hateoas;
 
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.DOCUMENTS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.ENTITIES_PATH;
+import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
@@ -45,6 +46,10 @@ public class HbaseIndexUrlFactory extends PortfolioUrlFactory {
 
 	public String getStatisticsUrl(String entityType, String entityId) {
 		return buildEntityUrl(getSelectorRootUrl(), entityType, entityId) + STATISTICS_PATH;
+	}
+
+	public String getInvertedIndexUrl(String entityType, String entityId) {
+		return buildEntityUrl(getSelectorRootUrl(), entityType, entityId) + INVERTED_INDEX_PATH;
 	}
 
 	private String buildEntityUrl(String prefix, String entityType, String entityId) {
