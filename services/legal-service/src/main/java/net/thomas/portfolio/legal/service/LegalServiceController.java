@@ -10,6 +10,7 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_MESSAGE_PRE
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
+import static net.thomas.portfolio.service_commons.hateoas.LinkFactory.asLink;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.hateoas.Link.REL_FIRST;
@@ -53,7 +54,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
-import net.thomas.portfolio.hateoas.LegalLinkFactory;
+import net.thomas.portfolio.hateoas.LegalUrlFactory;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
@@ -96,7 +97,7 @@ public class LegalServiceController {
 	@Autowired
 	private AuditLoggingControl auditLogging;
 	private LegalRulesControl legalRules;
-	private LegalLinkFactory linkFactory;
+	private LegalUrlFactory urlFactory;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
@@ -122,7 +123,7 @@ public class LegalServiceController {
 		webSocket.setMessageConverter(new MappingJackson2MessageConverter());
 		legalRules = new LegalRulesControl();
 		legalRules.setAnalyticsAdaptor(analyticsAdaptor);
-		linkFactory = new LegalLinkFactory(globalUrlPrefix);
+		urlFactory = new LegalUrlFactory(globalUrlPrefix);
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
 			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
@@ -170,7 +171,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(linkFactory.getHistoryItemLink(itemId))).build();
+				return created(URI.create(urlFactory.getHistoryItemUrl(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -188,7 +189,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(linkFactory.getHistoryItemLink(itemId))).build();
+				return created(URI.create(urlFactory.getHistoryItemUrl(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -204,7 +205,7 @@ public class LegalServiceController {
 	public ResponseEntity<?> lookupAuditLoggingHistory() {
 		final List<HistoryItemResource> items = auditLogging.getAll().stream().map(HistoryItemResource::new).collect(toList());
 		final Resources<HistoryItemResource> container = new Resources<>(items);
-		container.add(new Link(linkFactory.getHistoryLink()));
+		container.add(new Link(urlFactory.getHistoryUrl()));
 		return ok(container);
 	}
 
@@ -239,31 +240,35 @@ public class LegalServiceController {
 		}
 
 		private void addSelfLink(final HistoryItem item) {
-			add(buildLink(item.getItemId(), REL_SELF));
+			add(buildLink(REL_SELF, item.getItemId()));
 		}
 
 		private void addHistoryLink() {
-			add(new Link(linkFactory.getHistoryLink(), "all"));
+			add(asLink("all", () -> {
+				return urlFactory.getHistoryUrl();
+			}));
 		}
 
 		private void addNeighbourLinks(final HistoryItem item) {
 			if (item.getItemId() > 0) {
-				add(buildLink(item.getItemId() - 1, REL_PREVIOUS));
+				add(buildLink(REL_PREVIOUS, item.getItemId() - 1));
 			}
 			if (item.getItemId() < auditLogging.getLastId()) {
-				add(buildLink(item.getItemId() + 1, REL_NEXT));
+				add(buildLink(REL_NEXT, item.getItemId() + 1));
 			}
 		}
 
 		private void addBorderLinks(final HistoryItem item) {
 			if (auditLogging.getLastId() > -1) {
-				add(buildLink(0, REL_FIRST));
-				add(buildLink(auditLogging.getLastId(), REL_LAST));
+				add(buildLink(REL_FIRST, 0));
+				add(buildLink(REL_LAST, auditLogging.getLastId()));
 			}
 		}
 	}
 
-	private Link buildLink(int itemId, final String relation) {
-		return new Link(linkFactory.getHistoryItemLink(itemId), relation);
+	private Link buildLink(final String relation, int itemId) {
+		return asLink(relation, () -> {
+			return urlFactory.getHistoryItemUrl(itemId);
+		});
 	}
 }
