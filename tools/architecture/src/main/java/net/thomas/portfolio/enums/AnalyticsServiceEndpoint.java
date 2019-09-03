@@ -3,9 +3,9 @@ package net.thomas.portfolio.enums;
 import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_KNOWLEDGE_PATH;
 import static net.thomas.portfolio.globals.AnalyticsServiceGlobals.LOOKUP_KNOWLEDGE_ROOT_PATH;
 
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
-public enum AnalyticsServiceEndpoint implements ServiceEndpoint {
+public enum AnalyticsServiceEndpoint implements ContextPathSection {
 	ANALYTICS_BASE(LOOKUP_KNOWLEDGE_ROOT_PATH), LOOKUP_KNOWLEDGE(LOOKUP_KNOWLEDGE_PATH);
 	private final String path;
 

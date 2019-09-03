@@ -18,33 +18,32 @@ import org.slf4j.Logger;
 
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.services.Service;
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
 public class UrlSuffixBuilder {
 	private static final Logger LOG = getLogger(UrlSuffixBuilder.class);
 
-	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint) {
-		return buildUrlSuffix(serviceId, endpoint, emptySet());
+	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath) {
+		return buildUrlSuffix(servicePath, resourcePath, emptySet());
 	}
 
-	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint, final Parameter... parameters) {
-		return buildUrlSuffix(serviceId, endpoint, asList(parameters));
+	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final Parameter... parameters) {
+		return buildUrlSuffix(servicePath, resourcePath, asList(parameters));
 	}
 
-	public String buildUrlSuffix(final Service service, final ServiceEndpoint endpoint, final ParameterGroup... groups) {
+	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final ParameterGroup... groups) {
 		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters).flatMap(Arrays::stream).collect(Collectors.toList());
-		return buildUrlSuffix(service, endpoint, parameters);
+		return buildUrlSuffix(servicePath, resourcePath, parameters);
 	}
 
-	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint, final Collection<Parameter> parameters) {
-		final String urlSuffix = buildResourceUrl(serviceId, endpoint);
+	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final Collection<Parameter> parameters) {
+		final String urlSuffix = buildResourceUrl(servicePath, resourcePath);
 		final String parameterString = buildParameterString(parameters);
 		return urlSuffix + (parameterString.length() > 0 ? "?" + parameterString : "");
 	}
 
-	private String buildResourceUrl(final Service serviceId, final ServiceEndpoint endpoint) {
-		return serviceId.getContextPath() + endpoint.getContextPath();
+	private String buildResourceUrl(final ContextPathSection servicePath, final ContextPathSection resourcePath) {
+		return servicePath.getContextPath() + resourcePath.getContextPath();
 	}
 
 	private String buildParameterString(final Collection<Parameter> parameters) {

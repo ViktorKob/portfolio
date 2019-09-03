@@ -6,9 +6,9 @@ import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_TEXT_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_ENTITY_ROOT_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_SELECTOR_ROOT_PATH;
 
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
-public enum RenderServiceEndpoint implements ServiceEndpoint {
+public enum RenderServiceEndpoint implements ContextPathSection {
 	RENDER_ENTITY_ROOT(RENDER_ENTITY_ROOT_PATH),
 	RENDER_SELECTOR_ROOT(RENDER_SELECTOR_ROOT_PATH),
 	AS_SIMPLE_REPRESENTATION(AS_SIMPLE_REPRESENTATION_PATH),

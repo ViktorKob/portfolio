@@ -13,10 +13,10 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
 public class GraphQlQueryTestExecutionUtil {
-	private static final ServiceEndpoint GRAPH_QL = () -> {
+	private static final ContextPathSection GRAPH_QL = () -> {
 		return "/graphql";
 	};
 	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {

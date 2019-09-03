@@ -1,6 +1,6 @@
 package net.thomas.portfolio.services;
 
 @FunctionalInterface
-public interface ServiceEndpoint {
+public interface ContextPathSection {
 	String getContextPath();
 }

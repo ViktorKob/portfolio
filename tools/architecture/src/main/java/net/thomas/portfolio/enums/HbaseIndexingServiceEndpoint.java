@@ -11,9 +11,9 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SUGGESTIONS_PATH;
 
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
-public enum HbaseIndexingServiceEndpoint implements ServiceEndpoint {
+public enum HbaseIndexingServiceEndpoint implements ContextPathSection {
 	SCHEMA(SCHEMA_PATH),
 	SELECTORS(SELECTORS_PATH),
 	FROM_SIMPLE_REP(FROM_SIMPLE_REP_PATH),

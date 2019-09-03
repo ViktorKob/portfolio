@@ -20,7 +20,7 @@ import static net.thomas.portfolio.services.ServiceGlobals.RENDER_SERVICE_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_NAME;
 import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 
-public enum Service implements ServiceEndpoint {
+public enum Service implements ContextPathSection {
 	INFRASTRUCTURE_SERVICE("infrastructure-", INFRASTRUCTURE_MASTER_PATH, INFRASTRUCTURE_MASTER_NAME),
 	ADMIN_SERVICE("admin-", ADMIN_SERVICE_PATH, ADMIN_SERVICE_NAME),
 

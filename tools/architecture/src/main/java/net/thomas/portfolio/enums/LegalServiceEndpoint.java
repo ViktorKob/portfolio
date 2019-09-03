@@ -6,9 +6,9 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
-public enum LegalServiceEndpoint implements ServiceEndpoint {
+public enum LegalServiceEndpoint implements ContextPathSection {
 	LEGAL_ROOT(LEGAL_ROOT_PATH),
 	LEGAL_RULES(LEGAL_RULES_PATH),
 	AUDIT_LOG(AUDIT_LOGGING_PATH),

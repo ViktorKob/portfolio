@@ -1,9 +1,6 @@
 package net.thomas.portfolio.service_commons.network;
 
 import static java.lang.System.nanoTime;
-import static java.util.Arrays.asList;
-import static java.util.Arrays.stream;
-import static java.util.Collections.emptySet;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -12,9 +9,6 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.core.ParameterizedTypeReference;
@@ -33,7 +27,7 @@ import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.services.Service;
-import net.thomas.portfolio.services.ServiceEndpoint;
+import net.thomas.portfolio.services.ContextPathSection;
 
 public class HttpRestClient {
 	private static final Logger LOG = getLogger(HttpRestClient.class);
@@ -50,21 +44,26 @@ public class HttpRestClient {
 		urlSuffixBuilder = new UrlSuffixBuilder();
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType) {
-		final URI request = buildUri(service, endpoint);
+	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType) {
+		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint));
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType,
+	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
 			final ParameterGroup... parameters) {
-		final URI request = buildUri(service, endpoint, parameters);
+		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType,
+	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
 			final Parameter... parameters) {
-		final URI request = buildUri(service, endpoint, parameters);
+		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
 		return execute(request, method, responseType);
+	}
+
+	private URI buildUri(String urlSuffix) {
+		final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
+		return URI.create(serviceUrl.substring(0, serviceUrl.length() - 1) + urlSuffix);
 	}
 
 	@SuppressWarnings("unchecked") // Pending a better solution
@@ -96,15 +95,15 @@ public class HttpRestClient {
 		}
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method,
+	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
 			final ParameterizedTypeReference<T> responseType, final ParameterGroup... parameters) {
-		final URI request = buildUri(service, endpoint, parameters);
+		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method,
+	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
 			final ParameterizedTypeReference<T> responseType, final Parameter... parameters) {
-		final URI request = buildUri(service, endpoint, parameters);
+		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 
@@ -136,25 +135,6 @@ public class HttpRestClient {
 		final HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + credentials.getEncoded());
 		return new HttpEntity<>(headers);
-	}
-
-	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint) {
-		return buildUri(serviceId, endpoint, emptySet());
-	}
-
-	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint, final Parameter... parameters) {
-		return buildUri(serviceId, endpoint, asList(parameters));
-	}
-
-	private URI buildUri(final Service service, final ServiceEndpoint endpoint, final ParameterGroup... groups) {
-		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters).flatMap(Arrays::stream).collect(Collectors.toList());
-		return buildUri(service, endpoint, parameters);
-	}
-
-	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint, final Collection<Parameter> parameters) {
-		final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
-		final String urlSuffix = urlSuffixBuilder.buildUrlSuffix(serviceId, endpoint, parameters);
-		return URI.create(serviceUrl.substring(0, serviceUrl.length() - 1) + urlSuffix);
 	}
 
 	private InstanceInfo getServiceInfo(final String serviceName) {
