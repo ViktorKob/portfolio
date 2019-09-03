@@ -1,6 +1,7 @@
 package net.thomas.portfolio.enums;
 
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
+import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
@@ -13,7 +14,8 @@ public enum LegalServiceEndpoint implements ContextPathSection {
 	LEGAL_RULES(LEGAL_RULES_PATH),
 	AUDIT_LOG(AUDIT_LOGGING_PATH),
 	INVERTED_INDEX_QUERY(INVERTED_INDEX_PATH),
-	STATISTICS_LOOKUP(STATISTICS_PATH);
+	STATISTICS_LOOKUP(STATISTICS_PATH),
+	HISTORY(HISTORY_PATH);
 
 	private final String path;
 

@@ -13,18 +13,18 @@ import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.services.ContextPathSection;
 
-public class UrlSuffixBuilderImplUnitTest {
+public class PortfolioUrlSuffixBuilderUnitTest {
 	private static final String SOME_SERVICE_PATH = "/SomeEndpointPath";
 	private static final String SOME_RESOURCE_PATH = "/SomeResourcePath";
 	private static final String SOME_PARAMETER_NAME = "SOME_PARAMETER_NAME";
 	private static final String SOME_PARAMETER_VALUE = "SOME_PARAMETER_VALUE";
-	private UrlSuffixBuilderImpl builder;
+	private PortfolioUrlSuffixBuilder builder;
 	private ContextPathSection servicePath;
 	private ContextPathSection resourcePath;
 
 	@Before
 	public void setUp() {
-		builder = new UrlSuffixBuilderImpl();
+		builder = new PortfolioUrlSuffixBuilder();
 		servicePath = mock(ContextPathSection.class);
 		resourcePath = mock(ContextPathSection.class);
 		when(servicePath.getContextPath()).thenReturn(SOME_SERVICE_PATH);

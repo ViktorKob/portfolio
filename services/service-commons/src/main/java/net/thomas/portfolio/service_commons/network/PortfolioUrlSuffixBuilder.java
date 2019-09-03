@@ -20,8 +20,8 @@ import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.services.ContextPathSection;
 
-public class UrlSuffixBuilderImpl implements UrlSuffixBuilder {
-	private static final Logger LOG = getLogger(UrlSuffixBuilderImpl.class);
+public class PortfolioUrlSuffixBuilder implements UrlSuffixBuilder {
+	private static final Logger LOG = getLogger(PortfolioUrlSuffixBuilder.class);
 
 	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath) {
 		return buildUrlSuffix(servicePath, resourcePath, emptySet());

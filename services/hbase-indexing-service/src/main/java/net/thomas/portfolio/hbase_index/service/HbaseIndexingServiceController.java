@@ -1,12 +1,15 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.stream.Collectors.toList;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.ENTITIES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SUGGESTIONS_PATH;
-import static net.thomas.portfolio.service_commons.hateoas.LinkFactory.asLink;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
+import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -32,8 +35,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.thomas.portfolio.hateoas.HbaseIndexUrlFactory;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.service_commons.hateoas.LinkFactory;
+import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
@@ -56,11 +61,13 @@ public class HbaseIndexingServiceController {
 	@Autowired
 	private HbaseIndex index;
 
-	private HbaseIndexUrlFactory urlFactory;
+	private LinkFactory linkFactory;
 
 	@PostConstruct
 	public void initializeService() {
-		urlFactory = new HbaseIndexUrlFactory(globalUrlPrefix);
+		linkFactory = new LinkFactory(new UrlFactory(() -> {
+			return globalUrlPrefix;
+		}, new PortfolioUrlSuffixBuilder()));
 	}
 
 	@Secured("ROLE_USER")
@@ -94,9 +101,7 @@ public class HbaseIndexingServiceController {
 	}
 
 	private Link buildSuggestionsLink(String relation, String simpleRepresentation) {
-		return asLink(relation, () -> {
-			return urlFactory.getSelectorSuggestionsUrl(simpleRepresentation);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation));
 	}
 
 	@Secured("ROLE_USER")

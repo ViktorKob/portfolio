@@ -2,12 +2,19 @@ package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.stream.Collectors.toList;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.ENTITIES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SAMPLES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.FROM_SIMPLE_REP_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
-import static net.thomas.portfolio.service_commons.hateoas.LinkFactory.asLink;
+import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
+import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -35,10 +42,13 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import net.thomas.portfolio.hateoas.HbaseIndexUrlFactory;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
+import net.thomas.portfolio.service_commons.hateoas.LinkFactory;
+import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
@@ -67,7 +77,7 @@ public class SelectorController {
 	@Autowired
 	private SimpleRepresentationParserLibrary parserLibrary;
 
-	private HbaseIndexUrlFactory urlFactory;
+	private LinkFactory linkFactory;
 
 	public SelectorController() {
 		lookupExecutor = newSingleThreadExecutor();
@@ -75,7 +85,9 @@ public class SelectorController {
 
 	@PostConstruct
 	public void initializeService() {
-		urlFactory = new HbaseIndexUrlFactory(globalUrlPrefix);
+		linkFactory = new LinkFactory(new UrlFactory(() -> {
+			return globalUrlPrefix;
+		}, new PortfolioUrlSuffixBuilder()));
 	}
 
 	@Secured("ROLE_USER")
@@ -193,32 +205,22 @@ public class SelectorController {
 	}
 
 	private Link buildSelectorLink(final String relation, final DataTypeId id) {
-		return asLink(relation, () -> {
-			return urlFactory.getSelectorUrl(id.type, id.uid);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id));
 	}
 
 	private Link buildDocumentLink(String relation, DataTypeId id) {
-		return asLink(relation, () -> {
-			return urlFactory.getDocumentUrl(id.type, id.uid);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, id));
 	}
 
 	private Link buildSampleLink(String relation, String type, int amount) {
-		return asLink(relation, () -> {
-			return urlFactory.getSelectorSampleUrl(type, amount);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, type, SAMPLES), new SingleParameter("amount", amount));
 	}
 
 	private Link buildStatisticsLink(final String relation, DataTypeId id) {
-		return asLink(relation, () -> {
-			return urlFactory.getStatisticsUrl(id.type, id.uid);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id, STATISTICS));
 	}
 
 	private Link buildInvertedIndexLink(final String relation, DataTypeId id) {
-		return asLink(relation, () -> {
-			return urlFactory.getInvertedIndexUrl(id.type, id.uid);
-		});
+		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id, INVERTED_INDEX));
 	}
 }

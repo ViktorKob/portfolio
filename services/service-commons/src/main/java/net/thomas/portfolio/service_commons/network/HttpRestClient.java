@@ -26,7 +26,6 @@ import net.thomas.portfolio.common.services.parameters.Credentials;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
-import net.thomas.portfolio.service_commons.hateoas.UrlFactory;
 import net.thomas.portfolio.services.ContextPathSection;
 import net.thomas.portfolio.services.Service;
 
@@ -45,7 +44,7 @@ public class HttpRestClient {
 		urlFactory = new UrlFactory(() -> {
 			final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
 			return serviceUrl.substring(0, serviceUrl.length() - 1);
-		}, new UrlSuffixBuilderImpl());
+		}, new PortfolioUrlSuffixBuilder());
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType) {

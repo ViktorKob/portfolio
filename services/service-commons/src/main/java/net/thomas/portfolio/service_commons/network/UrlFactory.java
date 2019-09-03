@@ -1,17 +1,15 @@
-package net.thomas.portfolio.service_commons.hateoas;
+package net.thomas.portfolio.service_commons.network;
 
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.service_commons.network.UrlPrefixBuilder;
-import net.thomas.portfolio.service_commons.network.UrlSuffixBuilderImpl;
 import net.thomas.portfolio.services.ContextPathSection;
 import net.thomas.portfolio.services.Service;
 
 public class UrlFactory {
 	private final UrlPrefixBuilder prefixBuilder;
-	private final UrlSuffixBuilderImpl suffixBuilder;
+	private final PortfolioUrlSuffixBuilder suffixBuilder;
 
-	public UrlFactory(UrlPrefixBuilder prefixBuilder, UrlSuffixBuilderImpl suffixBuilder) {
+	public UrlFactory(UrlPrefixBuilder prefixBuilder, PortfolioUrlSuffixBuilder suffixBuilder) {
 		this.prefixBuilder = prefixBuilder;
 		this.suffixBuilder = suffixBuilder;
 	}
