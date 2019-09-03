@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Bounds implements ParameterGroup {
@@ -112,8 +112,8 @@ public class Bounds implements ParameterGroup {
 	@JsonIgnore
 	@ApiModelProperty(hidden = true)
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("b_offset", offset), new PreSerializedParameter("b_limit", limit),
-				new PreSerializedParameter("b_before", before), new PreSerializedParameter("b_after", after) };
+		return new Parameter[] { new SingleParameter("b_offset", offset), new SingleParameter("b_limit", limit),
+				new SingleParameter("b_before", before), new SingleParameter("b_after", after) };
 	}
 
 	@Override

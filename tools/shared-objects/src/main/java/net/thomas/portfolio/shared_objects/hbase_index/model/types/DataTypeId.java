@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "The globally unique id for an entity")
@@ -60,7 +60,7 @@ public class DataTypeId implements ParameterGroup {
 	@ApiModelProperty("Should be ignored")
 	@JsonIgnore
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("dti_type", type), new PreSerializedParameter("dti_uid", uid) };
+		return new Parameter[] { new SingleParameter("dti_type", type), new SingleParameter("dti_uid", uid) };
 	}
 
 	@Override

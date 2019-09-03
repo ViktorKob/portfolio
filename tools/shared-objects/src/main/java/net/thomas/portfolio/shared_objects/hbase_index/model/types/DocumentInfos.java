@@ -2,6 +2,8 @@ package net.thomas.portfolio.shared_objects.hbase_index.model.types;
 
 import static java.util.Collections.emptyList;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,6 +21,11 @@ public class DocumentInfos {
 
 	public DocumentInfos(List<DocumentInfo> infos) {
 		this.infos = infos;
+	}
+
+	// Only here because Resources from spring hateoas chooses to return a collection instead of a list
+	public DocumentInfos(Collection<DocumentInfo> infos) {
+		this.infos = new ArrayList<>(infos);
 	}
 
 	public List<DocumentInfo> getInfos() {

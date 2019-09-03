@@ -16,7 +16,7 @@ public class HbaseIndexUrlFactory extends PortfolioUrlFactory {
 		serviceRoot = globalUrlPrefix + HBASE_INDEXING_SERVICE_PATH;
 	}
 
-	public String getScemaRootUrl() {
+	public String getSchemaRootUrl() {
 		return serviceRoot + SCHEMA_PATH;
 	}
 
@@ -32,6 +32,10 @@ public class HbaseIndexUrlFactory extends PortfolioUrlFactory {
 		return serviceRoot + SELECTORS_PATH;
 	}
 
+	public String getSchemaUrl() {
+		return getSchemaRootUrl();
+	}
+
 	public String getEntityUrl(String entityType, String entityId) {
 		return buildEntityUrl(getEntityRootUrl(), entityType, entityId);
 	}
@@ -44,6 +48,18 @@ public class HbaseIndexUrlFactory extends PortfolioUrlFactory {
 		return buildEntityUrl(getSelectorRootUrl(), entityType, entityId);
 	}
 
+	public String getEntitySampleUrl(String type, int amount) {
+		return buildEntityTypeUrl(getEntityRootUrl(), type) + "?amount=" + amount;
+	}
+
+	public String getDocumentSampleUrl(String type, int amount) {
+		return buildEntityTypeUrl(getDocumentRootUrl(), type) + "?amount=" + amount;
+	}
+
+	public String getSelectorSampleUrl(String type, int amount) {
+		return buildEntityTypeUrl(getSelectorRootUrl(), type) + "?amount=" + amount;
+	}
+
 	public String getStatisticsUrl(String entityType, String entityId) {
 		return buildEntityUrl(getSelectorRootUrl(), entityType, entityId) + STATISTICS_PATH;
 	}
@@ -52,7 +68,19 @@ public class HbaseIndexUrlFactory extends PortfolioUrlFactory {
 		return buildEntityUrl(getSelectorRootUrl(), entityType, entityId) + INVERTED_INDEX_PATH;
 	}
 
+	public String getSelectorSuggestionsUrl(String simpleRepresentation) {
+		return buildSelectorSuggestionUrl(getSelectorRootUrl(), simpleRepresentation);
+	}
+
+	private String buildSelectorSuggestionUrl(String prefix, String simpleRepresentation) {
+		return prefix + slash(simpleRepresentation) + "/";
+	}
+
+	private String buildEntityTypeUrl(String prefix, String entityType) {
+		return prefix + slash(entityType);
+	}
+
 	private String buildEntityUrl(String prefix, String entityType, String entityId) {
-		return prefix + slash(entityType) + slash(entityId);
+		return buildEntityTypeUrl(prefix, entityType) + slash(entityId);
 	}
 }

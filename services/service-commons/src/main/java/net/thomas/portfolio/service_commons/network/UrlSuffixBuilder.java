@@ -1,0 +1,60 @@
+package net.thomas.portfolio.service_commons.network;
+
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.joining;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+
+import net.thomas.portfolio.common.services.parameters.Parameter;
+import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.services.Service;
+import net.thomas.portfolio.services.ServiceEndpoint;
+
+public class UrlSuffixBuilder {
+	private static final Logger LOG = getLogger(UrlSuffixBuilder.class);
+
+	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint) {
+		return buildUrlSuffix(serviceId, endpoint, emptySet());
+	}
+
+	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint, final Parameter... parameters) {
+		return buildUrlSuffix(serviceId, endpoint, asList(parameters));
+	}
+
+	public String buildUrlSuffix(final Service service, final ServiceEndpoint endpoint, final ParameterGroup... groups) {
+		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters).flatMap(Arrays::stream).collect(Collectors.toList());
+		return buildUrlSuffix(service, endpoint, parameters);
+	}
+
+	public String buildUrlSuffix(final Service serviceId, final ServiceEndpoint endpoint, final Collection<Parameter> parameters) {
+		final String urlSuffix = buildResourceUrl(serviceId, endpoint);
+		final String parameterString = buildParameterString(parameters);
+		return urlSuffix + (parameterString.length() > 0 ? "?" + parameterString : "");
+	}
+
+	private String buildResourceUrl(final Service serviceId, final ServiceEndpoint endpoint) {
+		return serviceId.getContextPath() + endpoint.getContextPath();
+	}
+
+	private String buildParameterString(final Collection<Parameter> parameters) {
+		return parameters.stream().filter(Objects::nonNull).filter(parameter -> parameter.hasValue()).map(parameter -> {
+			try {
+				return parameter.getName() + "=" + encode(parameter.getValue().toString(), UTF_8.toString());
+			} catch (final UnsupportedEncodingException e) {
+				LOG.error("Unable to URL encode parameter " + parameter.getName(), e);
+				throw new RuntimeException("Unable to URL encode parameter " + parameter.getName(), e);
+			}
+		}).collect(joining("&"));
+	}
+}

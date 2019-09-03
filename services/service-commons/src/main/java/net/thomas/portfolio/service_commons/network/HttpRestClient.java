@@ -24,7 +24,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
@@ -42,11 +41,13 @@ public class HttpRestClient {
 	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;
+	private final UrlSuffixBuilder urlSuffixBuilder;
 
 	public HttpRestClient(final EurekaClient discoveryClient, final RestTemplate restTemplate, final ServiceDependency serviceInfo) {
 		this.discoveryClient = discoveryClient;
 		this.restTemplate = restTemplate;
 		this.serviceInfo = serviceInfo;
+		urlSuffixBuilder = new UrlSuffixBuilder();
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ServiceEndpoint endpoint, final HttpMethod method, final Class<T> responseType) {
@@ -68,8 +69,8 @@ public class HttpRestClient {
 
 	@SuppressWarnings("unchecked") // Pending a better solution
 	private <T> T execute(final URI request, final HttpMethod method, final Class<T> responseType) {
+		final long stamp = nanoTime();
 		try {
-			final long stamp = nanoTime();
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
 			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing request '" + request + "'");
 			if (OK == response.getStatusCode()) {
@@ -80,6 +81,7 @@ public class HttpRestClient {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 			}
 		} catch (final HttpClientErrorException e) {
+			LOG.error("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms failing to execute request '" + request + "'");
 			if (NOT_FOUND == e.getStatusCode()) {
 				return null;
 			} else if (UNAUTHORIZED == e.getStatusCode()) {
@@ -106,15 +108,21 @@ public class HttpRestClient {
 		return execute(request, method, responseType);
 	}
 
+	@SuppressWarnings("unchecked") // Pending a better solution
 	private <T> T execute(final URI request, final HttpMethod method, final ParameterizedTypeReference<T> responseType) {
+		final long stamp = nanoTime();
 		try {
 			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
+			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing request '" + request + "'");
 			if (OK.equals(response.getStatusCode())) {
 				return response.getBody();
+			} else if (CREATED == response.getStatusCode()) {
+				return (T) (Boolean) true;
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 			}
 		} catch (final HttpClientErrorException e) {
+			LOG.error("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms failing to execute request '" + request + "'");
 			if (NOT_FOUND.equals(e.getStatusCode())) {
 				return null;
 			} else {
@@ -144,11 +152,9 @@ public class HttpRestClient {
 	}
 
 	private URI buildUri(final Service serviceId, final ServiceEndpoint endpoint, final Collection<Parameter> parameters) {
-		final InstanceInfo instanceInfo = getServiceInfo(serviceInfo.getName());
-		final String serviceUrl = instanceInfo.getHomePageUrl();
-		final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(serviceUrl + buildResourceUrl(serviceId, endpoint));
-		addParametersToBuilder(builder, parameters);
-		return builder.build().encode().toUri();
+		final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
+		final String urlSuffix = urlSuffixBuilder.buildUrlSuffix(serviceId, endpoint, parameters);
+		return URI.create(serviceUrl.substring(0, serviceUrl.length() - 1) + urlSuffix);
 	}
 
 	private InstanceInfo getServiceInfo(final String serviceName) {
@@ -177,17 +183,5 @@ public class HttpRestClient {
 			LOG.info("Discovery of " + serviceInfo.getName() + " successful.");
 		}
 		return instanceInfo;
-	}
-
-	private void addParametersToBuilder(final UriComponentsBuilder builder, final Collection<Parameter> parameters) {
-		for (final Parameter parameter : parameters) {
-			if (parameter.getValue() != null) {
-				builder.queryParam(parameter.getName(), parameter.getValue());
-			}
-		}
-	}
-
-	private String buildResourceUrl(final Service serviceId, final ServiceEndpoint endpoint) {
-		return serviceId.getContextPath() + endpoint.getContextPath();
 	}
 }

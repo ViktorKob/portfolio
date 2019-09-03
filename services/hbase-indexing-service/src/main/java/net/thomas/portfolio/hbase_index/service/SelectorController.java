@@ -1,6 +1,7 @@
 package net.thomas.portfolio.hbase_index.service;
 
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.stream.Collectors.toList;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.FROM_SIMPLE_REP_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +43,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -81,7 +84,7 @@ public class SelectorController {
 	public ResponseEntity<?> getEntityId(@PathVariable String dti_type, @PathVariable String simpleRepresentation) {
 		final Selector selector = parserLibrary.parse(dti_type, simpleRepresentation);
 		if (selector != null) {
-			return ok(packForTransport(selector));
+			return ok(wrapWithHateoas(selector));
 		} else {
 			return notFound().build();
 		}
@@ -97,7 +100,7 @@ public class SelectorController {
 		}
 		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.hasData()) {
-			return ok(samples);
+			return ok(wrapWithHateoas(dti_type, amount, samples));
 		} else {
 			return notFound().build();
 		}
@@ -110,7 +113,7 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final Statistics statistics = index.getStatistics(id);
 		if (statistics.hasData()) {
-			return ok(packForTransport(id, statistics));
+			return ok(wrapWithHateoas(id, statistics));
 		} else {
 			return notFound().build();
 		}
@@ -123,7 +126,7 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final DataType entity = index.getDataType(id);
 		if (entity != null) {
-			return ok(packForTransport(entity));
+			return ok(wrapWithHateoas(entity));
 		} else {
 			return notFound().build();
 		}
@@ -137,7 +140,7 @@ public class SelectorController {
 			@RequestParam(value = "relation", required = false) HashSet<String> relations) {
 		final DataTypeId selectorId = new DataTypeId(dti_type, dti_uid);
 		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
-		return ok(results);
+		return ok(wrapWithHateoas(selectorId, results));
 	}
 
 	private InvertedIndexLookup buildLookup(DataTypeId selectorId, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
@@ -154,24 +157,56 @@ public class SelectorController {
 		return builder.build();
 	}
 
-	private ResourceSupport packForTransport(DataType selector) {
-		final Resource<DataType> packed = new Resource<>(selector);
-		packed.add(buildSelectorLink(REL_SELF, selector.getId()));
-		packed.add(buildStatisticsLink("statistics", selector.getId()));
-		packed.add(buildInvertedIndexLink("invertedIndex", selector.getId()));
+	private ResourceSupport wrapWithHateoas(DataType entity) {
+		final Resource<DataType> packed = new Resource<>(entity);
+		if (entity instanceof Selector) {
+			packed.add(buildSelectorLink(REL_SELF, entity.getId()));
+			packed.add(buildStatisticsLink("statistics", entity.getId()));
+			packed.add(buildInvertedIndexLink("invertedIndex", entity.getId()));
+		}
 		return packed;
 	}
 
-	private Resource<Statistics> packForTransport(final DataTypeId id, final Statistics statistics) {
+	private Resource<Statistics> wrapWithHateoas(final DataTypeId id, final Statistics statistics) {
 		final Resource<Statistics> packed = new Resource<>(statistics);
 		packed.add(buildStatisticsLink(REL_SELF, id));
 		packed.add(buildSelectorLink("selector", id));
 		return packed;
 	}
 
+	private ResourceSupport wrapWithHateoas(DataTypeId id, DocumentInfos infos) {
+		final Resources<ResourceSupport> packed = new Resources<>(infos.getInfos().stream().map(this::wrapWithHateoas).collect(toList()));
+		packed.add(buildInvertedIndexLink(REL_SELF, id));
+		return packed;
+	}
+
+	private ResourceSupport wrapWithHateoas(String type, int amount, Entities samples) {
+		final Resources<ResourceSupport> packed = new Resources<>(samples.getEntities().stream().map(this::wrapWithHateoas).collect(toList()));
+		packed.add(buildSampleLink(REL_SELF, type, amount));
+		return packed;
+	}
+
+	private ResourceSupport wrapWithHateoas(DocumentInfo info) {
+		final Resource<DocumentInfo> packed = new Resource<>(info);
+		packed.add(buildDocumentLink(REL_SELF, info.getId()));
+		return packed;
+	}
+
 	private Link buildSelectorLink(final String relation, final DataTypeId id) {
 		return asLink(relation, () -> {
 			return urlFactory.getSelectorUrl(id.type, id.uid);
+		});
+	}
+
+	private Link buildDocumentLink(String relation, DataTypeId id) {
+		return asLink(relation, () -> {
+			return urlFactory.getDocumentUrl(id.type, id.uid);
+		});
+	}
+
+	private Link buildSampleLink(String relation, String type, int amount) {
+		return asLink(relation, () -> {
+			return urlFactory.getSelectorSampleUrl(type, amount);
 		});
 	}
 

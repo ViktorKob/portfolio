@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
@@ -97,8 +97,8 @@ public class LegalInformation implements ParameterGroup {
 	@JsonIgnore
 	@ApiModelProperty(value = "Should be ignored", example = "[]", hidden = true)
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("li_user", user), new PreSerializedParameter("li_justification", justification),
-				new PreSerializedParameter("li_lowerBound", lowerBound), new PreSerializedParameter("li_upperBound", upperBound) };
+		return new Parameter[] { new SingleParameter("li_user", user), new SingleParameter("li_justification", justification),
+				new SingleParameter("li_lowerBound", lowerBound), new SingleParameter("li_upperBound", upperBound) };
 	}
 
 	@Override

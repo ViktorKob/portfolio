@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.nexus.graphql.arguments.GraphQlArgument;
 
 public class GraphQlQueryBuilder {
@@ -84,12 +84,12 @@ public class GraphQlQueryBuilder {
 			query = "query " + query;
 				break;
 		}
-		return asGroup(new PreSerializedParameter("query", query), new PreSerializedParameter("operationName", "test"), jsonParameter("variables", variables));
+		return asGroup(new SingleParameter("query", query), new SingleParameter("operationName", "test"), jsonParameter("variables", variables));
 	}
 
-	private PreSerializedParameter jsonParameter(final String variable, final Map<String, String> value) {
+	private SingleParameter jsonParameter(final String variable, final Map<String, String> value) {
 		try {
-			return new PreSerializedParameter(variable, new ObjectMapper().writeValueAsString(value));
+			return new SingleParameter(variable, new ObjectMapper().writeValueAsString(value));
 		} catch (final JsonProcessingException e) {
 			throw new RuntimeException("Parameter creation failed", e);
 		}

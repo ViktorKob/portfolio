@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.PreSerializedParameter;
+import net.thomas.portfolio.common.services.parameters.SingleParameter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "Previous interaction with a specific document")
@@ -63,8 +63,8 @@ public class UsageActivity implements ParameterGroup {
 	@Override
 	@JsonIgnore
 	public Parameter[] getParameters() {
-		return new Parameter[] { new PreSerializedParameter("uai_user", user), new PreSerializedParameter("uai_type", type),
-				new PreSerializedParameter("uai_timeOfActivity", timeOfActivity) };
+		return new Parameter[] { new SingleParameter("uai_user", user), new SingleParameter("uai_type", type),
+				new SingleParameter("uai_timeOfActivity", timeOfActivity) };
 	}
 
 	@Override

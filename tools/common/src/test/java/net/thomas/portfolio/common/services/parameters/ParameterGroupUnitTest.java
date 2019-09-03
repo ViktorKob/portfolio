@@ -9,7 +9,7 @@ public class ParameterGroupUnitTest {
 	private static final String SOME_PARAMETER_NAME = "parameter name";
 	private static final String SOME_VALUE_1 = "Value 1";
 	private static final String SOME_VALUE_2 = "Value 2";
-	private final Parameter SOME_PARAMETER = new PreSerializedParameter(SOME_PARAMETER_NAME, "value");
+	private final Parameter SOME_PARAMETER = new SingleParameter(SOME_PARAMETER_NAME, "value");
 
 	@Test
 	public void shouldBuildSimpleGroup() {

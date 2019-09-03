@@ -6,24 +6,24 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-public class PreSerializedParameterUnitTest {
+public class SingleParameterUnitTest {
 	private static final boolean TEST_DONE = true;
 
 	@Test
 	public void shouldContainNameAfterInitialization() {
-		final PreSerializedParameter parameter = new PreSerializedParameter(SOME_NAME, SOME_VALUE);
+		final SingleParameter parameter = new SingleParameter(SOME_NAME, SOME_VALUE);
 		assertEquals(SOME_NAME, parameter.getName());
 	}
 
 	@Test
 	public void shouldContainValueAfterInitialization() {
-		final PreSerializedParameter parameter = new PreSerializedParameter(SOME_NAME, SOME_VALUE);
+		final SingleParameter parameter = new SingleParameter(SOME_NAME, SOME_VALUE);
 		assertEquals(SOME_VALUE, parameter.getValue());
 	}
 
 	@Test
 	public void shouldHaveValidToStringMethod() {
-		assertToStringContainsAllFieldsFromObject(new PreSerializedParameter(SOME_NAME, SOME_VALUE));
+		assertToStringContainsAllFieldsFromObject(new SingleParameter(SOME_NAME, SOME_VALUE));
 		assertTrue(TEST_DONE); // Here to fix code analysis issue
 	}
 
