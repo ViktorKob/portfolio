@@ -26,8 +26,9 @@ import net.thomas.portfolio.common.services.parameters.Credentials;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
-import net.thomas.portfolio.services.Service;
+import net.thomas.portfolio.service_commons.hateoas.UrlFactory;
 import net.thomas.portfolio.services.ContextPathSection;
+import net.thomas.portfolio.services.Service;
 
 public class HttpRestClient {
 	private static final Logger LOG = getLogger(HttpRestClient.class);
@@ -35,35 +36,33 @@ public class HttpRestClient {
 	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;
-	private final UrlSuffixBuilder urlSuffixBuilder;
+	private final UrlFactory urlFactory;
 
 	public HttpRestClient(final EurekaClient discoveryClient, final RestTemplate restTemplate, final ServiceDependency serviceInfo) {
 		this.discoveryClient = discoveryClient;
 		this.restTemplate = restTemplate;
 		this.serviceInfo = serviceInfo;
-		urlSuffixBuilder = new UrlSuffixBuilder();
+		urlFactory = new UrlFactory(() -> {
+			final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
+			return serviceUrl.substring(0, serviceUrl.length() - 1);
+		}, new UrlSuffixBuilderImpl());
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType) {
-		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint));
+		final URI request = URI.create(urlFactory.buildUrl(service, endpoint));
 		return execute(request, method, responseType);
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
 			final ParameterGroup... parameters) {
-		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
+		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
 			final Parameter... parameters) {
-		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
+		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
 		return execute(request, method, responseType);
-	}
-
-	private URI buildUri(String urlSuffix) {
-		final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
-		return URI.create(serviceUrl.substring(0, serviceUrl.length() - 1) + urlSuffix);
 	}
 
 	@SuppressWarnings("unchecked") // Pending a better solution
@@ -97,13 +96,13 @@ public class HttpRestClient {
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
 			final ParameterizedTypeReference<T> responseType, final ParameterGroup... parameters) {
-		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
+		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 
 	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
 			final ParameterizedTypeReference<T> responseType, final Parameter... parameters) {
-		final URI request = buildUri(urlSuffixBuilder.buildUrlSuffix(service, endpoint, parameters));
+		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
 		return execute(request, method, responseType);
 	}
 

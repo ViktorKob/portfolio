@@ -2,7 +2,7 @@ package net.thomas.portfolio.common.utils;
 
 import lombok.Data;
 
-public class LombokTest {
+public class LombokTester {
 	public static void main(String[] args) {
 		final TestObject left = new TestObject(1);
 		final TestObject right = new TestObject(1);
