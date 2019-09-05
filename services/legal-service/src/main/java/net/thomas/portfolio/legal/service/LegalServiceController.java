@@ -64,7 +64,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.hateoas.LinkFactory;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
 import net.thomas.portfolio.service_commons.network.UrlFactory;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
@@ -132,8 +132,8 @@ public class LegalServiceController {
 		}, new PortfolioUrlSuffixBuilder()));
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
-			((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
 			LOG.info("Adding fake audit log data");

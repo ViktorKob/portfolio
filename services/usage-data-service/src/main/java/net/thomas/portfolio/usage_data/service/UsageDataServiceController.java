@@ -34,7 +34,7 @@ import net.thomas.portfolio.common.services.parameters.validation.StringPresence
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -93,7 +93,7 @@ public class UsageDataServiceController {
 		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
 		new Thread(() -> {
-			((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
 		}).start();
 	}

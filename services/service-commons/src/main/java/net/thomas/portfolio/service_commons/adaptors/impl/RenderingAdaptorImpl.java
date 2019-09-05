@@ -16,11 +16,11 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @EnableCircuitBreaker
-public class RenderingAdaptorImpl implements HttpRestClientInitializable, RenderingAdaptor {
+public class RenderingAdaptorImpl implements PortfolioInfrastructureAware, RenderingAdaptor {
 
 	private HttpRestClient client;
 

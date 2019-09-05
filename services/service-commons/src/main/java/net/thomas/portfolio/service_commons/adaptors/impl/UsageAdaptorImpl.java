@@ -14,14 +14,14 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 @EnableCircuitBreaker
-public class UsageAdaptorImpl implements HttpRestClientInitializable, UsageAdaptor {
+public class UsageAdaptorImpl implements PortfolioInfrastructureAware, UsageAdaptor {
 	private HttpRestClient client;
 
 	@Override

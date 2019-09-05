@@ -12,6 +12,7 @@ import com.netflix.discovery.EurekaClient;
 
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLObjectMapper;
+import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
@@ -25,7 +26,10 @@ import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.ServiceDiscoveryUrlPrefixBuilder;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -88,11 +92,20 @@ public class NexusServiceController {
 	}
 
 	private void initializeIndividualAdaptors() {
-		((HttpRestClientInitializable) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-		((HttpRestClientInitializable) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
-		((HttpRestClientInitializable) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
-		((HttpRestClientInitializable) renderingAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
-		((HttpRestClientInitializable) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
+		buildUrlFactoryFor(config.getAnalytics());
+		((PortfolioInfrastructureAware) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+		buildUrlFactoryFor(config.getHbaseIndexing());
+		((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+		buildUrlFactoryFor(config.getLegal());
+		((PortfolioInfrastructureAware) legalAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
+		buildUrlFactoryFor(config.getRendering());
+		((PortfolioInfrastructureAware) renderingAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
+		buildUrlFactoryFor(config.getUsage());
+		((PortfolioInfrastructureAware) usageAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
+	}
+
+	private UrlFactory buildUrlFactoryFor(ServiceDependency serviceInfo) {
+		return new UrlFactory(new ServiceDiscoveryUrlPrefixBuilder(discoveryClient, serviceInfo), new PortfolioUrlSuffixBuilder());
 	}
 
 	private Adaptors buildCompositeAdaptors() {

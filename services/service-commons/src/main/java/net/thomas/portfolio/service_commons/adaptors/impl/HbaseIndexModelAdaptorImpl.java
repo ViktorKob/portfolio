@@ -40,7 +40,7 @@ import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.HttpRestClientInitializable;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
@@ -56,7 +56,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
 @EnableCircuitBreaker
-public class HbaseIndexModelAdaptorImpl implements HttpRestClientInitializable, HbaseIndexModelAdaptor {
+public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware, HbaseIndexModelAdaptor {
 	private static final Logger LOG = getLogger(HbaseIndexModelAdaptorImpl.class);
 	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
 

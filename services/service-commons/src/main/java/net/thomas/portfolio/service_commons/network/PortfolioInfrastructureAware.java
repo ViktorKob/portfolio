@@ -1,5 +1,5 @@
 package net.thomas.portfolio.service_commons.network;
 
-public interface HttpRestClientInitializable {
+public interface PortfolioInfrastructureAware {
 	void initialize(HttpRestClient client);
 }
