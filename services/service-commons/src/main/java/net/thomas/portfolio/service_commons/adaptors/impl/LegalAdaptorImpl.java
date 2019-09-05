@@ -18,6 +18,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
@@ -25,10 +26,12 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @EnableCircuitBreaker
 public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdaptor {
 
+	private UrlFactory urlFactory;
 	private HttpRestClient client;
 
 	@Override
-	public void initialize(HttpRestClient client) {
+	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
+		this.urlFactory = urlFactory;
 		this.client = client;
 	}
 

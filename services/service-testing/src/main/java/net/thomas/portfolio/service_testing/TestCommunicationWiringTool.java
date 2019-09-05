@@ -13,6 +13,7 @@ import com.netflix.discovery.EurekaClient;
 import net.thomas.portfolio.common.services.parameters.Credentials;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 
 public class TestCommunicationWiringTool {
 	private final String serviceName;
@@ -26,6 +27,11 @@ public class TestCommunicationWiringTool {
 
 	public void setRestTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+	}
+
+	public UrlFactory setupMockAndUrlFactory() {
+		final EurekaClient discoveryClientMock = mockClientDiscovery();
+		return null;
 	}
 
 	public HttpRestClient setupMockAndGetHttpClient() {

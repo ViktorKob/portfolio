@@ -14,15 +14,18 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.UrlFactory;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @EnableCircuitBreaker
 public class AnalyticsAdaptorImpl implements PortfolioInfrastructureAware, AnalyticsAdaptor {
+	private UrlFactory urlFactory;
 	private HttpRestClient client;
 
 	@Override
-	public void initialize(HttpRestClient client) {
+	public void initialize(UrlFactory urlFactory, HttpRestClient client) {
+		this.urlFactory = urlFactory;
 		this.client = client;
 	}
 

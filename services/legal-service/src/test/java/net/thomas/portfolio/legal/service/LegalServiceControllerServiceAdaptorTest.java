@@ -73,7 +73,7 @@ public class LegalServiceControllerServiceAdaptorTest {
 		legalInfoBuilder = new LegalInfoForTestBuilder();
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final LegalAdaptorImpl legalAdaptor = new LegalAdaptorImpl();
-		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		legalAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndUrlFactory(), COMMUNICATION_WIRING.setupMockAndGetHttpClient());
 		adaptors = new Adaptors.Builder().setLegalAdaptor(legalAdaptor).build();
 	}
 

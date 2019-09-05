@@ -80,7 +80,7 @@ public class UsageDataServiceControllerServiceAdaptorTest {
 		reset(sqlProxy);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final UsageAdaptorImpl usageAdaptor = new UsageAdaptorImpl();
-		usageAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		usageAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndUrlFactory(), COMMUNICATION_WIRING.setupMockAndGetHttpClient());
 		adaptors = new Adaptors.Builder().setUsageAdaptor(usageAdaptor).build();
 	}
 

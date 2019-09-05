@@ -3,6 +3,7 @@ package net.thomas.portfolio.usage_data.service;
 import static java.lang.Integer.MAX_VALUE;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.USAGE_ACTIVITIES_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.USAGE_ACTIVITIES_ROOT_PATH;
+import static net.thomas.portfolio.service_commons.network.UrlFactory.usingPortfolio;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
@@ -93,7 +94,8 @@ public class UsageDataServiceController {
 		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
 		new Thread(() -> {
-			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
+					new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDocumentTypes());
 		}).start();
 	}

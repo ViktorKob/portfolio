@@ -129,7 +129,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 		reset(index, parserLibrary);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final HbaseIndexModelAdaptorImpl hbaseAdaptor = new HbaseIndexModelAdaptorImpl();
-		hbaseAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		hbaseAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndUrlFactory(), COMMUNICATION_WIRING.setupMockAndGetHttpClient());
 		adaptors = new Adaptors.Builder().setHbaseModelAdaptor(hbaseAdaptor).build();
 	}
 

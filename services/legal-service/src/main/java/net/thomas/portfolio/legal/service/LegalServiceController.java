@@ -12,6 +12,7 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
+import static net.thomas.portfolio.service_commons.network.UrlFactory.usingPortfolio;
 import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -132,8 +133,10 @@ public class LegalServiceController {
 		}, new PortfolioUrlSuffixBuilder()));
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
-			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
-			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(usingPortfolio(discoveryClient, config.getAnalytics()),
+					new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
+					new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
 			LOG.info("Adding fake audit log data");
