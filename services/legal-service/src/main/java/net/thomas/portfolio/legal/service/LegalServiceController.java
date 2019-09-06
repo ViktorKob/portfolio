@@ -1,8 +1,6 @@
 package net.thomas.portfolio.legal.service;
 
 import static java.lang.System.currentTimeMillis;
-import static java.util.stream.Collectors.toList;
-import static net.thomas.portfolio.enums.LegalServiceEndpoint.HISTORY;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_UPDATED;
@@ -11,16 +9,9 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_MESSAGE_PRE
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_ROOT_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.LEGAL_RULES_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
-import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
-import static net.thomas.portfolio.service_commons.network.UrlFactory.usingPortfolio;
-import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
+import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.hateoas.Link.REL_FIRST;
-import static org.springframework.hateoas.Link.REL_LAST;
-import static org.springframework.hateoas.Link.REL_NEXT;
-import static org.springframework.hateoas.Link.REL_PREVIOUS;
-import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.created;
@@ -37,11 +28,9 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -55,7 +44,6 @@ import com.netflix.discovery.EurekaClient;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import lombok.Getter;
 import net.thomas.portfolio.common.services.parameters.validation.SpecificStringPresenceValidator;
 import net.thomas.portfolio.legal.system.AuditLoggingControl;
 import net.thomas.portfolio.legal.system.LegalRulesControl;
@@ -63,11 +51,12 @@ import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
-import net.thomas.portfolio.service_commons.hateoas.LinkFactory;
+import net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
-import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem;
@@ -80,7 +69,6 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 @EnableConfigurationProperties
 @RequestMapping(value = LEGAL_ROOT_PATH, produces = "application/hal+json")
 public class LegalServiceController {
-	private static final boolean INCLUDE_NEIGHBOURHOOD = true;
 	private static final Logger LOG = getLogger(LegalServiceController.class);
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
 	private static final UidValidator UID = new UidValidator("dti_uid", true);
@@ -102,7 +90,8 @@ public class LegalServiceController {
 	@Autowired
 	private AuditLoggingControl auditLogging;
 	private LegalRulesControl legalRules;
-	private LinkFactory linkFactory;
+	private PortfolioHateoasWrappingHelper hateoasHelper;
+	private PortfolioUrlLibrary urlLibrary;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
@@ -128,15 +117,17 @@ public class LegalServiceController {
 		webSocket.setMessageConverter(new MappingJackson2MessageConverter());
 		legalRules = new LegalRulesControl();
 		legalRules.setAnalyticsAdaptor(analyticsAdaptor);
-		linkFactory = new LinkFactory(new UrlFactory(() -> {
+		final UrlFactory urlFactory = new UrlFactory(() -> {
 			return globalUrlPrefix;
-		}, new PortfolioUrlSuffixBuilder()));
+		}, new PortfolioUrlSuffixBuilder());
+		urlLibrary = new PortfolioUrlLibrary(urlFactory);
+		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
 			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(usingPortfolio(discoveryClient, config.getAnalytics()),
-					new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+					new HttpRestClient(restTemplate, config.getAnalytics()));
 			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
-					new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
 			LOG.info("Adding fake audit log data");
@@ -180,7 +171,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(buildHistoryItemLink("", itemId).getHref())).build();
+				return created(URI.create(urlLibrary.legal.history.item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -198,7 +189,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(buildHistoryItemLink("", itemId).getHref())).build();
+				return created(URI.create(urlLibrary.legal.history.item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -211,11 +202,9 @@ public class LegalServiceController {
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryItemList.class)
 	@RequestMapping(path = HISTORY_PATH, method = GET)
-	public ResponseEntity<?> lookupAuditLoggingHistory() {
-		final List<HistoryItemResource> items = auditLogging.getAll().stream().map(HistoryItemResource::new).collect(toList());
-		final Resources<HistoryItemResource> container = new Resources<>(items);
-		container.add(buildHistoryLink(REL_SELF));
-		return ok(container);
+	public ResponseEntity<?> lookupAuditLoggingHistory(Pageable pageable) {
+		final List<HistoryItem> items = auditLogging.getAll(pageable);
+		return ok(hateoasHelper.wrap(items));
 	}
 
 	@Secured("ROLE_USER")
@@ -224,60 +213,9 @@ public class LegalServiceController {
 	public ResponseEntity<?> lookupAuditLoggingHistoryItem(@PathVariable Integer itemId) {
 		final HistoryItem item = auditLogging.getItem(itemId);
 		if (item != null) {
-			return ok(new HistoryItemResource(item, INCLUDE_NEIGHBOURHOOD));
+			return ok(hateoasHelper.wrap(item, auditLogging.getLastId()));
 		} else {
 			return notFound().build();
 		}
-	}
-
-	@Getter
-	public class HistoryItemResource extends ResourceSupport {
-		private final HistoryItem item;
-
-		public HistoryItemResource(HistoryItem item) {
-			this.item = item;
-			addSelfLink(item);
-		}
-
-		public HistoryItemResource(HistoryItem item, boolean includeNeighbourhood) {
-			this(item);
-			if (includeNeighbourhood) {
-				addHistoryLink();
-				addNeighbourLinks(item);
-				addBorderLinks(item);
-			}
-		}
-
-		private void addSelfLink(final HistoryItem item) {
-			add(buildHistoryItemLink(REL_SELF, item.getItemId()));
-		}
-
-		private void addHistoryLink() {
-			add(buildHistoryLink("all"));
-		}
-
-		private void addNeighbourLinks(final HistoryItem item) {
-			if (item.getItemId() > 0) {
-				add(buildHistoryItemLink(REL_PREVIOUS, item.getItemId() - 1));
-			}
-			if (item.getItemId() < auditLogging.getLastId()) {
-				add(buildHistoryItemLink(REL_NEXT, item.getItemId() + 1));
-			}
-		}
-
-		private void addBorderLinks(final HistoryItem item) {
-			if (auditLogging.getLastId() > -1) {
-				add(buildHistoryItemLink(REL_FIRST, 0));
-				add(buildHistoryItemLink(REL_LAST, auditLogging.getLastId()));
-			}
-		}
-	}
-
-	private Link buildHistoryLink(final String relation) {
-		return linkFactory.buildUrl("all", LEGAL_SERVICE, HISTORY);
-	}
-
-	private Link buildHistoryItemLink(final String relation, int itemId) {
-		return linkFactory.buildUrl(relation, LEGAL_SERVICE, asEndpoint(HISTORY, "" + itemId));
 	}
 }

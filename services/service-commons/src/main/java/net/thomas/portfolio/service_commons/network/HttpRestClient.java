@@ -19,48 +19,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
-
 import net.thomas.portfolio.common.services.parameters.Credentials;
-import net.thomas.portfolio.common.services.parameters.Parameter;
-import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
-import net.thomas.portfolio.services.ContextPathSection;
-import net.thomas.portfolio.services.Service;
 
 public class HttpRestClient {
 	private static final Logger LOG = getLogger(HttpRestClient.class);
-	private static final int MAX_INSTANCE_LOOKUP_ATTEMPTS = 60;
-	private final EurekaClient discoveryClient;
 	private final RestTemplate restTemplate;
 	private final ServiceDependency serviceInfo;
-	private final UrlFactory urlFactory;
 
-	public HttpRestClient(final EurekaClient discoveryClient, final RestTemplate restTemplate, final ServiceDependency serviceInfo) {
-		this.discoveryClient = discoveryClient;
+	public HttpRestClient(final RestTemplate restTemplate, final ServiceDependency serviceInfo) {
 		this.restTemplate = restTemplate;
 		this.serviceInfo = serviceInfo;
-		urlFactory = new UrlFactory(() -> {
-			final String serviceUrl = getServiceInfo(serviceInfo.getName()).getHomePageUrl();
-			return serviceUrl.substring(0, serviceUrl.length() - 1);
-		}, new PortfolioUrlSuffixBuilder());
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType) {
-		final URI request = URI.create(urlFactory.buildUrl(service, endpoint));
-		return execute(request, method, responseType);
-	}
-
-	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
-			final ParameterGroup... parameters) {
-		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
-		return execute(request, method, responseType);
-	}
-
-	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method, final Class<T> responseType,
-			final Parameter... parameters) {
-		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
+	public <T> T loadUrlAsObject(String url, final HttpMethod method, final Class<T> responseType) {
+		final URI request = URI.create(url);
 		return execute(request, method, responseType);
 	}
 
@@ -93,15 +66,8 @@ public class HttpRestClient {
 		}
 	}
 
-	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
-			final ParameterizedTypeReference<T> responseType, final ParameterGroup... parameters) {
-		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
-		return execute(request, method, responseType);
-	}
-
-	public <T> T loadUrlAsObject(final Service service, final ContextPathSection endpoint, final HttpMethod method,
-			final ParameterizedTypeReference<T> responseType, final Parameter... parameters) {
-		final URI request = URI.create(urlFactory.buildUrl(service, endpoint, parameters));
+	public <T> T loadUrlAsObject(String url, final HttpMethod method, final ParameterizedTypeReference<T> responseType) {
+		final URI request = URI.create(url);
 		return execute(request, method, responseType);
 	}
 
@@ -133,33 +99,5 @@ public class HttpRestClient {
 		final HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", "Basic " + credentials.getEncoded());
 		return new HttpEntity<>(headers);
-	}
-
-	private InstanceInfo getServiceInfo(final String serviceName) {
-		InstanceInfo instanceInfo = null;
-		int tries = 0;
-		while (instanceInfo == null && tries < MAX_INSTANCE_LOOKUP_ATTEMPTS) {
-			try {
-				instanceInfo = discoveryClient.getNextServerFromEureka(serviceName, false);
-			} catch (final RuntimeException e) {
-				if (e.getMessage().contains("No matches for the virtual host")) {
-					LOG.error("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
-					try {
-						Thread.sleep(5000);
-					} catch (final InterruptedException e1) {
-					}
-
-				} else {
-					throw new RuntimeException("Unable to complete service discovery", e);
-				}
-			}
-			tries++;
-		}
-		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
-			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
-		} else if (tries > 1) {
-			LOG.info("Discovery of " + serviceInfo.getName() + " successful.");
-		}
-		return instanceInfo;
 	}
 }

@@ -92,7 +92,6 @@ import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAda
 import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
-import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -103,8 +102,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.utils.DateConverter
 /***
  * These tests are currently all being kept in the same class to encourage running them before
  * checking in. The class has a startup time of around 10 seconds while each test takes less than 50
- * ms. Splitting it up would slow down the test suite considerably so I chose speed over separation
- * here.
+ * ms. Splitting it up by adaptor type would slow down the test suite considerably so I chose speed
+ * over separation here.
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = DEFINED_PORT, properties = { "server.port:18100", "eureka.client.registerWithEureka:false",
@@ -178,8 +177,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		reset(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		final HttpRestClient httpClient = COMMUNICATION_WIRING.setupMockAndGetHttpClient();
-		executionUtil = new GraphQlQueryTestExecutionUtil(httpClient);
+		executionUtil = new GraphQlQueryTestExecutionUtil(COMMUNICATION_WIRING.getUrlFactory(), COMMUNICATION_WIRING.getHttpRestClient());
 		queryBuilder = new GraphQlQueryBuilder();
 		usageActivityTestUtil = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 	}

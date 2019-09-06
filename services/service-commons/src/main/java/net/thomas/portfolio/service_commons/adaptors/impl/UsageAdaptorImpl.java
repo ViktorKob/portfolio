@@ -1,9 +1,5 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
-import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.USAGE_ACTIVITIES;
-import static net.thomas.portfolio.enums.UsageDataServiceEndpoint.USAGE_ACTIVITIES_ROOT;
-import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
-import static net.thomas.portfolio.services.Service.USAGE_DATA_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
@@ -15,7 +11,8 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
@@ -23,25 +20,27 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 @EnableCircuitBreaker
 public class UsageAdaptorImpl implements PortfolioInfrastructureAware, UsageAdaptor {
-	private UrlFactory urlFactory;
+	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient client;
 
 	@Override
 	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
-		this.urlFactory = urlFactory;
+		urlLibrary = new PortfolioUrlLibrary(urlFactory);
 		this.client = client;
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
-		return client.loadUrlAsObject(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), POST, UsageActivity.class, activity);
+		final String url = urlLibrary.usageData.usageActivities(documentId, activity);
+		return client.loadUrlAsObject(url, POST, UsageActivity.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3"),
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000") })
 	public UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
-		return client.loadUrlAsObject(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), GET, UsageActivities.class, bounds);
+		final String url = urlLibrary.usageData.usageActivities(documentId, bounds);
+		return client.loadUrlAsObject(url, GET, UsageActivities.class);
 	}
 }

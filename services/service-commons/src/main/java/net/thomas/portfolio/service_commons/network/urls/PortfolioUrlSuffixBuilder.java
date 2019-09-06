@@ -1,4 +1,4 @@
-package net.thomas.portfolio.service_commons.network;
+package net.thomas.portfolio.service_commons.network.urls;
 
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;

@@ -5,7 +5,7 @@ import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_SIMPLE_REPRES
 import static net.thomas.portfolio.globals.RenderServiceGlobals.AS_TEXT_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_ENTITY_ROOT_PATH;
 import static net.thomas.portfolio.globals.RenderServiceGlobals.RENDER_SELECTOR_ROOT_PATH;
-import static net.thomas.portfolio.service_commons.network.UrlFactory.usingPortfolio;
+import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -81,7 +81,7 @@ public class RenderServiceController {
 	public void initializeService() {
 		new Thread(() -> {
 			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
-					new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
 		}).start();
 	}

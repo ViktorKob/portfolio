@@ -129,7 +129,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 		reset(index, parserLibrary);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final HbaseIndexModelAdaptorImpl hbaseAdaptor = new HbaseIndexModelAdaptorImpl();
-		hbaseAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndUrlFactory(), COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		hbaseAdaptor.initialize(COMMUNICATION_WIRING.getUrlFactory(), COMMUNICATION_WIRING.getHttpRestClient());
 		adaptors = new Adaptors.Builder().setHbaseModelAdaptor(hbaseAdaptor).build();
 	}
 
@@ -253,7 +253,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	public void shouldReturnNullSuggestionWhenNotParsingPossible() {
+	public void shouldReturnNullSuggestionWhenNoParsingPossible() {
 		final List<Selector> suggestions = adaptors.getSelectorSuggestions(INVALID_SIMPLE_REPRESENTATION);
 		assertNull(suggestions);
 	}
@@ -266,7 +266,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 	}
 
 	@Test
-	public void shouldReturn404WhenThereAreNoSamples() {
+	public void shouldBeNullWhenThereAreNoSamples() {
 		when(index.getSamples(eq(SELECTOR_TYPE), anyInt())).thenReturn(new Entities());
 		final Entities entities = adaptors.getSamples(SELECTOR_TYPE, 1);
 		assertNull(entities);

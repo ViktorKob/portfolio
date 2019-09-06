@@ -6,6 +6,7 @@ import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.SELECTOR_
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +55,8 @@ public class AuditLoggingControl {
 		return history.size() - 1;
 	}
 
-	public List<HistoryItem> getAll() {
+	public List<HistoryItem> getAll(Pageable pageable) {
+		// TODO[Thomas]: Figure out how to do this in practice
 		return unmodifiableList(history);
 	}
 

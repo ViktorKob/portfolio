@@ -1,19 +1,12 @@
 package net.thomas.portfolio.service_testing;
 
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.springframework.web.client.RestTemplate;
-
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.parameters.Credentials;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 
 public class TestCommunicationWiringTool {
 	private final String serviceName;
@@ -29,26 +22,15 @@ public class TestCommunicationWiringTool {
 		this.restTemplate = restTemplate;
 	}
 
-	public UrlFactory setupMockAndUrlFactory() {
-		final EurekaClient discoveryClientMock = mockClientDiscovery();
-		return null;
+	public UrlFactory getUrlFactory() {
+		final UrlFactory urlFactory = new UrlFactory(() -> {
+			return "http://localhost:" + port;
+		}, new PortfolioUrlSuffixBuilder());
+		return urlFactory;
 	}
 
-	public HttpRestClient setupMockAndGetHttpClient() {
-		final EurekaClient discoveryClientMock = mockClientDiscovery();
-		return buildClientAccess(discoveryClientMock);
-	}
-
-	private EurekaClient mockClientDiscovery() {
-		final InstanceInfo serviceInfoMock = mock(InstanceInfo.class);
-		when(serviceInfoMock.getHomePageUrl()).thenReturn("http://localhost:" + port);
-		final EurekaClient discoveryClientMock = mock(EurekaClient.class);
-		when(discoveryClientMock.getNextServerFromEureka(eq(serviceName), anyBoolean())).thenReturn(serviceInfoMock);
-		return discoveryClientMock;
-	}
-
-	private HttpRestClient buildClientAccess(final EurekaClient discoveryClientMock) {
+	public HttpRestClient getHttpRestClient() {
 		final ServiceDependency serviceInfo = new ServiceDependency(serviceName, new Credentials("service-user", "password"));
-		return new HttpRestClient(discoveryClientMock, restTemplate, serviceInfo);
+		return new HttpRestClient(restTemplate, serviceInfo);
 	}
 }

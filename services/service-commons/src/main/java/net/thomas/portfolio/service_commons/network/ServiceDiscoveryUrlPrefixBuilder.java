@@ -8,6 +8,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
+import net.thomas.portfolio.service_commons.network.urls.UrlPrefixBuilder;
 
 public class ServiceDiscoveryUrlPrefixBuilder implements UrlPrefixBuilder {
 	private static final Logger LOG = getLogger(ServiceDiscoveryUrlPrefixBuilder.class);

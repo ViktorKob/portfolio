@@ -1,12 +1,5 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_HTML;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_SIMPLE_REPRESENTATION;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.AS_TEXT;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_ENTITY_ROOT;
-import static net.thomas.portfolio.enums.RenderServiceEndpoint.RENDER_SELECTOR_ROOT;
-import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
-import static net.thomas.portfolio.services.Service.RENDER_SERVICE;
 import static org.springframework.http.HttpMethod.GET;
 
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
@@ -17,36 +10,40 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 @EnableCircuitBreaker
 public class RenderingAdaptorImpl implements PortfolioInfrastructureAware, RenderingAdaptor {
 
-	private UrlFactory urlFactory;
+	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient client;
 
 	@Override
 	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
-		this.urlFactory = urlFactory;
+		urlLibrary = new PortfolioUrlLibrary(urlFactory);
 		this.client = client;
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_SELECTOR_ROOT, selectorId, AS_SIMPLE_REPRESENTATION), GET, String.class);
+		final String url = urlLibrary.render.simpleRepresentation(selectorId);
+		return client.loadUrlAsObject(url, GET, String.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsText(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT), GET, String.class);
+		final String url = urlLibrary.render.text(id);
+		return client.loadUrlAsObject(url, GET, String.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsHtml(DataTypeId id) {
-		return client.loadUrlAsObject(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML), GET, String.class);
+		final String url = urlLibrary.render.html(id);
+		return client.loadUrlAsObject(url, GET, String.class);
 	}
 }

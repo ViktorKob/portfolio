@@ -1,16 +1,10 @@
 package net.thomas.portfolio.hbase_index.service;
 
-import static java.util.stream.Collectors.toList;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.ENTITIES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SCHEMA_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SUGGESTIONS_PATH;
-import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
-import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
-import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -23,10 +17,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
@@ -36,9 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
-import net.thomas.portfolio.service_commons.hateoas.LinkFactory;
-import net.thomas.portfolio.service_commons.network.PortfolioUrlSuffixBuilder;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
@@ -49,6 +39,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaIm
 
 @Controller
 @Api(value = "", description = "Schema and general data lookup")
+@RequestMapping(produces = "application/hal+json")
 @EnableConfigurationProperties
 public class HbaseIndexingServiceController {
 
@@ -61,11 +52,11 @@ public class HbaseIndexingServiceController {
 	@Autowired
 	private HbaseIndex index;
 
-	private LinkFactory linkFactory;
+	private PortfolioHateoasWrappingHelper hateoasHelper;
 
 	@PostConstruct
 	public void initializeService() {
-		linkFactory = new LinkFactory(new UrlFactory(() -> {
+		hateoasHelper = new PortfolioHateoasWrappingHelper(new UrlFactory(() -> {
 			return globalUrlPrefix;
 		}, new PortfolioUrlSuffixBuilder()));
 	}
@@ -83,25 +74,10 @@ public class HbaseIndexingServiceController {
 	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String simpleRepresentation) {
 		final List<Selector> suggestions = parserLibrary.getSelectorSuggestions(simpleRepresentation);
 		if (suggestions != null && suggestions.size() > 0) {
-			return ok(wrapWithHateoas(simpleRepresentation, suggestions));
+			return ok(hateoasHelper.wrap(simpleRepresentation, suggestions));
 		} else {
 			return notFound().build();
 		}
-	}
-
-	private ResourceSupport wrapWithHateoas(String simpleRepresentation, List<Selector> suggestions) {
-		final Resources<ResourceSupport> packed = new Resources<>(suggestions.stream().map(this::wrapWithHateoas).collect(toList()));
-		packed.add(buildSuggestionsLink(REL_SELF, simpleRepresentation));
-		return packed;
-	}
-
-	private ResourceSupport wrapWithHateoas(DataType entity) {
-		final Resource<DataType> packed = new Resource<>(entity);
-		return packed;
-	}
-
-	private Link buildSuggestionsLink(String relation, String simpleRepresentation) {
-		return linkFactory.buildUrl(relation, HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation));
 	}
 
 	@Secured("ROLE_USER")
@@ -113,7 +89,7 @@ public class HbaseIndexingServiceController {
 		}
 		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.hasData()) {
-			return ok(samples);
+			return ok(hateoasHelper.wrap(dti_type, amount, samples));
 		} else {
 			return notFound().build();
 		}
@@ -126,7 +102,7 @@ public class HbaseIndexingServiceController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final DataType entity = index.getDataType(id);
 		if (entity != null) {
-			return ok(entity);
+			return ok(hateoasHelper.wrap(entity));
 		} else {
 			return notFound().build();
 		}

@@ -1,6 +1,6 @@
 package net.thomas.portfolio.nexus.service;
 
-import static net.thomas.portfolio.service_commons.network.UrlFactory.usingPortfolio;
+import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
 
 import javax.annotation.PostConstruct;
 
@@ -91,15 +91,15 @@ public class NexusServiceController {
 
 	private void initializeIndividualAdaptors() {
 		((PortfolioInfrastructureAware) analyticsAdaptor).initialize(usingPortfolio(discoveryClient, config.getAnalytics()),
-				new HttpRestClient(discoveryClient, restTemplate, config.getAnalytics()));
+				new HttpRestClient(restTemplate, config.getAnalytics()));
 		((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
-				new HttpRestClient(discoveryClient, restTemplate, config.getHbaseIndexing()));
+				new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 		((PortfolioInfrastructureAware) legalAdaptor).initialize(usingPortfolio(discoveryClient, config.getLegal()),
-				new HttpRestClient(discoveryClient, restTemplate, config.getLegal()));
+				new HttpRestClient(restTemplate, config.getLegal()));
 		((PortfolioInfrastructureAware) renderingAdaptor).initialize(usingPortfolio(discoveryClient, config.getRendering()),
-				new HttpRestClient(discoveryClient, restTemplate, config.getRendering()));
+				new HttpRestClient(restTemplate, config.getRendering()));
 		((PortfolioInfrastructureAware) usageAdaptor).initialize(usingPortfolio(discoveryClient, config.getUsage()),
-				new HttpRestClient(discoveryClient, restTemplate, config.getUsage()));
+				new HttpRestClient(restTemplate, config.getUsage()));
 	}
 
 	private Adaptors buildAdaptorsComposite() {

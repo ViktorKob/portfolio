@@ -115,7 +115,7 @@ class HistoryItem extends React.Component{
 class History extends React.Component{
 	render() {
 		const history = this.props.history.map(item =>
-			<HistoryItem key={item.item.itemId} item={item.item}/>
+			<HistoryItem key={item.itemId} item={item}/>
 		);
 		return (
 			<Card>
@@ -157,7 +157,7 @@ class QueryListRenderer extends React.Component {
 
 	fetchData(){
 		client({method: "GET", path: "v1/selectors/history"}).then(response => {
-			this.setState({history: response.entity._embedded.historyItemResourceList});
+			this.setState({history: response.entity._embedded.historyItemList});
 		});
 	}
 	

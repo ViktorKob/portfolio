@@ -1,4 +1,4 @@
-package net.thomas.portfolio.service_commons.network;
+package net.thomas.portfolio.service_commons.network.urls;
 
 import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
 import static org.junit.Assert.assertEquals;
@@ -11,6 +11,7 @@ import org.junit.Test;
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.SingleParameter;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
 import net.thomas.portfolio.services.ContextPathSection;
 
 public class PortfolioUrlSuffixBuilderUnitTest {

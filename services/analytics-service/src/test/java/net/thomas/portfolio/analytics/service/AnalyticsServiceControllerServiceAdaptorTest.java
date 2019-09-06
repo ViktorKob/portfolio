@@ -61,7 +61,7 @@ public class AnalyticsServiceControllerServiceAdaptorTest {
 	public void setUpController() {
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final AnalyticsAdaptorImpl analyticsAdaptor = new AnalyticsAdaptorImpl();
-		analyticsAdaptor.initialize(COMMUNICATION_WIRING.setupMockAndUrlFactory(), COMMUNICATION_WIRING.setupMockAndGetHttpClient());
+		analyticsAdaptor.initialize(COMMUNICATION_WIRING.getUrlFactory(), COMMUNICATION_WIRING.getHttpRestClient());
 		adaptors = new Adaptors.Builder().setAnalyticsAdaptor(analyticsAdaptor).build();
 	}
 

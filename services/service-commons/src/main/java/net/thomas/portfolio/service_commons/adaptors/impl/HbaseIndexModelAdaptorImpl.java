@@ -2,18 +2,7 @@ package net.thomas.portfolio.service_commons.adaptors.impl;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.DOCUMENTS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.ENTITIES;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.FROM_SIMPLE_REP;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SAMPLES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
-import static net.thomas.portfolio.service_commons.network.ServiceEndpointBuilder.asEndpoint;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
@@ -36,13 +25,12 @@ import com.google.common.cache.LoadingCache;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
-import net.thomas.portfolio.common.services.parameters.ParameterGroup;
-import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
-import net.thomas.portfolio.service_commons.network.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
@@ -59,20 +47,20 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaIm
 @EnableCircuitBreaker
 public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware, HbaseIndexModelAdaptor {
 	private static final Logger LOG = getLogger(HbaseIndexModelAdaptorImpl.class);
-	private static final ParameterGroup[] EMPTY_GROUP_LIST = new ParameterGroup[0];
 
-	private UrlFactory urlFactory;
+	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient client;
 	private HbaseIndexSchema schema;
 	private LoadingCache<DataTypeId, DataType> dataTypeCache;
 
 	@Override
 	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
-		this.urlFactory = urlFactory;
+		urlLibrary = new PortfolioUrlLibrary(urlFactory);
 		this.client = client;
 		while (schema == null) {
 			try {
-				schema = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, SCHEMA, GET, HbaseIndexSchemaImpl.class);
+				final String url = urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
+				schema = client.loadUrlAsObject(url, GET, HbaseIndexSchemaImpl.class);
 			} catch (final UnauthorizedAccessException e) {
 				LOG.error("Unable to fetch schema due to invalid credentials", e);
 				throw e;
@@ -93,7 +81,8 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 				// final Resource<DataType> entity = client.loadUrlAsObject(HBASE_INDEXING_SERVICE,
 				// asEndpoint(ENTITIES, id), GET, responseType, EMPTY_GROUP_LIST);
 				// return entity.getContent();
-				final DataType entity = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, id), GET, DataType.class);
+				final String url = urlLibrary.hbase.entities.lookup(id);
+				final DataType entity = client.loadUrlAsObject(url, GET, DataType.class);
 				return entity;
 			}
 		};
@@ -154,28 +143,40 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
 		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<Resources<Selector>>() {
 		};
-		final Resources<Selector> response = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation), GET,
-				responseType, EMPTY_GROUP_LIST);
-		return new ArrayList<>(response.getContent());
+		final String url = urlLibrary.hbase.selectors.suggestions(simpleRepresentation);
+		final Resources<Selector> response = client.loadUrlAsObject(url, GET, responseType);
+		if (response != null) {
+			return new ArrayList<>(response.getContent());
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public Entities getSamples(String dataType, int amount) {
 		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<Resources<DataType>>() {
 		};
-		final Resources<DataType> response = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, dataType, SAMPLES), GET, responseType,
-				asGroup(new SingleParameter("amount", amount)));
-		return new Entities(response.getContent());
+		final String url = urlLibrary.hbase.entities.samples(dataType, amount);
+		final Resources<DataType> response = client.loadUrlAsObject(url, GET, responseType);
+		if (response != null) {
+			return new Entities(response.getContent());
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
-	public Selector getFromSimpleRep(String type, String simpleRep) {
+	public Selector getFromSimpleRep(String type, String simpleRepresentation) {
 		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<Resource<Selector>>() {
 		};
-		final Resource<Selector> response = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, type, FROM_SIMPLE_REP, simpleRep), GET,
-				responseType, EMPTY_GROUP_LIST);
-		return response.getContent();
+		final String url = urlLibrary.hbase.selectors.simpleRepresentation(type, simpleRepresentation);
+		final Resource<Selector> response = client.loadUrlAsObject(url, GET, responseType);
+		if (response != null) {
+			return response.getContent();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -198,13 +199,15 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public References getReferences(DataTypeId documentId) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES), GET, References.class, EMPTY_GROUP_LIST);
+		final String url = urlLibrary.hbase.documents.references(documentId);
+		return client.loadUrlAsObject(url, GET, References.class);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Statistics getStatistics(DataTypeId selectorId) {
-		return client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS), GET, Statistics.class, EMPTY_GROUP_LIST);
+		final String url = urlLibrary.hbase.selectors.statistics(selectorId);
+		return client.loadUrlAsObject(url, GET, Statistics.class);
 	}
 
 	@Override
@@ -212,8 +215,8 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<Resources<DocumentInfo>>() {
 		};
-		final Resources<DocumentInfo> response = client.loadUrlAsObject(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, request.getSelectorId(), INVERTED_INDEX),
-				GET, responseType, request.getGroups());
+		final String url = urlLibrary.hbase.selectors.invertedIndex(request.getSelectorId(), request.getGroups());
+		final Resources<DocumentInfo> response = client.loadUrlAsObject(url, GET, responseType);
 		return new DocumentInfos(response.getContent());
 	}
 }
