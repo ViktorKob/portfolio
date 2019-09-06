@@ -96,7 +96,7 @@ public class SelectorController {
 		}
 		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.hasData()) {
-			return ok(hateoasHelper.wrap(dti_type, amount, samples));
+			return ok(hateoasHelper.wrap(samples, dti_type, amount));
 		} else {
 			return notFound().build();
 		}
@@ -109,7 +109,7 @@ public class SelectorController {
 		final DataTypeId id = new DataTypeId(dti_type, dti_uid);
 		final Statistics statistics = index.getStatistics(id);
 		if (statistics.hasData()) {
-			return ok(hateoasHelper.wrap(id, statistics));
+			return ok(hateoasHelper.wrap(statistics, id));
 		} else {
 			return notFound().build();
 		}
@@ -136,7 +136,7 @@ public class SelectorController {
 			@RequestParam(value = "relation", required = false) HashSet<String> relations) {
 		final DataTypeId selectorId = new DataTypeId(dti_type, dti_uid);
 		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
-		return ok(hateoasHelper.wrap(selectorId, results));
+		return ok(hateoasHelper.wrap(results, selectorId));
 	}
 
 	private InvertedIndexLookup buildLookup(DataTypeId selectorId, Bounds bounds, Set<String> documentTypes, Set<String> relations) {

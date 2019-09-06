@@ -74,7 +74,7 @@ public class HbaseIndexingServiceController {
 	public ResponseEntity<?> getSelectorSuggestions(@PathVariable String simpleRepresentation) {
 		final List<Selector> suggestions = parserLibrary.getSelectorSuggestions(simpleRepresentation);
 		if (suggestions != null && suggestions.size() > 0) {
-			return ok(hateoasHelper.wrap(simpleRepresentation, suggestions));
+			return ok(hateoasHelper.wrap(suggestions, simpleRepresentation));
 		} else {
 			return notFound().build();
 		}
@@ -89,7 +89,7 @@ public class HbaseIndexingServiceController {
 		}
 		final Entities samples = index.getSamples(dti_type, amount);
 		if (samples != null && samples.hasData()) {
-			return ok(hateoasHelper.wrap(dti_type, amount, samples));
+			return ok(hateoasHelper.wrap(samples, dti_type, amount));
 		} else {
 			return notFound().build();
 		}

@@ -29,6 +29,12 @@ public class ServiceEndpointBuilder {
 		};
 	}
 
+	public static ContextPathSection asEndpoint(ContextPathSection firstPrefix, ContextPathSection secondPrefix) {
+		return () -> {
+			return firstPrefix.getContextPath() + secondPrefix.getContextPath();
+		};
+	}
+
 	public static ContextPathSection asEndpoint(ContextPathSection firstPrefix, ContextPathSection secondPrefix, String value) {
 		return () -> {
 			return firstPrefix.getContextPath() + secondPrefix.getContextPath() + "/" + value + "/";

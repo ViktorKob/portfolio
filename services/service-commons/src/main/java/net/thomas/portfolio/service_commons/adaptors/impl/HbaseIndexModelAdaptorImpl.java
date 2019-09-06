@@ -3,11 +3,11 @@ package net.thomas.portfolio.service_commons.adaptors.impl;
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
+import static net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper.unwrap;
 import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +32,7 @@ import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
@@ -75,15 +76,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		return new CacheLoader<DataTypeId, DataType>() {
 			@Override
 			public DataType load(DataTypeId id) throws Exception {
-				// final ParameterizedTypeReference<Resource<DataType>> responseType = new
-				// ParameterizedTypeReference<Resource<DataType>>() {
-				// };
-				// final Resource<DataType> entity = client.loadUrlAsObject(HBASE_INDEXING_SERVICE,
-				// asEndpoint(ENTITIES, id), GET, responseType, EMPTY_GROUP_LIST);
-				// return entity.getContent();
+				final ParameterizedTypeReference<Resource<DataType>> responseType = new ParameterizedTypeReference<Resource<DataType>>() {
+				};
 				final String url = urlLibrary.hbase.entities.lookup(id);
-				final DataType entity = client.loadUrlAsObject(url, GET, DataType.class);
-				return entity;
+				return unwrap(client.loadUrlAsObject(url, GET, responseType));
 			}
 		};
 	}
@@ -144,12 +140,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<Resources<Selector>>() {
 		};
 		final String url = urlLibrary.hbase.selectors.suggestions(simpleRepresentation);
-		final Resources<Selector> response = client.loadUrlAsObject(url, GET, responseType);
-		if (response != null) {
-			return new ArrayList<>(response.getContent());
-		} else {
-			return null;
-		}
+		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
@@ -157,12 +148,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<Resources<DataType>>() {
 		};
 		final String url = urlLibrary.hbase.entities.samples(dataType, amount);
-		final Resources<DataType> response = client.loadUrlAsObject(url, GET, responseType);
-		if (response != null) {
-			return new Entities(response.getContent());
-		} else {
-			return null;
-		}
+		return new Entities(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 
 	@Override
@@ -171,12 +157,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<Resource<Selector>>() {
 		};
 		final String url = urlLibrary.hbase.selectors.simpleRepresentation(type, simpleRepresentation);
-		final Resource<Selector> response = client.loadUrlAsObject(url, GET, responseType);
-		if (response != null) {
-			return response.getContent();
-		} else {
-			return null;
-		}
+		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
@@ -199,15 +180,19 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public References getReferences(DataTypeId documentId) {
+		final ParameterizedTypeReference<Resources<Reference>> responseType = new ParameterizedTypeReference<Resources<Reference>>() {
+		};
 		final String url = urlLibrary.hbase.documents.references(documentId);
-		return client.loadUrlAsObject(url, GET, References.class);
+		return new References(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Statistics getStatistics(DataTypeId selectorId) {
+		final ParameterizedTypeReference<Resource<Statistics>> responseType = new ParameterizedTypeReference<Resource<Statistics>>() {
+		};
 		final String url = urlLibrary.hbase.selectors.statistics(selectorId);
-		return client.loadUrlAsObject(url, GET, Statistics.class);
+		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
@@ -216,7 +201,6 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<Resources<DocumentInfo>>() {
 		};
 		final String url = urlLibrary.hbase.selectors.invertedIndex(request.getSelectorId(), request.getGroups());
-		final Resources<DocumentInfo> response = client.loadUrlAsObject(url, GET, responseType);
-		return new DocumentInfos(response.getContent());
+		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 }

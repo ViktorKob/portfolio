@@ -35,7 +35,6 @@ import static net.thomas.portfolio.services.Service.USAGE_DATA_SERVICE;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
-import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
@@ -165,11 +164,11 @@ public class PortfolioUrlLibrary {
 
 		public class HistoryUrls {
 			public String all() {
-				return urlFactory.buildUrl(LEGAL_SERVICE, HISTORY);
+				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY));
 			}
 
 			public String item(int itemId) {
-				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(HISTORY, "" + itemId));
+				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY, "" + itemId));
 			}
 		}
 	}
@@ -193,8 +192,8 @@ public class PortfolioUrlLibrary {
 			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), activity);
 		}
 
-		public String usageActivities(DataTypeId documentId, Bounds bounds) {
-			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), bounds);
+		public String usageActivities(DataTypeId documentId, ParameterGroup... parameterGroups) {
+			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), parameterGroups);
 		}
 	}
 }

@@ -15,6 +15,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,11 @@ import net.thomas.portfolio.common.services.parameters.validation.SpecificString
 import net.thomas.portfolio.common.services.parameters.validation.StringPresenceValidator;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
+import net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
+import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
@@ -47,7 +51,7 @@ import net.thomas.portfolio.usage_data.sql.SqlProxy;
 @RestController
 @Api(value = "", description = "Lookup of previous analysts interaction with documents")
 @EnableConfigurationProperties
-@RequestMapping(value = USAGE_ACTIVITIES_ROOT_PATH + "/{dti_type}/{dti_uid}" + USAGE_ACTIVITIES_PATH)
+@RequestMapping(value = USAGE_ACTIVITIES_ROOT_PATH + "/{dti_type}/{dti_uid}" + USAGE_ACTIVITIES_PATH, produces = "application/hal+json")
 public class UsageDataServiceController {
 	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
 	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
@@ -60,6 +64,8 @@ public class UsageDataServiceController {
 	private static final LongRangeValidator TIME_OF_ACTIVITY = new LongRangeValidator("uai_timeOfActivity", Long.MIN_VALUE, Long.MAX_VALUE, false);
 
 	private final UsageDataServiceConfiguration config;
+	@Value("${global-url-prefix}")
+	private String globalUrlPrefix;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
@@ -68,6 +74,8 @@ public class UsageDataServiceController {
 	private RestTemplate restTemplate;
 	@Autowired
 	private SqlProxy proxy;
+
+	private PortfolioHateoasWrappingHelper hateoasHelper;
 
 	@Autowired
 	public UsageDataServiceController(UsageDataServiceConfiguration config) {
@@ -91,6 +99,10 @@ public class UsageDataServiceController {
 
 	@PostConstruct
 	public void initializeService() {
+		final UrlFactory urlFactory = new UrlFactory(() -> {
+			return globalUrlPrefix;
+		}, new PortfolioUrlSuffixBuilder());
+		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
 		proxy.setDatabase(config.getDatabase());
 		proxy.ensurePresenceOfSchema();
 		new Thread(() -> {
@@ -109,7 +121,7 @@ public class UsageDataServiceController {
 			try {
 				final UsageActivities activities = proxy.fetchUsageActivities(id, bounds);
 				if (activities != null) {
-					return ok(activities);
+					return ok(hateoasHelper.wrap(activities, id, bounds));
 				} else {
 					return notFound().build();
 				}

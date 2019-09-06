@@ -145,7 +145,7 @@ public class LegalServiceController {
 	public ResponseEntity<?> checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 			final Legality response = legalRules.checkLegalityOfInvertedIndexLookup(selectorId, legalInfo);
-			return ok(response);
+			return ok(hateoasHelper.wrapInvertedIndexLegalStatus(response, selectorId, legalInfo));
 		} else {
 			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
@@ -154,12 +154,12 @@ public class LegalServiceController {
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Verify that looking up statistics for the specified selector is legal based on the specified legal information", response = Legality.class)
 	@RequestMapping(path = "/{dti_type}/{dti_uid}" + STATISTICS_PATH + LEGAL_RULES_PATH, method = GET)
-	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId dataTypeId, LegalInformation legalInfo) {
-		if (TYPE.isValid(dataTypeId.type) && UID.isValid(dataTypeId.uid)) {
-			final Legality response = legalRules.checkLegalityOfStatisticsLookup(dataTypeId, legalInfo);
-			return ok(response);
+	public ResponseEntity<?> checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
+		if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
+			final Legality response = legalRules.checkLegalityOfStatisticsLookup(selectorId, legalInfo);
+			return ok(hateoasHelper.wrapStatisticsLegalStatus(response, selectorId, legalInfo));
 		} else {
-			return badRequest().body(TYPE.getReason(dataTypeId.type) + "<BR>" + UID.getReason(dataTypeId.uid));
+			return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 		}
 	}
 
