@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
@@ -32,6 +33,8 @@ import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware
 @SpringBootApplication
 public class NexusServiceController {
 	private final NexusServiceConfiguration config;
+	@Value("${global-url-prefix}")
+	private String globalUrlPrefix;
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired

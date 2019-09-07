@@ -98,6 +98,10 @@ public class PortfolioUrlLibrary {
 			public String references(DataTypeId documentId) {
 				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES));
 			}
+
+			public String samples(String dataType, int amount) {
+				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+			}
 		}
 
 		public class SelectorUrls {
@@ -119,6 +123,10 @@ public class PortfolioUrlLibrary {
 
 			public String invertedIndex(DataTypeId selectorId, ParameterGroup... parameterGroups) {
 				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), parameterGroups);
+			}
+
+			public String samples(String dataType, int amount) {
+				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
 			}
 		}
 	}

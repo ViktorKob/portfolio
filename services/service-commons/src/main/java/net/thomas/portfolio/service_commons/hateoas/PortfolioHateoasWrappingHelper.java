@@ -58,11 +58,15 @@ public class PortfolioHateoasWrappingHelper {
 		urlLibrary = new PortfolioUrlLibrary(urlFactory);
 	}
 
-	public ResourceSupport wrapWithRootLinks(String message) {
+	public ResourceSupport wrapWithRootLinks(String message, List<String> documentTypes, List<String> selectorTypes) {
 		final Resource<String> index = new Resource<>(message);
 		index.add(new Link(urlLibrary.legal.history.all(), "Search history"));
-		index.add(new Link(urlLibrary.hbase.entities.samples("Email", 5), "Document samples: Email"));
-		index.add(new Link(urlLibrary.hbase.entities.samples("Localname", 5), "Selector samples: Localname"));
+		index.add(documentTypes.stream().map(type -> {
+			return new Link(urlLibrary.hbase.entities.samples(type, 10), "Document samples: " + type);
+		}).toArray(Link[]::new));
+		index.add(selectorTypes.stream().map(type -> {
+			return new Link(urlLibrary.hbase.selectors.samples(type, 10), "Selector samples: " + type);
+		}).toArray(Link[]::new));
 		return index;
 	}
 
