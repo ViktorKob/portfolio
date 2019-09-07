@@ -9,6 +9,7 @@ import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.FROM_SIMPL
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.INVERTED_INDEX;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.REFERENCES;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SAMPLES;
+import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SELECTORS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.STATISTICS;
 import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SUGGESTIONS;
@@ -78,6 +79,10 @@ public class PortfolioUrlLibrary {
 			entities = new EntityUrls();
 			documents = new DocumentUrls();
 			selectors = new SelectorUrls();
+		}
+
+		public String schema() {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
 		}
 
 		public class EntityUrls {

@@ -52,13 +52,13 @@ public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdap
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.legal.audit.log.invertedIndex(selectorId, legalInfo);
-		return client.loadUrlAsObject(url, POST, Boolean.class);
+		return client.loadUrlAsObject(url, POST);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.legal.audit.log.statistics(selectorId, legalInfo);
-		return client.loadUrlAsObject(url, POST, Boolean.class);
+		return client.loadUrlAsObject(url, POST);
 	}
 }

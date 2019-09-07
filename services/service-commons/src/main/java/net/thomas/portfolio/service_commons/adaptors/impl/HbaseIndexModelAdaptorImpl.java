@@ -32,7 +32,6 @@ import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
-import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Reference;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
@@ -60,8 +59,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		this.client = client;
 		while (schema == null) {
 			try {
+				final ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>> responseType = new ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>>() {
+				};
 				final String url = urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
-				schema = client.loadUrlAsObject(url, GET, HbaseIndexSchemaImpl.class);
+				schema = unwrap(client.loadUrlAsObject(url, GET, responseType));
 			} catch (final UnauthorizedAccessException e) {
 				LOG.error("Unable to fetch schema due to invalid credentials", e);
 				throw e;
@@ -147,8 +148,20 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public Entities getSamples(String dataType, int amount) {
 		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<Resources<DataType>>() {
 		};
-		final String url = urlLibrary.hbase.entities.samples(dataType, amount);
-		return new Entities(unwrap(client.loadUrlAsObject(url, GET, responseType)));
+		String url;
+		if (isDocument(dataType)) {
+			url = urlLibrary.hbase.selectors.samples(dataType, amount);
+		} else if (isDocument(dataType)) {
+			url = urlLibrary.hbase.documents.samples(dataType, amount);
+		} else {
+			url = urlLibrary.hbase.entities.samples(dataType, amount);
+		}
+		final List<DataType> entities = unwrap(client.loadUrlAsObject(url, GET, responseType));
+		if (entities != null) {
+			return new Entities(entities);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -180,10 +193,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public References getReferences(DataTypeId documentId) {
-		final ParameterizedTypeReference<Resources<Reference>> responseType = new ParameterizedTypeReference<Resources<Reference>>() {
+		final ParameterizedTypeReference<Resource<References>> responseType = new ParameterizedTypeReference<Resource<References>>() {
 		};
 		final String url = urlLibrary.hbase.documents.references(documentId);
-		return new References(unwrap(client.loadUrlAsObject(url, GET, responseType)));
+		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override

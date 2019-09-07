@@ -39,23 +39,29 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 	@Override
 	public DataType deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
 		final ObjectMapper mapper = (ObjectMapper) parser.getCodec();
-		final JsonNode node = mapper.readTree(parser);
+		JsonNode node = mapper.readTree(parser);
+		if (isWrappedWithHal(node)) {
+			node = node.get("content");
+		}
 		return (DataType) deserializeDataType(node, mapper);
+	}
+
+	private boolean isWrappedWithHal(JsonNode node) {
+		return node.has("content") && node.has("_links") && node.size() == 2;
 	}
 
 	private Object deserializeDataType(JsonNode node, ObjectMapper mapper)
 			throws JsonParseException, JsonMappingException, IOException, JsonProcessingException {
 		if (node.has("dataType")) {
-			switch (node.get("dataType")
-				.asText()) {
-			case "Document":
-				return deserializeDocument(node, mapper);
-			case "Selector":
-				return deserializeSelector(node, mapper);
-			case "RawDataType":
-				return deserializeRawDataType(node, mapper);
-			default:
-				throw new RuntimeException("Unable to deserialize " + node);
+			switch (node.get("dataType").asText()) {
+				case "Document":
+					return deserializeDocument(node, mapper);
+				case "Selector":
+					return deserializeSelector(node, mapper);
+				case "RawDataType":
+					return deserializeRawDataType(node, mapper);
+				default:
+					throw new RuntimeException("Unable to deserialize " + node);
 			}
 		} else if (node instanceof ArrayNode) {
 			final List<Object> values = new LinkedList<>();

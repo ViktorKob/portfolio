@@ -32,38 +32,11 @@ public class HttpRestClient {
 		this.serviceInfo = serviceInfo;
 	}
 
-	public <T> T loadUrlAsObject(String url, final HttpMethod method, final Class<T> responseType) {
+	public <T> T loadUrlAsObject(String url, final HttpMethod method) {
+		final ParameterizedTypeReference<T> responseType = new ParameterizedTypeReference<T>() {
+		};
 		final URI request = URI.create(url);
 		return execute(request, method, responseType);
-	}
-
-	@SuppressWarnings("unchecked") // Pending a better solution
-	private <T> T execute(final URI request, final HttpMethod method, final Class<T> responseType) {
-		final long stamp = nanoTime();
-		try {
-			final ResponseEntity<T> response = restTemplate.exchange(request, method, buildRequestHeader(serviceInfo.getCredentials()), responseType);
-			LOG.info("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms executing request '" + request + "'");
-			if (OK == response.getStatusCode()) {
-				return response.getBody();
-			} else if (CREATED == response.getStatusCode()) {
-				return (T) (Boolean) true;
-			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
-			}
-		} catch (final HttpClientErrorException e) {
-			LOG.error("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms failing to execute request '" + request + "'");
-			if (NOT_FOUND == e.getStatusCode()) {
-				return null;
-			} else if (UNAUTHORIZED == e.getStatusCode()) {
-				throw new UnauthorizedAccessException(
-						"Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.", e);
-			} else if (BAD_REQUEST == e.getStatusCode()) {
-				throw new BadRequestException("Request '" + request + "' is malformed. Please fix it before trying again.", e);
-			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.",
-						e);
-			}
-		}
 	}
 
 	public <T> T loadUrlAsObject(String url, final HttpMethod method, final ParameterizedTypeReference<T> responseType) {
@@ -88,6 +61,11 @@ public class HttpRestClient {
 			LOG.error("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms failing to execute request '" + request + "'");
 			if (NOT_FOUND.equals(e.getStatusCode())) {
 				return null;
+			} else if (UNAUTHORIZED == e.getStatusCode()) {
+				throw new UnauthorizedAccessException(
+						"Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.", e);
+			} else if (BAD_REQUEST == e.getStatusCode()) {
+				throw new BadRequestException("Request '" + request + "' is malformed. Please fix it before trying again.", e);
 			} else {
 				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName()
 						+ " is working properly. Http Error Code: " + e.getStatusCode() + "-" + e.getStatusText(), e);

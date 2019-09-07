@@ -1,9 +1,12 @@
 package net.thomas.portfolio.service_commons.adaptors.impl;
 
+import static net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper.unwrap;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.Resource;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -32,15 +35,19 @@ public class UsageAdaptorImpl implements PortfolioInfrastructureAware, UsageAdap
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
+		final ParameterizedTypeReference<Resource<UsageActivity>> responceType = new ParameterizedTypeReference<Resource<UsageActivity>>() {
+		};
 		final String url = urlLibrary.usageData.usageActivities(documentId, activity);
-		return client.loadUrlAsObject(url, POST, UsageActivity.class);
+		return unwrap(client.loadUrlAsObject(url, POST, responceType));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3"),
 			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000") })
 	public UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
+		final ParameterizedTypeReference<Resource<UsageActivities>> responceType = new ParameterizedTypeReference<Resource<UsageActivities>>() {
+		};
 		final String url = urlLibrary.usageData.usageActivities(documentId, bounds);
-		return client.loadUrlAsObject(url, GET, UsageActivities.class);
+		return unwrap(client.loadUrlAsObject(url, GET, responceType));
 	}
 }

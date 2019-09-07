@@ -143,7 +143,7 @@ public class UsageDataServiceController {
 				&& TIME_OF_ACTIVITY.isValid(activity.timeOfActivity)) {
 			try {
 				proxy.storeUsageActivity(id, activity);
-				return ok(activity);
+				return ok(hateoasHelper.wrap(activity, id));
 			} catch (final Throwable t) {
 				t.printStackTrace();
 				return status(INTERNAL_SERVER_ERROR).body("The server was unable to store the activity.");

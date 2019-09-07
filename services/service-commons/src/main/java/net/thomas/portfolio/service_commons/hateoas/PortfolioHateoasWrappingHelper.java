@@ -30,10 +30,12 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 public class PortfolioHateoasWrappingHelper {
 	private final PortfolioUrlLibrary urlLibrary;
@@ -68,6 +70,12 @@ public class PortfolioHateoasWrappingHelper {
 			return new Link(urlLibrary.hbase.selectors.samples(type, 10), "Selector samples: " + type);
 		}).toArray(Link[]::new));
 		return index;
+	}
+
+	public ResourceSupport wrap(HbaseIndexSchema schema) {
+		final Resource<HbaseIndexSchema> container = new Resource<>(schema);
+		container.add(asLink(REL_SELF, urlLibrary.hbase.schema()));
+		return container;
 	}
 
 	public ResourceSupport wrap(DataType entity) {
@@ -107,21 +115,21 @@ public class PortfolioHateoasWrappingHelper {
 		return container;
 	}
 
-	public ResourceSupport wrap(Entities samples, String type, int amount) {
-		final Resources<ResourceSupport> container = new Resources<>(samples.getEntities().stream().map(this::wrap).collect(toList()));
-		container.add(asLink("more", urlLibrary.hbase.entities.samples(type, amount)));
-		return container;
-	}
-
 	public ResourceSupport wrap(DocumentInfo info) {
 		final Resource<DocumentInfo> container = new Resource<>(info);
 		container.add(asLink("document", urlLibrary.hbase.documents.lookup(info.getId())));
 		return container;
 	}
 
+	public ResourceSupport wrap(Entities samples, String type, int amount) {
+		final Resources<ResourceSupport> container = new Resources<>(samples.getEntities().stream().map(this::wrap).collect(toList()));
+		container.add(asLink(REL_NEXT, urlLibrary.hbase.entities.samples(type, amount)));
+		return container;
+	}
+
 	public ResourceSupport wrap(List<Selector> suggestions, String simpleRepresentation) {
 		final Resources<ResourceSupport> container = new Resources<>(suggestions.stream().map(this::wrap).collect(toList()));
-		container.add(asLink(REL_SELF, urlLibrary.hbase.selectors.suggestions(simpleRepresentation)));
+		container.add(asLink(REL_NEXT, urlLibrary.hbase.selectors.suggestions(simpleRepresentation)));
 		return container;
 	}
 
@@ -206,10 +214,16 @@ public class PortfolioHateoasWrappingHelper {
 		return container;
 	}
 
-	public ResourceSupport wrap(UsageActivities activities, DataTypeId id, Bounds bounds) {
+	public ResourceSupport wrap(UsageActivities activities, DataTypeId documentId, Bounds bounds) {
 		final Resource<UsageActivities> container = new Resource<>(activities);
-		container.add(asLink(REL_SELF, urlLibrary.usageData.usageActivities(id, bounds)));
-		container.add(asLink("document", urlLibrary.hbase.documents.lookup(id)));
+		container.add(asLink(REL_SELF, urlLibrary.usageData.usageActivities(documentId, bounds)));
+		container.add(asLink("document", urlLibrary.hbase.documents.lookup(documentId)));
+		return container;
+	}
+
+	public ResourceSupport wrap(UsageActivity activity, DataTypeId documentId) {
+		final Resource<UsageActivity> container = new Resource<>(activity);
+		container.add(asLink("document", urlLibrary.hbase.documents.lookup(documentId)));
 		return container;
 	}
 

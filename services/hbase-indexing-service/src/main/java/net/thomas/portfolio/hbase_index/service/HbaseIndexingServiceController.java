@@ -65,7 +65,7 @@ public class HbaseIndexingServiceController {
 	@ApiOperation(value = "Fetch the schema for the underlying data model", response = HbaseIndexSchemaImpl.class)
 	@RequestMapping(path = SCHEMA_PATH, method = GET)
 	public ResponseEntity<?> getSchema() {
-		return ok(schema);
+		return ok(hateoasHelper.wrap(schema));
 	}
 
 	@Secured("ROLE_USER")
