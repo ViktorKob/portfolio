@@ -45,6 +45,7 @@ public class ProxyServiceProperties {
 		// ####################
 		// Standard settings:
 		// ####################
+		put("global-url-prefix", "${external-protocol}${external-service-address}");
 
 		put("server.port", "${service-port}");
 		put("server.max-http-header-size", "200000");
