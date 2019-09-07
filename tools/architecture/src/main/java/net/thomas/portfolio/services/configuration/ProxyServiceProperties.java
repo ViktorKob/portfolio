@@ -78,7 +78,7 @@ public class ProxyServiceProperties {
 		put("eureka.client.register-with-eureka", "true");
 		put("eureka.client.fetch-registry", "true");
 		put("eureka.client.registry-fetch-interval-seconds", "5");
-		put("eureka.client.service-url.defaultZone", "${external-protocol}service-user:password@${discovery-address}${infrastructure-context-path}/eureka/");
+		put("eureka.client.service-url.defaultZone", "http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/");
 
 		put("service-status-page", "${external-protocol}service-user:password@${external-service-address}${service-context-path}/actuator/routes");
 
