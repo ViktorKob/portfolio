@@ -34,21 +34,21 @@ public class RenderingAdaptorImpl implements PortfolioInfrastructureAware, Rende
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		final String url = urlLibrary.render.simpleRepresentation(selectorId);
+		final String url = urlLibrary.selectors.render.simpleRepresentation(selectorId);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsText(DataTypeId id) {
-		final String url = urlLibrary.render.text(id);
+		final String url = urlLibrary.entities.render.text(id);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public String renderAsHtml(DataTypeId id) {
-		final String url = urlLibrary.render.html(id);
+		final String url = urlLibrary.entities.render.html(id);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 }

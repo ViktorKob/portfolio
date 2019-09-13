@@ -34,7 +34,7 @@ public class AnalyticsAdaptorImpl implements PortfolioInfrastructureAware, Analy
 	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Resource<AnalyticalKnowledge>> responseType = new ParameterizedTypeReference<Resource<AnalyticalKnowledge>>() {
 		};
-		final String url = urlLibrary.analytics.knowledge(selectorId);
+		final String url = urlLibrary.selectors.knowledge(selectorId);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 }

@@ -46,92 +46,175 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 public class PortfolioUrlLibrary {
 	private final UrlFactory urlFactory;
 
-	public final AnalyticsUrls analytics;
-	public final HbaseUrls hbase;
-	public final LegalUrls legal;
-	public final RenderUrls render;
-	public final UsageDataUrls usageData;
+	public final EntityUrls entities;
+	public final DocumentUrls documents;
+	public final SelectorUrls selectors;
 
 	public PortfolioUrlLibrary(UrlFactory urlFactory) {
 		this.urlFactory = urlFactory;
-		analytics = new AnalyticsUrls();
-		hbase = new HbaseUrls();
-		legal = new LegalUrls();
-		render = new RenderUrls();
-		usageData = new UsageDataUrls();
+		entities = new EntityUrls();
+		documents = new DocumentUrls();
+		selectors = new SelectorUrls();
 	}
 
-	public class AnalyticsUrls {
-		public AnalyticsUrls() {
+	public String schema() {
+		return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
+	}
+
+	public class EntityUrls {
+		public final RenderUrls render;
+
+		public EntityUrls() {
+			render = new RenderUrls();
+		}
+
+		public String samples(String dataType, int amount) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+		}
+
+		public String lookup(DataTypeId id) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, id));
+		}
+
+		public class RenderUrls {
+			public String text(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT));
+			}
+
+			public String html(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML));
+			}
+		}
+	}
+
+	public class DocumentUrls {
+		public final RenderUrls render;
+
+		public DocumentUrls() {
+			render = new RenderUrls();
+		}
+
+		public String samples(String dataType, int amount) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+		}
+
+		public String lookup(DataTypeId id) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, id));
+		}
+
+		public String references(DataTypeId documentId) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES));
+		}
+
+		public String usageActivities(DataTypeId documentId, UsageActivity activity) {
+			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), activity);
+		}
+
+		public String usageActivities(DataTypeId documentId, ParameterGroup... parameterGroups) {
+			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), parameterGroups);
+		}
+
+		public class RenderUrls {
+			public String text(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT));
+			}
+
+			public String html(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML));
+			}
+		}
+	}
+
+	public class SelectorUrls {
+		public final RenderUrls render;
+		public final HistoryUrls history;
+		public final AuditUrls audit;
+
+		public SelectorUrls() {
+			render = new RenderUrls();
+			audit = new AuditUrls();
+			history = new HistoryUrls();
+		}
+
+		public String samples(String dataType, int amount) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+		}
+
+		public String suggestions(String simpleRepresentation) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation));
+		}
+
+		public String lookup(DataTypeId id) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id));
+		}
+
+		public String simpleRepresentation(String dataType, String simpleRepresentation) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, FROM_SIMPLE_REP, simpleRepresentation));
+		}
+
+		public String invertedIndex(DataTypeId selectorId, ParameterGroup... parameterGroups) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), parameterGroups);
 		}
 
 		public String knowledge(DataTypeId selectorId) {
 			return urlFactory.buildUrl(ANALYTICS_SERVICE, asEndpoint(ANALYTICS_BASE, selectorId, LOOKUP_KNOWLEDGE));
 		}
-	}
 
-	public class HbaseUrls {
-		public final EntityUrls entities;
-		public final DocumentUrls documents;
-		public final SelectorUrls selectors;
-
-		public HbaseUrls() {
-			entities = new EntityUrls();
-			documents = new DocumentUrls();
-			selectors = new SelectorUrls();
+		public String statistics(DataTypeId selectorId) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS));
 		}
 
-		public String schema() {
-			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
-		}
-
-		public class EntityUrls {
-			public String lookup(DataTypeId id) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, id));
+		public class RenderUrls {
+			public String simpleRepresentation(DataTypeId selectorId) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_SELECTOR_ROOT, selectorId, AS_SIMPLE_REPRESENTATION));
 			}
 
-			public String samples(String dataType, int amount) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+			public String text(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT));
+			}
+
+			public String html(DataTypeId id) {
+				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML));
 			}
 		}
 
-		public class DocumentUrls {
-			public String lookup(DataTypeId id) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, id));
+		public class AuditUrls {
+			public final CheckUrls check;
+			public final LogUrls log;
+
+			public AuditUrls() {
+				check = new CheckUrls();
+				log = new LogUrls();
 			}
 
-			public String references(DataTypeId documentId) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES));
+			public class CheckUrls {
+				public String invertedIndex(DataTypeId selectorId, LegalInformation legalInfo) {
+					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, LEGAL_RULES), legalInfo);
+				}
+
+				public String statistics(DataTypeId selectorId, LegalInformation legalInfo) {
+					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, LEGAL_RULES), legalInfo);
+				}
 			}
 
-			public String samples(String dataType, int amount) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+			public class LogUrls {
+				public String invertedIndex(DataTypeId selectorId, LegalInformation legalInfo) {
+					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, AUDIT_LOG), legalInfo);
+				}
+
+				public String statistics(DataTypeId selectorId, LegalInformation legalInfo) {
+					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, AUDIT_LOG), legalInfo);
+				}
 			}
 		}
 
-		public class SelectorUrls {
-			public String lookup(DataTypeId id) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id));
+		public class HistoryUrls {
+			public String all() {
+				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY));
 			}
 
-			public String suggestions(String simpleRepresentation) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, SUGGESTIONS, simpleRepresentation));
-			}
-
-			public String simpleRepresentation(String dataType, String simpleRepresentation) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, FROM_SIMPLE_REP, simpleRepresentation));
-			}
-
-			public String statistics(DataTypeId selectorId) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, STATISTICS));
-			}
-
-			public String invertedIndex(DataTypeId selectorId, ParameterGroup... parameterGroups) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), parameterGroups);
-			}
-
-			public String samples(String dataType, int amount) {
-				return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
+			public String item(int itemId) {
+				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY, "" + itemId));
 			}
 		}
 	}
@@ -183,30 +266,6 @@ public class PortfolioUrlLibrary {
 			public String item(int itemId) {
 				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY, "" + itemId));
 			}
-		}
-	}
-
-	public class RenderUrls {
-		public String simpleRepresentation(DataTypeId selectorId) {
-			return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_SELECTOR_ROOT, selectorId, AS_SIMPLE_REPRESENTATION));
-		}
-
-		public String text(DataTypeId id) {
-			return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_TEXT));
-		}
-
-		public String html(DataTypeId id) {
-			return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML));
-		}
-	}
-
-	public class UsageDataUrls {
-		public String usageActivities(DataTypeId documentId, UsageActivity activity) {
-			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), activity);
-		}
-
-		public String usageActivities(DataTypeId documentId, ParameterGroup... parameterGroups) {
-			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), parameterGroups);
 		}
 	}
 }

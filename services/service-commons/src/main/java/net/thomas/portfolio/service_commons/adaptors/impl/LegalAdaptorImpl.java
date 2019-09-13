@@ -37,28 +37,28 @@ public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdap
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.legal.audit.check.invertedIndex(selectorId, legalInfo);
+		final String url = urlLibrary.selectors.audit.check.invertedIndex(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Legality checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.legal.audit.check.statistics(selectorId, legalInfo);
+		final String url = urlLibrary.selectors.audit.check.statistics(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.legal.audit.log.invertedIndex(selectorId, legalInfo);
+		final String url = urlLibrary.selectors.audit.log.invertedIndex(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);
 	}
 
 	@Override
 	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.legal.audit.log.statistics(selectorId, legalInfo);
+		final String url = urlLibrary.selectors.audit.log.statistics(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);
 	}
 }

@@ -171,7 +171,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(urlLibrary.legal.history.item(itemId))).build();
+				return created(URI.create(urlLibrary.selectors.history.item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -189,7 +189,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(urlLibrary.legal.history.item(itemId))).build();
+				return created(URI.create(urlLibrary.selectors.history.item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
