@@ -18,7 +18,7 @@ public class ProxyServiceProperties {
 		SERVICE_PROPERTIES = new HashMap<>();
 
 		put("service-context-path", "/Proxy");
-		put("service-name", "proxy-service");
+		put("service-name", "proxy");
 
 		// ####################
 		// Unique settings:
