@@ -1,13 +1,16 @@
 package net.thomas.portfolio.legal.system;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableList;
 import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.INVERTED_INDEX;
 import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.SELECTOR_STATISTICS;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -55,9 +58,28 @@ public class AuditLoggingControl {
 		return history.size() - 1;
 	}
 
-	public List<HistoryItem> getAll(Pageable pageable) {
-		// TODO[Thomas]: Figure out how to do this in practice
-		return unmodifiableList(history);
+	public int getSize() {
+		return history.size();
+	}
+
+	public List<HistoryItem> get(int page, int size) {
+		try {
+			final int offset = page * size;
+			final int limit = offset + size;
+			return unmodifiableList(history.subList(offset, limit > history.size() ? history.size() : limit));
+		} catch (final IndexOutOfBoundsException e) {
+			return emptyList();
+		}
+	}
+
+	public Page<HistoryItem> getPage(Pageable pageable) {
+		try {
+			final int offset = (int) pageable.getOffset();
+			final int limit = offset + pageable.getPageSize();
+			return new PageImpl<>(history.subList(offset, limit > history.size() ? history.size() : limit), pageable, history.size());
+		} catch (final IllegalArgumentException e) {
+			return new PageImpl<>(emptyList(), pageable, history.size());
+		}
 	}
 
 	public HistoryItem getItem(int id) {

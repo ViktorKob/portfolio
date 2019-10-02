@@ -6,16 +6,18 @@ import static org.springframework.hateoas.Link.REL_LAST;
 import static org.springframework.hateoas.Link.REL_NEXT;
 import static org.springframework.hateoas.Link.REL_PREVIOUS;
 import static org.springframework.hateoas.Link.REL_SELF;
+import static org.springframework.web.util.UriComponentsBuilder.fromUriString;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.PagedResources.PageMetadata;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.Resources;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
@@ -133,14 +135,6 @@ public class PortfolioHateoasWrappingHelper {
 		return container;
 	}
 
-	public ResourceSupport wrap(List<HistoryItem> items) {
-		final List<ResourceSupport> packedItems = items.stream().map(this::wrapInner).collect(toList());
-		final PageMetadata metaData = new PageMetadata(10, 1, packedItems.size());
-		final Resources<ResourceSupport> container = new PagedResources<>(packedItems, metaData);
-		container.add(asLink(REL_SELF, urlLibrary.selectors.history.all()));
-		return container;
-	}
-
 	public ResourceSupport wrap(HistoryItem item, int highestId) {
 		final ResourceSupport container = wrapInner(item);
 		addNeighbourLinks(container, item, highestId);
@@ -229,5 +223,13 @@ public class PortfolioHateoasWrappingHelper {
 
 	private Link asLink(final String relation, final String url) {
 		return new Link(url, relation);
+	}
+
+	public Link asPagedLink(final String relation, final String url, Pageable page) {
+		final UriComponentsBuilder builder = fromUriString(url).replaceQueryParam("page", page.getPageNumber()).replaceQueryParam("size", page.getPageSize());
+		for (final Order sortingElement : page.getSort()) {
+			builder.queryParam("sort", sortingElement.getProperty() + "-" + sortingElement.getDirection());
+		}
+		return new Link(builder.build().toString(), relation);
 	}
 }

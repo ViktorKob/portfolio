@@ -1,6 +1,5 @@
 package net.thomas.portfolio.legal.service;
 
-import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.AUDIT_LOGGING_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_PATH;
 import static net.thomas.portfolio.globals.LegalServiceGlobals.HISTORY_UPDATED;
@@ -12,6 +11,7 @@ import static net.thomas.portfolio.globals.LegalServiceGlobals.STATISTICS_PATH;
 import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
 import static net.thomas.portfolio.services.ServiceGlobals.MESSAGE_PREFIX;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.created;
@@ -21,16 +21,21 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.net.URI;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -92,9 +97,11 @@ public class LegalServiceController {
 	private LegalRulesControl legalRules;
 	private PortfolioHateoasWrappingHelper hateoasHelper;
 	private PortfolioUrlLibrary urlLibrary;
+	private final HistoryItemResourceAssembler historyItemResourceAssembler;
 
 	public LegalServiceController(LegalServiceConfiguration config) {
 		this.config = config;
+		historyItemResourceAssembler = new HistoryItemResourceAssembler();
 	}
 
 	@Bean(name = "AnalyticsAdaptor")
@@ -130,12 +137,56 @@ public class LegalServiceController {
 					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");
-			LOG.info("Adding fake audit log data");
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me", "For reasons", 0l, Long.MAX_VALUE));
-			auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For reasons", currentTimeMillis(), Long.MAX_VALUE));
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2", "For other reasons", 0l, currentTimeMillis()));
-			auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3", null, null, null));
-			LOG.info("Done adding fake audit log data");
+			// LOG.info("Adding fake audit log data");
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "AA"), new LegalInformation("me",
+			// "For reasons", 0l, Long.MAX_VALUE));
+			// auditLogging.logStatisticsLookup(new DataTypeId("Type1", "AB"), new LegalInformation("me", "For
+			// reasons", currentTimeMillis(), Long.MAX_VALUE));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type1", "FF"), new LegalInformation("me2",
+			// "For other reasons", 0l, currentTimeMillis()));
+			// auditLogging.logInvertedIndexLookup(new DataTypeId("Type2", "01"), new LegalInformation("me3",
+			// null, null, null));
+			// LOG.info("Done adding fake audit log data");
 		}).start();
 	}
 
@@ -202,9 +253,14 @@ public class LegalServiceController {
 	@Secured("ROLE_USER")
 	@ApiOperation(value = "Fetch all previous audit logs from history", response = HistoryItemList.class)
 	@RequestMapping(path = HISTORY_PATH, method = GET)
-	public ResponseEntity<?> lookupAuditLoggingHistory(Pageable pageable) {
-		final List<HistoryItem> items = auditLogging.getAll(pageable);
-		return ok(hateoasHelper.wrap(items));
+	public ResponseEntity<?> lookupAuditLoggingHistory(@PageableDefault Pageable pageable, PagedResourcesAssembler<HistoryItem> assembler) {
+		final Page<HistoryItem> items = auditLogging.getPage(pageable);
+		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors.history.all(), pageable);
+		if (items.getSize() == 0) {
+			return ok(assembler.toEmptyResource(items, HistoryItem.class, selfLink));
+		} else {
+			return ok(assembler.toResource(items, historyItemResourceAssembler, selfLink));
+		}
 	}
 
 	@Secured("ROLE_USER")
@@ -216,6 +272,13 @@ public class LegalServiceController {
 			return ok(hateoasHelper.wrap(item, auditLogging.getLastId()));
 		} else {
 			return notFound().build();
+		}
+	}
+
+	public class HistoryItemResourceAssembler implements ResourceAssembler<HistoryItem, ResourceSupport> {
+		@Override
+		public ResourceSupport toResource(HistoryItem entity) {
+			return hateoasHelper.wrap(entity, auditLogging.getLastId());
 		}
 	}
 }
