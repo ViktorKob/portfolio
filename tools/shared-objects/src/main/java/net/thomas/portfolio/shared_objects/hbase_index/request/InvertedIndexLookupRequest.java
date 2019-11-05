@@ -1,5 +1,6 @@
 package net.thomas.portfolio.shared_objects.hbase_index.request;
 
+import static java.util.Collections.emptySet;
 import static net.thomas.portfolio.common.services.parameters.ParameterGroup.asGroup;
 import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
@@ -35,8 +36,8 @@ public class InvertedIndexLookupRequest {
 		this.selectorId = selectorId;
 		this.legalInfo = legalInfo;
 		this.bounds = bounds;
-		this.documentTypes = documentTypes;
-		this.relations = relations;
+		this.documentTypes = documentTypes != null ? documentTypes : emptySet();
+		this.relations = relations != null ? relations : emptySet();
 	}
 
 	public InvertedIndexLookupRequest(final InvertedIndexLookupRequest source) {

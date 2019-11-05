@@ -6,6 +6,7 @@ import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
+import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -18,6 +19,9 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +36,7 @@ import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookup;
 import net.thomas.portfolio.hbase_index.lookup.InvertedIndexLookupBuilder;
 import net.thomas.portfolio.hbase_index.schema.simple_rep.SimpleRepresentationParserLibrary;
 import net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.IndexableFilter;
@@ -42,6 +47,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndex;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
@@ -62,6 +68,7 @@ public class SelectorController {
 	private SimpleRepresentationParserLibrary parserLibrary;
 
 	private PortfolioHateoasWrappingHelper hateoasHelper;
+	private PortfolioUrlLibrary urlLibrary;
 
 	public SelectorController() {
 		lookupExecutor = newSingleThreadExecutor();
@@ -69,9 +76,11 @@ public class SelectorController {
 
 	@PostConstruct
 	public void initializeService() {
-		hateoasHelper = new PortfolioHateoasWrappingHelper(new UrlFactory(() -> {
+		final UrlFactory urlFactory = new UrlFactory(() -> {
 			return globalUrlPrefix;
-		}, new PortfolioUrlSuffixBuilder()));
+		}, new PortfolioUrlSuffixBuilder());
+		urlLibrary = new PortfolioUrlLibrary(urlFactory);
+		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
 	}
 
 	@Secured("ROLE_USER")
@@ -133,9 +142,12 @@ public class SelectorController {
 	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH, method = GET)
 	public ResponseEntity<?> lookupSelectorInInvertedIndex(@PathVariable String dti_type, @PathVariable String dti_uid, LegalInformation legalInfo,
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
-			@RequestParam(value = "relation", required = false) HashSet<String> relations) {
+			@RequestParam(value = "relation", required = false) HashSet<String> relations, @PageableDefault Pageable pageable) {
 		final DataTypeId selectorId = new DataTypeId(dti_type, dti_uid);
 		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
+		final InvertedIndexLookupRequest lookupRequest = new InvertedIndexLookupRequest(selectorId, legalInfo, bounds, documentTypes, relations);
+		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors.invertedIndex(selectorId, lookupRequest.getGroups()), pageable);
+		System.out.println(selfLink);
 		return ok(hateoasHelper.wrap(results, selectorId));
 	}
 
