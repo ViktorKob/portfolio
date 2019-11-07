@@ -32,6 +32,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
@@ -114,6 +115,12 @@ public class PortfolioHateoasWrappingHelper {
 	public ResourceSupport wrap(DocumentInfos infos, DataTypeId id) {
 		final Resources<ResourceSupport> container = new Resources<>(infos.getInfos().stream().map(this::wrap).collect(toList()));
 		container.add(asLink(REL_SELF, urlLibrary.selectors.invertedIndex(id)));
+		return container;
+	}
+
+	public ResourceSupport wrap(DocumentInfos infos, DataTypeId id, InvertedIndexLookupRequest request, Pageable pageable) {
+		final Resources<ResourceSupport> container = new Resources<>(infos.getInfos().stream().map(this::wrap).collect(toList()));
+		container.add(asPagedLink(REL_SELF, urlLibrary.selectors.invertedIndex(id, request.getGroups()), pageable));
 		return container;
 	}
 

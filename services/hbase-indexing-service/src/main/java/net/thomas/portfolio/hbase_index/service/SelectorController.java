@@ -1,11 +1,13 @@
 package net.thomas.portfolio.hbase_index.service;
 
+import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.FROM_SIMPLE_REP_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.INVERTED_INDEX_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SAMPLES_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.SELECTORS_PATH;
 import static net.thomas.portfolio.globals.HbaseIndexingServiceGlobals.STATISTICS_PATH;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
 import static org.springframework.hateoas.Link.REL_SELF;
 import static org.springframework.http.ResponseEntity.notFound;
 import static org.springframework.http.ResponseEntity.ok;
@@ -19,9 +21,13 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceAssembler;
+import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +49,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Indexable
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Entities;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
@@ -56,6 +63,7 @@ import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 @Api(value = "", description = "Lookup of selectors and their related data")
 @RequestMapping(value = SELECTORS_PATH + "/{dti_type}", produces = "application/hal+json")
 public class SelectorController {
+	private final DocumentInfoResourceAssembler documentInfoResourceAssembler;
 	private final ExecutorService lookupExecutor;
 
 	@Value("${global-url-prefix}")
@@ -71,6 +79,7 @@ public class SelectorController {
 	private PortfolioUrlLibrary urlLibrary;
 
 	public SelectorController() {
+		documentInfoResourceAssembler = new DocumentInfoResourceAssembler();
 		lookupExecutor = newSingleThreadExecutor();
 	}
 
@@ -142,13 +151,32 @@ public class SelectorController {
 	@RequestMapping(path = "/{dti_uid}" + INVERTED_INDEX_PATH, method = GET)
 	public ResponseEntity<?> lookupSelectorInInvertedIndex(@PathVariable String dti_type, @PathVariable String dti_uid, LegalInformation legalInfo,
 			Bounds bounds, @RequestParam(value = "documentType", required = false) HashSet<String> documentTypes,
-			@RequestParam(value = "relation", required = false) HashSet<String> relations, @PageableDefault Pageable pageable) {
+			@RequestParam(value = "relation", required = false) HashSet<String> relations, @PageableDefault Pageable pageable,
+			PagedResourcesAssembler<DocumentInfo> assembler) {
 		final DataTypeId selectorId = new DataTypeId(dti_type, dti_uid);
-		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
+		bounds = decorateWithPageable(bounds, pageable);
 		final InvertedIndexLookupRequest lookupRequest = new InvertedIndexLookupRequest(selectorId, legalInfo, bounds, documentTypes, relations);
+		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
 		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors.invertedIndex(selectorId, lookupRequest.getGroups()), pageable);
-		System.out.println(selfLink);
-		return ok(hateoasHelper.wrap(results, selectorId));
+		if (results.getInfos().size() == 0) {
+			return ok(assembler.toEmptyResource(new PageImpl<>(emptyList(), pageable, pageable.getPageNumber() * pageable.getPageSize()), DocumentInfo.class,
+					selfLink));
+		} else {
+			return ok(assembler.toResource(buildPagedResponse(selectorId, results, pageable), documentInfoResourceAssembler, selfLink));
+		}
+	}
+
+	private Bounds decorateWithPageable(Bounds bounds, Pageable pageable) {
+		if (pageableIsInUse(pageable)) {
+			final int offset = pageable.getPageNumber() * pageable.getPageSize();
+			bounds.setB_offset(offset);
+			bounds.setB_limit(pageable.getPageSize());
+		}
+		return bounds;
+	}
+
+	private boolean pageableIsInUse(Pageable pageable) {
+		return pageable.hasPrevious();
 	}
 
 	private InvertedIndexLookup buildLookup(DataTypeId selectorId, Bounds bounds, Set<String> documentTypes, Set<String> relations) {
@@ -163,5 +191,20 @@ public class SelectorController {
 			builder.addIndexableFilter(new IndexableFilter.RelationFilter(relations));
 		}
 		return builder.build();
+	}
+
+	private PageImpl<DocumentInfo> buildPagedResponse(DataTypeId id, DocumentInfos infos, Pageable pageable) {
+		try {
+			return new PageImpl<>(infos.getInfos(), pageable, index.getStatistics(id).get(INFINITY));
+		} catch (final IllegalArgumentException e) {
+			return new PageImpl<>(emptyList(), pageable, index.getStatistics(id).get(INFINITY));
+		}
+	}
+
+	public class DocumentInfoResourceAssembler implements ResourceAssembler<DocumentInfo, ResourceSupport> {
+		@Override
+		public ResourceSupport toResource(DocumentInfo entity) {
+			return hateoasHelper.wrap(entity);
+		}
 	}
 }
