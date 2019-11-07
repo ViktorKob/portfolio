@@ -300,6 +300,7 @@ public class HbaseIndexingServiceControllerServiceAdaptorTest {
 		final Indexable indexable = new Indexable(SELECTOR_TYPE, "Path", DOCUMENT_TYPE, "Field");
 		when(index.invertedIndexLookup(eq(SOME_ID), eq(indexable)))
 				.thenReturn(new DocumentInfos(asList(new DocumentInfo(SOME_ID, new Timestamp(1000L), new Timestamp(2000L)))));
+		when(index.getStatistics(eq(SOME_ID))).thenReturn(new Statistics(singletonMap(INFINITY, 0l)));
 		final DocumentInfos infos = adaptors
 				.lookupSelectorInInvertedIndex(new InvertedIndexLookupRequest(SOME_ID, new LegalInformation(), new Bounds(), emptySet(), emptySet()));
 		assertEquals(SOME_ID, first(infos).getId());
