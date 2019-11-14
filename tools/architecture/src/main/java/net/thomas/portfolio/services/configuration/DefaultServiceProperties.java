@@ -29,6 +29,7 @@ public class DefaultServiceProperties {
 		put("server.tomcat.min-spare-threads", "2");
 
 		put("spring.application.name", "${service-name}");
+		put("spring.main.allow-bean-definition-overriding", "true");
 		put("spring.security.user.name", "service-user");
 		put("spring.security.user.password", "password");
 		put("spring.security.user.roles", "USER");
@@ -38,8 +39,9 @@ public class DefaultServiceProperties {
 		put("management.endpoints.web.exposure.include", "*");
 		put("management.endpoint.health.show-details", "ALWAYS");
 
-		put("eureka.instance.lease-renewal-interval-in-seconds", "5");
-		put("eureka.instance.lease-expiration-duration-in-seconds", "10");
+		put("eureka.instance.prefer-ip-address", "true");
+		put("eureka.instance.lease-renewal-interval-in-seconds", "15");
+		put("eureka.instance.lease-expiration-duration-in-seconds", "30");
 		put("eureka.instance.health-check-url-path", "${service-context-path}/actuator/health");
 		put("eureka.instance.status-page-url-path", "${service-status-page}");
 
@@ -55,7 +57,7 @@ public class DefaultServiceProperties {
 		// ####################
 	}
 
-	private static void put(String propertyId, String value) {
+	private static void put(final String propertyId, final String value) {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 

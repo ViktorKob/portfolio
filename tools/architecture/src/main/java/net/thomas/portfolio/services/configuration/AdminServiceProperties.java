@@ -48,6 +48,7 @@ public class AdminServiceProperties {
 		put("spring.security.user.name", "service-user");
 		put("spring.security.user.password", "password");
 		put("spring.security.user.roles", "USER");
+		put("spring.cloud.inetutils.ignored-interfaces", "docker0");
 
 		put("management.endpoints.web.cors.allowed-origins", "true");
 		put("management.endpoints.web.exposure.include", "*");
@@ -66,11 +67,10 @@ public class AdminServiceProperties {
 		put("eureka.client.fetch-registry", "true");
 		put("eureka.client.registry-fetch-interval-seconds", "5");
 		put("eureka.client.service-url.defaultZone", "http://service-user:password@${discovery-address}${infrastructure-context-path}/eureka/");
-
 		// ####################
 	}
 
-	private static void put(String propertyId, String value) {
+	private static void put(final String propertyId, final String value) {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 

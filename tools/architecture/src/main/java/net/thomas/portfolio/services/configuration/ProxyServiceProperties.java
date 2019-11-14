@@ -60,6 +60,7 @@ public class ProxyServiceProperties {
 		put("spring.security.user.name", "service-user");
 		put("spring.security.user.password", "password");
 		put("spring.security.user.roles", "USER");
+		put("spring.cloud.inetutils.ignored-interfaces", "docker0");
 
 		put("management.endpoints.web.base-path", "${service-context-path}/actuator");
 		put("management.endpoints.web.cors.allowed-origins", "true");
@@ -96,7 +97,7 @@ public class ProxyServiceProperties {
 		}
 	}
 
-	private static void put(String propertyId, String value) {
+	private static void put(final String propertyId, final String value) {
 		SERVICE_PROPERTIES.put(propertyId, value);
 	}
 

@@ -115,7 +115,7 @@
 							<goal>build</goal>
 						</goals>
 					</execution>
-				</executions>
+				</executions> 
 				<configuration>
 					<repository>docker.io/viktorkob/portfolio-${project.artifactId}</repository>
 					<tag>${project.version}</tag>

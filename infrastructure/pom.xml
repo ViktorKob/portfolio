@@ -46,6 +46,11 @@
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.1.2</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -102,7 +107,7 @@
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>				
+					</buildArgs>
 				</configuration>
 			</plugin>
 		</plugins>
