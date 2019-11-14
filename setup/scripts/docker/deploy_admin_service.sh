@@ -1,3 +1,4 @@
+#!/bin/bash
 ###########################
 
 SERVICE_NAME="admin-service"
