@@ -48,7 +48,6 @@ public class AdminServiceProperties {
 		put("spring.security.user.name", "service-user");
 		put("spring.security.user.password", "password");
 		put("spring.security.user.roles", "USER");
-		put("spring.cloud.inetutils.ignored-interfaces", "docker0");
 
 		put("management.endpoints.web.cors.allowed-origins", "true");
 		put("management.endpoints.web.exposure.include", "*");
