@@ -2,9 +2,9 @@
 
 # Portfolio 
 
-This repository contains examples of how I prioritize tasks and solve problems. It is meant to give potential employers an idea of what they can expect from me as a developer.
+This repository contains examples of how I have build a cloud'ish infrastructure to leverage a big data platform. It is meant to give potential employers an idea of what they can expect from me as a developer.
 
-For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation and GraphQL to wrap the API.
+For anyone not wishing to employ me, this is an example of how I would build a micro-service based infrastructure, for looking up information in an environment centered around an HBASE index, using spring boot for implementation and GraphQL to wrap the API. All neatly wrapped in Docker images for deployment.
 
 It is very much a work in progress, and I plan on adding new features continuously until I run out of ideas or get the job I want.
 
