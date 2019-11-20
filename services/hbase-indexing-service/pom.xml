@@ -65,6 +65,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>testing-tools</artifactId>
 			<scope>test</scope>
@@ -82,7 +87,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>2.0.3.RELEASE</version>
+				<version>${project.spring.boot.version}</version>
 				<configuration>
 					<mainClass>net.thomas.portfolio.hbase_index.HbaseIndexingServiceApplication</mainClass>
 				</configuration>
@@ -111,7 +116,7 @@
 					<tag>${project.version}</tag>
 					<buildArgs>
 						<JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>				
+					</buildArgs>
 				</configuration>
 			</plugin>
 		</plugins>
