@@ -27,6 +27,7 @@
 		<project.swagger.version>2.9.2</project.swagger.version>
 		<project.spring.hateoas.version>2.9.2</project.spring.hateoas.version>
 		<project.docker.plugin.version>1.4.13</project.docker.plugin.version>
+		<project.mockito.version>3.1.0</project.mockito.version>
 	</properties>
 
 	<dependencyManagement>
@@ -141,6 +142,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
+			<version>${project.mockito.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -173,8 +175,13 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.0</version>
-						<!-- dependencies> <dependency> <groupId>org.ow2.asm</groupId> <artifactId>asm</artifactId> 
-							<version>6.2</version> </dependency> </dependencies -->
+						<dependencies>
+							<dependency>
+								<groupId>org.ow2.asm</groupId>
+								<artifactId>asm</artifactId>
+								<version>7.2</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -214,15 +221,20 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.8.0</version>
-						<!-- dependencies> <dependency> <groupId>org.ow2.asm</groupId> <artifactId>asm</artifactId> 
-							<version>6.2</version> </dependency> </dependencies -->
+						<dependencies>
+							<dependency>
+								<groupId>org.ow2.asm</groupId>
+								<artifactId>asm</artifactId>
+								<version>7.2</version>
+							</dependency>
+						</dependencies>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>2.22.0</version>
 					</plugin>
-					<!-- plugin>
+					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
 						<version>0.8.5</version>
@@ -240,6 +252,13 @@
 								<exclude>net/thomas/portfolio/usage_data/UsageDataServiceApplication*</exclude>
 							</excludes>
 						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.ow2.asm</groupId>
+								<artifactId>asm</artifactId>
+								<version>7.2</version>
+							</dependency>
+						</dependencies>
 						<executions>
 							<execution>
 								<id>prepare-agent</id>
@@ -249,11 +268,8 @@
 							</execution>
 						</executions>
 					</plugin>
-					<plugin>
-						<groupId>org.eluder.coveralls</groupId>
-						<artifactId>coveralls-maven-plugin</artifactId>
-						<version>4.3.0</version>
-					</plugin -->
+					<!-- plugin> <groupId>org.eluder.coveralls</groupId> <artifactId>coveralls-maven-plugin</artifactId> 
+						<version>4.3.0</version> </plugin -->
 				</plugins>
 			</build>
 		</profile>
