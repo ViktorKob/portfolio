@@ -8,7 +8,7 @@
 	<artifactId>infrastructure-service</artifactId>
 
 	<name>infrastructure-service</name>
-	<description>Config, Discovery and Hystrix services</description>
+	<description>Discovery service and Hystrix UI</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,6 +25,10 @@
 		<dependency>
 			<groupId>net.thomas.portfolio.tools</groupId>
 			<artifactId>architecture</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-config-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

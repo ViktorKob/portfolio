@@ -1,0 +1,9 @@
+####################
+# Service settings:
+####################
+
+service-port: 8888
+discovery-address: localhost:8000
+external-service-address: localhost:80
+external-protocol: http://
+eureka.instance.hostname: localhost

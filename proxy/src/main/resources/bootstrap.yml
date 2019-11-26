@@ -1,0 +1,6 @@
+spring:
+   profiles:
+      active: development
+   cloud:
+      config:
+         uri: http://service-user:password@localhost:8888/Config

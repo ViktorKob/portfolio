@@ -1,6 +1,8 @@
 package net.thomas.portfolio.services;
 
 public class ServiceGlobals {
+	public static final String CONFIG_PATH = "/Config";
+	public static final String CONFIG_NAME = "config";
 	public static final String INFRASTRUCTURE_MASTER_PATH = "/Infrastructure";
 	public static final String INFRASTRUCTURE_MASTER_NAME = "infrastructure";
 	public static final String ADMIN_SERVICE_PATH = "/Admin";

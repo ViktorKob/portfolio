@@ -6,6 +6,8 @@ import static net.thomas.portfolio.services.ServiceGlobals.ADMIN_SERVICE_NAME;
 import static net.thomas.portfolio.services.ServiceGlobals.ADMIN_SERVICE_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.ANALYTICS_SERVICE_NAME;
 import static net.thomas.portfolio.services.ServiceGlobals.ANALYTICS_SERVICE_PATH;
+import static net.thomas.portfolio.services.ServiceGlobals.CONFIG_NAME;
+import static net.thomas.portfolio.services.ServiceGlobals.CONFIG_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_NAME;
 import static net.thomas.portfolio.services.ServiceGlobals.HBASE_INDEXING_SERVICE_PATH;
 import static net.thomas.portfolio.services.ServiceGlobals.INFRASTRUCTURE_MASTER_NAME;
@@ -21,6 +23,7 @@ import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_NA
 import static net.thomas.portfolio.services.ServiceGlobals.USAGE_DATA_SERVICE_PATH;
 
 public enum Service implements ContextPathSection {
+	CONFIG_SERVICE("config-", CONFIG_PATH, CONFIG_NAME),
 	INFRASTRUCTURE_SERVICE("infrastructure-", INFRASTRUCTURE_MASTER_PATH, INFRASTRUCTURE_MASTER_NAME),
 	ADMIN_SERVICE("admin-", ADMIN_SERVICE_PATH, ADMIN_SERVICE_NAME),
 
