@@ -57,9 +57,10 @@ public class InfrastructureServiceProperties {
 		put("management.endpoints.web.exposure.include", "*");
 		put("management.endpoint.health.show-details", "ALWAYS");
 
+		put("eureka.instance.prefer-ip-address", "true");
 		put("eureka.instance.lease-renewal-interval-in-seconds", "5");
 		put("eureka.instance.lease-expiration-duration-in-seconds", "10");
-		put("eureka.instance.health-check-url-path", "${service-context-path}/actuator/health");
+		put("eureka.instance.health-check-url-path", "/actuator/health");
 		put("eureka.instance.status-page-url-path", "${service-status-page}");
 
 		put("eureka.instance.metadata-map.management.context-path", "${service-context-path}/actuator");
