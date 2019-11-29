@@ -44,8 +44,8 @@ public class CustomErrorHandler extends DefaultGraphQLErrorHandler {
 	private static class SanitizedError extends ExceptionWhileDataFetching {
 		private static final long serialVersionUID = 1L;
 
-		public SanitizedError(final ExceptionWhileDataFetching error) {
-			super(rootPath(), error.getException(), null);
+		public SanitizedError(final ExceptionWhileDataFetching innerException) {
+			super(rootPath(), innerException.getException(), innerException.getLocations().get(0));
 		}
 
 		@Override
