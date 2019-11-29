@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +27,7 @@ import com.github.mthizo247.cloud.netflix.zuul.web.socket.EnableZuulWebSocket;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class ProxyApplication {
 	@Configuration
+	@ComponentScan(basePackages = "net.thomas.portfolio.service_commons.adaptors")
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

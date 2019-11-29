@@ -11,6 +11,7 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +25,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class UsageDataServiceApplication {
 	@Configuration
+	@ComponentScan(basePackages = "net.thomas.portfolio.service_commons.adaptors")
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {

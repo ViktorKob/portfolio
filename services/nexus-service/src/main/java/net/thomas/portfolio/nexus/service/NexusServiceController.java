@@ -1,5 +1,6 @@
 package net.thomas.portfolio.nexus.service;
 
+import static graphql.servlet.core.GraphQLObjectMapper.newBuilder;
 import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
 
 import javax.annotation.PostConstruct;
@@ -14,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.discovery.EurekaClient;
 
 import graphql.schema.GraphQLSchema;
-import graphql.servlet.GraphQLObjectMapper;
+import graphql.servlet.core.GraphQLObjectMapper;
 import net.thomas.portfolio.nexus.graphql.GraphQlModelBuilder;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
@@ -121,6 +122,6 @@ public class NexusServiceController {
 
 	@Bean
 	public GraphQLObjectMapper graphQLObjectMapper() {
-		return GraphQLObjectMapper.newBuilder().withGraphQLErrorHandler(new CustomErrorHandler()).build();
+		return newBuilder().withGraphQLErrorHandler(new CustomErrorHandler()).build();
 	}
 }

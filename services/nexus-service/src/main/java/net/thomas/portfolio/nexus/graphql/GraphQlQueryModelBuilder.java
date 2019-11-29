@@ -4,11 +4,12 @@ import static graphql.Scalars.GraphQLBigDecimal;
 import static graphql.Scalars.GraphQLBigInteger;
 import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
+import static graphql.schema.GraphQLEnumType.newEnum;
+import static graphql.schema.GraphQLEnumValueDefinition.newEnumValueDefinition;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInterfaceType.newInterface;
 import static graphql.schema.GraphQLList.list;
 import static graphql.schema.GraphQLObjectType.newObject;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.DAY;
 import static net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.StatisticsPeriod.INFINITY;
@@ -86,8 +87,10 @@ public class GraphQlQueryModelBuilder {
 	public GraphQLObjectType build() {
 		GraphQlArgument.initialize(adaptors);
 		final List<GraphQLFieldDefinition> queryFieldDefinitions = buildFieldDefinitions(adaptors);
-		return new GraphQLObjectType("NexusQueryModel", "Model enabling querying of all relevant sub-services as one data structure", queryFieldDefinitions,
-				emptyList());
+		return newObject().name("NexusQueryModel")
+				.description("Model enabling querying of all relevant sub-services as one data structure")
+				.fields(queryFieldDefinitions)
+				.build();
 	}
 
 	private List<GraphQLFieldDefinition> buildFieldDefinitions(final Adaptors adaptors) {
@@ -152,7 +155,7 @@ public class GraphQlQueryModelBuilder {
 			fields.add(newFieldDefinition().name(dataType)
 					.description("Fields and functions in the " + dataType + " type")
 					.type(dataTypeObjectType)
-					.argument(arguments.build())
+					.arguments(arguments.build())
 					.dataFetcher(createFetcher(dataType, adaptors))
 					.build());
 		}
@@ -221,30 +224,30 @@ public class GraphQlQueryModelBuilder {
 		String description = "";
 		switch (field.getType()) {
 			case DECIMAL:
-			fetcher = new DecimalFieldDataFetcher(field.getName(), adaptors);
-			graphQlType = GraphQLBigDecimal;
-			description = buildDescription("Decimal field", field, parentType);
+				fetcher = new DecimalFieldDataFetcher(field.getName(), adaptors);
+				graphQlType = GraphQLBigDecimal;
+				description = buildDescription("Decimal field", field, parentType);
 				break;
 			case INTEGER:
-			fetcher = new IntegerFieldDataFetcher(field.getName(), adaptors);
-			graphQlType = GraphQLLong;
-			description = buildDescription("Integer field", field, parentType);
+				fetcher = new IntegerFieldDataFetcher(field.getName(), adaptors);
+				graphQlType = GraphQLLong;
+				description = buildDescription("Integer field", field, parentType);
 				break;
 			case TIMESTAMP:
-			fetcher = new FormattedTimestampFieldDataFetcher(field.getName(), adaptors);
-			graphQlType = GraphQLString;
-			description = buildDescription("Timestamp", field, parentType);
+				fetcher = new FormattedTimestampFieldDataFetcher(field.getName(), adaptors);
+				graphQlType = GraphQLString;
+				description = buildDescription("Timestamp", field, parentType);
 				break;
 			case GEO_LOCATION:
-			fetcher = environment -> getEntity(environment).get(field.getName());
-			graphQlType = new GraphQLTypeReference("GeoLocation");
-			description = buildDescription("Geolocation", field, parentType);
+				fetcher = environment -> getEntity(environment).get(field.getName());
+				graphQlType = new GraphQLTypeReference("GeoLocation");
+				description = buildDescription("Geolocation", field, parentType);
 				break;
 			case STRING:
 			default:
-			fetcher = environment -> getEntity(environment) == null ? null : getEntity(environment).get(field.getName());
-			graphQlType = GraphQLString;
-			description = buildDescription("Textual field", field, parentType);
+				fetcher = environment -> getEntity(environment) == null ? null : getEntity(environment).get(field.getName());
+				graphQlType = GraphQLString;
+				description = buildDescription("Textual field", field, parentType);
 				break;
 		}
 		if (field.isArray()) {
@@ -311,7 +314,7 @@ public class GraphQlQueryModelBuilder {
 	private GraphQLFieldDefinition buildSelectorSuggestionField(final Adaptors adaptors) {
 		return newFieldDefinition().name("suggest")
 				.description("Lookup of selectors suggestions based on simple representation")
-				.argument(new ArgumentsBuilder().addSimpleRep(REQUIRED).addUser().addJustification().addDateBounds().build())
+				.arguments(new ArgumentsBuilder().addSimpleRep(REQUIRED).addUser().addJustification().addDateBounds().build())
 				.type(list(new GraphQLTypeReference("Selector")))
 				.dataFetcher(new SelectorSuggestionsFetcher(adaptors))
 				.build();
@@ -437,9 +440,9 @@ public class GraphQlQueryModelBuilder {
 		String name = null;
 		for (final Enum<?> value : values) {
 			name = value.getClass().getSimpleName();
-			enumValues.add(new GraphQLEnumValueDefinition(value.name(), value.name() + " in Enum " + name, value));
+			enumValues.add(newEnumValueDefinition().name(value.name()).description(value.name() + " in Enum " + name).value(value).build());
 		}
-		return new GraphQLEnumType(name + "Enum", "Mapping of Enum " + name + " to GraphQL", enumValues);
+		return newEnum().name(name + "Enum").description("Mapping of Enum " + name + " to GraphQL").values(enumValues).build();
 	}
 
 	private GraphQLFieldDefinition createFormattedTimeOfInterceptionField(final Adaptors adaptors) {
@@ -447,7 +450,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("formattedTimeOfInterception")
 				.description("The exact time for when the event, defined by the document, was intercepted, in ISO 8601 format")
 				.type(GraphQLString)
-				.argument(arguments.build())
+				.arguments(arguments.build())
 				.dataFetcher(new FormattedTimeOfInterceptionDataFetcher(adaptors))
 				.build();
 	}
@@ -457,7 +460,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("formattedTimeOfEvent")
 				.description("The best guess for when the event, defined by the document, occurred, in ISO 8601 format")
 				.type(GraphQLString)
-				.argument(arguments.build())
+				.arguments(arguments.build())
 				.dataFetcher(new FormattedTimeOfEventDataFetcher(adaptors))
 				.build();
 	}
@@ -482,7 +485,7 @@ public class GraphQlQueryModelBuilder {
 		final ArgumentsBuilder arguments = new ArgumentsBuilder().addPaging().addDateBounds();
 		return newFieldDefinition().name("usageActivities")
 				.description("Registered user interaction with this document")
-				.argument(arguments.build())
+				.arguments(arguments.build())
 				.type(list(new GraphQLTypeReference("UsageActivity")))
 				.dataFetcher(new UsageActivitiesFetcher(adaptors))
 				.build();
@@ -554,7 +557,7 @@ public class GraphQlQueryModelBuilder {
 
 		return newFieldDefinition().name("events")
 				.description("Events that this \" + dataType + \" has been linked to in the index")
-				.argument(arguments.build())
+				.arguments(arguments.build())
 				.type(list(new GraphQLTypeReference("Document")))
 				.dataFetcher(new DocumentListFetcher(adaptors))
 				.build();
@@ -573,7 +576,7 @@ public class GraphQlQueryModelBuilder {
 		return newFieldDefinition().name("statistics")
 				.description("Lookup statstics over how often the selector occurs in the index")
 				.type(new GraphQLTypeReference("SelectorStatistics"))
-				.argument(arguments.build())
+				.arguments(arguments.build())
 				.dataFetcher(new SelectorStatisticsFetcher(adaptors))
 				.build();
 	}

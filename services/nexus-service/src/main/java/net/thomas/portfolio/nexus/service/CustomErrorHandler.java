@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.GraphQLError;
-import graphql.servlet.DefaultGraphQLErrorHandler;
+import graphql.servlet.core.DefaultGraphQLErrorHandler;
 import net.thomas.portfolio.nexus.graphql.exceptions.ClientException;
 
 public class CustomErrorHandler extends DefaultGraphQLErrorHandler {

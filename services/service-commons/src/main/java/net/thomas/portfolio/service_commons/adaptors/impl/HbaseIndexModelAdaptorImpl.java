@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.slf4j.Logger;
-import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
@@ -22,8 +21,6 @@ import org.springframework.hateoas.Resources;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.google.common.cache.LoadingCache;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
@@ -44,7 +41,7 @@ import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLook
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchema;
 import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 
-@EnableCircuitBreaker
+// @EnableCircuitBreaker
 public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware, HbaseIndexModelAdaptor {
 	private static final Logger LOG = getLogger(HbaseIndexModelAdaptorImpl.class);
 
@@ -59,7 +56,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		this.client = client;
 		while (schema == null) {
 			try {
-				final ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>> responseType = new ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>>() {
+				final ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>> responseType = new ParameterizedTypeReference<>() {
 				};
 				final String url = urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
 				schema = unwrap(client.loadUrlAsObject(url, GET, responseType));
@@ -74,10 +71,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	private CacheLoader<DataTypeId, DataType> buildDataTypeCacheLoader(HttpRestClient client) {
-		return new CacheLoader<DataTypeId, DataType>() {
+		return new CacheLoader<>() {
 			@Override
 			public DataType load(DataTypeId id) throws Exception {
-				final ParameterizedTypeReference<Resource<DataType>> responseType = new ParameterizedTypeReference<Resource<DataType>>() {
+				final ParameterizedTypeReference<Resource<DataType>> responseType = new ParameterizedTypeReference<>() {
 				};
 				final String url = urlLibrary.entities.lookup(id);
 				return unwrap(client.loadUrlAsObject(url, GET, responseType));
@@ -136,9 +133,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
-		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<Resources<Selector>>() {
+		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
 		final String url = urlLibrary.selectors.suggestions(simpleRepresentation);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
@@ -146,7 +144,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 
 	@Override
 	public Entities getSamples(String dataType, int amount) {
-		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<Resources<DataType>>() {
+		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<>() {
 		};
 		String url;
 		if (isDocument(dataType)) {
@@ -165,16 +163,18 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Selector getFromSimpleRep(String type, String simpleRepresentation) {
-		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<Resource<Selector>>() {
+		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
 		final String url = urlLibrary.selectors.simpleRepresentation(type, simpleRepresentation);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public DataType getDataType(DataTypeId id) {
 		try {
 			return dataTypeCache.get(id);
@@ -191,27 +191,30 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public References getReferences(DataTypeId documentId) {
-		final ParameterizedTypeReference<Resource<References>> responseType = new ParameterizedTypeReference<Resource<References>>() {
+		final ParameterizedTypeReference<Resource<References>> responseType = new ParameterizedTypeReference<>() {
 		};
 		final String url = urlLibrary.documents.references(documentId);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public Statistics getStatistics(DataTypeId selectorId) {
-		final ParameterizedTypeReference<Resource<Statistics>> responseType = new ParameterizedTypeReference<Resource<Statistics>>() {
+		final ParameterizedTypeReference<Resource<Statistics>> responseType = new ParameterizedTypeReference<>() {
 		};
 		final String url = urlLibrary.selectors.statistics(selectorId);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
 	@Override
-	@HystrixCommand(commandProperties = { @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3") })
+	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
+	// "circuitBreaker.requestVolumeThreshold", value = "3") })
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
-		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<Resources<DocumentInfo>>() {
+		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<>() {
 		};
 		final String url = urlLibrary.selectors.invertedIndex(request.getSelectorId(), request.getGroups());
 		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));

@@ -43,7 +43,9 @@ public class NexusServiceProperties {
 	}
 
 	private static void setupServlet() {
-		put("graphql.servlet.corsEnabled", "true");
+		put("graphql.servlet.enabled", "true");
+		put("graphql.servlet.cors-enabled", "true");
+		put("graphql.servlet.exception-handlers-enabled", "true");
 
 		put("graphiql.pageTitle", "Portfolio GraphiQL interface");
 		put("graphiql.headers.Authorization", "Basic c2VydmljZS11c2VyOnBhc3N3b3Jk");

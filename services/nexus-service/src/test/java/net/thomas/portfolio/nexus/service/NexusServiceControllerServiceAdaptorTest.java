@@ -77,8 +77,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import graphql.schema.GraphQLSchema;
-import graphql.servlet.DefaultGraphQLSchemaProvider;
-import graphql.servlet.GraphQLSchemaProvider;
+import graphql.servlet.config.DefaultGraphQLSchemaProvider;
+import graphql.servlet.config.GraphQLSchemaProvider;
 import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryBuilder;
 import net.thomas.portfolio.nexus.service.test_utils.GraphQlQueryTestExecutionUtil;
 import net.thomas.portfolio.nexus.service.test_utils.UsageActivityTestUtil;

@@ -11,6 +11,7 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,16 +25,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class RenderServiceApplication {
 	@Configuration
+	@ComponentScan(basePackages = "net.thomas.portfolio.service_commons.adaptors")
 	static class CsrfBugWorkaround extends WebSecurityConfigurerAdapter {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.csrf()
-				.disable()
-				.authorizeRequests()
-				.anyRequest()
-				.authenticated()
-				.and()
-				.httpBasic();
+			http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 	}
 
@@ -42,10 +38,7 @@ public class RenderServiceApplication {
 	public class SwaggerConfig {
 		@Bean
 		public Docket api() {
-			return new Docket(SWAGGER_2).select()
-				.apis(basePackage("net.thomas.portfolio.render.service"))
-				.paths(any())
-				.build();
+			return new Docket(SWAGGER_2).select().apis(basePackage("net.thomas.portfolio.render.service")).paths(any()).build();
 		}
 	}
 

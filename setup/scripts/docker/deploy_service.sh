@@ -39,7 +39,14 @@ else
 
   echo
   echo "Starting container"
-  docker run --name ${CONTAINER_NAME} --network host ${MOUNTS} -tid ${PORTS} viktorkob/portfolio-${SERVICE_NAME}:${JAR_VERSION}
+  # --rm: remove after run
+  # --name: as specified in argument
+  # --network host: (non-exclusively) adopt host network interface
+  # mounts: as specified in argument
+  # -tid: (t)erminal (i)nteractive and (d)etach
+  # ports: as specified in argument
+  # image-name in docker.io
+  docker run --rm --name ${CONTAINER_NAME} --network host ${MOUNTS} -tid ${PORTS} viktorkob/portfolio-${SERVICE_NAME}:${JAR_VERSION}
 
   echo
   echo "All done"

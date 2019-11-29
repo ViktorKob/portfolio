@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import graphql.servlet.GraphQLServletListener;
-import graphql.servlet.SimpleGraphQLHttpServlet;
+import graphql.servlet.GraphQLHttpServlet;
+import graphql.servlet.core.GraphQLServletListener;
 
 @Component
 public class AllowCrossOriginServletModification {
 	@Autowired
-	private SimpleGraphQLHttpServlet servlet;
+	private GraphQLHttpServlet servlet;
 
 	@PostConstruct
 	public void modifyServlet() {

@@ -6,7 +6,10 @@ service-port: 80
 discovery-address: localhost:8000
 external-service-address: localhost:80
 external-protocol: http://
+eureka.instance.non-secure-port-enabled: true
+eureka.instance.secure-port-enabled: false
 spring.main.allow-bean-definition-overriding: true
+
 
 ####################
 HTTPS settings:
