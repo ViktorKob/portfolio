@@ -40,7 +40,7 @@ public class ProxyServiceProperties {
 		put("ribbon.eureka.enabled", "true");
 		put("ribbon.ConnectTimeout", "2000");
 		put("ribbon.ReadTimeout", "600000");
-		put("hystrix.command.default.execution.timeout.enabled", "false");
+		// put("hystrix.command.default.execution.timeout.enabled", "false");
 
 		// ####################
 		// Standard settings:

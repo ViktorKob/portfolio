@@ -74,11 +74,11 @@ public class NexusServiceProperties {
 	}
 
 	private static void setupHystrix() {
-		put("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", "5000");
-		put("hystrix.command.default.circuitBreaker.requestVolumeThreshold", "5");
-		put("hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds", "1000");
-		put("hystrix.command.default.metrics.rollingStats.timeInMilliseconds", "300000");
-		put("hystrix.command.default.metrics.rollingStats.numBuckets", "300");
+		// put("hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds", "5000");
+		// put("hystrix.command.default.circuitBreaker.requestVolumeThreshold", "5");
+		// put("hystrix.command.default.circuitBreaker.sleepWindowInMilliseconds", "1000");
+		// put("hystrix.command.default.metrics.rollingStats.timeInMilliseconds", "300000");
+		// put("hystrix.command.default.metrics.rollingStats.numBuckets", "300");
 	}
 
 	private static void put(String propertyId, String value) {
