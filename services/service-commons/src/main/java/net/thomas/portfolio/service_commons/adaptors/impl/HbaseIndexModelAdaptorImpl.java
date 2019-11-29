@@ -18,6 +18,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
 import com.google.common.cache.LoadingCache;
@@ -43,6 +44,14 @@ import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaIm
 
 // @EnableCircuitBreaker
 public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware, HbaseIndexModelAdaptor {
+	public static final String GET_SELECTOR_SUGGESTIONS = "getSelectorSuggestions";
+	public static final String GET_SAMPLES = "getSamples";
+	public static final String GET_FROM_SIMPLE_REPRESENTATION = "getFromSimpleRepresentation";
+	public static final String LOOKUP_ENTITY = "lookupEntity";
+	public static final String LOOKUP_DOCUMENT_REFERENCES = "lookupDocumentReferences";
+	public static final String LOOKUP_SELECTOR_STATISTICS = "lookupSelectorStatistics";
+	public static final String LOOKUP_SELECTOR_IN_INVERTED_INDEX = "lookupSelectorInInvertedIndex";
+
 	private static final Logger LOG = getLogger(HbaseIndexModelAdaptorImpl.class);
 
 	private PortfolioUrlLibrary urlLibrary;
@@ -133,8 +142,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = GET_SELECTOR_SUGGESTIONS)
 	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
 		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
@@ -143,6 +151,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
+	@SentinelResource(value = GET_SAMPLES)
 	public Entities getSamples(String dataType, int amount) {
 		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<>() {
 		};
@@ -163,8 +172,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = GET_FROM_SIMPLE_REPRESENTATION)
 	public Selector getFromSimpleRep(String type, String simpleRepresentation) {
 		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
@@ -173,8 +181,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = LOOKUP_ENTITY)
 	public DataType getDataType(DataTypeId id) {
 		try {
 			return dataTypeCache.get(id);
@@ -191,8 +198,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = LOOKUP_DOCUMENT_REFERENCES)
 	public References getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Resource<References>> responseType = new ParameterizedTypeReference<>() {
 		};
@@ -201,8 +207,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = LOOKUP_SELECTOR_STATISTICS)
 	public Statistics getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Resource<Statistics>> responseType = new ParameterizedTypeReference<>() {
 		};
@@ -211,8 +216,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = LOOKUP_SELECTOR_IN_INVERTED_INDEX)
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<>() {
 		};

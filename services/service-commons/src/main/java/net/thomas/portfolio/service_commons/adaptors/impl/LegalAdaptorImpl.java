@@ -7,6 +7,8 @@ import static org.springframework.http.HttpMethod.POST;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+
 import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
@@ -18,6 +20,11 @@ import net.thomas.portfolio.shared_objects.legal.Legality;
 
 // @EnableCircuitBreaker
 public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdaptor {
+	public static final String CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP = "checkLegalityOfInvertedIndexLookup";
+	public static final String CHECK_LEGALITY_OF_STATISTICS_LOOKUP = "checkLegalityOfStatisticsLookup";
+	public static final String AUDIT_LOG_INVERTED_INDEX_LOOKUP = "auditLogInvertedIndexLookup";
+	public static final String AUDIT_LOG_STATISTICS_LOOKUP = "auditLogStatisticsLookup";
+
 	private final ParameterizedTypeReference<Resource<Legality>> LEGALITY_RESOURCE = new ParameterizedTypeReference<>() {
 	};
 
@@ -31,32 +38,28 @@ public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdap
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP)
 	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.selectors.audit.check.invertedIndex(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = CHECK_LEGALITY_OF_STATISTICS_LOOKUP)
 	public Legality checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.selectors.audit.check.statistics(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = AUDIT_LOG_INVERTED_INDEX_LOOKUP)
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.selectors.audit.log.invertedIndex(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
+	@SentinelResource(value = AUDIT_LOG_STATISTICS_LOOKUP)
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
 		final String url = urlLibrary.selectors.audit.log.statistics(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);

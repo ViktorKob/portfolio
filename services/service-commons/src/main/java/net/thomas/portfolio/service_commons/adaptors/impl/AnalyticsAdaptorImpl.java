@@ -18,6 +18,8 @@ import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
 // @EnableCircuitBreaker
 public class AnalyticsAdaptorImpl implements PortfolioInfrastructureAware, AnalyticsAdaptor {
+	public static final String GET_KNOWLEDGE = "getKnowledge";
+
 	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient client;
 
@@ -28,9 +30,7 @@ public class AnalyticsAdaptorImpl implements PortfolioInfrastructureAware, Analy
 	}
 
 	@Override
-	// @HystrixCommand(commandProperties = { @HystrixProperty(name =
-	// "circuitBreaker.requestVolumeThreshold", value = "3") })
-	@SentinelResource(value = "getKnowledge")
+	@SentinelResource(value = GET_KNOWLEDGE)
 	public AnalyticalKnowledge getKnowledge(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Resource<AnalyticalKnowledge>> responseType = new ParameterizedTypeReference<>() {
 		};
