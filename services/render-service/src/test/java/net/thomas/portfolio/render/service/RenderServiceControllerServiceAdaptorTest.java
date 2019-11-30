@@ -25,10 +25,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
-import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.service_commons.network.BadRequestException;
+import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_testing.TestCommunicationWiringTool;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -46,12 +46,14 @@ public class RenderServiceControllerServiceAdaptorTest {
 		loadServicePathsIntoProperties();
 	}
 
+	interface HbaseIndexMock extends HbaseIndexModelAdaptor, PortfolioInfrastructureAware {
+	}
+
 	@TestConfiguration
 	static class ServiceMocksSetup {
-
 		@Bean(name = "HbaseIndexModelAdaptor")
 		public HbaseIndexModelAdaptor getHbaseAdaptor() {
-			final HbaseIndexModelAdaptor hbaseAdaptor = mock(HbaseIndexModelAdaptorImpl.class);
+			final HbaseIndexModelAdaptor hbaseAdaptor = mock(HbaseIndexMock.class);
 			when(hbaseAdaptor.getDataTypes()).thenReturn(asList(DATA_TYPE));
 			return hbaseAdaptor;
 		}
