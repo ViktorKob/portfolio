@@ -45,18 +45,21 @@ To familiarize yourself with GraphiQL, I recommend going to [their introduction 
 
 To run it, first make sure that ports 80, 8000, 8001, 8100, 8120, 8150, 8200, 8300 and 8350 are available on your system. Or simply run it, and check these first if a service fails. 
 
+- Make sure you have Java (I currently use OpenJdk 11).
 - Check out the entire repository.
 - Import the root pom into your favorite IDE.
 - ~~Install a mysql server (I use 5.5, but any newer should work), and use [the schema](https://github.com/ViktorKob/portfolio/blob/master/services/usage-data-service/src/main/resources/schema/usage_data_schema.sql) to set it up in a database named "usage_data". I will probably add a SQLite version at some point for experimentation.~~ I now use SQLite instead for easier setup and execution. It should be enough to simply run the service.
 - If you are running linux, make sure the maximum number of open files is larger than 200K (ulimit -n to check).
+- Start the Config service from the config folder (net.thomas.portfolio.config.ConfigApplication). 
 - Start the infrastructure service from the infrastructure folder (net.thomas.portfolio.infrastructure.InfrastructureMasterApplication).
 - Start the Admin service from the admin folder (net.thomas.portfolio.infrastructure.AdminApplication). 
 - Start the Proxy service from the proxy folder (net.thomas.portfolio.infrastructure.ProxyApplication). 
 - Run each service using its respective net.thomas.portfolio.*.*ServiceApplication.java. Order should not matter, if you start all of them shortly after each other. O.w. make sure to start the HbaseIndexingService first.
-- Personally, I use a launch group in eclipse to start the services all at once (with a delay of 10 seconds after starting the infrastructure master).
+- Personally, I use a launch group in eclipse to start the services all at once (with a delays of 10 seconds after starting the config server and the infrastructure master).
+- Note that the HbaseIndexing service isn't fully ready until it has created the sample data, stored it, and run the processing step on it. It will tell you in the log, when the initialization is done. The schema can be pulled immediately after start of Tomcat.
 
 Now you can do as described above, but locally (without https, though). <BR>
-~~Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndex/).~~ You should be able both to go through the proxy on port 80 and to go directly to each service.<BR>
+~~Note, that unless you also set up a local reverse proxy, you will need to specify ports directly when running queries (as opposed to the examples above). For instance, the hbase service should be running at (localhost:8120/HbaseIndex/).~~ You should be able both to go through the proxy on port 80 and to go directly to each service using their ports.<BR>
 ~~Also note, that graphiql requires graphql and itself to be running at the root level (localhost:8100/graphql)~~ GraphQL is now also located behind the /Nexus context path.
 
 ## Status at the moment
