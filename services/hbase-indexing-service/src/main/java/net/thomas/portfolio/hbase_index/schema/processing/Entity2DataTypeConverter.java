@@ -225,7 +225,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 				};
 			}
 		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException("Unable to build conversion hiearachy node for " + entityClass.getSimpleName() + " - " + field, e);
+			throw new UnableToConvertException("Unable to build conversion hiearachy node for " + entityClass.getSimpleName() + " - " + field, e);
 		}
 	}
 

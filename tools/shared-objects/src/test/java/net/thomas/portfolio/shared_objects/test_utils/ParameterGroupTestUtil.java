@@ -7,18 +7,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.common.services.parameters.Parameter;
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
+import net.thomas.portfolio.common.utils.ProgrammingException;
 
 public class ParameterGroupTestUtil {
 
 	public static <T extends ParameterGroup> void assertParametersMatchParameterGroups(T group) {
 		try {
-			actualAssertParametersMatchParameterGroups(group);
-		} catch (final Throwable e) {
-			throw new RuntimeException("Unable to serialize object for test: " + group, e);
+			actuallyAssertParametersMatchParameterGroups(group);
+		} catch (final Throwable cause) {
+			throw new ProgrammingException("Unable to serialize object for test: " + group, cause);
 		}
 	}
 
-	private static <T extends ParameterGroup> void actualAssertParametersMatchParameterGroups(T group) throws JsonProcessingException {
+	private static <T extends ParameterGroup> void actuallyAssertParametersMatchParameterGroups(T group) throws JsonProcessingException {
 		final String serializedForm = new ObjectMapper().writeValueAsString(group);
 		for (final Parameter parameter : group.getParameters()) {
 			final String message = "Could not find " + parameter + " in " + serializedForm;

@@ -62,7 +62,7 @@ public class UsageActivityTestUtil {
 		try {
 			return Bounds.class.getField(argument.getName());
 		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException("Unable to locate field " + argument.getName() + " in Bounds");
+			throw new FieldLookupException("Unable to locate field " + argument.getName() + " in Bounds");
 		}
 	}
 
@@ -86,4 +86,15 @@ public class UsageActivityTestUtil {
 		assertEquals(value, response);
 	}
 
+	public static class FieldLookupException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public FieldLookupException(String message) {
+			super(message);
+		}
+
+		public FieldLookupException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
 }

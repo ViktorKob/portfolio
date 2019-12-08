@@ -55,7 +55,7 @@ public class SqlProxy {
 			try (Connection connection = createConnection()) {
 				createAndInitializeDatabase(connection);
 			} catch (final SQLException e) {
-				throw new RuntimeException("Unable to ensure database is setup correctly", e);
+				throw new UsageDataAccessException("Unable to ensure database is setup correctly", e);
 			}
 		}
 	}
@@ -66,7 +66,7 @@ public class SqlProxy {
 			final String sql = reader.lines().collect(Collectors.joining(" "));
 			execute(connection, sql);
 		} catch (final NullPointerException | IOException e) {
-			throw new RuntimeException("Unable to read sql schema from disk", e);
+			throw new UsageDataAccessException("Unable to read sql schema from disk", e);
 		}
 	}
 

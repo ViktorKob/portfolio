@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.thomas.portfolio.common.utils.ProgrammingException;
 import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAdaptor;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
@@ -144,8 +145,8 @@ public class GraphQlTestUtil {
 			hasher.update(String.valueOf(idSeed++).getBytes());
 			final String uid = printHexBinary(hasher.digest());
 			return new DataTypeId(type, uid);
-		} catch (final NoSuchAlgorithmException e) {
-			throw new RuntimeException("Unable to calculate hash", e);
+		} catch (final NoSuchAlgorithmException cause) {
+			throw new ProgrammingException("MD5 algorithm is no longer available", cause);
 		}
 	}
 
