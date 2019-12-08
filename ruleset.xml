@@ -10,10 +10,4 @@
             <property name="violationSuppressXPath" value="./MethodDeclarator[@Image='hashCode' or @Image='equals']"/>
         </properties>
     </rule>
-
-    <rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
-        <properties>
-            <property name="violationSuppressXPath" value="./MethodDeclarator[@Image='hashCode' or @Image='equals']"/>
-        </properties>
-    </rule>
 </ruleset>
