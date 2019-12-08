@@ -72,7 +72,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorEntityPreAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
 			return (entity, context) -> {
-				throw new RuntimeException("Unable to serialize " + entity);
+				throw new EntitySerializationException("Unable to serialize " + entity + ":  Action not implemented");
 			};
 		}
 	}
@@ -84,7 +84,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorEntityPostAction<T, SerializerContext>) actions.get(entityClass);
 		} else {
 			return (entity, context) -> {
-				throw new RuntimeException("Unable to serialize " + entity);
+				throw new EntitySerializationException("Unable to serialize " + entity + ":  Action not implemented");
 			};
 		}
 	}
@@ -96,7 +96,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorFieldPreAction<T, SerializerContext>) actions.get(entityClass).getFieldPreAction(field);
 		} else {
 			return (entity, context) -> {
-				throw new RuntimeException("Unable to serialize " + entity);
+				throw new EntitySerializationException("Unable to serialize " + entity + ":  Action not implemented");
 			};
 		}
 	}
@@ -108,7 +108,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorFieldPostAction<T, SerializerContext>) actions.get(entityClass).getFieldPostAction(field);
 		} else {
 			return (entity, context) -> {
-				throw new RuntimeException("Unable to serialize " + entity);
+				throw new EntitySerializationException("Unable to serialize " + entity + ":  Action not implemented");
 			};
 		}
 	}
@@ -120,7 +120,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 			return (VisitorFieldSimpleAction<T, SerializerContext>) actions.get(entityClass).getFieldSimpleAction(field);
 		} else {
 			return (entity, context) -> {
-				throw new RuntimeException("Unable to serialize " + entity);
+				throw new EntitySerializationException("Unable to serialize " + entity + ":  Action not implemented");
 			};
 		}
 	}
@@ -147,7 +147,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 				generator.writeStringField("id", entity.uid);
 				_performPreEntityAction(entity, getContext(context));
 			} catch (final IOException e) {
-				throw new RuntimeException("Unable to serialize " + entity.toString(), e);
+				throw new EntitySerializationException("Unable to serialize " + entity.toString(), e);
 			}
 		}
 
@@ -163,7 +163,7 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 				final JsonGenerator generator = getContext(context).generator;
 				generator.writeEndObject();
 			} catch (final IOException e) {
-				throw new RuntimeException("Unable to serialize " + entity.toString(), e);
+				throw new EntitySerializationException("Unable to serialize " + entity.toString(), e);
 			}
 		}
 
@@ -560,5 +560,17 @@ public class EntitySerializerActionFactory implements VisitorEntityPreActionFact
 	@FunctionalInterface
 	interface Action<ENTITY_TYPE extends Entity> {
 		void perform(ENTITY_TYPE entity, JsonGenerator generator) throws IOException;
+	}
+
+	public static class EntitySerializationException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EntitySerializationException(String message) {
+			super(message);
+		}
+
+		public EntitySerializationException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

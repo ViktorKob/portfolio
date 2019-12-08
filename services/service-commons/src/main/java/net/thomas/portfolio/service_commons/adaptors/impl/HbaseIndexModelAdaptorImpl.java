@@ -57,7 +57,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient client;
 	private HbaseIndexSchema schema;
-	private LoadingCache<DataTypeId, DataType> dataTypeCache;
+	private LoadingCache<DataTypeId, DataType> entityCache;
 
 	@Override
 	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
@@ -76,10 +76,10 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 				// We try again until we succeed or the service is closed from the outside
 			}
 		}
-		dataTypeCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(200).build(buildDataTypeCacheLoader(client));
+		entityCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(200).build(buildEntityCacheLoader(client));
 	}
 
-	private CacheLoader<DataTypeId, DataType> buildDataTypeCacheLoader(HttpRestClient client) {
+	private CacheLoader<DataTypeId, DataType> buildEntityCacheLoader(HttpRestClient client) {
 		return new CacheLoader<>() {
 			@Override
 			public DataType load(DataTypeId id) throws Exception {
@@ -184,15 +184,15 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	@SentinelResource(value = LOOKUP_ENTITY)
 	public DataType getDataType(DataTypeId id) {
 		try {
-			return dataTypeCache.get(id);
-		} catch (final InvalidCacheLoadException e) {
-			if (e.getMessage().contains("CacheLoader returned null for key")) {
+			return entityCache.get(id);
+		} catch (final InvalidCacheLoadException cause) {
+			if (cause.getMessage().contains("CacheLoader returned null for key")) {
 				return null;
 			} else {
-				throw new RuntimeException("Unable to fetch data type", e);
+				throw new UnknownEntityException("Unable to fetch entity", cause);
 			}
-		} catch (final ExecutionException e) {
-			e.printStackTrace();
+		} catch (final ExecutionException cause) {
+			LOG.error("Error during entity fetch", cause);
 			return null;
 		}
 	}
@@ -222,5 +222,17 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		};
 		final String url = urlLibrary.selectors.invertedIndex(request.getSelectorId(), request.getGroups());
 		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));
+	}
+
+	public static class UnknownEntityException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public UnknownEntityException(String message) {
+			super(message);
+		}
+
+		public UnknownEntityException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

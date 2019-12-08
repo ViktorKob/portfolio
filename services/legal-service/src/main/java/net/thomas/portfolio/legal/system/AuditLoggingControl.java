@@ -37,7 +37,7 @@ public class AuditLoggingControl {
 			if (history.add(invertedIndexItemTemplate.itemId(nextIndex).selectorId(selectorId).legalInfo(legalInfo).build())) {
 				return nextIndex;
 			} else {
-				throw new RuntimeException("Unable to add audit log");
+				throw new AuditLogAccessException("Unable to add audit log for Inverted Index Lookup");
 			}
 		}
 
@@ -49,7 +49,7 @@ public class AuditLoggingControl {
 			if (history.add(selectorStatisticsItemTemplate.itemId(nextIndex).selectorId(selectorId).legalInfo(legalInfo).build())) {
 				return nextIndex;
 			} else {
-				throw new RuntimeException("Unable to add audit log");
+				throw new AuditLogAccessException("Unable to add audit log for Statistics Lookup");
 			}
 		}
 	}
@@ -87,6 +87,18 @@ public class AuditLoggingControl {
 			return history.get(id);
 		} else {
 			return null;
+		}
+	}
+
+	public static class AuditLogAccessException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public AuditLogAccessException(String message) {
+			super(message);
+		}
+
+		public AuditLogAccessException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

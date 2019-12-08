@@ -83,8 +83,8 @@ public class ReflectionUtil {
 			} else {
 				return getValueUsingMatchingGetMethod(field, object);
 			}
-		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to get value " + field + " from object " + object, e);
+		} catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException cause) {
+			throw new EntityVerificationException("Unable to get value " + field + " from object " + object, cause);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class ReflectionUtil {
 			final List<Object> instances = new ArrayList<>();
 			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
 			if (constructor == null) {
-				throw new RuntimeException("Unable to locate constructor for object using its fields: " + object);
+				throw new EntityVerificationException("Unable to locate constructor for object using its fields: " + object);
 			}
 			for (final Field field : getDeclaredFields(object)) {
 				if (Object.class.isAssignableFrom(field.getType())) {
@@ -129,8 +129,8 @@ public class ReflectionUtil {
 				}
 			}
 			return instances;
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			throw new RuntimeException("Unable to construct instances of object using its fields: " + object, e);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException cause) {
+			throw new EntityVerificationException("Unable to construct instances of object using its fields: " + object, cause);
 		}
 	}
 
@@ -167,17 +167,17 @@ public class ReflectionUtil {
 			// TODO[Thomas]: Experimental solution pending better implementation
 			// try {
 			// return NameBasedConstructorMatcher.copyInstance(object);
-			// } catch (final RuntimeException e) {
+			// } catch (final InstanceVerificationException e) {
 			final Object[] arguments = buildValueArrayForObject(object);
 			final Constructor<?> constructor = getFirstConstructorMatchingObjectFields(object);
 			if (constructor != null) {
 				return constructor.newInstance(arguments);
 			} else {
-				throw new RuntimeException("Unable to copy instance " + object);
+				throw new EntityVerificationException("Unable to copy instance " + object);
 			}
 			// }
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-			throw new RuntimeException("Unable to copy instance " + object, e);
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException cause) {
+			throw new EntityVerificationException("Unable to copy instance " + object, cause);
 		}
 	}
 
@@ -190,7 +190,7 @@ public class ReflectionUtil {
 			if (constructor != null) {
 				return constructor.createInstance(object);
 			} else {
-				throw new RuntimeException("Unable to copy instance " + object);
+				throw new EntityVerificationException("Unable to copy instance " + object);
 			}
 		}
 
@@ -202,7 +202,7 @@ public class ReflectionUtil {
 			if (constructor != null) {
 				return constructor.createCollectionOfInstancesEachWithOneParameterSetToNull(object);
 			} else {
-				throw new RuntimeException("Unable to copy instance " + object);
+				throw new EntityVerificationException("Unable to copy instance " + object);
 			}
 		}
 
@@ -273,8 +273,8 @@ public class ReflectionUtil {
 			try {
 				final Object[] arguments = buildValueArrayWithSpecifiedValueAsNull(object, null);
 				return constructor.newInstance(arguments);
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException("Unable to construct new instance og " + object);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException cause) {
+				throw new EntityVerificationException("Unable to construct new instance og " + object);
 			}
 		}
 
@@ -286,8 +286,8 @@ public class ReflectionUtil {
 					constructor.newInstance(arguments);
 				}
 				return instances;
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException("Unable to construct new instance og " + object);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException cause) {
+				throw new EntityVerificationException("Unable to construct new instance og " + object);
 			}
 		}
 
@@ -310,6 +310,18 @@ public class ReflectionUtil {
 				}
 			}
 			return values;
+		}
+	}
+
+	public static class EntityVerificationException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EntityVerificationException(String message) {
+			super(message);
+		}
+
+		public EntityVerificationException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

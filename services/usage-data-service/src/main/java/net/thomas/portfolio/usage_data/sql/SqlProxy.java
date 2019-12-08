@@ -102,8 +102,8 @@ public class SqlProxy {
 						.values(id.type, id.uid, userId, accessTypeId, new Timestamp(activity.timeOfActivity))
 						.execute();
 			});
-		} catch (final SQLException e) {
-			throw new RuntimeException("Unable to fetch activity from database", e);
+		} catch (final SQLException cause) {
+			throw new UsageDataAccessException("Unable to fetch activity from database", cause);
 		}
 	}
 
@@ -141,12 +141,24 @@ public class SqlProxy {
 				activities.add(new UsageActivity(username, activityType, timeOfActivity));
 			}
 			return new UsageActivities(activities);
-		} catch (final SQLException e) {
-			throw new RuntimeException("Unable to fetch activity from database", e);
+		} catch (final SQLException cause) {
+			throw new UsageDataAccessException("Unable to fetch activity from database", cause);
 		}
 	}
 
 	private Connection createConnection() throws SQLException {
 		return getConnection(databaseConfig.getConnectionString());
+	}
+
+	public static class UsageDataAccessException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public UsageDataAccessException(String message) {
+			super(message);
+		}
+
+		public UsageDataAccessException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

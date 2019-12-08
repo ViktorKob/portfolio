@@ -24,8 +24,19 @@ public class StrictEntityHierarchyVisitor<CONTEXT_TYPE extends VisitingContext> 
 			final StrictEntityVisitor<? extends Entity, CONTEXT_TYPE> entityVisitor = visitorLibrary.get(entity.getClass());
 			entityVisitor.visit(entity, context);
 		} else {
-			throw new RuntimeException("No visitor for " + entity.getClass()
-				.getSimpleName() + " has been implemented yet");
+			throw new VisitorNotImplementedException("No visitor for " + entity.getClass().getSimpleName() + " has been implemented yet");
+		}
+	}
+
+	public static class VisitorNotImplementedException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public VisitorNotImplementedException(String message) {
+			super(message);
+		}
+
+		public VisitorNotImplementedException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

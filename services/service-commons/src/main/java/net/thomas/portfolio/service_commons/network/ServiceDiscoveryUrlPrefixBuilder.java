@@ -37,21 +37,37 @@ public class ServiceDiscoveryUrlPrefixBuilder implements UrlPrefixBuilder {
 			} catch (final RuntimeException e) {
 				if (e.getMessage().contains("No matches for the virtual host")) {
 					LOG.error("Failed discovery of " + serviceInfo.getName() + ". Retrying " + (MAX_INSTANCE_LOOKUP_ATTEMPTS - tries - 1) + " more times.");
-					try {
-						Thread.sleep(5000);
-					} catch (final InterruptedException e1) {
-					}
+					sleepSilently(5000);
 				} else {
-					throw new RuntimeException("Unable to complete service discovery", e);
+					throw new ServiceDiscoveryException("Unable to complete service discovery", e);
 				}
 			}
 			tries++;
 		}
 		if (instanceInfo == null && tries == MAX_INSTANCE_LOOKUP_ATTEMPTS) {
-			throw new RuntimeException("Unable to locate " + serviceInfo.getName() + " in discovery service");
+			throw new ServiceDiscoveryException("Unable to locate " + serviceInfo.getName() + " in discovery service");
 		} else if (tries > 1) {
 			LOG.info("Discovery of " + serviceInfo.getName() + " successful.");
 		}
 		return instanceInfo;
+	}
+
+	private void sleepSilently(int timeInMillis) {
+		try {
+			Thread.sleep(timeInMillis);
+		} catch (final InterruptedException e1) {
+		}
+	}
+
+	public static class ServiceDiscoveryException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ServiceDiscoveryException(String message) {
+			super(message);
+		}
+
+		public ServiceDiscoveryException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

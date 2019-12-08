@@ -151,7 +151,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 				updateWithRelevantFieldsFromEntity(dataTypeEntity, entity, relevantFields);
 			};
 		} else {
-			throw new RuntimeException("Unable to convert entity of type " + entityClass.getSimpleName());
+			throw new UnableToConvertException("Unable to convert entity of type " + entityClass.getSimpleName());
 		}
 	}
 
@@ -159,7 +159,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 		try {
 			return entityClass.getField(fieldName);
 		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException("Unable to convert " + entityClass + " - " + fieldName, e);
+			throw new UnableToConvertException("Unable to convert " + entityClass + " - " + fieldName, e);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 			dataTypeEntity.setTimeOfEvent((Timestamp) timeOfEvent.get(entity));
 			dataTypeEntity.setTimeOfInterception((Timestamp) timeOfInterception.get(entity));
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to convert node " + entity, e);
+			throw new UnableToConvertException("Unable to convert node " + entity, e);
 		}
 	}
 
@@ -178,7 +178,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 			try {
 				dataTypeEntity.put(entityField.getName(), entityField.get(entity));
 			} catch (IllegalArgumentException | IllegalAccessException e) {
-				throw new RuntimeException("Unable to convert node " + entity, e);
+				throw new UnableToConvertException("Unable to convert node " + entity, e);
 			}
 		}
 	}
@@ -203,7 +203,7 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 				};
 			}
 		} catch (NoSuchFieldException | SecurityException e) {
-			throw new RuntimeException("Unable to build conversion hiearachy node for " + entityClass.getSimpleName() + " - " + field, e);
+			throw new UnableToConvertException("Unable to build conversion hiearachy node for " + entityClass.getSimpleName() + " - " + field, e);
 		}
 	}
 
@@ -231,5 +231,17 @@ public class Entity2DataTypeConverter implements VisitorEntityPreActionFactory<C
 
 	private <T extends Entity> String getType(final T entity) {
 		return entity.getClass().getSimpleName();
+	}
+
+	public static class UnableToConvertException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public UnableToConvertException(String message) {
+			super(message);
+		}
+
+		public UnableToConvertException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

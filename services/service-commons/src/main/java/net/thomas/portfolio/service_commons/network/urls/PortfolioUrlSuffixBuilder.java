@@ -23,19 +23,23 @@ import net.thomas.portfolio.services.ContextPathSection;
 public class PortfolioUrlSuffixBuilder implements UrlSuffixBuilder {
 	private static final Logger LOG = getLogger(PortfolioUrlSuffixBuilder.class);
 
+	@Override
 	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath) {
 		return buildUrlSuffix(servicePath, resourcePath, emptySet());
 	}
 
+	@Override
 	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final Parameter... parameters) {
 		return buildUrlSuffix(servicePath, resourcePath, asList(parameters));
 	}
 
+	@Override
 	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final ParameterGroup... groups) {
 		final Collection<Parameter> parameters = stream(groups).map(ParameterGroup::getParameters).flatMap(Arrays::stream).collect(Collectors.toList());
 		return buildUrlSuffix(servicePath, resourcePath, parameters);
 	}
 
+	@Override
 	public String buildUrlSuffix(final ContextPathSection servicePath, final ContextPathSection resourcePath, final Collection<Parameter> parameters) {
 		final String urlSuffix = buildResourceUrl(servicePath, resourcePath);
 		final String parameterString = buildParameterString(parameters);
@@ -50,10 +54,22 @@ public class PortfolioUrlSuffixBuilder implements UrlSuffixBuilder {
 		return parameters.stream().filter(Objects::nonNull).filter(parameter -> parameter.hasValue()).map(parameter -> {
 			try {
 				return parameter.getName() + "=" + encode(parameter.getValue().toString(), UTF_8.toString());
-			} catch (final UnsupportedEncodingException e) {
-				LOG.error("Unable to URL encode parameter " + parameter.getName(), e);
-				throw new RuntimeException("Unable to URL encode parameter " + parameter.getName(), e);
+			} catch (final UnsupportedEncodingException cause) {
+				LOG.error("Unable to URL encode parameter " + parameter.getName(), cause);
+				throw new UrlBuildException("Unable to URL encode parameter " + parameter.getName(), cause);
 			}
 		}).collect(joining("&"));
+	}
+
+	public static class UrlBuildException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public UrlBuildException(String message) {
+			super(message);
+		}
+
+		public UrlBuildException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }
