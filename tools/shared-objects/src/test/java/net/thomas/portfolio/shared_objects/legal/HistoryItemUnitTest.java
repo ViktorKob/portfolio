@@ -4,14 +4,9 @@ import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.SELECTOR_STATISTICS;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -37,7 +32,7 @@ public class HistoryItemUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserializeCorrectly() throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
+	public void shouldSerializeDeserializeCorrectly() throws Exception {
 		final HistoryItem item = builder.build();
 		final ObjectMapper mapper = new ObjectMapper();
 		final HistoryItem actualValue = mapper.readValue(mapper.writeValueAsString(item), HistoryItem.class);

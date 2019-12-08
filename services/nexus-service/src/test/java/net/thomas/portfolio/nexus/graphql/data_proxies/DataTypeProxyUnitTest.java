@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import net.thomas.portfolio.common.utils.ProgrammingException;
 import net.thomas.portfolio.service_commons.adaptors.Adaptors;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -128,7 +129,7 @@ public class DataTypeProxyUnitTest {
 		@Override
 		protected DataType _getEntity() {
 			if (getEntityHasBeenCalled) {
-				throw new RuntimeException("_getEntity was called more than once");
+				throw new ProgrammingException("_getEntity was called more than once");
 			}
 			getEntityHasBeenCalled = true;
 			return SOME_ENTITY;

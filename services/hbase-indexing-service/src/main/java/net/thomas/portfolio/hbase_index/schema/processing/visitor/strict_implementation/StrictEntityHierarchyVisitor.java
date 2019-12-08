@@ -9,6 +9,11 @@ import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityVisitor;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.VisitingContext;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.strict_implementation.entities.StrictEntityVisitor;
 
+/***
+ * Strict implementation of a depth-first entity traversal algorithm.
+ *
+ * Has knowledge of each type in advance and leverages this to traverse through the fields directly.
+ */
 @ThreadSafe
 public class StrictEntityHierarchyVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
 

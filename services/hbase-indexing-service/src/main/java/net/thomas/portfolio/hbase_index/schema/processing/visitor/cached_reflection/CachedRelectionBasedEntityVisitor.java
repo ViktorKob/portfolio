@@ -3,15 +3,24 @@ package net.thomas.portfolio.hbase_index.schema.processing.visitor.cached_reflec
 import java.lang.reflect.Field;
 import java.util.Map;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import net.thomas.portfolio.hbase_index.schema.Entity;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityTraversalException;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityVisitor;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.cached_reflection.actions.EntityActions;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.cached_reflection.actions.FieldActions;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.contexts.VisitingContext;
 
+/***
+ * Cached implementation of a reflection based depth-first entity traversal algorithm.
+ *
+ * Caches the structure of each type during construction and then leverage this information, when
+ * executing the visit.
+ */
+@ThreadSafe
 public class CachedRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
 	private final Map<Object, EntityActions<CONTEXT_TYPE>> actionMap;
-	private Object object;
 
 	public CachedRelectionBasedEntityVisitor(Map<Object, EntityActions<CONTEXT_TYPE>> actionMap) {
 		this.actionMap = actionMap;
@@ -26,8 +35,7 @@ public class CachedRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingCont
 			for (final Field field : entityClass.getFields()) {
 				if ("uid".equals(field.getName())) {
 					continue;
-				} else if (field.getType()
-					.isArray()) {
+				} else if (field.getType().isArray()) {
 					final FieldActions<CONTEXT_TYPE> fieldActions = actions.fieldActions.get(field.getName());
 					fieldActions.preField.performFieldPreAction(entity, context);
 					final Entity[] subEntities = (Entity[]) field.get(entity);
@@ -46,15 +54,15 @@ public class CachedRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingCont
 					}
 				} else {
 					final FieldActions<CONTEXT_TYPE> fieldActions = actions.fieldActions.get(field.getName());
-					object = field.get(entity);
+					final Object object = field.get(entity);
 					if (object != null) {
 						fieldActions.simpleField.performSimpleFieldAction(entity, context);
 					}
 				}
 			}
 			actions.postEntity.performEntityPostAction(entity, context);
-		} catch (IllegalAccessException | SecurityException e) {
-			throw new RuntimeException("Unable to visit entity " + entity);
+		} catch (IllegalAccessException | SecurityException cause) {
+			throw new EntityTraversalException("Unable to visit entity " + entity, cause);
 		}
 	}
 }

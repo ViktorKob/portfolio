@@ -9,6 +9,7 @@ import java.util.Iterator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import net.thomas.portfolio.hbase_index.fake.generators.EntityGenerationException;
 import net.thomas.portfolio.hbase_index.schema.selectors.PrivateId;
 
 public class PrivateIdGeneratorUnitTest {
@@ -40,7 +41,7 @@ public class PrivateIdGeneratorUnitTest {
 		for (int i = 0; i < 100; i++) {
 			final PrivateId privateId = GENERATOR.next();
 			if (privateId.number.contains(" ")) {
-				throw new RuntimeException("Found whitespaces in sample");
+				throw new EntityGenerationException("Found whitespaces in sample");
 			}
 		}
 		assertTrue(TEST_DONE); // Here to fix code analysis issue

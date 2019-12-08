@@ -65,8 +65,8 @@ public class EventDiskReader extends EventDiskIo implements EventReader {
 			if (path != null) {
 				try {
 					return list(path).map(file -> file.toAbsolutePath()).collect(toCollection(LinkedList::new));
-				} catch (final IOException e) {
-					throw new RuntimeException("Unable to access data on disk", e);
+				} catch (final IOException cause) {
+					throw new EventAccessException("Unable to access data on disk", cause);
 				}
 			} else {
 				return null;
@@ -76,10 +76,9 @@ public class EventDiskReader extends EventDiskIo implements EventReader {
 		private Queue<Path> readFileList(final Path path) {
 			if (path != null) {
 				try {
-					return list(path).filter(file -> matchesEventFile(file)).map(file -> file.toAbsolutePath())
-							.collect(toCollection(LinkedList::new));
-				} catch (final IOException e) {
-					throw new RuntimeException("Unable to access data on disk", e);
+					return list(path).filter(file -> matchesEventFile(file)).map(file -> file.toAbsolutePath()).collect(toCollection(LinkedList::new));
+				} catch (final IOException cause) {
+					throw new EventAccessException("Unable to access data on disk", cause);
 				}
 			} else {
 				return null;
@@ -127,8 +126,20 @@ public class EventDiskReader extends EventDiskIo implements EventReader {
 	private <T> T read(final File file, final Class<T> contentClass) {
 		try (final InputStream inputStream = new GZIPInputStream(new FileInputStream(file))) {
 			return objectMapper.readValue(inputStream, contentClass);
-		} catch (final IOException e) {
-			throw new RuntimeException("Unable to access data on disk", e);
+		} catch (final IOException cause) {
+			throw new EventAccessException("Unable to access data on disk", cause);
+		}
+	}
+
+	public static class EventAccessException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EventAccessException(String message) {
+			super(message);
+		}
+
+		public EventAccessException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

@@ -77,11 +77,11 @@ public class GraphQlQueryBuilder {
 	public ParameterGroup build() {
 		switch (type) {
 			case MUTATION:
-			query = "mutation " + query;
+				query = "mutation " + query;
 				break;
 			case QUERY:
 			default:
-			query = "query " + query;
+				query = "query " + query;
 				break;
 		}
 		return asGroup(new SingleParameter("query", query), new SingleParameter("operationName", "test"), jsonParameter("variables", variables));
@@ -90,13 +90,25 @@ public class GraphQlQueryBuilder {
 	private SingleParameter jsonParameter(final String variable, final Map<String, String> value) {
 		try {
 			return new SingleParameter(variable, new ObjectMapper().writeValueAsString(value));
-		} catch (final JsonProcessingException e) {
-			throw new RuntimeException("Parameter creation failed", e);
+		} catch (final JsonProcessingException cause) {
+			throw new QueryBuildException("Parameter creation failed", cause);
 		}
 	}
 
 	enum QueryType {
 		QUERY,
 		MUTATION;
+	}
+
+	public static class QueryBuildException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public QueryBuildException(String message) {
+			super(message);
+		}
+
+		public QueryBuildException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

@@ -20,7 +20,7 @@ public class GraphQlQueryTestExecutionUtil {
 	private static final ContextPathSection GRAPH_QL = () -> {
 		return "/graphql";
 	};
-	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {
+	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<>() {
 	};
 	private final UrlFactory urlFactory;
 	private final HttpRestClient client;
@@ -63,8 +63,20 @@ public class GraphQlQueryTestExecutionUtil {
 				result = ((Map<String, Object>) result).get(element);
 			}
 			return result;
-		} catch (final Exception e) {
-			throw new RuntimeException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, e);
+		} catch (final Exception cause) {
+			throw new InvalidGraphQlResponseException("Unable to lookup path " + stream(path).collect(joining(".")) + " in response: " + response, cause);
+		}
+	}
+
+	public static class InvalidGraphQlResponseException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public InvalidGraphQlResponseException(String message) {
+			super(message);
+		}
+
+		public InvalidGraphQlResponseException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

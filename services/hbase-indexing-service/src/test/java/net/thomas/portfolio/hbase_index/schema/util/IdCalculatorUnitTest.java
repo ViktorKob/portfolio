@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.thomas.portfolio.hbase_index.schema.util.IdCalculator;
+import net.thomas.portfolio.common.utils.ProgrammingException;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
@@ -311,16 +311,15 @@ public class IdCalculatorUnitTest {
 		hasher.update(DOCUMENT_TYPE.getBytes());
 		final String value = (String) getField(DOCUMENT_ENTITY, VALUE_FIELD);
 		hasher.update(value.getBytes());
-		hasher.update(valueOf(DOCUMENT_ENTITY.getTimeOfEvent()
-			.getTimestamp()).getBytes());
+		hasher.update(valueOf(DOCUMENT_ENTITY.getTimeOfEvent().getTimestamp()).getBytes());
 		return keyConverter.convert(hasher.digest());
 	}
 
 	private static MessageDigest hasher() {
 		try {
 			return MessageDigest.getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			throw new RuntimeException("MD5 hasher is no longer available", e);
+		} catch (final NoSuchAlgorithmException cause) {
+			throw new ProgrammingException("MD5 hasher is no longer available", cause);
 		}
 	}
 

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertEquals;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SerializationDeserializationUtil {
-	private static final ThreadLocal<ObjectMapper> MAPPER = new ThreadLocal<ObjectMapper>() {
+	private static final ThreadLocal<ObjectMapper> MAPPER = new ThreadLocal<>() {
 		@Override
 		public ObjectMapper get() {
 			return new ObjectMapper();
@@ -30,8 +30,8 @@ public class SerializationDeserializationUtil {
 			final ObjectMapper mapper = MAPPER.get();
 			final String serializedInstance = mapper.writeValueAsString(object);
 			return (T) mapper.readValue(serializedInstance, object.getClass());
-		} catch (final Throwable e) {
-			throw new RuntimeException("Unable to serialize / deserialize object for test: " + object, e);
+		} catch (final Throwable cause) {
+			throw new ProtocolTestException("Unable to serialize / deserialize object for test: " + object, cause);
 		}
 	}
 
@@ -46,8 +46,20 @@ public class SerializationDeserializationUtil {
 			final ObjectMapper mapper = MAPPER.get();
 			final String serializedInstance = mapper.writeValueAsString(object);
 			return (T) mapper.readValue(serializedInstance, deserializationClass);
-		} catch (final Throwable e) {
-			throw new RuntimeException("Unable to serialize / deserialize object for test: " + object, e);
+		} catch (final Throwable cause) {
+			throw new ProtocolTestException("Unable to serialize / deserialize object for test: " + object, cause);
+		}
+	}
+
+	public static class ProtocolTestException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ProtocolTestException(String message) {
+			super(message);
+		}
+
+		public ProtocolTestException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import net.thomas.portfolio.common.utils.ProgrammingException;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
@@ -61,7 +62,7 @@ public class DataTypeDeserializer extends StdDeserializer<DataType> {
 				case "RawDataType":
 					return deserializeRawDataType(node, mapper);
 				default:
-					throw new RuntimeException("Unable to deserialize " + node);
+					throw new ProgrammingException("Unable to deserialize " + node + ": Missing deserializer for type " + node.get("dataType").asText());
 			}
 		} else if (node instanceof ArrayNode) {
 			final List<Object> values = new LinkedList<>();

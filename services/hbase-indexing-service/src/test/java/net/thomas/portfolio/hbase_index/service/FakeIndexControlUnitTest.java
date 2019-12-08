@@ -25,7 +25,7 @@ public class FakeIndexControlUnitTest {
 		final Path outputFolder = get(STORAGE_ROOT);
 		delete(outputFolder.toFile());
 		if (exists(outputFolder)) {
-			throw new RuntimeException("Unable to delete folder from disk for test: " + outputFolder.toAbsolutePath());
+			throw new IOException("Unable to delete folder from disk for test: " + outputFolder.toAbsolutePath());
 		}
 	}
 

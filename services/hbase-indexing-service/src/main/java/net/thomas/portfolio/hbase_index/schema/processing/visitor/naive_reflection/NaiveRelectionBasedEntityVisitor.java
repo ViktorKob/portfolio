@@ -2,7 +2,10 @@ package net.thomas.portfolio.hbase_index.schema.processing.visitor.naive_reflect
 
 import java.lang.reflect.Field;
 
+import javax.annotation.concurrent.ThreadSafe;
+
 import net.thomas.portfolio.hbase_index.schema.Entity;
+import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityTraversalException;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.EntityVisitor;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorEntityPostAction;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.actions.VisitorEntityPreAction;
@@ -11,8 +14,13 @@ import net.thomas.portfolio.hbase_index.schema.processing.visitor.naive_reflecti
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.naive_reflection.actions.VisitorNaiveFieldPreAction;
 import net.thomas.portfolio.hbase_index.schema.processing.visitor.naive_reflection.actions.VisitorNaiveFieldSimpleAction;
 
+/***
+ * Simple implementation of a reflection based depth-first entity traversal algorithm.
+ *
+ * Rediscovers the structure of the type every time it is run.
+ */
+@ThreadSafe
 public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingContext> implements EntityVisitor<CONTEXT_TYPE> {
-	private Object object;
 	private final VisitorEntityPreAction<Entity, CONTEXT_TYPE> entityPreAction;
 	private final VisitorEntityPostAction<Entity, CONTEXT_TYPE> entityPostAction;
 	private final VisitorNaiveFieldPreAction<Entity, CONTEXT_TYPE> fieldPreAction;
@@ -37,8 +45,7 @@ public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingConte
 			for (final Field field : entityClass.getFields()) {
 				if ("uid".equals(field.getName())) {
 					continue;
-				} else if (field.getType()
-					.isArray()) {
+				} else if (field.getType().isArray()) {
 					fieldPreAction.performNaiveFieldPreAction(entity, context, field.getName());
 					final Entity[] subEntities = (Entity[]) field.get(entity);
 					for (final Entity subEntity : subEntities) {
@@ -53,15 +60,15 @@ public class NaiveRelectionBasedEntityVisitor<CONTEXT_TYPE extends VisitingConte
 						fieldPostAction.performNaiveFieldPostAction(entity, context, field.getName());
 					}
 				} else {
-					object = field.get(entity);
+					final Object object = field.get(entity);
 					if (object != null) {
 						fieldSimpleAction.performNaiveSimpleFieldAction(entity, context, field.getName());
 					}
 				}
 			}
 			entityPostAction.performEntityPostAction(entity, context);
-		} catch (IllegalAccessException | SecurityException e) {
-			throw new RuntimeException("Unable to visit entity " + entity);
+		} catch (IllegalAccessException | SecurityException cause) {
+			throw new EntityTraversalException("Unable to visit entity " + entity, cause);
 		}
 	}
 }

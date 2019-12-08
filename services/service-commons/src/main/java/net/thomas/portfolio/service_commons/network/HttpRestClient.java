@@ -33,7 +33,7 @@ public class HttpRestClient {
 	}
 
 	public <T> T loadUrlAsObject(String url, final HttpMethod method) {
-		final ParameterizedTypeReference<T> responseType = new ParameterizedTypeReference<T>() {
+		final ParameterizedTypeReference<T> responseType = new ParameterizedTypeReference<>() {
 		};
 		final URI request = URI.create(url);
 		return execute(request, method, responseType);
@@ -55,20 +55,21 @@ public class HttpRestClient {
 			} else if (CREATED == response.getStatusCode()) {
 				return (T) (Boolean) true;
 			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
+				throw new UnableToCompleteRequestException(
+						"Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName() + " is working properly.");
 			}
-		} catch (final HttpClientErrorException e) {
+		} catch (final HttpClientErrorException cause) {
 			LOG.error("Spend " + (System.nanoTime() - stamp) / 1000000.0 + " ms failing to execute request '" + request + "'");
-			if (NOT_FOUND.equals(e.getStatusCode())) {
+			if (NOT_FOUND.equals(cause.getStatusCode())) {
 				return null;
-			} else if (UNAUTHORIZED == e.getStatusCode()) {
+			} else if (UNAUTHORIZED == cause.getStatusCode()) {
 				throw new UnauthorizedAccessException(
-						"Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.", e);
-			} else if (BAD_REQUEST == e.getStatusCode()) {
-				throw new BadRequestException("Request '" + request + "' is malformed. Please fix it before trying again.", e);
+						"Access denied for request '" + request + "'. Please verify that you have the correct credentials for the service.", cause);
+			} else if (BAD_REQUEST == cause.getStatusCode()) {
+				throw new BadRequestException("Request '" + request + "' is malformed. Please fix it before trying again.", cause);
 			} else {
-				throw new RuntimeException("Unable to execute request for '" + request + "'. Please verify " + serviceInfo.getName()
-						+ " is working properly. Http Error Code: " + e.getStatusCode() + "-" + e.getStatusText(), e);
+				throw new UnableToCompleteRequestException("Unable to complete request for '" + request + "'. Please verify " + serviceInfo.getName()
+						+ " is working properly. Http Error Code: " + cause.getStatusCode() + "-" + cause.getStatusText(), cause);
 			}
 		}
 	}
@@ -78,4 +79,5 @@ public class HttpRestClient {
 		headers.add("Authorization", "Basic " + credentials.getEncoded());
 		return new HttpEntity<>(headers);
 	}
+
 }

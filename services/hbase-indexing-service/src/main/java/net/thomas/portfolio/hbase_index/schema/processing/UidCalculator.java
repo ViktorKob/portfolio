@@ -42,8 +42,8 @@ public class UidCalculator {
 					addField(hasher, entity, field);
 				}
 			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to determine Uid", e);
+		} catch (IllegalArgumentException | IllegalAccessException cause) {
+			throw new FieldLookupException("Unable to determine Uid", cause);
 		}
 	}
 
@@ -71,5 +71,17 @@ public class UidCalculator {
 	@Override
 	public String toString() {
 		return asString(this);
+	}
+
+	public static class FieldLookupException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public FieldLookupException(String message) {
+			super(message);
+		}
+
+		public FieldLookupException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }
