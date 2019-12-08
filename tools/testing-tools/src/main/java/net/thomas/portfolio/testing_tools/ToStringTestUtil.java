@@ -18,8 +18,8 @@ public class ToStringTestUtil {
 					assertStringContainsNameAndValue(asString, field.getName(), value.toString());
 				}
 			}
-		} catch (final IllegalArgumentException e) {
-			throw new RuntimeException("Unable to compare equality for object " + object, e);
+		} catch (final IllegalArgumentException cause) {
+			throw new FieldReflectionException("Unable to compare equality for object " + object, cause);
 		}
 	}
 
@@ -27,5 +27,17 @@ public class ToStringTestUtil {
 		final String remainder = string.substring(string.indexOf(name) + name.length());
 		final int indexOfValue = remainder.indexOf(value);
 		assertTrue(indexOfValue >= 0 && indexOfValue < MAXIMUM_ACCEPTABLE_CHARACTOR_DISTANCE);
+	}
+
+	public static class FieldReflectionException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public FieldReflectionException(String message) {
+			super(message);
+		}
+
+		public FieldReflectionException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

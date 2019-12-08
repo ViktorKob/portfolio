@@ -5,6 +5,7 @@ import static net.thomas.portfolio.common.utils.ToStringUtil.asString;
 
 import java.util.List;
 
+import net.thomas.portfolio.common.utils.ProgrammingException;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Field;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField;
@@ -47,8 +48,7 @@ public class IdCalculator {
 		}
 
 		if (entity instanceof Document) {
-			hasher.add(valueOf(((Document) entity).getTimeOfEvent()
-				.getTimestamp()).getBytes());
+			hasher.add(valueOf(((Document) entity).getTimeOfEvent().getTimestamp()).getBytes());
 		}
 		final String uid = hasher.digest();
 		return new DataTypeId(type, uid);
@@ -59,14 +59,13 @@ public class IdCalculator {
 			if (PrimitiveType.TIMESTAMP == ((PrimitiveField) field).getType()) {
 				return valueOf(((Timestamp) value).getTimestamp()).getBytes();
 			} else {
-				return value.toString()
-					.getBytes();
+				return value.toString().getBytes();
 			}
 		} else if (field instanceof ReferenceField) {
 			final DataTypeId id = ((DataType) value).getId();
 			return id.uid.getBytes();
 		} else {
-			throw new RuntimeException("Unknown field " + field);
+			throw new ProgrammingException("Field type " + field.getClass().getSimpleName() + " has not been implemented yet");
 		}
 	}
 

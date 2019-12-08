@@ -25,21 +25,35 @@ public class EventDiskWriter extends EventDiskIo implements EventWriter {
 		}
 	}
 
+	@Override
 	public void add(final Event event) {
 		final Path filePath = createEventPath(event.uid);
 		try (final OutputStream outputStream = new GZIPOutputStream(new FileOutputStream(filePath.toFile()))) {
 			objectMapper.writeValue(outputStream, event);
-		} catch (final IOException e) {
-			throw new RuntimeException("Unable to export data to file " + filePath, e);
+		} catch (final IOException cause) {
+			throw new EventWriteException("Unable to export data to file " + filePath, cause);
 		}
 	}
 
+	@Override
 	public void add(final String uid, final References references) {
 		final Path filePath = createEventReferencesPath(uid);
 		try (final OutputStream outputStream = new GZIPOutputStream(new FileOutputStream(filePath.toFile()))) {
 			objectMapper.writeValue(outputStream, references);
-		} catch (final IOException e) {
-			throw new RuntimeException("Unable to export data to file " + filePath, e);
+		} catch (final IOException cause) {
+			throw new EventWriteException("Unable to export data to file " + filePath, cause);
+		}
+	}
+
+	public static class EventWriteException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EventWriteException(String message) {
+			super(message);
+		}
+
+		public EventWriteException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }

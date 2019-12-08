@@ -29,7 +29,7 @@ public class SimpleRepresentationParserLibraryBuilder {
 
 	public SimpleRepresentationParserLibraryBuilder add(SimpleRepresentationParserImpl parser) {
 		if (parsers.containsKey(parser.getType())) {
-			throw new RuntimeException("Parser for type " + parser.getType() + " was added more than once");
+			throw new ParserLibraryBuildException("Parser for type " + parser.getType() + " was added more than once");
 		}
 		parsers.put(parser.getType(), parser);
 		return this;
@@ -63,5 +63,17 @@ public class SimpleRepresentationParserLibraryBuilder {
 		final SimpleRepresentationParserLibraryImpl library = new SimpleRepresentationParserLibraryImpl(parsers);
 		library.setSelectorTypes(dataTypeFields.keySet());
 		return library;
+	}
+
+	public static class ParserLibraryBuildException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ParserLibraryBuildException(String message) {
+			super(message);
+		}
+
+		public ParserLibraryBuildException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

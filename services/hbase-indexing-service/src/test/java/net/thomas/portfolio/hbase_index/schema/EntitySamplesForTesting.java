@@ -43,34 +43,26 @@ public class EntitySamplesForTesting {
 	public static final Domain SOME_DOMAIN = new Domain("part", SOME_TOP_LEVEL_DOMAIN);
 	public static final EmailAddress SOME_EMAIL_ADDRESS = new EmailAddress(SOME_LOCALNAME, SOME_DOMAIN);
 	public static final EmailEndpoint SOME_EMAIL_ENDPOINT = new EmailEndpoint(SOME_DISPLAYED_NAME, SOME_EMAIL_ADDRESS);
-	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME = new EmailEndpoint(null,
-			SOME_EMAIL_ADDRESS);
+	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME = new EmailEndpoint(null, SOME_EMAIL_ADDRESS);
 	public static final EmailEndpoint EMAIL_ENDPOINT_MISSING_ADDRESS = new EmailEndpoint(SOME_DISPLAYED_NAME, null);
-	public static final CommunicationEndpoint SOME_COMMUNICATION_ENDPOINT = new CommunicationEndpoint(SOME_PUBLIC_ID,
-			SOME_PRIVATE_ID);
-	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME = new CommunicationEndpoint(
-			null, SOME_PRIVATE_ID);
-	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_ADDRESS = new CommunicationEndpoint(
-			SOME_PUBLIC_ID, null);
-	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT,
-			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME),
+	public static final CommunicationEndpoint SOME_COMMUNICATION_ENDPOINT = new CommunicationEndpoint(SOME_PUBLIC_ID, SOME_PRIVATE_ID);
+	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_DISPLAYED_NAME = new CommunicationEndpoint(null, SOME_PRIVATE_ID);
+	public static final CommunicationEndpoint COMMUNICATION_ENDPOINT_MISSING_ADDRESS = new CommunicationEndpoint(SOME_PUBLIC_ID, null);
+	public static final Email SOME_EMAIL = new Email(SOME_SUBJECT, SOME_MESSAGE, SOME_EMAIL_ENDPOINT, asArray(SOME_EMAIL_ENDPOINT),
+			asArray(SOME_EMAIL_ENDPOINT, EMAIL_ENDPOINT_MISSING_DISPLAYED_NAME), asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Email SOME_OTHER_EMAIL = new Email("abc", "def", SOME_EMAIL_ENDPOINT, asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT),
 			asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Email SOME_OTHER_EMAIL = new Email("abc", "def", SOME_EMAIL_ENDPOINT,
-			asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT), asArray(SOME_EMAIL_ENDPOINT), SOME_TIMESTAMP,
-			SOME_TIMESTAMP);
-	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT,
-			SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT,
-			SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
-	public static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID,
-			SOME_PRIVATE_ID, SOME_DOMAIN, SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
-			SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
-	public static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME,
-			SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN, SOME_EMAIL_ADDRESS };
+	public static final TextMessage SOME_TEXT_MESSAGE = new TextMessage(SOME_MESSAGE, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_LOCATION,
+			SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Conversation SOME_CONVERSATION = new Conversation(SOME_DURATION, SOME_COMMUNICATION_ENDPOINT, SOME_COMMUNICATION_ENDPOINT,
+			SOME_LOCATION, SOME_LOCATION, SOME_TIMESTAMP, SOME_TIMESTAMP);
+	public static final Entity[] INSTANCE_OF_EACH_ENTITY_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+			SOME_EMAIL_ADDRESS, SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT, SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
+	public static final SelectorEntity[] INSTANCE_OF_EACH_SELECTOR_TYPE = { SOME_LOCALNAME, SOME_DISPLAYED_NAME, SOME_PUBLIC_ID, SOME_PRIVATE_ID, SOME_DOMAIN,
+			SOME_EMAIL_ADDRESS };
 	public static final MetaEntity[] INSTANCE_OF_EACH_META_TYPE = { SOME_EMAIL_ENDPOINT, SOME_COMMUNICATION_ENDPOINT };
 	public static final Event[] INSTANCE_OF_EACH_EVENT_TYPE = { SOME_EMAIL, SOME_TEXT_MESSAGE, SOME_CONVERSATION };
-	public static final References REFERENCES_FOR_SOME_EMAIL = new References(
-			asList(new Reference(APPLE, "SomeOriginalId", emptySet())));
+	public static final References REFERENCES_FOR_SOME_EMAIL = new References(asList(new Reference(APPLE, "SomeOriginalId", emptySet())));
 
 	static {
 		SOME_DISPLAYED_NAME.uid = "00";
@@ -96,8 +88,8 @@ public class EntitySamplesForTesting {
 		for (final Entity entity : INSTANCE_OF_EACH_ENTITY_TYPE) {
 			try {
 				runner.executeOn(entity);
-			} catch (final Exception t) {
-				throw new RuntimeException("Failed while testing " + entity, t);
+			} catch (final Exception cause) {
+				throw new EntitySampleTestException("Failed while testing " + entity, cause);
 			}
 		}
 	}
@@ -106,8 +98,8 @@ public class EntitySamplesForTesting {
 		for (final Event event : INSTANCE_OF_EACH_EVENT_TYPE) {
 			try {
 				runner.executeOn(event);
-			} catch (final Exception t) {
-				throw new RuntimeException("Failed testing " + event, t);
+			} catch (final Exception cause) {
+				throw new EntitySampleTestException("Failed testing " + event, cause);
 			}
 		}
 	}
@@ -116,8 +108,8 @@ public class EntitySamplesForTesting {
 		for (final MetaEntity metaEntity : INSTANCE_OF_EACH_META_TYPE) {
 			try {
 				runner.executeOn(metaEntity);
-			} catch (final Exception t) {
-				throw new RuntimeException("Failed testing " + metaEntity, t);
+			} catch (final Exception cause) {
+				throw new EntitySampleTestException("Failed testing " + metaEntity, cause);
 			}
 		}
 	}
@@ -126,8 +118,8 @@ public class EntitySamplesForTesting {
 		for (final SelectorEntity selector : INSTANCE_OF_EACH_SELECTOR_TYPE) {
 			try {
 				runner.executeOn(selector);
-			} catch (final Exception t) {
-				throw new RuntimeException("Failed testing " + selector, t);
+			} catch (final Exception cause) {
+				throw new EntitySampleTestException("Failed testing " + selector, cause);
 			}
 		}
 	}
@@ -137,8 +129,8 @@ public class EntitySamplesForTesting {
 			if (selector.getClass().isAnnotationPresent(SimpleRepresentable.class)) {
 				try {
 					runner.executeOn(selector);
-				} catch (final Exception t) {
-					throw new RuntimeException("Failed testing " + selector, t);
+				} catch (final Exception cause) {
+					throw new EntitySampleTestException("Failed testing " + selector, cause);
 				}
 			}
 		}
@@ -170,13 +162,11 @@ public class EntitySamplesForTesting {
 	}
 
 	public static Field[] getFieldsExceptUid(Entity entity) {
-		return stream(entity.getClass().getFields()).filter(field -> !"uid".equals(field.getName()))
-				.toArray(Field[]::new);
+		return stream(entity.getClass().getFields()).filter(field -> !"uid".equals(field.getName())).toArray(Field[]::new);
 	}
 
 	public static Field[] getRelevantFields(Entity entity) {
-		return stream(entity.getClass().getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName()))
-				.toArray(Field[]::new);
+		return stream(entity.getClass().getDeclaredFields()).filter(field -> !"$jacocoData".equals(field.getName())).toArray(Field[]::new);
 	}
 
 	public static Class<?> getComponentType(Field field) {
@@ -193,5 +183,17 @@ public class EntitySamplesForTesting {
 
 	public static DataTypeId idFor(Entity entity) {
 		return new DataTypeId(getClassSimpleName(entity), entity.uid);
+	}
+
+	public static class EntitySampleTestException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public EntitySampleTestException(String message) {
+			super(message);
+		}
+
+		public EntitySampleTestException(String message, Throwable cause) {
+			super(message, cause);
+		}
 	}
 }

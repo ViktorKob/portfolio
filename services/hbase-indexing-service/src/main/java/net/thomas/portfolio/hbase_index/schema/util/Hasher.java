@@ -7,6 +7,8 @@ import static javax.xml.bind.DatatypeConverter.printHexBinary;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import net.thomas.portfolio.common.utils.ProgrammingException;
+
 public class Hasher {
 	private static int counter = 0;
 	private MessageDigest hasher;
@@ -14,8 +16,8 @@ public class Hasher {
 	public Hasher() {
 		try {
 			hasher = getInstance("MD5");
-		} catch (final NoSuchAlgorithmException e) {
-			throw new RuntimeException("Unable to calculate hash", e);
+		} catch (final NoSuchAlgorithmException cause) {
+			throw new ProgrammingException("MD5 hasher is no longer available", cause);
 		}
 	}
 

@@ -23,8 +23,20 @@ public class BoundMatcher implements ArgumentMatcher<Bounds> {
 	public boolean matches(final Bounds bounds) {
 		try {
 			return value.equals(field.get(bounds));
-		} catch (IllegalArgumentException | IllegalAccessException e) {
-			throw new RuntimeException("Unable to lookup field " + field.getName() + " in " + bounds);
+		} catch (IllegalArgumentException | IllegalAccessException cause) {
+			throw new FieldLookupException("Unable to lookup field " + field.getName() + " in " + bounds, cause);
+		}
+	}
+
+	public static class FieldLookupException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public FieldLookupException(String message) {
+			super(message);
+		}
+
+		public FieldLookupException(String message, Throwable cause) {
+			super(message, cause);
 		}
 	}
 }
