@@ -35,21 +35,21 @@ public class RenderingAdaptorImpl implements PortfolioInfrastructureAware, Rende
 	@Override
 	@SentinelResource(value = RENDER_AS_SIMPLE_REPRESENTATION)
 	public String renderAsSimpleRepresentation(DataTypeId selectorId) {
-		final String url = urlLibrary.selectors.render.simpleRepresentation(selectorId);
+		final String url = urlLibrary.selectors().render().simpleRepresentation(selectorId);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 
 	@Override
 	@SentinelResource(value = RENDER_AS_TEXT)
 	public String renderAsText(DataTypeId id) {
-		final String url = urlLibrary.entities.render.text(id);
+		final String url = urlLibrary.entities().render().text(id);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 
 	@Override
 	@SentinelResource(value = RENDER_AS_HTML)
 	public String renderAsHtml(DataTypeId id) {
-		final String url = urlLibrary.entities.render.html(id);
+		final String url = urlLibrary.entities().render().html(id);
 		return unwrap(client.loadUrlAsObject(url, GET, STRING_RESOURCE));
 	}
 }

@@ -98,12 +98,12 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveEntitySamplesUrl() {
 		final ContextPathSection endpoint = asContextPath(ENTITIES_PATH, SOME_DATA_TYPE, SAMPLES_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)), (ParameterGroup) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.entities.samples(SOME_DATA_TYPE, SOME_INTEGER));
+		assertEquals(SOME_URL_STRING, library.entities().samples(SOME_DATA_TYPE, SOME_INTEGER));
 	}
 
 	@Test
 	public void shouldHaveEntitySamplesParameterAmount() {
-		library.entities.samples(SOME_DATA_TYPE, SOME_INTEGER);
+		library.entities().samples(SOME_DATA_TYPE, SOME_INTEGER);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_INTEGER)));
 	}
 
@@ -111,33 +111,33 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveEntityLookupUrl() {
 		final ContextPathSection endpoint = asContextPath(ENTITIES_PATH, SOME_DATA_TYPE, SOME_UID);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.entities.lookup(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.entities().lookup(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveEntityRenderAsTextUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_TEXT_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.entities.render.text(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.entities().render().text(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveEntityRenderAsHtmlUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_HTML_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.entities.render.html(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.entities().render().html(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveDocumentSamplesUrl() {
 		final ContextPathSection endpoint = asContextPath(DOCUMENTS_PATH, SOME_DATA_TYPE, SAMPLES_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)), (ParameterGroup) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.samples(SOME_DATA_TYPE, SOME_INTEGER));
+		assertEquals(SOME_URL_STRING, library.documents().samples(SOME_DATA_TYPE, SOME_INTEGER));
 	}
 
 	@Test
 	public void shouldHaveDocumentSamplesParameterAmount() {
-		library.documents.samples(SOME_DATA_TYPE, SOME_INTEGER);
+		library.documents().samples(SOME_DATA_TYPE, SOME_INTEGER);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_INTEGER)));
 	}
 
@@ -145,46 +145,46 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveDocumentLookupUrl() {
 		final ContextPathSection endpoint = asContextPath(DOCUMENTS_PATH, SOME_DATA_TYPE, SOME_UID);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.lookup(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.documents().lookup(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveDocumentReferencesUrl() {
 		final ContextPathSection endpoint = asContextPath(DOCUMENTS_PATH, SOME_DATA_TYPE, SOME_UID, REFERENCES_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.references(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.documents().references(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveDocumentGetUsageActivitiesUrl() {
 		final ContextPathSection endpoint = asContextPath(USAGE_ACTIVITIES_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, USAGE_ACTIVITIES_PATH);
 		when(urlFactory.buildUrl(eq(USAGE_DATA_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.usageActivities(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.documents().usageActivities(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveDocumentGetUsageActivitiesUrlWithBounds() {
 		final ContextPathSection endpoint = asContextPath(USAGE_ACTIVITIES_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, USAGE_ACTIVITIES_PATH);
 		when(urlFactory.buildUrl(eq(USAGE_DATA_SERVICE), argThat(matches(endpoint)), (Bounds) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.usageActivities(SOME_DATA_TYPE_ID, someBounds));
+		assertEquals(SOME_URL_STRING, library.documents().usageActivities(SOME_DATA_TYPE_ID, someBounds));
 	}
 
 	@Test
 	public void shouldHaveDocumentPostUsageActivitiesUrl() {
 		final ContextPathSection endpoint = asContextPath(USAGE_ACTIVITIES_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, USAGE_ACTIVITIES_PATH);
 		when(urlFactory.buildUrl(eq(USAGE_DATA_SERVICE), argThat(matches(endpoint)), (UsageActivity) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.usageActivities(SOME_DATA_TYPE_ID, someUsageActivity));
+		assertEquals(SOME_URL_STRING, library.documents().usageActivities(SOME_DATA_TYPE_ID, someUsageActivity));
 	}
 
 	@Test
 	public void shouldHaveDocumentGetUsageActivitiesParameterBounds() {
-		library.documents.usageActivities(SOME_DATA_TYPE_ID, someBounds);
+		library.documents().usageActivities(SOME_DATA_TYPE_ID, someBounds);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(someBounds)));
 	}
 
 	@Test
 	public void shouldHaveDocumentPostUsageActivitiesParameterUsageActivity() {
-		library.documents.usageActivities(SOME_DATA_TYPE_ID, someUsageActivity);
+		library.documents().usageActivities(SOME_DATA_TYPE_ID, someUsageActivity);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(someUsageActivity)));
 	}
 
@@ -192,26 +192,26 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveDocumentRenderAsTextUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_TEXT_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.render.text(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.documents().render().text(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveDocumentRenderAsHtmlUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_HTML_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.documents.render.html(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.documents().render().html(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorSamplesUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SAMPLES_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)), (ParameterGroup) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.samples(SOME_DATA_TYPE, SOME_INTEGER));
+		assertEquals(SOME_URL_STRING, library.selectors().samples(SOME_DATA_TYPE, SOME_INTEGER));
 	}
 
 	@Test
 	public void shouldHaveSelectorSamplesParameterAmount() {
-		library.selectors.samples(SOME_DATA_TYPE, SOME_INTEGER);
+		library.selectors().samples(SOME_DATA_TYPE, SOME_INTEGER);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_INTEGER)));
 	}
 
@@ -219,40 +219,40 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveSelectorSuggestionsUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SUGGESTIONS_PATH, SOME_SIMPLE_REPRESENTATION + "/");
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.suggestions(SOME_SIMPLE_REPRESENTATION));
+		assertEquals(SOME_URL_STRING, library.selectors().suggestions(SOME_SIMPLE_REPRESENTATION));
 	}
 
 	@Test
 	public void shouldHaveSelectorLookupUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SOME_UID);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.lookup(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().lookup(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorFromSimpleRepresentationUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, FROM_SIMPLE_REP_PATH, SOME_SIMPLE_REPRESENTATION + "/");
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.fromSimpleRepresentation(SOME_DATA_TYPE, SOME_SIMPLE_REPRESENTATION));
+		assertEquals(SOME_URL_STRING, library.selectors().fromSimpleRepresentation(SOME_DATA_TYPE, SOME_SIMPLE_REPRESENTATION));
 	}
 
 	@Test
 	public void shouldHaveSelectorInvertedIndexLookupUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SOME_UID, INVERTED_INDEX_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.invertedIndex(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().invertedIndex(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorInvertedIndexLookupUrlWithParameter() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SOME_UID, INVERTED_INDEX_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)), (ParameterGroup[]) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest));
+		assertEquals(SOME_URL_STRING, library.selectors().invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest));
 	}
 
 	@Test
 	public void shouldHaveSelectorInvertedIndexLookupUrlWithParameterInvertedIndexRequest() {
-		library.selectors.invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest);
+		library.selectors().invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 
@@ -260,47 +260,47 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveSelectorKnowledgeUrl() {
 		final ContextPathSection endpoint = asContextPath(LOOKUP_KNOWLEDGE_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, LOOKUP_KNOWLEDGE_PATH);
 		when(urlFactory.buildUrl(eq(ANALYTICS_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.knowledge(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().knowledge(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorStatisticsUrl() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SOME_UID, STATISTICS_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.statistics(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().statistics(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorRenderAsTextUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_TEXT_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.render.text(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().render().text(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorRenderAsSimpleRepresentationUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_SELECTOR_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_SIMPLE_REPRESENTATION_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.render.simpleRepresentation(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().render().simpleRepresentation(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveSelectorRenderAsHtmlUrl() {
 		final ContextPathSection endpoint = asContextPath(RENDER_ENTITY_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, AS_HTML_PATH);
 		when(urlFactory.buildUrl(eq(RENDER_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.render.html(SOME_DATA_TYPE_ID));
+		assertEquals(SOME_URL_STRING, library.selectors().render().html(SOME_DATA_TYPE_ID));
 	}
 
 	@Test
 	public void shouldHaveAuditCheckInvertedIndexUrl() {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, LegalServiceGlobals.INVERTED_INDEX_PATH, LEGAL_RULES_PATH);
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)), (LegalInformation) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.audit.check.invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo));
+		assertEquals(SOME_URL_STRING, library.selectors().audit().check().invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo));
 	}
 
 	@Test
 	public void shouldHaveAuditCheckInvertedIndexUrlWithParameterLegalInfo() {
-		library.selectors.audit.check.invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo);
+		library.selectors().audit().check().invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 
@@ -308,12 +308,12 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveAuditCheckStatisticsUrl() {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, LegalServiceGlobals.STATISTICS_PATH, LEGAL_RULES_PATH);
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)), (LegalInformation) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.audit.check.statistics(SOME_DATA_TYPE_ID, someLegalInfo));
+		assertEquals(SOME_URL_STRING, library.selectors().audit().check().statistics(SOME_DATA_TYPE_ID, someLegalInfo));
 	}
 
 	@Test
 	public void shouldHaveAuditCheckStatisticsUrlWithParameterLegalInfo() {
-		library.selectors.audit.check.statistics(SOME_DATA_TYPE_ID, someLegalInfo);
+		library.selectors().audit().check().statistics(SOME_DATA_TYPE_ID, someLegalInfo);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 
@@ -322,12 +322,12 @@ public class PortfolioUrlLibraryUnitTest {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, LegalServiceGlobals.INVERTED_INDEX_PATH,
 				AUDIT_LOGGING_PATH);
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)), (LegalInformation) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.audit.log.invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo));
+		assertEquals(SOME_URL_STRING, library.selectors().audit().log().invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo));
 	}
 
 	@Test
 	public void shouldHaveAuditLogInvertedIndexUrlWithParameterLegalInfo() {
-		library.selectors.audit.log.invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo);
+		library.selectors().audit().log().invertedIndex(SOME_DATA_TYPE_ID, someLegalInfo);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 
@@ -335,12 +335,12 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveAuditLogStatisticsUrl() {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, SOME_DATA_TYPE, SOME_UID, LegalServiceGlobals.STATISTICS_PATH, AUDIT_LOGGING_PATH);
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)), (LegalInformation) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.audit.log.statistics(SOME_DATA_TYPE_ID, someLegalInfo));
+		assertEquals(SOME_URL_STRING, library.selectors().audit().log().statistics(SOME_DATA_TYPE_ID, someLegalInfo));
 	}
 
 	@Test
 	public void shouldHaveAuditLogStatisticsUrlWithParameterLegalInfo() {
-		library.selectors.audit.log.statistics(SOME_DATA_TYPE_ID, someLegalInfo);
+		library.selectors().audit().log().statistics(SOME_DATA_TYPE_ID, someLegalInfo);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 
@@ -348,14 +348,14 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveLegalHistoryUrl() {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, HISTORY_PATH);
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.history.all());
+		assertEquals(SOME_URL_STRING, library.selectors().history().all());
 	}
 
 	@Test
 	public void shouldHaveLegalHistoryForItemUrl() {
 		final ContextPathSection endpoint = asContextPath(LEGAL_ROOT_PATH, HISTORY_PATH, "" + SOME_INTEGER + "/");
 		when(urlFactory.buildUrl(eq(LEGAL_SERVICE), argThat(matches(endpoint)))).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors.history.item(SOME_INTEGER));
+		assertEquals(SOME_URL_STRING, library.selectors().history().item(SOME_INTEGER));
 	}
 
 	private ContextPathSection asContextPath(String... elements) {
@@ -369,10 +369,6 @@ public class PortfolioUrlLibraryUnitTest {
 	private ArgumentMatcher<ParameterGroup> matches(Integer value) {
 		return group -> group.getParameters()[0].getValue().equals(value);
 	}
-
-	// private ArgumentMatcher<ParameterGroup> matchesGroup(ParameterGroup value) {
-	// return group -> group.getParameters()[0].equals(value.getParameters()[0]);
-	// }
 
 	private ArgumentMatcher<ParameterGroup> matches(ParameterGroup value) {
 		return group -> {

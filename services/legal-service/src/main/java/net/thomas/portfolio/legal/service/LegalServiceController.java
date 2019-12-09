@@ -222,7 +222,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logInvertedIndexLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(urlLibrary.selectors.history.item(itemId))).build();
+				return created(URI.create(urlLibrary.selectors().history().item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -240,7 +240,7 @@ public class LegalServiceController {
 			if (TYPE.isValid(selectorId.type) && UID.isValid(selectorId.uid)) {
 				final int itemId = auditLogging.logStatisticsLookup(selectorId, legalInfo);
 				webSocket.convertAndSend(MESSAGE_PREFIX + LEGAL_MESSAGE_PREFIX + HISTORY_UPDATED, "updated");
-				return created(URI.create(urlLibrary.selectors.history.item(itemId))).build();
+				return created(URI.create(urlLibrary.selectors().history().item(itemId))).build();
 			} else {
 				return badRequest().body(TYPE.getReason(selectorId.type) + "<BR>" + UID.getReason(selectorId.uid));
 			}
@@ -255,7 +255,7 @@ public class LegalServiceController {
 	@RequestMapping(path = HISTORY_PATH, method = GET)
 	public ResponseEntity<?> lookupAuditLoggingHistory(@PageableDefault Pageable pageable, PagedResourcesAssembler<HistoryItem> assembler) {
 		final Page<HistoryItem> items = auditLogging.getPage(pageable);
-		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors.history.all(), pageable);
+		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors().history().all(), pageable);
 		if (items.getSize() == 0) {
 			return ok(assembler.toEmptyResource(items, HistoryItem.class, selfLink));
 		} else {

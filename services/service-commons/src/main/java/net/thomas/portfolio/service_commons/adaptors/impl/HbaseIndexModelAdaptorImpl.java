@@ -82,7 +82,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 			public DataType load(DataTypeId id) throws Exception {
 				final ParameterizedTypeReference<Resource<DataType>> responseType = new ParameterizedTypeReference<>() {
 				};
-				final String url = urlLibrary.entities.lookup(id);
+				final String url = urlLibrary.entities().lookup(id);
 				return unwrap(client.loadUrlAsObject(url, GET, responseType));
 			}
 		};
@@ -143,7 +143,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public List<Selector> getSelectorSuggestions(String simpleRepresentation) {
 		final ParameterizedTypeReference<Resources<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.suggestions(simpleRepresentation);
+		final String url = urlLibrary.selectors().suggestions(simpleRepresentation);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
@@ -154,11 +154,11 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		};
 		String url;
 		if (isDocument(dataType)) {
-			url = urlLibrary.selectors.samples(dataType, amount);
+			url = urlLibrary.selectors().samples(dataType, amount);
 		} else if (isDocument(dataType)) {
-			url = urlLibrary.documents.samples(dataType, amount);
+			url = urlLibrary.documents().samples(dataType, amount);
 		} else {
-			url = urlLibrary.entities.samples(dataType, amount);
+			url = urlLibrary.entities().samples(dataType, amount);
 		}
 		final List<DataType> entities = unwrap(client.loadUrlAsObject(url, GET, responseType));
 		if (entities != null) {
@@ -173,7 +173,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public Selector getFromSimpleRep(String type, String simpleRepresentation) {
 		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.fromSimpleRepresentation(type, simpleRepresentation);
+		final String url = urlLibrary.selectors().fromSimpleRepresentation(type, simpleRepresentation);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
@@ -199,7 +199,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public References getReferences(DataTypeId documentId) {
 		final ParameterizedTypeReference<Resource<References>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.documents.references(documentId);
+		final String url = urlLibrary.documents().references(documentId);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
@@ -208,7 +208,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public Statistics getStatistics(DataTypeId selectorId) {
 		final ParameterizedTypeReference<Resource<Statistics>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.statistics(selectorId);
+		final String url = urlLibrary.selectors().statistics(selectorId);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
@@ -217,7 +217,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.invertedIndex(request.getSelectorId(), request);
+		final String url = urlLibrary.selectors().invertedIndex(request.getSelectorId(), request);
 		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 

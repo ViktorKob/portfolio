@@ -39,28 +39,28 @@ public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdap
 	@Override
 	@SentinelResource(value = CHECK_LEGALITY_OF_INVERTED_INDEX_LOOKUP)
 	public Legality checkLegalityOfInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.selectors.audit.check.invertedIndex(selectorId, legalInfo);
+		final String url = urlLibrary.selectors().audit().check().invertedIndex(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
 	@SentinelResource(value = CHECK_LEGALITY_OF_STATISTICS_LOOKUP)
 	public Legality checkLegalityOfStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.selectors.audit.check.statistics(selectorId, legalInfo);
+		final String url = urlLibrary.selectors().audit().check().statistics(selectorId, legalInfo);
 		return unwrap(client.loadUrlAsObject(url, GET, LEGALITY_RESOURCE));
 	}
 
 	@Override
 	@SentinelResource(value = AUDIT_LOG_INVERTED_INDEX_LOOKUP)
 	public Boolean auditLogInvertedIndexLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.selectors.audit.log.invertedIndex(selectorId, legalInfo);
+		final String url = urlLibrary.selectors().audit().log().invertedIndex(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);
 	}
 
 	@Override
 	@SentinelResource(value = AUDIT_LOG_STATISTICS_LOOKUP)
 	public Boolean auditLogStatisticsLookup(DataTypeId selectorId, LegalInformation legalInfo) {
-		final String url = urlLibrary.selectors.audit.log.statistics(selectorId, legalInfo);
+		final String url = urlLibrary.selectors().audit().log().statistics(selectorId, legalInfo);
 		return client.loadUrlAsObject(url, POST);
 	}
 }

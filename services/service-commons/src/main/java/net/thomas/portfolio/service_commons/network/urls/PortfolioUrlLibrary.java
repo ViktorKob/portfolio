@@ -47,15 +47,15 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 public class PortfolioUrlLibrary {
 	private final UrlFactory urlFactory;
 
-	public EntityUrls entities;
-	public DocumentUrls documents;
-	public SelectorUrls selectors;
+	public EntityUrls entityUrls;
+	public DocumentUrls documentUrls;
+	public SelectorUrls selectorUrls;
 
 	public PortfolioUrlLibrary(UrlFactory urlFactory) {
 		this.urlFactory = urlFactory;
-		entities = new EntityUrls();
-		documents = new DocumentUrls();
-		selectors = new SelectorUrls();
+		entityUrls = new EntityUrls();
+		documentUrls = new DocumentUrls();
+		selectorUrls = new SelectorUrls();
 	}
 
 	@Deprecated
@@ -63,15 +63,31 @@ public class PortfolioUrlLibrary {
 		return urlFactory;
 	}
 
+	public EntityUrls entities() {
+		return entityUrls;
+	}
+
+	public DocumentUrls documents() {
+		return documentUrls;
+	}
+
+	public SelectorUrls selectors() {
+		return selectorUrls;
+	}
+
 	public String schema() {
 		return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
 	}
 
 	public class EntityUrls {
-		public final RenderUrls render;
+		public final RenderUrls renderUrls;
 
 		public EntityUrls() {
-			render = new RenderUrls();
+			renderUrls = new RenderUrls();
+		}
+
+		public RenderUrls render() {
+			return renderUrls;
 		}
 
 		public String samples(String dataType, Integer amount) {
@@ -94,10 +110,14 @@ public class PortfolioUrlLibrary {
 	}
 
 	public class DocumentUrls {
-		public final RenderUrls render;
+		public final RenderUrls renderUrls;
 
 		public DocumentUrls() {
-			render = new RenderUrls();
+			renderUrls = new RenderUrls();
+		}
+
+		public RenderUrls render() {
+			return renderUrls;
 		}
 
 		public String samples(String dataType, int amount) {
@@ -136,14 +156,26 @@ public class PortfolioUrlLibrary {
 	}
 
 	public class SelectorUrls {
-		public final RenderUrls render;
-		public final HistoryUrls history;
-		public final AuditUrls audit;
+		public final RenderUrls renderUrls;
+		public final HistoryUrls historyUrls;
+		public final AuditUrls auditUrls;
 
 		public SelectorUrls() {
-			render = new RenderUrls();
-			audit = new AuditUrls();
-			history = new HistoryUrls();
+			renderUrls = new RenderUrls();
+			auditUrls = new AuditUrls();
+			historyUrls = new HistoryUrls();
+		}
+
+		public RenderUrls render() {
+			return renderUrls;
+		}
+
+		public HistoryUrls history() {
+			return historyUrls;
+		}
+
+		public AuditUrls audit() {
+			return auditUrls;
 		}
 
 		public String samples(String dataType, int amount) {
@@ -193,12 +225,20 @@ public class PortfolioUrlLibrary {
 		}
 
 		public class AuditUrls {
-			public final CheckUrls check;
-			public final LogUrls log;
+			public final CheckUrls checkUrls;
+			public final LogUrls logUrls;
 
 			public AuditUrls() {
-				check = new CheckUrls();
-				log = new LogUrls();
+				checkUrls = new CheckUrls();
+				logUrls = new LogUrls();
+			}
+
+			public CheckUrls check() {
+				return checkUrls;
+			}
+
+			public LogUrls log() {
+				return logUrls;
 			}
 
 			public class CheckUrls {

@@ -35,7 +35,7 @@ public class UsageAdaptorImpl implements PortfolioInfrastructureAware, UsageAdap
 	public UsageActivity storeUsageActivity(DataTypeId documentId, UsageActivity activity) {
 		final ParameterizedTypeReference<Resource<UsageActivity>> responceType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.documents.usageActivities(documentId, activity);
+		final String url = urlLibrary.documents().usageActivities(documentId, activity);
 		return unwrap(client.loadUrlAsObject(url, POST, responceType));
 	}
 
@@ -44,7 +44,7 @@ public class UsageAdaptorImpl implements PortfolioInfrastructureAware, UsageAdap
 	public UsageActivities fetchUsageActivities(DataTypeId documentId, Bounds bounds) {
 		final ParameterizedTypeReference<Resource<UsageActivities>> responceType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.documents.usageActivities(documentId, bounds);
+		final String url = urlLibrary.documents().usageActivities(documentId, bounds);
 		return unwrap(client.loadUrlAsObject(url, GET, responceType));
 	}
 }
