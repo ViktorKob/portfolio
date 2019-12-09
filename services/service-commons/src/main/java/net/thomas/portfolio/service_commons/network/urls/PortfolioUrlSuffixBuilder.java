@@ -64,10 +64,6 @@ public class PortfolioUrlSuffixBuilder implements UrlSuffixBuilder {
 	public static class UrlBuildException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 
-		public UrlBuildException(String message) {
-			super(message);
-		}
-
 		public UrlBuildException(String message, Throwable cause) {
 			super(message, cause);
 		}

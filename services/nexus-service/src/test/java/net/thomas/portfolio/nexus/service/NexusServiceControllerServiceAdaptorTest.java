@@ -177,7 +177,7 @@ public class NexusServiceControllerServiceAdaptorTest {
 		reset(analyticsAdaptor, hbaseAdaptor, legalAdaptor, renderingAdaptor, usageAdaptor);
 		setUpHbaseAdaptorMock(hbaseAdaptor);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
-		executionUtil = new GraphQlQueryTestExecutionUtil(COMMUNICATION_WIRING.getUrlFactory(), COMMUNICATION_WIRING.getHttpRestClient());
+		executionUtil = new GraphQlQueryTestExecutionUtil(COMMUNICATION_WIRING.getUrlLibrary(), COMMUNICATION_WIRING.getHttpRestClient());
 		queryBuilder = new GraphQlQueryBuilder();
 		usageActivityTestUtil = new UsageActivityTestUtil(queryBuilder, usageAdaptor, executionUtil);
 	}

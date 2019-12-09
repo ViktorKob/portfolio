@@ -13,7 +13,7 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
-import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.services.ContextPathSection;
 
 public class GraphQlQueryTestExecutionUtil {
@@ -22,11 +22,11 @@ public class GraphQlQueryTestExecutionUtil {
 	};
 	private static final ParameterizedTypeReference<LinkedHashMap<String, Object>> JSON = new ParameterizedTypeReference<>() {
 	};
-	private final UrlFactory urlFactory;
+	private final PortfolioUrlLibrary urlLibrary;
 	private final HttpRestClient client;
 
-	public GraphQlQueryTestExecutionUtil(final UrlFactory urlFactory, final HttpRestClient client) {
-		this.urlFactory = urlFactory;
+	public GraphQlQueryTestExecutionUtil(PortfolioUrlLibrary urlLibrary, final HttpRestClient client) {
+		this.urlLibrary = urlLibrary;
 		this.client = client;
 	}
 
@@ -43,12 +43,12 @@ public class GraphQlQueryTestExecutionUtil {
 	}
 
 	private Map<String, Object> executeQuery(final ParameterGroup parameterGroup) {
-		final String url = urlFactory.buildUrl(NEXUS_SERVICE, GRAPH_QL, parameterGroup);
+		final String url = urlLibrary.getUrlFactory().buildUrl(NEXUS_SERVICE, GRAPH_QL, parameterGroup);
 		return client.loadUrlAsObject(url, GET, JSON);
 	}
 
 	private Map<String, Object> executeMutation(final ParameterGroup parameterGroup) {
-		final String url = urlFactory.buildUrl(NEXUS_SERVICE, GRAPH_QL, parameterGroup);
+		final String url = urlLibrary.getUrlFactory().buildUrl(NEXUS_SERVICE, GRAPH_QL, parameterGroup);
 		return client.loadUrlAsObject(url, GET, JSON);
 	}
 

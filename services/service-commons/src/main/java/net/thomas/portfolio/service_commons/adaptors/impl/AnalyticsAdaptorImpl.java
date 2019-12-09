@@ -12,7 +12,6 @@ import net.thomas.portfolio.service_commons.adaptors.specific.AnalyticsAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
-import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 
@@ -24,8 +23,8 @@ public class AnalyticsAdaptorImpl implements PortfolioInfrastructureAware, Analy
 	private HttpRestClient client;
 
 	@Override
-	public void initialize(UrlFactory urlFactory, HttpRestClient client) {
-		urlLibrary = new PortfolioUrlLibrary(urlFactory);
+	public void initialize(PortfolioUrlLibrary urlLibrary, HttpRestClient client) {
+		this.urlLibrary = urlLibrary;
 		this.client = client;
 	}
 

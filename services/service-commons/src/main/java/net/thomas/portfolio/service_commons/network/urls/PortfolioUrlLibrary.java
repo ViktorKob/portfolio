@@ -33,9 +33,10 @@ import static net.thomas.portfolio.services.Service.LEGAL_SERVICE;
 import static net.thomas.portfolio.services.Service.RENDER_SERVICE;
 import static net.thomas.portfolio.services.Service.USAGE_DATA_SERVICE;
 
-import net.thomas.portfolio.common.services.parameters.ParameterGroup;
 import net.thomas.portfolio.common.services.parameters.SingleParameter;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
@@ -46,15 +47,20 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 public class PortfolioUrlLibrary {
 	private final UrlFactory urlFactory;
 
-	public final EntityUrls entities;
-	public final DocumentUrls documents;
-	public final SelectorUrls selectors;
+	public EntityUrls entities;
+	public DocumentUrls documents;
+	public SelectorUrls selectors;
 
 	public PortfolioUrlLibrary(UrlFactory urlFactory) {
 		this.urlFactory = urlFactory;
 		entities = new EntityUrls();
 		documents = new DocumentUrls();
 		selectors = new SelectorUrls();
+	}
+
+	@Deprecated
+	public UrlFactory getUrlFactory() {
+		return urlFactory;
 	}
 
 	public String schema() {
@@ -68,7 +74,7 @@ public class PortfolioUrlLibrary {
 			render = new RenderUrls();
 		}
 
-		public String samples(String dataType, int amount) {
+		public String samples(String dataType, Integer amount) {
 			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(ENTITIES, dataType, SAMPLES), asGroup(new SingleParameter("amount", amount)));
 		}
 
@@ -106,12 +112,16 @@ public class PortfolioUrlLibrary {
 			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(DOCUMENTS, documentId, REFERENCES));
 		}
 
+		public String usageActivities(DataTypeId documentId) {
+			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES));
+		}
+
 		public String usageActivities(DataTypeId documentId, UsageActivity activity) {
 			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), activity);
 		}
 
-		public String usageActivities(DataTypeId documentId, ParameterGroup... parameterGroups) {
-			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), parameterGroups);
+		public String usageActivities(DataTypeId documentId, Bounds bounds) {
+			return urlFactory.buildUrl(USAGE_DATA_SERVICE, asEndpoint(USAGE_ACTIVITIES_ROOT, documentId, USAGE_ACTIVITIES), bounds);
 		}
 
 		public class RenderUrls {
@@ -148,12 +158,16 @@ public class PortfolioUrlLibrary {
 			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, id));
 		}
 
-		public String simpleRepresentation(String dataType, String simpleRepresentation) {
+		public String fromSimpleRepresentation(String dataType, String simpleRepresentation) {
 			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, dataType, FROM_SIMPLE_REP, simpleRepresentation));
 		}
 
-		public String invertedIndex(DataTypeId selectorId, ParameterGroup... parameterGroups) {
-			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), parameterGroups);
+		public String invertedIndex(DataTypeId selectorId) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX));
+		}
+
+		public String invertedIndex(DataTypeId selectorId, InvertedIndexLookupRequest request) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), request.getGroups());
 		}
 
 		public String knowledge(DataTypeId selectorId) {
@@ -176,56 +190,6 @@ public class PortfolioUrlLibrary {
 			public String html(DataTypeId id) {
 				return urlFactory.buildUrl(RENDER_SERVICE, asEndpoint(RENDER_ENTITY_ROOT, id, AS_HTML));
 			}
-		}
-
-		public class AuditUrls {
-			public final CheckUrls check;
-			public final LogUrls log;
-
-			public AuditUrls() {
-				check = new CheckUrls();
-				log = new LogUrls();
-			}
-
-			public class CheckUrls {
-				public String invertedIndex(DataTypeId selectorId, LegalInformation legalInfo) {
-					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, LEGAL_RULES), legalInfo);
-				}
-
-				public String statistics(DataTypeId selectorId, LegalInformation legalInfo) {
-					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, LEGAL_RULES), legalInfo);
-				}
-			}
-
-			public class LogUrls {
-				public String invertedIndex(DataTypeId selectorId, LegalInformation legalInfo) {
-					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, INVERTED_INDEX_QUERY, AUDIT_LOG), legalInfo);
-				}
-
-				public String statistics(DataTypeId selectorId, LegalInformation legalInfo) {
-					return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, selectorId, STATISTICS_LOOKUP, AUDIT_LOG), legalInfo);
-				}
-			}
-		}
-
-		public class HistoryUrls {
-			public String all() {
-				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY));
-			}
-
-			public String item(int itemId) {
-				return urlFactory.buildUrl(LEGAL_SERVICE, asEndpoint(LEGAL_ROOT, HISTORY, "" + itemId));
-			}
-		}
-	}
-
-	public class LegalUrls {
-		public final HistoryUrls history;
-		public final AuditUrls audit;
-
-		public LegalUrls() {
-			audit = new AuditUrls();
-			history = new HistoryUrls();
 		}
 
 		public class AuditUrls {

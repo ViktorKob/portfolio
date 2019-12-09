@@ -77,7 +77,7 @@ public class RenderServiceControllerServiceAdaptorTest {
 		reset(hbaseAdaptor, rendererProvider);
 		COMMUNICATION_WIRING.setRestTemplate(restTemplate);
 		final RenderingAdaptorImpl renderingAdaptor = new RenderingAdaptorImpl();
-		renderingAdaptor.initialize(COMMUNICATION_WIRING.getUrlFactory(), COMMUNICATION_WIRING.getHttpRestClient());
+		renderingAdaptor.initialize(COMMUNICATION_WIRING.getUrlLibrary(), COMMUNICATION_WIRING.getHttpRestClient());
 		adaptors = new Adaptors.Builder().setRenderingAdaptor(renderingAdaptor).build();
 	}
 

@@ -131,9 +131,9 @@ public class LegalServiceController {
 		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
 		new Thread(() -> {
 			LOG.info("Initializing adaptors and validators");
-			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(usingPortfolio(discoveryClient, config.getAnalytics()),
+			((PortfolioInfrastructureAware) analyticsAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getAnalytics())),
 					new HttpRestClient(restTemplate, config.getAnalytics()));
-			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getHbaseIndexing())),
 					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getSelectorTypes());
 			LOG.info("Done initializing adaptors and validators");

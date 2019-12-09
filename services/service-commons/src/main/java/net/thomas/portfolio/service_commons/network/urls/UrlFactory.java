@@ -11,9 +11,9 @@ import net.thomas.portfolio.services.Service;
 
 public class UrlFactory {
 	private final UrlPrefixBuilder prefixBuilder;
-	private final PortfolioUrlSuffixBuilder suffixBuilder;
+	private final UrlSuffixBuilder suffixBuilder;
 
-	public UrlFactory(UrlPrefixBuilder prefixBuilder, PortfolioUrlSuffixBuilder suffixBuilder) {
+	public UrlFactory(UrlPrefixBuilder prefixBuilder, UrlSuffixBuilder suffixBuilder) {
 		this.prefixBuilder = prefixBuilder;
 		this.suffixBuilder = suffixBuilder;
 	}

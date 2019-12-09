@@ -10,19 +10,19 @@ public class UidValidator extends StringPresenceValidator {
 
 	@Override
 	public boolean isValid(String uid) {
-		return super.isValid(uid) && uid.length() % 2 == 0;
+		return super.isValid(uid) && (uid == null || lengthIsEven(uid));
 	}
 
 	@Override
 	public String getReason(String uid) {
-		if (uid != null && lengthIsOdd(uid)) {
-			return parameterName + " ( was " + uid + " ) is of odd length, but HEX numbers must be of even length";
-		} else {
+		if (uid == null || lengthIsEven(uid)) {
 			return super.getReason(uid);
+		} else {
+			return parameterName + " ( was " + uid + " ) is of odd length, but HEX numbers must be of even length";
 		}
 	}
 
-	private boolean lengthIsOdd(String uid) {
-		return uid.length() % 2 != 0;
+	private boolean lengthIsEven(String uid) {
+		return uid.length() % 2 == 0;
 	}
 }

@@ -5,6 +5,7 @@ import org.springframework.web.client.RestTemplate;
 import net.thomas.portfolio.common.services.parameters.Credentials;
 import net.thomas.portfolio.common.services.parameters.ServiceDependency;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 
@@ -22,11 +23,11 @@ public class TestCommunicationWiringTool {
 		this.restTemplate = restTemplate;
 	}
 
-	public UrlFactory getUrlFactory() {
+	public PortfolioUrlLibrary getUrlLibrary() {
 		final UrlFactory urlFactory = new UrlFactory(() -> {
 			return "http://localhost:" + port;
 		}, new PortfolioUrlSuffixBuilder());
-		return urlFactory;
+		return new PortfolioUrlLibrary(urlFactory);
 	}
 
 	public HttpRestClient getHttpRestClient() {

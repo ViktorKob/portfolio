@@ -1,7 +1,7 @@
 package net.thomas.portfolio.service_commons.network;
 
-import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 
 public interface PortfolioInfrastructureAware {
-	void initialize(UrlFactory urlFactory, HttpRestClient client);
+	void initialize(PortfolioUrlLibrary urlLibrary, HttpRestClient client);
 }

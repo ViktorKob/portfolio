@@ -30,6 +30,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.HbaseIndexModelAda
 import net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlSuffixBuilder;
 import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.service_commons.validation.UidValidator;
@@ -78,7 +79,7 @@ public class AnalyticsServiceController {
 		}, new PortfolioUrlSuffixBuilder());
 		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
 		new Thread(() -> {
-			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
+			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getHbaseIndexing())),
 					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
 			TYPE.setValidStrings(hbaseAdaptor.getDataTypes());
 		}).start();

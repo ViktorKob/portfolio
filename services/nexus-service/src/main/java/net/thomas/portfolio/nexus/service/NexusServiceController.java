@@ -30,6 +30,7 @@ import net.thomas.portfolio.service_commons.adaptors.specific.RenderingAdaptor;
 import net.thomas.portfolio.service_commons.adaptors.specific.UsageAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
+import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 
 @SpringBootApplication
 public class NexusServiceController {
@@ -94,15 +95,15 @@ public class NexusServiceController {
 	}
 
 	private void initializeIndividualAdaptors() {
-		((PortfolioInfrastructureAware) analyticsAdaptor).initialize(usingPortfolio(discoveryClient, config.getAnalytics()),
+		((PortfolioInfrastructureAware) analyticsAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getAnalytics())),
 				new HttpRestClient(restTemplate, config.getAnalytics()));
-		((PortfolioInfrastructureAware) hbaseAdaptor).initialize(usingPortfolio(discoveryClient, config.getHbaseIndexing()),
+		((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getHbaseIndexing())),
 				new HttpRestClient(restTemplate, config.getHbaseIndexing()));
-		((PortfolioInfrastructureAware) legalAdaptor).initialize(usingPortfolio(discoveryClient, config.getLegal()),
+		((PortfolioInfrastructureAware) legalAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getLegal())),
 				new HttpRestClient(restTemplate, config.getLegal()));
-		((PortfolioInfrastructureAware) renderingAdaptor).initialize(usingPortfolio(discoveryClient, config.getRendering()),
+		((PortfolioInfrastructureAware) renderingAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getRendering())),
 				new HttpRestClient(restTemplate, config.getRendering()));
-		((PortfolioInfrastructureAware) usageAdaptor).initialize(usingPortfolio(discoveryClient, config.getUsage()),
+		((PortfolioInfrastructureAware) usageAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getUsage())),
 				new HttpRestClient(restTemplate, config.getUsage()));
 	}
 

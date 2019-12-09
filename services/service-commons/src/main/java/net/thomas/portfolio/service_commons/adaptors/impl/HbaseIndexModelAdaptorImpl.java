@@ -2,9 +2,7 @@ package net.thomas.portfolio.service_commons.adaptors.impl;
 
 import static com.google.common.cache.CacheBuilder.newBuilder;
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static net.thomas.portfolio.enums.HbaseIndexingServiceEndpoint.SCHEMA;
 import static net.thomas.portfolio.service_commons.hateoas.PortfolioHateoasWrappingHelper.unwrap;
-import static net.thomas.portfolio.services.Service.HBASE_INDEXING_SERVICE;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpMethod.GET;
 
@@ -28,7 +26,6 @@ import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
-import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
 import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
@@ -60,14 +57,14 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	private LoadingCache<DataTypeId, DataType> entityCache;
 
 	@Override
-	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
-		urlLibrary = new PortfolioUrlLibrary(urlFactory);
+	public void initialize(PortfolioUrlLibrary urlLibrary, HttpRestClient client) {
+		this.urlLibrary = urlLibrary;
 		this.client = client;
 		while (schema == null) {
 			try {
 				final ParameterizedTypeReference<Resource<HbaseIndexSchemaImpl>> responseType = new ParameterizedTypeReference<>() {
 				};
-				final String url = urlFactory.buildUrl(HBASE_INDEXING_SERVICE, SCHEMA);
+				final String url = urlLibrary.schema();
 				schema = unwrap(client.loadUrlAsObject(url, GET, responseType));
 			} catch (final UnauthorizedAccessException e) {
 				LOG.error("Unable to fetch schema due to invalid credentials", e);
@@ -176,7 +173,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public Selector getFromSimpleRep(String type, String simpleRepresentation) {
 		final ParameterizedTypeReference<Resource<Selector>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.simpleRepresentation(type, simpleRepresentation);
+		final String url = urlLibrary.selectors.fromSimpleRepresentation(type, simpleRepresentation);
 		return unwrap(client.loadUrlAsObject(url, GET, responseType));
 	}
 
@@ -220,7 +217,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors.invertedIndex(request.getSelectorId(), request.getGroups());
+		final String url = urlLibrary.selectors.invertedIndex(request.getSelectorId(), request);
 		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 

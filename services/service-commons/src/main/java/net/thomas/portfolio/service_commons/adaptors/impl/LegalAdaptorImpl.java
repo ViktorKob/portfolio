@@ -13,7 +13,6 @@ import net.thomas.portfolio.service_commons.adaptors.specific.LegalAdaptor;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
 import net.thomas.portfolio.service_commons.network.PortfolioInfrastructureAware;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
-import net.thomas.portfolio.service_commons.network.urls.UrlFactory;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
@@ -32,8 +31,8 @@ public class LegalAdaptorImpl implements PortfolioInfrastructureAware, LegalAdap
 	private HttpRestClient client;
 
 	@Override
-	public void initialize(final UrlFactory urlFactory, final HttpRestClient client) {
-		urlLibrary = new PortfolioUrlLibrary(urlFactory);
+	public void initialize(PortfolioUrlLibrary urlLibrary, HttpRestClient client) {
+		this.urlLibrary = urlLibrary;
 		this.client = client;
 	}
 
