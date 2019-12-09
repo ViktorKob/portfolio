@@ -58,8 +58,5 @@ public class PortfolioHateoasWrappingHelperUnitTest {
 	}
 
 	private static class StringResources extends Resources<String> {
-		StringResources() {
-			super(null);
-		}
 	}
 }

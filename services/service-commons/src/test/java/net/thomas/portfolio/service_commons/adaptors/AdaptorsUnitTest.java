@@ -28,8 +28,11 @@ import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.Sel
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.SelectorUrls.HistoryUrls;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
 
 /***
  * Individual adaptor implementations are tested through the Adaptors class since these should
@@ -41,10 +44,14 @@ public class AdaptorsUnitTest {
 	private static final String SOME_URL_STRING = "SomeUrl";
 	private static final Legality SOME_LEGALITY = Legality.LEGAL;
 	private static final Boolean SUCCESS = true;
+	private static final String SOME_RENDERED_STRING = "Render";
 
 	private DataTypeId someEntityId;
 	private AnalyticalKnowledge someAnalyticalKnowledge;
 	private LegalInformation someLegalInfo;
+	private UsageActivity someUsageActivity;
+	private UsageActivities someUsageActivities;
+	private Bounds someBounds;
 
 	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient httpClient;
@@ -61,6 +68,9 @@ public class AdaptorsUnitTest {
 		someEntityId = mock(DataTypeId.class);
 		someAnalyticalKnowledge = mock(AnalyticalKnowledge.class);
 		someLegalInfo = mock(LegalInformation.class);
+		someUsageActivity = mock(UsageActivity.class);
+		someUsageActivities = mock(UsageActivities.class);
+		someBounds = mock(Bounds.class);
 	}
 
 	@Before
@@ -123,6 +133,46 @@ public class AdaptorsUnitTest {
 		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(POST))).thenReturn(SUCCESS);
 		final Boolean success = adaptors.auditLogStatisticsLookup(someEntityId, someLegalInfo);
 		assertEquals(SUCCESS, success);
+	}
+
+	@Test
+	public void shouldGetTextRender() {
+		when(urlLibrary.entities().render().text(eq(someEntityId))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_RENDERED_STRING));
+		final String text = adaptors.renderAsText(someEntityId);
+		assertEquals(SOME_RENDERED_STRING, text);
+	}
+
+	@Test
+	public void shouldGetSimpleRepresentationRender() {
+		when(urlLibrary.selectors().render().simpleRepresentation(eq(someEntityId))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_RENDERED_STRING));
+		final String simpleRepresentation = adaptors.renderAsSimpleRepresentation(someEntityId);
+		assertEquals(SOME_RENDERED_STRING, simpleRepresentation);
+	}
+
+	@Test
+	public void shouldGetHtmlRender() {
+		when(urlLibrary.entities().render().html(eq(someEntityId))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_RENDERED_STRING));
+		final String html = adaptors.renderAsHtml(someEntityId);
+		assertEquals(SOME_RENDERED_STRING, html);
+	}
+
+	@Test
+	public void shouldGetUsageActivities() {
+		when(urlLibrary.documents().usageActivities(eq(someEntityId), eq(someBounds))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(someUsageActivities));
+		final UsageActivities activities = adaptors.fetchUsageActivities(someEntityId, someBounds);
+		assertEquals(someUsageActivities, activities);
+	}
+
+	@Test
+	public void shouldPostUsageActivity() {
+		when(urlLibrary.documents().usageActivities(eq(someEntityId), eq(someUsageActivity))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(POST), any())).thenReturn(new Resource<>(someUsageActivity));
+		final UsageActivity activity = adaptors.storeUsageActivity(someEntityId, someUsageActivity);
+		assertEquals(someUsageActivity, activity);
 	}
 
 	public PortfolioUrlLibrary buildUrlLibraryMock() {
