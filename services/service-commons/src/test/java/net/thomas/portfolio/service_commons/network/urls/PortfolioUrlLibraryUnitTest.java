@@ -85,6 +85,7 @@ public class PortfolioUrlLibraryUnitTest {
 		someBounds = mock(Bounds.class);
 		when(someBounds.getParameters()).thenReturn(SOME_PARAMETER_GROUP.getParameters());
 		someInvertedIndexLookupRequest = mock(InvertedIndexLookupRequest.class);
+		when(someInvertedIndexLookupRequest.getSelectorId()).thenReturn(SOME_DATA_TYPE_ID);
 		when(someInvertedIndexLookupRequest.getGroups()).thenReturn(SOME_PARAMETER_GROUPS);
 	}
 
