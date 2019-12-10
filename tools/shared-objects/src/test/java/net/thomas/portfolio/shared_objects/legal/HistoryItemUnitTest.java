@@ -2,12 +2,12 @@ package net.thomas.portfolio.shared_objects.legal;
 
 import static java.lang.System.currentTimeMillis;
 import static net.thomas.portfolio.shared_objects.legal.LegalQueryType.SELECTOR_STATISTICS;
+import static net.thomas.portfolio.testing_tools.SerializationDeserializationUtil.assertCanSerializeAndDeserialize;
+import static net.thomas.portfolio.testing_tools.ToStringTestUtil.assertToStringContainsAllFieldsFromObject;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
 import net.thomas.portfolio.shared_objects.legal.HistoryItem.HistoryItemBuilder;
@@ -32,10 +32,12 @@ public class HistoryItemUnitTest {
 	}
 
 	@Test
-	public void shouldSerializeDeserializeCorrectly() throws Exception {
-		final HistoryItem item = builder.build();
-		final ObjectMapper mapper = new ObjectMapper();
-		final HistoryItem actualValue = mapper.readValue(mapper.writeValueAsString(item), HistoryItem.class);
-		assertEquals(item, actualValue);
+	public void shouldHaveSymmetricProtocol() {
+		assertCanSerializeAndDeserialize(builder.build());
+	}
+
+	@Test
+	public void shouldHaveValidToStringFunction() {
+		assertToStringContainsAllFieldsFromObject(builder.build());
 	}
 }
