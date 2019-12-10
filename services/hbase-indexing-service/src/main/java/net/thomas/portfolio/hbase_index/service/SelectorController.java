@@ -157,7 +157,7 @@ public class SelectorController {
 		bounds = decorateWithPageable(bounds, pageable);
 		final InvertedIndexLookupRequest lookupRequest = new InvertedIndexLookupRequest(selectorId, legalInfo, bounds, documentTypes, relations);
 		final DocumentInfos results = buildLookup(selectorId, bounds, documentTypes, relations).execute();
-		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors().invertedIndex(selectorId, lookupRequest), pageable);
+		final Link selfLink = hateoasHelper.asPagedLink(REL_SELF, urlLibrary.selectors().invertedIndex(lookupRequest), pageable);
 		if (results.getInfos().size() == 0) {
 			return ok(assembler.toEmptyResource(new PageImpl<>(emptyList(), pageable, pageable.getPageNumber() * pageable.getPageSize()), DocumentInfo.class,
 					selfLink));

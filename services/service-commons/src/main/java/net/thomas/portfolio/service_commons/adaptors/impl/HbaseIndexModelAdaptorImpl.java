@@ -66,11 +66,11 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 				};
 				final String url = urlLibrary.schema();
 				schema = unwrap(client.loadUrlAsObject(url, GET, responseType));
-			} catch (final UnauthorizedAccessException e) {
-				LOG.error("Unable to fetch schema due to invalid credentials", e);
-				throw e;
-			} catch (final RuntimeException e) {
-				// We try again until we succeed or the service is closed from the outside
+			} catch (final UnauthorizedAccessException cause) {
+				LOG.error("Unable to fetch schema due to invalid credentials", cause);
+				throw cause;
+			} catch (final RuntimeException cause) {
+				// We silently retry until we succeed or the program is closed from the outside
 			}
 		}
 		entityCache = newBuilder().refreshAfterWrite(10, MINUTES).maximumSize(200).build(buildEntityCacheLoader(client));
@@ -153,7 +153,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 		final ParameterizedTypeReference<Resources<DataType>> responseType = new ParameterizedTypeReference<>() {
 		};
 		String url;
-		if (isDocument(dataType)) {
+		if (isSelector(dataType)) {
 			url = urlLibrary.selectors().samples(dataType, amount);
 		} else if (isDocument(dataType)) {
 			url = urlLibrary.documents().samples(dataType, amount);
@@ -217,7 +217,7 @@ public class HbaseIndexModelAdaptorImpl implements PortfolioInfrastructureAware,
 	public DocumentInfos lookupSelectorInInvertedIndex(InvertedIndexLookupRequest request) {
 		final ParameterizedTypeReference<Resources<DocumentInfo>> responseType = new ParameterizedTypeReference<>() {
 		};
-		final String url = urlLibrary.selectors().invertedIndex(request.getSelectorId(), request);
+		final String url = urlLibrary.selectors().invertedIndex(request);
 		return new DocumentInfos(unwrap(client.loadUrlAsObject(url, GET, responseType)));
 	}
 

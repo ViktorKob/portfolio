@@ -247,12 +247,12 @@ public class PortfolioUrlLibraryUnitTest {
 	public void shouldHaveSelectorInvertedIndexLookupUrlWithParameter() {
 		final ContextPathSection endpoint = asContextPath(SELECTORS_PATH, SOME_DATA_TYPE, SOME_UID, INVERTED_INDEX_PATH);
 		when(urlFactory.buildUrl(eq(HBASE_INDEXING_SERVICE), argThat(matches(endpoint)), (ParameterGroup[]) any())).thenReturn(SOME_URL_STRING);
-		assertEquals(SOME_URL_STRING, library.selectors().invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest));
+		assertEquals(SOME_URL_STRING, library.selectors().invertedIndex(someInvertedIndexLookupRequest));
 	}
 
 	@Test
 	public void shouldHaveSelectorInvertedIndexLookupUrlWithParameterInvertedIndexRequest() {
-		library.selectors().invertedIndex(SOME_DATA_TYPE_ID, someInvertedIndexLookupRequest);
+		library.selectors().invertedIndex(someInvertedIndexLookupRequest);
 		verify(urlFactory).buildUrl(any(), any(), argThat(matches(SOME_PARAMETER_GROUP)));
 	}
 

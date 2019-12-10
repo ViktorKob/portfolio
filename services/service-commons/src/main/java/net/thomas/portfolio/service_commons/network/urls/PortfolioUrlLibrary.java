@@ -198,8 +198,8 @@ public class PortfolioUrlLibrary {
 			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX));
 		}
 
-		public String invertedIndex(DataTypeId selectorId, InvertedIndexLookupRequest request) {
-			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, selectorId, INVERTED_INDEX), request.getGroups());
+		public String invertedIndex(InvertedIndexLookupRequest request) {
+			return urlFactory.buildUrl(HBASE_INDEXING_SERVICE, asEndpoint(SELECTORS, request.getSelectorId(), INVERTED_INDEX), request.getGroups());
 		}
 
 		public String knowledge(DataTypeId selectorId) {

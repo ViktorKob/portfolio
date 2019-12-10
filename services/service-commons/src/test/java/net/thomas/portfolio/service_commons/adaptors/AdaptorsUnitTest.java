@@ -1,16 +1,35 @@
 package net.thomas.portfolio.service_commons.adaptors;
 
+import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields.fields;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.PrimitiveField.integer;
+import static net.thomas.portfolio.shared_objects.hbase_index.model.fields.ReferenceField.dataType;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 
 import net.thomas.portfolio.service_commons.adaptors.impl.AnalyticsAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.HbaseIndexModelAdaptorImpl;
@@ -18,6 +37,7 @@ import net.thomas.portfolio.service_commons.adaptors.impl.LegalAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.RenderingAdaptorImpl;
 import net.thomas.portfolio.service_commons.adaptors.impl.UsageAdaptorImpl;
 import net.thomas.portfolio.service_commons.network.HttpRestClient;
+import net.thomas.portfolio.service_commons.network.UnauthorizedAccessException;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.DocumentUrls;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.EntityUrls;
@@ -27,8 +47,18 @@ import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.Sel
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.SelectorUrls.AuditUrls.LogUrls;
 import net.thomas.portfolio.service_commons.network.urls.PortfolioUrlLibrary.SelectorUrls.HistoryUrls;
 import net.thomas.portfolio.shared_objects.analytics.AnalyticalKnowledge;
+import net.thomas.portfolio.shared_objects.hbase_index.model.fields.Fields;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.References;
+import net.thomas.portfolio.shared_objects.hbase_index.model.meta_data.Statistics;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataType;
 import net.thomas.portfolio.shared_objects.hbase_index.model.types.DataTypeId;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Document;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfo;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.DocumentInfos;
+import net.thomas.portfolio.shared_objects.hbase_index.model.types.Selector;
 import net.thomas.portfolio.shared_objects.hbase_index.request.Bounds;
+import net.thomas.portfolio.shared_objects.hbase_index.request.InvertedIndexLookupRequest;
+import net.thomas.portfolio.shared_objects.hbase_index.schema.HbaseIndexSchemaImpl;
 import net.thomas.portfolio.shared_objects.legal.LegalInformation;
 import net.thomas.portfolio.shared_objects.legal.Legality;
 import net.thomas.portfolio.shared_objects.usage_data.UsageActivities;
@@ -41,10 +71,25 @@ import net.thomas.portfolio.shared_objects.usage_data.UsageActivity;
  * Hateoas unwrappers are also included, since these are not worth mocking
  */
 public class AdaptorsUnitTest {
+	private static final String SOME_UID = "ABCD";
+	private static final String SOME_DOCUMENT_TYPE = "SomeDocumentType";
+	private static final String SOME_SELECTOR_TYPE = "SomeSelectorType";
+	private static final DataTypeId SOME_DOCUMENT_ID = new DataTypeId(SOME_DOCUMENT_TYPE, SOME_UID);
+	private static final DataTypeId SOME_SELECTOR_ID = new DataTypeId(SOME_SELECTOR_TYPE, SOME_UID);
+	private static final Fields SOME_DOCUMENT_FIELDS = fields(dataType("SomeField", SOME_SELECTOR_TYPE));
+	private static final Fields SOME_SELECTOR_FIELDS = fields(integer("SomeOtherField"));
+	private static final String SOME_SIMPLE_REPRESENTATION = "SimpleRepresentation";
 	private static final String SOME_URL_STRING = "SomeUrl";
+	private static final String SOME_SCHEMA_URL = "SomeSchemaUrl";
 	private static final Legality SOME_LEGALITY = Legality.LEGAL;
 	private static final Boolean SUCCESS = true;
 	private static final String SOME_RENDERED_STRING = "Render";
+	private static final Document SOME_DOCUMENT = new Document(SOME_DOCUMENT_ID);
+	private static final Selector SOME_SELECTOR = new Selector(SOME_SELECTOR_ID);
+	private static final References SOME_REFERENCES = new References();
+	private static final Statistics SOME_STATISTICS = new Statistics();
+	private static final DocumentInfo SOME_DOCUMENT_INFO = new DocumentInfo(SOME_DOCUMENT_ID, null, null);
+	private static final InvertedIndexLookupRequest SOME_REQUEST = new InvertedIndexLookupRequest(SOME_SELECTOR_ID, null, null, emptySet(), emptySet());
 
 	private DataTypeId someEntityId;
 	private AnalyticalKnowledge someAnalyticalKnowledge;
@@ -55,6 +100,7 @@ public class AdaptorsUnitTest {
 
 	private PortfolioUrlLibrary urlLibrary;
 	private HttpRestClient httpClient;
+	private HbaseIndexSchemaImpl sampleSchema;
 
 	private AnalyticsAdaptorImpl analyticsAdaptor;
 	private HbaseIndexModelAdaptorImpl hbaseModelAdaptor;
@@ -74,25 +120,48 @@ public class AdaptorsUnitTest {
 	}
 
 	@Before
-	public void setUpAdaptors() {
+	public void setUpAdaptors() throws Exception {
+		sampleSchema = setupSampleSchema();
 		urlLibrary = buildUrlLibraryMock();
 		httpClient = mock(HttpRestClient.class);
+		when(urlLibrary.schema()).thenReturn(SOME_SCHEMA_URL);
+		when(httpClient.loadUrlAsObject(eq(SOME_SCHEMA_URL), eq(GET), any())).thenReturn(new Resource<>(sampleSchema));
 		analyticsAdaptor = new AnalyticsAdaptorImpl();
-		analyticsAdaptor.initialize(urlLibrary, httpClient);
-		// hbaseModelAdaptor = new HbaseIndexModelAdaptorImpl();
-		// hbaseModelAdaptor.initialize(urlLibrary, httpClient);
+		hbaseModelAdaptor = new HbaseIndexModelAdaptorImpl();
 		legalAdaptor = new LegalAdaptorImpl();
-		legalAdaptor.initialize(urlLibrary, httpClient);
 		renderingAdaptor = new RenderingAdaptorImpl();
-		renderingAdaptor.initialize(urlLibrary, httpClient);
 		usageAdaptor = new UsageAdaptorImpl();
-		usageAdaptor.initialize(urlLibrary, httpClient);
+
 		adaptors = new Adaptors.Builder().setAnalyticsAdaptor(analyticsAdaptor)
-				// .setHbaseModelAdaptor(hbaseModelAdaptor)
+				.setHbaseModelAdaptor(hbaseModelAdaptor)
 				.setLegalAdaptor(legalAdaptor)
 				.setRenderingAdaptor(renderingAdaptor)
 				.setUsageAdaptor(usageAdaptor)
 				.build();
+
+		initializeAdaptorsWithTimeout(urlLibrary, httpClient, 2000, SECONDS);
+	}
+
+	private HbaseIndexSchemaImpl setupSampleSchema() {
+		final HbaseIndexSchemaImpl schema = new HbaseIndexSchemaImpl();
+		final Map<String, Fields> dataTypes = new HashMap<>();
+		dataTypes.put(SOME_DOCUMENT_TYPE, SOME_DOCUMENT_FIELDS);
+		dataTypes.put(SOME_SELECTOR_TYPE, SOME_SELECTOR_FIELDS);
+		schema.setDataTypeFields(dataTypes);
+		schema.setDocumentTypes(singleton(SOME_DOCUMENT_TYPE));
+		schema.setSelectorTypes(singleton(SOME_SELECTOR_TYPE));
+		schema.setSimpleRepresentableTypes(singleton(SOME_SELECTOR_TYPE));
+		return schema;
+	}
+
+	private void initializeAdaptorsWithTimeout(PortfolioUrlLibrary urlLibrary, HttpRestClient httpClient, long time, TimeUnit unit) throws Exception {
+		newSingleThreadExecutor().submit(() -> {
+			analyticsAdaptor.initialize(urlLibrary, httpClient);
+			hbaseModelAdaptor.initialize(urlLibrary, httpClient);
+			legalAdaptor.initialize(urlLibrary, httpClient);
+			renderingAdaptor.initialize(urlLibrary, httpClient);
+			usageAdaptor.initialize(urlLibrary, httpClient);
+		}).get(time, unit);
 	}
 
 	@Test
@@ -101,6 +170,128 @@ public class AdaptorsUnitTest {
 		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(someAnalyticalKnowledge));
 		final AnalyticalKnowledge knowledge = adaptors.getKnowledge(someEntityId);
 		assertEquals(someAnalyticalKnowledge, knowledge);
+	}
+
+	@Test(expected = UnauthorizedAccessException.class)
+	public void shouldRaiseExceptionWhenNotAuthorizedForSchema() {
+		when(httpClient.loadUrlAsObject(eq(SOME_SCHEMA_URL), eq(GET), any())).thenThrow(UnauthorizedAccessException.class);
+		new HbaseIndexModelAdaptorImpl().initialize(urlLibrary, httpClient);
+	}
+
+	@Test
+	public void shouldSilentlyRetryWhenCatchingRuntimeExceptionWhileFetchingSchema() {
+		when(httpClient.loadUrlAsObject(eq(SOME_SCHEMA_URL), eq(GET), any())).thenThrow(RuntimeException.class).thenReturn(new Resource<>(sampleSchema));
+		new HbaseIndexModelAdaptorImpl().initialize(urlLibrary, httpClient);
+	}
+
+	@Test
+	public void shouldGetDataTypesDirectlyFromSchema() {
+		final Collection<String> dataTypes = adaptors.getDataTypes();
+		assertEquals(sampleSchema.getDataTypes(), dataTypes);
+	}
+
+	@Test
+	public void shouldGetDocumentTypesDirectlyFromSchema() {
+		final Collection<String> dataTypes = adaptors.getDocumentTypes();
+		assertEquals(sampleSchema.getDocumentTypes(), dataTypes);
+	}
+
+	@Test
+	public void shouldGetSelectorTypesDirectlyFromSchema() {
+		final Collection<String> dataTypes = adaptors.getSelectorTypes();
+		assertEquals(sampleSchema.getSelectorTypes(), dataTypes);
+	}
+
+	@Test
+	public void shouldGetSimpleRepresentableStatusDirectlyFromSchema() {
+		assertTrue(adaptors.isSimpleRepresentable(SOME_SELECTOR_TYPE));
+		assertFalse(adaptors.isSimpleRepresentable(SOME_DOCUMENT_TYPE));
+	}
+
+	@Test
+	public void shouldGetSelectorStatusDirectlyFromSchema() {
+		assertTrue(adaptors.isSelector(SOME_SELECTOR_TYPE));
+		assertFalse(adaptors.isSelector(SOME_DOCUMENT_TYPE));
+	}
+
+	@Test
+	public void shouldGetDocumentStatusDirectlyFromSchema() {
+		assertTrue(adaptors.isDocument(SOME_DOCUMENT_TYPE));
+		assertFalse(adaptors.isDocument(SOME_SELECTOR_TYPE));
+	}
+
+	@Test
+	public void shouldGetFieldsForDocumentDirectlyFromSchema() {
+		assertEquals(sampleSchema.getFieldsForDataType(SOME_DOCUMENT_TYPE), adaptors.getFieldsForDataType(SOME_DOCUMENT_TYPE));
+	}
+
+	@Test
+	public void shouldGetFieldsForSelectorDirectlyFromSchema() {
+		assertEquals(sampleSchema.getFieldsForDataType(SOME_SELECTOR_TYPE), adaptors.getFieldsForDataType(SOME_SELECTOR_TYPE));
+	}
+
+	@Test
+	public void shouldGetSelectorSuggestions() {
+		when(urlLibrary.selectors().suggestions(eq(SOME_SIMPLE_REPRESENTATION))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resources<>(singleton(SOME_SELECTOR)));
+		final List<Selector> selectors = adaptors.getSelectorSuggestions(SOME_SIMPLE_REPRESENTATION);
+		assertSame(SOME_SELECTOR, selectors.get(0));
+	}
+
+	@Test
+	public void shouldGetSelectorFromRepresentation() {
+		when(urlLibrary.selectors().fromSimpleRepresentation(eq(SOME_SELECTOR_TYPE), eq(SOME_SIMPLE_REPRESENTATION))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_SELECTOR));
+		final Selector selector = adaptors.getFromSimpleRep(SOME_SELECTOR_TYPE, SOME_SIMPLE_REPRESENTATION);
+		assertSame(SOME_SELECTOR, selector);
+	}
+
+	@Test
+	public void shouldGetDocumentById() {
+		when(urlLibrary.entities().lookup(eq(SOME_DOCUMENT_ID))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_DOCUMENT));
+		final DataType selector = adaptors.getDataType(SOME_DOCUMENT_ID);
+		assertSame(SOME_DOCUMENT, selector);
+	}
+
+	@Test
+	public void shouldGetSelectorById() {
+		when(urlLibrary.entities().lookup(eq(SOME_SELECTOR_ID))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_SELECTOR));
+		final DataType selector = adaptors.getDataType(SOME_SELECTOR_ID);
+		assertSame(SOME_SELECTOR, selector);
+	}
+
+	@Test
+	public void shouldGracefullySurviceUnknownEntity() {
+		when(urlLibrary.entities().lookup(eq(SOME_DOCUMENT_ID))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(null);
+		final DataType selector = adaptors.getDataType(SOME_DOCUMENT_ID);
+		assertNull(selector);
+	}
+
+	@Test
+	public void shouldGetReferencesForDocument() {
+		when(urlLibrary.documents().references(eq(SOME_DOCUMENT_ID))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_REFERENCES));
+		final References response = adaptors.getReferences(SOME_DOCUMENT_ID);
+		assertSame(SOME_REFERENCES, response);
+	}
+
+	@Test
+	public void shouldGetStatisticsForSelector() {
+		when(urlLibrary.selectors().statistics(eq(SOME_SELECTOR_ID))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resource<>(SOME_STATISTICS));
+		final Statistics response = adaptors.getStatistics(SOME_SELECTOR_ID);
+		assertSame(SOME_STATISTICS, response);
+	}
+
+	@Test
+	public void shouldGetDocumentsBasedOnInvertedIndexLookup() {
+		when(urlLibrary.selectors().invertedIndex(same(SOME_REQUEST))).thenReturn(SOME_URL_STRING);
+		when(httpClient.loadUrlAsObject(eq(SOME_URL_STRING), eq(GET), any())).thenReturn(new Resources<>(singleton(SOME_DOCUMENT_INFO)));
+		final DocumentInfos response = adaptors.lookupSelectorInInvertedIndex(SOME_REQUEST);
+		assertSame(SOME_DOCUMENT_INFO, response.getInfos().iterator().next());
 	}
 
 	@Test

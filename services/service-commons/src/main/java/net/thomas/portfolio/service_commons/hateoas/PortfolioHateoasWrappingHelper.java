@@ -120,7 +120,7 @@ public class PortfolioHateoasWrappingHelper {
 
 	public ResourceSupport wrap(DocumentInfos infos, DataTypeId id, InvertedIndexLookupRequest request, Pageable pageable) {
 		final Resources<ResourceSupport> container = new Resources<>(infos.getInfos().stream().map(this::wrap).collect(toList()));
-		container.add(asPagedLink(REL_SELF, urlLibrary.selectors().invertedIndex(id, request), pageable));
+		container.add(asPagedLink(REL_SELF, urlLibrary.selectors().invertedIndex(request), pageable));
 		return container;
 	}
 
