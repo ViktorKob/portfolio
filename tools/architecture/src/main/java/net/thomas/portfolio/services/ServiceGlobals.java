@@ -22,4 +22,6 @@ public class ServiceGlobals {
 	public static final String RENDER_SERVICE_NAME = "render";
 	public static final String USAGE_DATA_SERVICE_PATH = "/UsageData";
 	public static final String USAGE_DATA_SERVICE_NAME = "usage-data";
+	public static final String USAGE_DATA_JPA_SERVICE_PATH = "/UsageDataJpa";
+	public static final String USAGE_DATA_JPA_SERVICE_NAME = "usage-data-jpa";
 }

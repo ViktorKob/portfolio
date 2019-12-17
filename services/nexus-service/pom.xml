@@ -44,12 +44,12 @@
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-reflect</artifactId>
-			<version>${graphql.kotlin.version}</version>
+			<version>${graphql.kotlin.version}</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		<dependency>
 			<groupId>org.jetbrains.kotlin</groupId>
 			<artifactId>kotlin-stdlib</artifactId>
-			<version>${graphql.kotlin.version}</version>
+			<version>${graphql.kotlin.version}</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		<!-- End of compatibility section -->
 

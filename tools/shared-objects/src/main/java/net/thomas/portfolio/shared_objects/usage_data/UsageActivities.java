@@ -36,7 +36,7 @@ public class UsageActivities {
 
 	@JsonIgnore
 	public UsageActivity get(int index) {
-		return activities.get(0);
+		return activities.get(index);
 	}
 
 	@Override

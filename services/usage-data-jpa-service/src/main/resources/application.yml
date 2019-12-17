@@ -1,0 +1,8 @@
+####################
+Service settings:
+####################
+
+service-port: 8201
+discovery-address: localhost:8000
+external-service-address: localhost:80
+external-protocol: http://

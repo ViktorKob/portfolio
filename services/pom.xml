@@ -24,6 +24,7 @@
 		<module>nexus-service</module>
 		<module>render-service</module>
 		<module>usage-data-service</module>
+		<module>usage-data-jpa-service</module>
 	</modules>
 
 	<dependencyManagement>
