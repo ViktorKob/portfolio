@@ -2,6 +2,8 @@ package net.thomas.portfolio.usage_data.service.storage.entities;
 
 import static javax.persistence.GenerationType.AUTO;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,28 +12,32 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import net.thomas.portfolio.shared_objects.usage_data.UsageActivityType;
 
 @Entity
-@Table(name = "user_accessed_document")
+@Table(name = "USER_ACCESSED_DOCUMENT")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocumentUsage {
 	@Id
-	@Column(name = "row")
+	@Column(name = "ROW_NUMBER")
 	@GeneratedValue(strategy = AUTO)
 	private long row;
-	@Column(name = "document_type")
+	@Column(name = "DOCUMENT_TYPE")
 	private String documentType;
-	@Column(name = "document_uid")
+	@Column(name = "DOCUMENT_UID")
 	private String documentUid;
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "USER_ID")
 	private User userId;
-	@OneToOne
-	@JoinColumn(name = "access_type_id")
-	private AccessType accessTypeId;
-	@Column(name = "time_of_access")
-	private Long timeOfAccess;
+	@Column(name = "ACCESS_TYPE")
+	private UsageActivityType accessType;
+	@Column(name = "TIME_OF_ACCESS")
+	private Date timeOfAccess;
 }

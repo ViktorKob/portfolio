@@ -8,18 +8,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user")
+@Table(name = "USER")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 	@Id
-	@Column(name = "id")
+	@Column(name = "ID")
 	@GeneratedValue(strategy = AUTO)
 	private long userId;
-	@Column(name = "name")
+	@Column(name = "NAME")
 	private String name;
 }

@@ -1,8 +1,20 @@
 ####################
-Service settings:
+# Service settings:
 ####################
 
-service-port: 8201
+service-port: 8210
 discovery-address: localhost:8000
 external-service-address: localhost:80
 external-protocol: http://
+
+
+# For dev
+spring:
+   h2:
+      console:
+         enabled: true
+   jpa:
+      show-sql: true
+      properties:
+         hibernate:
+            format_sql: true

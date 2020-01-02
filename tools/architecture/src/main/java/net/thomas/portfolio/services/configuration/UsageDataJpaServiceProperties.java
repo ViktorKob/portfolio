@@ -33,6 +33,13 @@ public class UsageDataJpaServiceProperties {
 
 		put("usage-data-service.database.database_name", "usage_data");
 
+		put("spring.jpa.hibernate.ddl-auto", "none");
+		put("spring.datasource.url", "jdbc:h2:file:${user.dir}/database/${usage-data-service.database.database_name};mode=mysql");
+		put("spring.datasource.driver-class-name", "org.h2.Driver");
+		put("spring.datasource.username", "db-user");
+		put("spring.datasource.password", "password");
+		put("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+
 		// ####################
 	}
 

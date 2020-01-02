@@ -32,7 +32,7 @@ public class UsageDataJpaServiceConfiguration {
 		}
 
 		public String getConnectionString() {
-			return "jdbc:sqlite:database/" + databaseName + ".db";
+			return "jdbc:mysql:localhost:3306/" + databaseName;
 		}
 	}
 

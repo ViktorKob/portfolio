@@ -4,6 +4,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.USAGE_ACTIVITIES_PATH;
 import static net.thomas.portfolio.globals.UsageDataServiceGlobals.USAGE_ACTIVITIES_ROOT_PATH;
 import static net.thomas.portfolio.service_commons.network.urls.UrlFactory.usingPortfolio;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.notFound;
@@ -14,6 +15,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -54,6 +56,7 @@ import net.thomas.portfolio.usage_data.service.storage.UsageDataJpaStorage;
 @EnableConfigurationProperties
 @RequestMapping(value = USAGE_ACTIVITIES_ROOT_PATH + "/{dti_type}/{dti_uid}" + USAGE_ACTIVITIES_PATH, produces = "application/hal+json")
 public class UsageDataJpaServiceController {
+	private static final Logger LOG = getLogger(UsageDataJpaServiceController.class);
 	private static final long AROUND_THOUSAND_YEARS_AGO = -1000l * 60 * 60 * 24 * 365 * 1000;
 	private static final long AROUND_EIGHT_THOUSAND_YEARS_FROM_NOW = 1000l * 60 * 60 * 24 * 365 * 8000;
 	private static final SpecificStringPresenceValidator TYPE = new SpecificStringPresenceValidator("dti_type", true);
@@ -67,6 +70,9 @@ public class UsageDataJpaServiceController {
 	private final UsageDataJpaServiceConfiguration config;
 	@Value("${global-url-prefix}")
 	private String globalUrlPrefix;
+	@Value("${spring.datasource.url}")
+	private String url;
+
 	@Autowired
 	private EurekaClient discoveryClient;
 	@Autowired
@@ -95,12 +101,11 @@ public class UsageDataJpaServiceController {
 
 	@PostConstruct
 	public void initializeService() {
+		System.out.println("Database located at: " + url);
 		final UrlFactory urlFactory = new UrlFactory(() -> {
 			return globalUrlPrefix;
 		}, new PortfolioUrlSuffixBuilder());
 		hateoasHelper = new PortfolioHateoasWrappingHelper(urlFactory);
-		// proxy.setDatabase(config.getDatabase());
-		// proxy.ensurePresenceOfSchema();
 		new Thread(() -> {
 			((PortfolioInfrastructureAware) hbaseAdaptor).initialize(new PortfolioUrlLibrary(usingPortfolio(discoveryClient, config.getHbaseIndexing())),
 					new HttpRestClient(restTemplate, config.getHbaseIndexing()));
